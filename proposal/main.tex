@@ -1,0 +1,71 @@
+% article type removes chapter structure, remove it for chapter version
+\documentclass[12pt,oneside,article]{memoir}
+
+\newcommand{\thesisTitle}{Your Thesis Title}
+\newcommand{\thesisAuthor}{Ankush Jain}
+
+%%% --- PDF Metadata ---
+\usepackage[pdftex,
+    pdfauthor={\thesisAuthor},
+    pdftitle={\thesisTitle},
+    pdfsubject={PhD Dissertation, ECE, CMU},
+    pdfkeywords={PhD, Dissertation, CMU, Electrical and Computer Engineering}
+]{hyperref}
+
+%%% --- Packages ---
+\usepackage{lmodern} % or times
+\usepackage[margin=1in]{geometry}
+\usepackage{tocbibind} % ensures TOC entries for references?
+\usepackage{lipsum} % for dummy text
+
+%%% --- Bibliography ---
+\usepackage[
+    style=ieee,
+    backend=biber,
+    sorting=none,
+    citestyle=numeric-comp,
+]{biblatex}
+
+\addbibresource{bib/amr.bib}
+\addbibresource{bib/netsketch.bib}
+\addbibresource{bib/netsketch-mon.bib}
+\addbibresource{bib/p3.bib}
+\addbibresource{bib/range_queries.bib}
+
+% For terse references
+\usepackage[capitalize]{cleveref}
+
+% For captions and subfigures
+\usepackage{caption}
+\usepackage{subcaption}
+
+%%% --- Spacing and Counters ---
+\OnehalfSpacing{} % line spacing
+ % This makes section the top-level entity
+\renewcommand{\thesection}{\arabic{section}}
+\setsecnumdepth{subsection}
+\settocdepth{subsection}
+
+%%% --- Document Begins ---
+\begin{document}
+\frontmatter{}
+\input{frontmatter}
+
+%%% --- Main Matter Begins ---
+\mainmatter{}
+\input{tex/1-intro}
+
+% \chapter{Introduction}
+% \lipsum[1-3]
+% \chapter{Background}
+% \lipsum[1-3]
+%%% --- Appendix (Optional) ---
+%\appendix
+% \chapter{Supplementary Material}
+% Add raw data, code listings, or extended discussion here.
+
+%%% --- Bibliography ---
+
+\printbibliography
+
+\end{document}
