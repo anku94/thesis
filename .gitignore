@@ -14,3 +14,4 @@ local
 *.synctex.gz
 .DS_Store
 .*swp
+.cursor

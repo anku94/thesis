@@ -1,7 +1,9 @@
-% article type removes chapter structure, remove it for chapter version
+% article type removes large chapter titles, remove it for full version
 \documentclass[12pt,oneside,article]{memoir}
 
-\newcommand{\thesisTitle}{Your Thesis Title}
+\newcommand{\thesisTitle}{
+    Unifying Streaming Data Reorganization and Interactive Real-Time Observability in Large Clusters
+}
 \newcommand{\thesisAuthor}{Ankush Jain}
 
 %%% --- PDF Metadata ---
@@ -42,9 +44,13 @@
 %%% --- Spacing and Counters ---
 \OnehalfSpacing{} % line spacing
  % This makes section the top-level entity
-\renewcommand{\thesection}{\arabic{section}}
-\setsecnumdepth{subsection}
-\settocdepth{subsection}
+% \renewcommand{\thesection}{\arabic{section}}
+\setsecnumdepth{subsubsection}
+% \settocdepth{subsection}
+
+\chapterstyle{article}
+\setsecheadstyle{\normalfont\large\bfseries} % default is usually \Large
+\setsubsecheadstyle{\normalfont\normalsize\bfseries}
 
 %%% --- Document Begins ---
 \begin{document}
@@ -53,7 +59,11 @@
 
 %%% --- Main Matter Begins ---
 \mainmatter{}
+\input{tex/0-abstract}
 \input{tex/1-intro}
+\input{tex/2-carp}
+\input{tex/3-amr}
+\input{tex/4-orca}
 
 % \chapter{Introduction}
 % \lipsum[1-3]

@@ -1,7 +1,70 @@
-\section{Introduction}
+\chapter{Introduction}
+\label{chap:introduction}
 
-Test citation~\cite{Dubey2022:Flash-X}
-\lipsum[1]
+\section{The Dual Challenges of HPC at Scale}
+\label{sec:intro_motivation}
+This section will establish the broad context of the thesis. It will discuss the growing
+importance of large-scale scientific simulations and introduce the two persistent, critical
+challenges that define the field: the data challenge (managing and analyzing massive data output)
+and the performance challenge (optimizing computational efficiency on complex, large-scale
+systems).
 
-\subsection{Background}
-\lipsum[2]
+\section{The Siloed Approach to In-Situ Co-Processing}
+\label{sec:intro_siloed}
+This section will describe the status quo, arguing that the data and performance challenges have
+traditionally been addressed by separate communities using siloed tools. It will introduce the
+concept of in-situ processing as a promising direction but note that early efforts were often
+domain-specific and did not bridge this gap.
+
+\subsection{The Data Path Problem: A Missing Primitive}
+\label{sec:intro_data_path}
+This subsection will focus specifically on the data challenge. It will detail the state-of-the-art
+in in-situ data analysis prior to this work (e.g., hash partitioning) and identify the key missing
+piece: a viable method for in-situ adaptive range partitioning. This sets the stage for the
+contributions of CARP.
+
+\subsection{The Compute Path Problem: A Diagnostic Challenge}
+\label{sec:intro_compute_path}
+This subsection will pivot to the performance challenge. It will describe the conventional
+approach to performance tuning (e.g., post-mortem trace analysis) and highlight its core weakness:
+the inability to distinguish fundamental workload imbalance from fixable, environmental system
+noise due to a lack of on-site, hardware-level context. This sets the stage for the findings of
+the AMR study.
+
+\section{A Unified Framework for Real-Time Observation and Control}
+\label{sec:intro_thesis}
+
+\subsection{Thesis Statement}
+\label{sec:intro_thesis_statement}
+This section will present the unifying insight of the thesis: that the data and performance
+problems are two sides of the same coin, both pointing to the need for a unified framework for
+real-time, in-situ observation and control.
+It will then formally state the thesis.
+\begin{quote}
+  This thesis presents the design, implementation, and generalization of an in-situ OODA
+  (Observe-Orient-Decide-Act) loop for large-scale scientific applications.
+  We first demonstrate its effectiveness in the data domain with an adaptive partitioner (CARP), then
+  establish its necessity for performance diagnostics in the compute domain (AMR), and culminate in
+  ORCA, a general-purpose, programmable framework that elevates this concept to enable holistic,
+  real-time control of HPC workflows.
+\end{quote}
+
+\subsection{Summary of Contributions}
+\label{sec:intro_contributions}
+This section will briefly list the core intellectual contributions of the thesis, mapping each to a
+part of the work.
+\begin{itemize}
+  \item The design and validation of CARP, completing the
+        toolkit of in-situ data partitioning primitives with a demonstration of an adaptive control loop.
+  \item A deep diagnostic study of AMR codes that establishes the primacy of on-site, full-stack
+        performance analysis over conventional methods.
+  \item The design and architecture of ORCA, a
+        general-purpose framework that unifies these concepts into a programmable platform for real-time
+        monitoring and consistent control.
+\end{itemize}
+
+\section{Dissertation Outline}
+\label{sec:intro_outline}
+This final section will provide a brief roadmap for the remainder of the thesis document, outlining
+the content of each subsequent chapter (CARP, AMR, ORCA, Conclusion and Future Work).
+
