@@ -1,0 +1,71 @@
+\section{CARP --- Adaptive In-Situ Range
+Partitioning}\label{carp-adaptive-in-situ-range-partitioning}
+
+\subsection{Relevant Background and Architectural
+Rationale}\label{relevant-background-and-architectural-rationale}
+
+\begin{itemize}
+\tightlist
+\item
+  Prior in-situ approaches were either tightly coupled to the
+  application (hard to adapt and extend) or focused on fast, unordered
+  ingestion (hash partitioning), sacrificing query efficiency.
+\item
+  Range queries are critical in scientific analysis, but traditional
+  solutions required expensive post-processing sorts---architecturally
+  at odds with the streaming, in-memory nature of modern HPC I/O.
+\item
+  The network-to-storage bandwidth gap and the bursty, append-heavy I/O
+  patterns of checkpointing make streaming, adaptive, one-pass
+  reorganization architecturally optimal.
+\end{itemize}
+
+\subsection{Motivation and Context}\label{motivation-and-context}
+
+\begin{itemize}
+\tightlist
+\item
+  Adaptive range partitioning was the last missing primitive for general
+  in-situ data organization.
+\item
+  Scientific datasets are highly skewed and dynamic, demanding solutions
+  that can adjust in real time.
+\end{itemize}
+
+\subsection{Approach}\label{approach}
+
+\begin{itemize}
+\tightlist
+\item
+  CARP adaptively reorganizes data during application I/O, discovering
+  and adjusting range partitions on the fly.
+\item
+  Operates fully in-situ, without extra passes or reordering after the
+  fact.
+\end{itemize}
+
+\subsection{Key Results}\label{key-results}
+
+\begin{itemize}
+\tightlist
+\item
+  Delivers near-sorted query performance for range queries, with zero
+  ingestion overhead.
+\item
+  Outperforms prior work: up to 5x faster than post-processing and up to
+  100x lower query latency than in-situ indexing baselines.
+\item
+  Robust across extremes of skew and evolving data distributions.
+\end{itemize}
+
+\subsection{Broader Impact}\label{broader-impact}
+
+\begin{itemize}
+\tightlist
+\item
+  Completes the set of architectural primitives for in-situ data
+  organization.
+\item
+  Introduces the ``state-driven adaptive control loop'' pattern, a theme
+  carried forward in the thesis.
+\end{itemize}

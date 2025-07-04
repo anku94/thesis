@@ -1,0 +1,103 @@
+\section{Background and Landscape}\label{background-and-landscape}
+
+\subsection{The BSP Paradigm and Synchronized Cluster
+Computing}\label{the-bsp-paradigm-and-synchronized-cluster-computing}
+
+\begin{itemize}
+\tightlist
+\item
+  What is BSP? Why is it foundational for both HPC and large-scale ML?
+\item
+  Timestepped execution, collectives, and synchronization barriers.
+\item
+  Impact on application design: sensitivity to stragglers and the
+  importance of uniform progress.
+\end{itemize}
+
+\subsection{Anatomy of Modern
+Clusters}\label{anatomy-of-modern-clusters}
+
+\begin{itemize}
+\item
+  Cluster resources: nodes, memory hierarchies, accelerators (e.g.,
+  GPUs).
+\item
+  \textbf{Networking:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    HPC: specialized high-speed fabrics (e.g., InfiniBand, Aries) for
+    collectives, plus Ethernet control networks.
+  \item
+    ML clusters: backend networks for data, frontend for orchestration.
+  \end{itemize}
+\item
+  Storage infrastructure: parallel filesystems (Lustre, GPFS, BeeGFS),
+  burst buffers, SSD tiers.
+\end{itemize}
+
+\subsection{Data Movement and I/O
+Challenges}\label{data-movement-and-io-challenges}
+
+\begin{itemize}
+\tightlist
+\item
+  Bursty checkpointing and collective I/O phases in scientific apps.
+\item
+  The network/storage bandwidth gap as a persistent architectural
+  problem.
+\item
+  Checkpointing and trace collection as stressors for both storage and
+  system performance.
+\item
+  The difference between data written for analysis (HPC) and for
+  recoverability (ML).
+\end{itemize}
+
+\subsection{In-Situ Analytics: Community Drivers and Status
+Quo}\label{in-situ-analytics-community-drivers-and-status-quo}
+
+\begin{itemize}
+\item
+  Traditional ``persist-then-analyze'' model and its breakdown at scale.
+\item
+  Why in-situ emerged: reducing time-to-insight, bandwidth needs, and
+  storage costs.
+\item
+  Overview of major in-situ paradigms:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Tightly coupled: libraries embedded in simulation.
+  \item
+    Loosely coupled: co-processing with staging/burst nodes.
+  \item
+    Overlay networks: aggregation and scalable monitoring.
+  \item
+    In-situ indexing: hash-based (DeltaFS), range (missing).
+  \end{itemize}
+\item
+  Limitations of each and the context for new approaches.
+\end{itemize}
+
+\subsection{Scientific Code Ecosystem}\label{scientific-code-ecosystem}
+
+\begin{itemize}
+\tightlist
+\item
+  Landscape of open-source and institutional codes: how science gets
+  done at scale.
+\item
+  \textbf{VPIC:} what it is, scientific significance, I/O demands.
+\item
+  \textbf{AMR codes:} (e.g., Parthenon, FLASH, Enzo) for multiscale,
+  adaptive modeling.
+\item
+  Other representative codes and domains (brief nod to climate,
+  molecular dynamics, etc.).
+\item
+  Common challenges: data volumes, run duration, complexity, and the
+  resulting analysis needs.
+\end{itemize}

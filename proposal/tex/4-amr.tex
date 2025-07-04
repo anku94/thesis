@@ -1,0 +1,83 @@
+\section{AMR --- Diagnosing and Optimizing Adaptive Mesh
+Codes}\label{amr-diagnosing-and-optimizing-adaptive-mesh-codes}
+
+\subsection{Background and Motivation}\label{background-and-motivation}
+
+\begin{itemize}
+\tightlist
+\item
+  Block-structured AMR (Adaptive Mesh Refinement) codes are widely used
+  for large-scale simulations in physics and engineering, but are
+  notoriously difficult to optimize at scale.
+\item
+  Synchronization and frequent mesh refinement create straggler effects;
+  performance is traditionally diagnosed as a load-balancing problem.
+\end{itemize}
+
+\subsection{Load-Balancing Policies and
+Baselines}\label{load-balancing-policies-and-baselines}
+
+\begin{itemize}
+\tightlist
+\item
+  Common practice: work placement policies (e.g., Space-Filling Curves,
+  naive block distribution) assume uniform costs and static assignment.
+\item
+  Prior literature and production codes rely on heuristics; empirical
+  tuning is difficult, and ``obvious'' improvements often fail at scale.
+\end{itemize}
+
+\subsection{The Diagnostic Journey}\label{the-diagnostic-journey}
+
+\begin{itemize}
+\tightlist
+\item
+  Initial attempts to optimize placement exposed more complex
+  bottlenecks: hardware faults, system noise, and non-obvious sources of
+  variability.
+\item
+  Standard profiling tools were insufficient---transient effects and
+  cross-stack anomalies went undetected.
+\end{itemize}
+
+\subsection{Evolution of the Telemetry
+Pipeline}\label{evolution-of-the-telemetry-pipeline}
+
+\begin{itemize}
+\tightlist
+\item
+  Necessity drove a bottom-up diagnostic process: custom code
+  instrumentation, direct CSV logging, and iterative data analysis.
+\item
+  The ad-hoc telemetry stack evolved into a query-driven, structured
+  workflow, borrowing concepts from modern OLAP and observability.
+\item
+  Adoption of programmable tools (eBPF, OLAP engines) enabled the
+  root-cause diagnosis that classical HPC tools could not deliver.
+\end{itemize}
+
+\subsection{Key Results and Policy
+Development}\label{key-results-and-policy-development}
+
+\begin{itemize}
+\tightlist
+\item
+  The CPLX placement policy: a tunable hybrid balancing load and
+  communication locality, outperforming prior baselines by up to 21.6\%.
+\item
+  Main finding: true bottlenecks often lie outside what classical load
+  balancing or placement can solve---highlighting the need for deeper,
+  programmable, telemetry-driven diagnosis.
+\end{itemize}
+
+\subsection{Broader Lessons}\label{broader-lessons}
+
+\begin{itemize}
+\tightlist
+\item
+  Performance optimization for modern AMR codes is fundamentally
+  empirical and diagnostic, not purely algorithmic.
+\item
+  Motivates the need for a general, programmable approach to cluster
+  telemetry and control---setting the stage for ORCA.
+\end{itemize}
