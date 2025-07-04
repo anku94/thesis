@@ -1,5 +1,5 @@
 % article type removes large chapter titles, remove it for full version
-\documentclass[12pt,oneside,article]{memoir}
+\documentclass[11pt,oneside,article]{memoir}
 
 \newcommand{\thesisTitle}{
     Unifying Streaming Data Reorganization and Interactive Real-Time Observability in Large Clusters
@@ -19,20 +19,44 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{tocbibind} % ensures TOC entries for references?
 \usepackage{lipsum} % for dummy text
+\usepackage{markdown} % for outlines, temporary
 
 %%% --- Bibliography ---
 \usepackage[
-    style=ieee,
+    style=numeric,
     backend=biber,
     sorting=none,
     citestyle=numeric-comp,
 ]{biblatex}
 
 \addbibresource{bib/amr.bib}
+\addbibresource{bib/general-thesis.bib}
 \addbibresource{bib/netsketch.bib}
 \addbibresource{bib/netsketch-mon.bib}
 \addbibresource{bib/p3.bib}
 \addbibresource{bib/range_queries.bib}
+
+% remove some metadata
+\AtEveryBibitem{%
+  \clearfield{day}%
+  \clearfield{month}%
+  \clearfield{note}%
+  \clearfield{language}%
+  \clearfield{urldate}%
+  \clearfield{booktitle}%
+  \clearfield{issn}%
+  \clearfield{isbn}%
+  \clearfield{location}%
+  \clearfield{address}%
+  \clearfield{doi}%
+  \clearfield{pages}%
+  \clearfield{series}%
+  \clearfield{location}%
+}
+
+% clear both url and urldate in biblatex
+\renewbibmacro*{url+urldate}{}
+\renewbibmacro*{publisher+location+date}{\printdate}
 
 % For terse references
 \usepackage[capitalize]{cleveref}
@@ -60,15 +84,24 @@
 %%% --- Main Matter Begins ---
 \mainmatter{}
 \input{tex/0-abstract}
+% \markdownInput{notes/outline-ch1-v1.md}
 \input{tex/1-intro}
-\input{tex/2-carp}
-\input{tex/3-amr}
-\input{tex/4-orca}
+\newpage
+\markdownInput{notes/outline-ch2-v1.md}
+\newpage
+\markdownInput{notes/outline-ch3-v1.md}
 
-% \chapter{Introduction}
-% \lipsum[1-3]
-% \chapter{Background}
-% \lipsum[1-3]
+\newpage
+\markdownInput{notes/outline-ch4-v1.md}
+
+\newpage
+\markdownInput{notes/outline-ch5-v1.md}
+
+
+% \input{tex/2-carp}
+% \input{tex/3-amr}
+% \input{tex/4-orca}
+
 %%% --- Appendix (Optional) ---
 %\appendix
 % \chapter{Supplementary Material}
@@ -76,6 +109,13 @@
 
 %%% --- Bibliography ---
 
-\printbibliography
+% x plus y: x is inter-bib space
+\newpage
+\begingroup
+\renewcommand*{\bibfont}{\small}  % or \footnotesize or custom \fontsize
+\renewcommand{\baselinestretch}{0.9}
+\setlength{\bibitemsep}{4pt plus 0.3ex}
+\printbibliography{}
+\endgroup
 
 \end{document}

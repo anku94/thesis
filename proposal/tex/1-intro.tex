@@ -1,70 +1,81 @@
 \chapter{Introduction}
-\label{chap:introduction}
 
-\section{The Dual Challenges of HPC at Scale}
-\label{sec:intro_motivation}
-This section will establish the broad context of the thesis. It will discuss the growing
-importance of large-scale scientific simulations and introduce the two persistent, critical
-challenges that define the field: the data challenge (managing and analyzing massive data output)
-and the performance challenge (optimizing computational efficiency on complex, large-scale
-systems).
+\section{Motivation and Scope}
 
-\section{The Siloed Approach to In-Situ Co-Processing}
-\label{sec:intro_siloed}
-This section will describe the status quo, arguing that the data and performance challenges have
-traditionally been addressed by separate communities using siloed tools. It will introduce the
-concept of in-situ processing as a promising direction but note that early efforts were often
-domain-specific and did not bridge this gap.
+The Bulk Synchronous Parallel (BSP) paradigm powers some of our most critical computational tools,
+from large-scale scientific simulations to distributed machine learning.
+These workloads---consisting of large parallel computations interspersed with I/O and global
+synchronization---currently use upto O(10k)
+nodes~\cite{Das2023:LargeScale,Stock2024:LargeScale,Gratt2024:Llama3Scale,:LlamaScale} and continue
+to grow with time~\cite{Rahma2024:MLScale}.
+As these applications scale, their efficiency has datacenter-level impacts on both cost and
+time-to-discovery.
 
-\subsection{The Data Path Problem: A Missing Primitive}
-\label{sec:intro_data_path}
-This subsection will focus specifically on the data challenge. It will detail the state-of-the-art
-in in-situ data analysis prior to this work (e.g., hash partitioning) and identify the key missing
-piece: a viable method for in-situ adaptive range partitioning. This sets the stage for the
-contributions of CARP.
+The tightly synchronized nature of BSP creates two unique challenges that strain modern computing
+infrastructure.
+On the data path, bursts of checkpointed state create massive I/O demands on the storage and
+analytics infrastructure~\cite{Eisen2022:Checkpoint}.
+On the compute path, global synchronization amplifies sensitivity to execution
+variability~\cite{Hoefl2010:Noise,Petri2003:Missing,Yildi2016:IONoise}.
+Performance bottlenecks that would be manageable in loosely coupled systems become critical scaling
+barriers when every worker must wait for the slowest participant.
+% The traditional "collect and post-process" approach—write data to storage, then analyze it
+% offline—increasingly breaks down under the volume and velocity of modern scientific workloads.
+% High I/O costs, slow time-to-insight, and systematically underutilized analytical results
+% demonstrate the fundamental limitations of this paradigm.
 
-\subsection{The Compute Path Problem: A Diagnostic Challenge}
-\label{sec:intro_compute_path}
-This subsection will pivot to the performance challenge. It will describe the conventional
-approach to performance tuning (e.g., post-mortem trace analysis) and highlight its core weakness:
-the inability to distinguish fundamental workload imbalance from fixable, environmental system
-noise due to a lack of on-site, hardware-level context. This sets the stage for the findings of
-the AMR study.
 
-\section{A Unified Framework for Real-Time Observation and Control}
-\label{sec:intro_thesis}
+% This synchronization penalty transforms routine system noise into fundamental performance
+% limiters, making scalability increasingly fragile.
 
-\subsection{Thesis Statement}
-\label{sec:intro_thesis_statement}
-This section will present the unifying insight of the thesis: that the data and performance
-problems are two sides of the same coin, both pointing to the need for a unified framework for
-real-time, in-situ observation and control.
-It will then formally state the thesis.
-\begin{quote}
-  This thesis presents the design, implementation, and generalization of an in-situ OODA
-  (Observe-Orient-Decide-Act) loop for large-scale scientific applications.
-  We first demonstrate its effectiveness in the data domain with an adaptive partitioner (CARP), then
-  establish its necessity for performance diagnostics in the compute domain (AMR), and culminate in
-  ORCA, a general-purpose, programmable framework that elevates this concept to enable holistic,
-  real-time control of HPC workflows.
-\end{quote}
+\section{Status Quo: A Nascent In-Situ Landscape}
 
-\subsection{Summary of Contributions}
-\label{sec:intro_contributions}
-This section will briefly list the core intellectual contributions of the thesis, mapping each to a
-part of the work.
-\begin{itemize}
-  \item The design and validation of CARP, completing the
-        toolkit of in-situ data partitioning primitives with a demonstration of an adaptive control loop.
-  \item A deep diagnostic study of AMR codes that establishes the primacy of on-site, full-stack
-        performance analysis over conventional methods.
-  \item The design and architecture of ORCA, a
-        general-purpose framework that unifies these concepts into a programmable platform for real-time
-        monitoring and consistent control.
-\end{itemize}
+In-situ analytics emerged as a promising response to these BSP challenges, attempting to leverage
+idle computational resources during I/O phases to perform data analysis and organization tasks that
+would otherwise require expensive post-processing.
 
-\section{Dissertation Outline}
-\label{sec:intro_outline}
-This final section will provide a brief roadmap for the remainder of the thesis document, outlining
-the content of each subsequent chapter (CARP, AMR, ORCA, Conclusion and Future Work).
+Early in-situ work focused on tightly coupled libraries such as ParaView Catalyst, though these
+were often limited to scripted visualization or basic filtering operations.
+Loosely coupled approaches like ADIOS and DataSpaces enabled more sophisticated co-processing
+workflows but introduced additional complexity and network dependencies.
 
+Overlay networks including MRNet and LDMS provided scalable data reduction capabilities but offered
+limited programmability, finding primary use in monitoring rather than general analytics.
+In-situ indexing advanced with systems like DeltaFS implementing hash partitioning at scale, yet
+adaptive range partitioning remained an unsolved challenge.
+
+Despite these advances, most in-situ systems remained point solutions—valuable within their
+specific domains but narrow in scope, with limited programmability or generality across different
+use cases.
+
+\section{Gaps and the Journey to Generality}
+
+On the data path, the available toolkit for in-situ analytics remained fundamentally incomplete.
+Most efforts focused on specific tasks such as visualization or compression, leaving open critical
+challenges including adaptive range partitioning of streaming data.
+
+On the compute path, the prevailing struggle centered on diagnosing and fixing performance issues.
+While widely understood as fundamentally a load balancing problem, practitioners were plagued by
+noisy telemetry and insufficient diagnostic tools to distinguish workload imbalance from
+environmental factors.
+
+This thesis initially approached these as two separate research problems.
+Only through extensive empirical systems work did it become clear that both represented instances
+of a deeper, more general challenge: organizing and processing streaming data effectively for both
+insight generation and real-time control.
+
+\section{Thesis Statement}
+
+\textit{Streaming, programmable analytics and control can unify and solve both data and compute challenges in synchronized cluster computing.}
+
+\section{Overview of Contributions}
+
+This thesis presents three major contributions that progressively develop this unified approach:
+
+\textbf{CARP} fills the last major gap in in-situ data organization by
+providing adaptive range partitioning of streaming data, completing the toolkit of fundamental
+partitioning primitives for in-situ analytics.
+
+\textbf{CPLX/AMR} develops programmable, empirical workflows and tunable placement policies for real-world performance diagnosis and optimization, demonstrating the necessity of full-stack telemetry over traditional approaches.
+
+\textbf{ORCA} generalizes these insights into a unified, real-time framework for observability and control at cluster scale, providing a programmable substrate for both data analytics and system optimization.
