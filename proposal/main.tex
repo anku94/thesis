@@ -15,11 +15,12 @@
 ]{hyperref}
 
 %%% --- Packages ---
-\usepackage{lmodern} % or times
+\usepackage{lmodern}
 \usepackage[margin=1in]{geometry}
 \usepackage{tocbibind} % ensures TOC entries for references?
 \usepackage{lipsum} % for dummy text
 \usepackage{markdown} % for outlines, temporary
+\usepackage{xcolor} % for colored text
 
 %%% --- Bibliography ---
 \usepackage[
@@ -64,6 +65,9 @@
 % For captions and subfigures
 \usepackage{caption}
 \usepackage{subcaption}
+
+%%% --- Commands ---
+\newcommand{\ga}[1]{\textcolor{red!70!black}{@GA: #1}}
 
 %%% --- Spacing and Counters ---
 \OnehalfSpacing{} % line spacing
