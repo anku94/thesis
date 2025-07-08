@@ -1,0 +1,191 @@
+% !TEX root = ../main.tex
+
+\chapter{Introduction}
+
+\section{Motivation: Efficiency Bottlenecks in BSP}
+
+The Bulk Synchronous Parallel (BSP) paradigm powers some of our most critical computational tools,
+from large-scale scientific simulations in astrophysics and climate science to distributed training
+of foundation models in machine learning.
+These workloads---consisting of large parallel computations interspersed with I/O and global
+synchronization---currently operate at the scale of tens of thousands of accelerator
+nodes~\cite{Das2023:LargeScale,Stock2024:LargeScale,Gratt2024:Llama3Scale,:LlamaScale} and continue
+to grow with time~\cite{Rahma2024:MLScale}.
+As these applications scale, their efficiency has datacenter-level impacts on both cost and
+time-to-discovery.
+
+The tightly synchronized nature of BSP creates two unique challenges that strain modern computing
+infrastructure.
+On the data path, bursts of checkpointed state create massive I/O demands on the storage and
+analytics infrastructure~\cite{Eisen2022:Checkpoint}.
+On the compute path, frequent global synchronization amplifies the system's sensitivity to
+execution variability~\cite{Hoefl2010:Noise,Petri2003:Missing,Yildi2016:IONoise}.
+Performance bottlenecks that would be manageable in loosely coupled systems, such as minor OS-level
+interruptions or thermal throttling, become critical scaling barriers when every worker must wait
+for the slowest participant.
+
+We now describe the status quo and outstanding efficiency challenges along the data and compute
+paths.
+
+\paragraph{Data Management}
+The explosive growth in scientific data volumes has made in-situ analytics an essential strategy
+for reducing I/O overhead and accelerating time-to-insight.
+While widely used for visualization and occasionally adopted for data transformation or staging,
+current in-situ systems are fragmented, limited, and purpose-built.
+Most frameworks hardcode specific operations or assume fixed data layouts, with no support for
+composing multiple indexing strategies at ingest time.
+Existing systems like FastQuery build auxiliary indices such as bitmaps, while others like DeltaFS
+perform high-throughput hash partitioning suitable for point queries—but neither supports efficient
+range queries.
+No general-purpose mechanism exists for building query-efficient layouts dynamically and
+incrementally during ingestion.
+As a result, range query performance still hinges on costly post-processing sorts, undermining the
+core premise of in-situ data processing.
+
+\paragraph{Compute Efficiency}
+The parallel inefficiency of BSP codes is widely ascribed to load imbalance, but there has been
+little systematic effort to characterize its sources or validate mitigation strategies.
+The standard approach—offline trace analysis—is both cumbersome and disconnected from real-time
+system context.
+Traces are large, opaque, and typically analyzed long after execution, often by researchers without
+access to the hardware environment that produced them.
+Profiling tools, while lightweight, expose only coarse-grained summaries and miss transient effects
+that may drive synchronization delays.
+As a result, performance tuning remains ad-hoc and reactive, lacking the infrastructure for
+targeted, context-aware introspection during execution.
+
+\section{Our Work: A Comprehensive Study of BSP Efficiency}
+
+Our work developed systems and algorithms to advance workflow efficiency of parallel codes on
+both the compute and data paths.
+These systems demonstrated that significant efficiency gains were possible and revealed key
+insights for making these wins accessible on production clusters.
+This experience led us to develop ORCA, a general-purpose approach that enables efficiency wins
+in production environments.
+We describe each system in turn, highlighting the contributions and insights that collectively
+motivated our unified approach.
+
+\subsection{Data Path: Streaming Data Reorganization}
+
+\paragraph{Motivation}
+Our work was motivated by the need for write-efficient ingestion techniques that for scientific
+data analyses.
+Analyses on continuous physical properties such as wavefronts or energy bands require efficient
+range queries.
+All existing solutions for efficient range queries require reordering of on-disk data via
+postprocessing.
+Not only would an in-situ ingestion system deliver efficiency gains, it would also complete the
+toolkit of fundamental in-situ data organization primitives.
+
+\paragraph{Challenges}
+Our goal was to develop a purely streaming system that would never reorder data once written to
+disk, without making any assumptions about data distribution characteristics.
+Our characterization study found scientific data distributions to be highly skewed and evolving
+over time.
+Any static range partitioning scheme would become imbalanced, creating write bottlenecks and query
+hotspots.
+Our system needed to ingest data with unknown, dynamic, a nd evolving data distributions, maintain
+full utilization of the storage system, and scale to thousands of cores with minimal application
+runtime overhead.
+
+\paragraph{Our Contribution}
+CARP (Continuous Adaptive Range Partitioner), an adaptive partitioner that adapts to arbitrary key
+distributions and partitions them in a single streaming pass.
+CARP provides query latencies comparable to those of a full sort without any ingestion overhead,
+making it 5$\times$ faster than prior work.
+
+% \paragraph{Lessons Learned} Analytics capabilities are fragmented across specialized tools,
+% requiring database-style modularity that decouples analysis from data layout. Adaptive control
+% loops are essential for dynamic workloads, and in-situ processing enables "good enough" solutions
+% that outperform "perfect" offline approaches.
+
+\subsection{Compute Path: Understanding and Mitigating Load Imbalance}
+
+\paragraph{Motivation}
+Poor utilization in adaptive mesh codes a well-known problem.
+We wanted to create load-balancing mechanisms that would incorporate fine-grained runtime telemetry
+from these codes, and incorporate them into a placement policy that conferred meaningful runtime
+gains.
+
+\paragraph{Challenges}
+Our efforts to collect and interpret telemetry, and create models of code performance that could be
+exploited in a placement policy encountered several persistent challenges.
+
+\begin{enumerate}
+  \item Raw telemetry measurements did not correlate with expected behavior, forcing deep investigation of
+        cross-stack performance anomalies, and revealing issues with hardware, network stack parameters, operation
+        ordering etc.
+        These constituted runtime noise that had to be eliminated before telemetry and plpacement effects
+        could be reliably observed.
+  \item Identifying, isolating, and tracing transient performance issues in a large parallel code required
+        collecting and analyzing a large volume of telemetry.
+        Existing performance tools were unhelpful: profiling tools did not provide the required
+        granuliarty, while traces were slow and not analyzable.
+  \item Need efficient placement computation on NP-hard problem within tight timing constraints.
+\end{enumerate}
+
+\paragraph{Our Contribution}
+A placement policy (CPLX) with tunable control over two placement tradeoffs: compute load balance
+and communication locality.
+By balancing these two objectives, CPLX provides upto 21.6\% runtime improvement over optimized
+baselines.
+
+% \paragraph{Lessons Learned} \begin{enumerate} \item "Load imbalance" is a misnomer - the real
+% problem is cross-stack variability masquerading as algorithmic issues. \item Context-specific
+% solutions are required as exported traces lose essential insight. \item Programmable telemetry is
+% essential, and ad-hoc analytics pipelines proved more effective than standard tools. \item
+% Real-time feedback is needed for effective diagnosis and tuning. \end{enumerate}
+
+\subsection{ORCA: Transferring Lessons Learned to General-Purpose Observability}
+
+\paragraph{Motivation}
+While our previous efforts were successful in demonstrating the potential for efficiency gains on
+both data and compute paths, realizing these gains on production clusters remained elusive.
+Realizing data path efficiency requires a general-purpose data management system that can use the
+best combination of indexes for a given analytics workload.
+Realizing compute path efficieny is even more challenging: our work was conducted on an in-house
+research cluster with no operational, security, or vendor constraints.
+Realizing these benefits in production clusters requires efficient workflows to trace variability
+to its root cause, which may or may not be amenable to algorithmic solutions.
+
+\paragraph{Our Approach}
+We are developing a general-purpose dataflow framework for cluster observability using SQL
+semantics and Arrow.
+ORCA (Observability with Realtime Control and Aggregation) uses a tree-based overlay network with
+distributed query planning and a async control path.
+
+\paragraph{Challenges}
+No existing template exists for cluster-scale streaming analytics.
+The system requires complex distributed coordination with multiple interacting components while
+meeting strict performance requirements to avoid impacting application critical paths.
+
+\section{Thesis Statement}
+
+\begin{quote}
+  This thesis asserts that overcoming the primary data and compute bottlenecks in large-scale BSP
+  applications requires a paradigm shift from specialized, siloed tools to a unified, online
+  \emph{sense-making} engine, and demonstrates that the architectural foundation for this shift is a
+  framework that treats both in-situ analytics and performance diagnostics as a single problem of
+  composing query-driven dataflows.
+\end{quote}
+
+\subsection{Potential Impact}
+
+\paragraph{Immediate Impact}
+Application-level observability becomes a first-class capability.
+ORCA replaces brittle traces and low-resolution profilers with a lightweight, always-on,
+query-driven system that supports real-time diagnosis and runtime tuning.
+Developers can rapidly inspect distributed behavior, toggle probes, and react to anomalies without
+modifying application code or halting execution.
+
+\paragraph{Longer-Term Impact}
+ORCA evolves into a flexible substrate for in-situ analytics and adaptive control.
+Its open architecture supports programmable analysis pipelines, integration of diverse telemetry
+sources, and runtime composition of custom indexing and aggregation strategies.
+Over time, it can subsume visualization, introspection, and control workflows into a unified
+framework that prioritizes insight per unit of data moved, enabling principled trade-offs between
+data fidelity, performance, and resource usage.
+
+\section{Document Structure}
+
+The remainder of this document is organized as follows.

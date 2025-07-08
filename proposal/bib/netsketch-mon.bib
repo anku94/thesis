@@ -463,6 +463,23 @@
   file = {/Users/schwifty/Zotero/storage/65ENXBH7/S0743731523000369.html}
 }
 
+@online{Eisen2024:ADIOS,
+  title = {Streaming {{Data}} in {{HPC Workflows Using ADIOS}}},
+  shorttitle = {{{ADIOS}}},
+  author = {Eisenhauer, Greg and Podhorszki, Norbert and Gainaru, Ana and Klasky, Scott and Davis, Philip E. and Parashar, Manish and Wolf, Matthew and Suchtya, Eric and Fredj, Erick and Bolea, Vicente and Pöschel, Franz and Steiniger, Klaus and Bussmann, Michael and Pausch, Richard and Chandrasekaran, Sunita},
+  date = {2024-09-30},
+  eprint = {2410.00178},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2410.00178},
+  url = {http://arxiv.org/abs/2410.00178},
+  urldate = {2025-07-04},
+  abstract = {The "IO Wall" problem, in which the gap between computation rate and data access rate grows continuously, poses significant problems to scientific workflows which have traditionally relied upon using the filesystem for intermediate storage between workflow stages. One way to avoid this problem in scientific workflows is to stream data directly from producers to consumers and avoiding storage entirely. However, the manner in which this is accomplished is key to both performance and usability. This paper presents the Sustainable Staging Transport, an approach which allows direct streaming between traditional file writers and readers with few application changes. SST is an ADIOS "engine", accessible via standard ADIOS APIs, and because ADIOS allows engines to be chosen at run-time, many existing file-oriented ADIOS workflows can utilize SST for direct application-to-application communication without any source code changes. This paper describes the design of SST and presents performance results from various applications that use SST, for feeding model training with simulation data with substantially higher bandwidth than the theoretical limits of Frontier's file system, for strong coupling of separately developed applications for multiphysics multiscale simulation, or for in situ analysis and visualization of data to complete all data processing shortly after the simulation finishes.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Performance},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2024_eisenhauer_et_al_streaming_data_in_hpc_workflows_using_adios.pdf;/Users/schwifty/Zotero/storage/4UFCZVNI/2410.html}
+}
+
 @inproceedings{Eran2022:FlexDriver,
   title = {{{FlexDriver}}: A Network Driver for Your Accelerator},
   shorttitle = {{{FlexDriver}}},
@@ -1105,6 +1122,24 @@
   abstract = {Performance monitoring of HPC applications offers opportunities for adaptive optimization based on dynamic performance behavior, unavailable in purely post-mortem performance views. However, a parallel performance monitoring system must have low overhead and high efficiency to make these opportunities tangible. We describe a scalable parallel performance monitor called TAUoverMRNet (ToM), created from the integration of the TAU performance system and the Multicast Reduction Network (MRNet). The integration is achieved through a plug-in architecture in TAU that allows selection of different transport substrates to offload online performance data. A method to establish the transport overlay structure of the monitor from within TAU, one that requires no added support from the job manager or application, is presented. We demonstrate the distribution of performance analysis from the sink to the overlay nodes and the reduction in large-scale profile data that could otherwise overwhelm any single sink. Results show low perturbation and significant savings accrued from reduction at large processor-counts.},
   langid = {english},
   file = {/Users/schwifty/Zotero/storage/LSC9T9DY/Nataraj et al. - 2010 - A framework for scalable, parallel performance mon.pdf}
+}
+
+@article{Natar2010:FrameworkScalableParallelb,
+  title = {A Framework for Scalable, Parallel Performance Monitoring},
+  author = {Nataraj, Aroon and Malony, Allen D. and Morris, Alan and Arnold, Dorian C. and Miller, Barton P.},
+  date = {2010},
+  journaltitle = {Concurrency and Computation: Practice and Experience},
+  volume = {22},
+  number = {6},
+  pages = {720--735},
+  issn = {1532-0634},
+  doi = {10.1002/cpe.1544},
+  url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.1544},
+  urldate = {2025-07-04},
+  abstract = {Performance monitoring of HPC applications offers opportunities for adaptive optimization based on the dynamic performance behavior, unavailable in purely post-mortem performance views. However, a parallel performance monitoring system must have low overhead and high efficiency to make these opportunities tangible. We describe a scalable parallel performance monitor called TAUoverMRNet (ToM), created from the integration of the TAU performance system and the Multicast Reduction Network (MRNet). The integration is achieved through a plug-in architecture in TAU that allows the selection of different transport substrates to offload the online performance data. A method to establish the transport overlay structure of the monitor from within TAU, one that requires no added support from the job manager or application, is presented. We demonstrate the distribution of performance analysis from the sink to the overlay nodes and the reduction in the large-scale profile data that could, otherwise, overwhelm any single sink. The results show low perturbation and significant savings accrued from reduction at large processor-counts. Copyright © 2009 John Wiley \& Sons, Ltd.},
+  langid = {english},
+  keywords = {monitoring,MRNet,overlay,performance,TAU,tree-based},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2010_nataraj_et_al_a_framework_for_scalable,_parallel_performance_monitoring.pdf;/Users/schwifty/Zotero/storage/V8UE2LVF/cpe.html}
 }
 
 @inproceedings{Newel2021:RAS,

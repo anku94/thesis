@@ -1,44 +1,45 @@
 % !TEX root = ../main.tex
 \begin{abstract}
-  The Bulk Synchronous Parallel (BSP) paradigm powers some of our most critical computational tools,
-  from large-scale scientific simulations to distributed machine learning.
+  The Bulk Synchronous Parallel (BSP) paradigm powers our most critical computational tools, from
+  large-scale scientific simulations to distributed machine learning.
   As these applications scale, their efficiency has datacenter-level impacts on both cost and
   time-to-discovery.
-  Yet the tightly synchronized nature of BSP creates two distinct challenges: bursts of checkpointed
-  state strain the data path, while global synchronization amplifies sensitivity to execution
-  variability on the compute path.
-  While traditionally addressed by separate communities and tools, this thesis demonstrates that both
-  problems can be mapped to a common challenge: organizing and processing streaming data for insight.
+  Yet the tightly synchronized nature of BSP creates two distinct challenges: on the data path,
+  bursts of checkpointed state strain storage and analytics infrastructure, while on the compute
+  path, global synchronization amplifies sensitivity to execution variability.
+  While traditionally addressed by separate tools, this thesis demonstrates that both problems can be
+  unified by treating them as challenges of organizing and processing streaming data for insight.
 
-  We first address a data path challenge: efficiently enabling range queries on massive, streaming
-  scientific datasets.
-  Analytics on continuous physical attributes, such as energy bands, naturally map to range queries,
-  but efficient querying requires expensive post-processing sorts.
-  CARP is an adaptive range partitioner that reorders data in-situ during application I/O, adaptively tracking
-  highly skewed and evolving distributions.
-  As a result, CARP approximates the query performance of a sort with no ingestion overhead,
-  achieving up to 5x faster performance than prior work.
+  To address the data path, we present CARP, an adaptive range partitioner that reorders data
+  in-situ.
+  To enable efficient range queries on continuous physical attributes (e.g., particle energy) without
+  expensive post-processing sorts, CARP adaptively tracks highly skewed and evolving data
+  distributions as they are generated.
+  By doing so, it approximates the query performance of a perfect sort with no ingestion overhead,
+  achieving up to 5x faster end-to-end performance than prior work and query latencies up to 100x
+  faster than other in-situ techniques.
 
-  We then turn to the compute phase, examining what is typically framed as a load-balancing problem
-  in adaptive parallel codes.
-  In practice, we found that genuine load imbalance was often masked by deeper sources of
-  variability—hardware faults, system noise, and unpredictable interactions across the stack.
-  Standard profiling tools fell short, forcing us to develop our own telemetry pipelines, which
-  organically evolved into a query-driven analytics stack.
-  This process led to CPLX, a tunable placement policy that balances compute load with communication
-  locality, achieving up to 21.6\% runtime improvement over optimized AMR baselines.
-  More importantly, this work revealed that the central challenge in HPC performance is often not in
-  solving imbalance, but in diagnosing what truly limits scalability.
+  We then turn to the compute path, where our investigation revealed that genuine load imbalance in
+  adaptive codes was frequently confounded by deeper sources of variability—hardware faults, system
+  noise, and unpredictable cross-stack interactions—exacerbated by global synchronization.
+  Isolating these effects required fine-grained telemetry that standard tools could not provide,
+  compelling us to develop custom, query-driven analytics pipelines.
+  This diagnostic process yielded CPLX, a tunable placement policy that improves runtime by up to
+  21.6\% .
+  More importantly, it exposed the critical need for queryable, real-time feedback to rapidly
+  characterize performance bottlenecks.
 
-  Lessons from CARP’s adaptive control and the diagnostic imperative in AMR motivated the development
-  of ORCA, a general-purpose framework for programmable, real-time analytics and control on streaming
-  telemetry.
-  ORCA synthesizes these insights by leveraging distributed query planning and a decoupled overlay
-  architecture, built on Apache DataFusion, to efficiently reconstruct global system state from
-  hierarchical aggregations.
-  Its consistent control path—embodied by the Timestep-Linked Two-Phase Commit (TS2PC)
-  protocol—enables robust, real-time application steering.
-  Through declarative, query-driven dataflows, ORCA unifies observability and control, fundamentally
-  transforming how we analyze, tune, and interact with large-scale computational systems.
+  Our experiences with streaming data reorganization in CARP and the diagnostic challenges
+  encountered during our load-balancing work culminated in ORCA, a framework for online, declarative,
+  and dynamic observability.
+  ORCA reconstructs on-demand views of distributed system state, streaming only the telemetry
+  required to synthesize the requested views.
+  These views can evolve over time through a control path that supports consistent, asynchronous
+  updates.
+  ORCA uses columnar telemetry formats, distributed query planning, and operator pushdown to minimize
+  data movement and support low-latency introspection.
+  By providing a single, programmable substrate for query-driven dataflows, ORCA bridges
+  long-standing silos between performance diagnostics and in-situ data analytics, offering a unified
+  response to the data and compute challenges of large-scale parallel systems.
 \end{abstract}
 \newpage
