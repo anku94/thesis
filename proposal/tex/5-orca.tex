@@ -1,69 +1,77 @@
-\section{ORCA --- Generalizing Observability and
-Control}\label{orca-generalizing-observability-and-control}
+\chapter{ORCA: A Unified Framework for Declarative Observability}
 
-\subsection{Background and Motivation}\label{background-and-motivation}
+\section{Motivation: Unifying the Lessons from CARP and CPLX}
 
-\begin{itemize}
-\tightlist
-\item
-  Lessons from CARP and AMR revealed the need for a general,
-  programmable framework for both analytics and real-time control in
-  large clusters.
-\item
-  Existing tools provided either narrow observability, limited
-  programmability, or ad-hoc steering---none delivered unified,
-  declarative, scalable control.
-\end{itemize}
+The preceding chapters demonstrated two key insights that, while derived from different
+problem domains, point toward a single, unified solution. First, CARP showed the power
+of an in-situ, adaptive control loop for solving a complex data organization problem by
+reconstructing a model of the system's data distribution. Second, our work on AMR codes
+revealed that performance tuning is fundamentally a diagnostic problem of state
+reconstruction, requiring a programmable, query-driven approach to see past system
+noise and identify true root causes.
 
-\subsection{Approach and Architecture}\label{approach-and-architecture}
+ORCA synthesizes these lessons, proposing that both data path organization and compute
+path diagnostics are instances of the same fundamental challenge: reconstructing a
+coherent, actionable view of a distributed system's state from partial, streaming data.
+The goal of ORCA is to provide a general-purpose, architectural solution to this
+problem—a sense-making engine for large-scale parallel systems that dissolves the
+artificial barrier between data analytics and performance diagnostics.
 
-\begin{itemize}
-\tightlist
-\item
-  ORCA introduces a decoupled overlay network: application, aggregators,
-  and controller communicate via high-performance RPC.
-\item
-  Built on distributed query planning (Apache DataFusion) for
-  SQL-driven, in-memory analytics on streaming telemetry.
-\item
-  Real-time control via a Timestep-Linked Two-Phase Commit (TS2PC)
-  protocol ensures consistent, synchronized updates across all ranks.
-\end{itemize}
+\section{The ORCA Architecture: A Query-Driven Dataflow System}
 
-\subsection{Key Results and
-Capabilities}\label{key-results-and-capabilities}
+\subsection{Decoupled Overlay Network}
+To minimize performance interference with the application, ORCA employs a three-tier
+overlay architecture that decouples the analysis and control plane from the
+application's critical path. The tiers consist of the MPI Application itself, a set of
+stateful Aggregator nodes responsible for data processing, and a central Controller
+that orchestrates the system. This separation allows for sophisticated analysis to
+occur on dedicated resources without perturbing the primary computation.
 
-\begin{itemize}
-\tightlist
-\item
-  Demonstrates scalable, low-overhead analytics at line-rate bandwidths,
-  enabling ``analyze-then-persist'' at cluster scale.
-\item
-  Makes dynamic, cluster-wide control practical---enabling online
-  tuning, interactive workflows, and safe application reconfiguration in
-  situ.
-\item
-  Provides a declarative, extensible substrate for both scientific
-  introspection and systems-level observability.
-\end{itemize}
+\subsection{The Query-Driven Data Path}
+The core of ORCA is its query-driven data path, built on an "analyze, then persist"
+model. In contrast to traditional systems that log everything, telemetry is only
+streamed from the application in response to SQL queries installed on the aggregators.
+This on-demand approach dramatically reduces data volume and movement. The system uses
+Apache Arrow as its columnar in-memory data format and leverages Apache DataFusion for
+distributed, in-memory query execution. To further enhance efficiency, the query
+planner can push down operators, such as filters and partial aggregates, closer to the
+data source, minimizing network traffic.
 
-\subsection{Remaining Work and
-Timeline}\label{remaining-work-and-timeline}
+\subsection{The Consistent Control Path}
+Complementing the data path, ORCA provides a mechanism to apply control actions—such as
+toggling a data probe or adjusting a tuning parameter—consistently and deterministically
+across all application ranks. This is achieved via the Timestep-Linked Two-Phase Commit
+(TS2PC) protocol, a novel mechanism that links control commands to a specific future
+application timestep, ensuring that all workers observe the change in a coordinated
+manner.
 
-\begin{itemize}
-\tightlist
-\item
-  TODO
-\end{itemize}
+\section{Emergent Capabilities and Vision}
 
-\subsection{Broader Impact}\label{broader-impact}
+\subsection{Validated Core Performance}
+As ORCA is a system under active development, we present its key validated results that
+demonstrate the viability of its core architecture. The single-aggregator data path has
+been benchmarked and shown to sustain near line-rate throughput of approximately 3 GB/s
+on a 40 Gbps testbed fabric, proving the efficiency of the underlying data-path design.
 
-\begin{itemize}
-\tightlist
-\item
-  ORCA subsumes fragmented observability and steering solutions under a
-  unified, data-centric paradigm.
-\item
-  Establishes the general, programmable control loop as a foundational
-  primitive for future HPC and ML systems.
-\end{itemize}
+\subsection{A Platform for Online Tuning and Introspection}
+The ORCA architecture provides the foundation for a complete OODA (Observe-Orient-Decide-Act)
+loop, enabling online autotuning by tightly coupling real-time observation with the
+consistent control path. Beyond performance metrics, the framework can function as a
+"computational microscope," allowing for the in-situ analysis of scientific data streams
+themselves, offering scientists an interactive view into a running simulation.
+
+\subsection{Orchestration for Smart Infrastructure}
+The declarative, query-driven dataflow model positions ORCA as an ideal software
+control plane for future HPC systems that incorporate programmable hardware like DPUs and
+SmartNICs. By providing a high-level abstraction for data analysis, ORCA can
+orchestrate these heterogeneous resources, pushing parts of the analysis down to the
+most efficient location in the data path, be it a CPU, GPU, or a network device.
+
+\section{Contribution: An Architecture for Unified Observability}
+
+ORCA's primary contribution is not a single point solution, but an architectural
+blueprint for a new class of observability systems. It dissolves the artificial silo
+between performance diagnostics and in-situ data analytics by treating both as dataflow
+problems. By providing a single, programmable substrate for query-driven dataflows,
+ORCA offers a unified and extensible response to the data and compute challenges of
+large-scale parallel systems.
