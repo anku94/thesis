@@ -33,71 +33,104 @@ move through the simulation domain.
 Mesh codes discretize the spatial domain into grids and compute the evolution of properties of
 interest at each grid point.
 
-% todo: ML training?
-
 \paragraph{The BSP Model}
 The BSP model consists of alternating compute and synchronization phases.
 Execution begins with decomposition of the problem into independent subproblems assigned to
 workers, and proceeds as discrete timesteps.
 Each timestep consists of a compute phase followed by a global synchronization phase, where
-synchronous collectives ensure all ranks advance together—a requirement for correctness.
+synchronous collectives~\cite{:MPI, :NCCL} ensure all ranks advance together.
 Every few timesteps, a checkpoint is triggered for fault tolerance offline analysis.
-Checkpointing frequency increases with application scale as intra-checkpoint failure probability
-rises, creating periodic I/O-bound operations that stress the storage system.
+This tight coupling is the root of cluster efficiency problems: synchronous checkpoints create
+coordinated I/O bursts that stress the storage system, while global collectives make overall
+performance acutely sensitive to the slowest worker.
+% Checkpointing frequency increases with application scale as intra-checkpoint failure probability
+% rises, creating periodic I/O-bound operations that stress the storage system.
+
 
 \paragraph{Distributed ML Training}
 Distributed ML training represents a similar and increasingly important cluster workload, occupying
-tens of thousands of GPUs and running for months~\cite{:LlamaScale,Rahma2024:MLScale,Gratt2024:Llama3Scale}.
+tens of thousands of GPUs and running for
+months~\cite{:LlamaScale,Rahma2024:MLScale,Gratt2024:Llama3Scale}.
 The cluster architectures are comparable, though ML clusters often add a \emph{frontend} Ethernet
 network for general datacenter connectivity~\cite{Gangi2024:RDMA}.
 While the parallelization strategies differ---ML employs a mix of data, tensor, and pipeline
 parallelism---the execution model still relies on the same core BSP primitives of synchronous
-collectives~\cite{Gangi2024:RDMA} and periodic checkpointing~\cite{Strat:CheckpointCheckpointsLarge}.
-
+collectives~\cite{Gangi2024:RDMA} and periodic checkpointing~\cite{Eisen2022:Checkpoint}.
 
 \section{Data Management}
 
+Checkpointing creates I/O-bound bottlenecks in BSP systems.
+Traditional post-processing analytics requires additional time and computational resources after
+simulation completion.
+Databases, while providing composable interfaces, suffer from high write amplification factors
+(WAF) that make them unsuitable for HPC ingestion workloads.
+This motivated the development of in-situ processing approaches.
 
-Ingestion efficiency essential.
-WAF of 1X ideal and essential to ingest at max storage system bandwidth.
-Databases are not ideal.
+In-situ visualization systems (ParaView Catalyst, VisIt) are widely deployed and mature.
+In-situ data reorganization approaches have demonstrated viability, such as DeltaFS hash
+partitioning at large scale.
+These systems are purpose-built and specialized, creating an ecosystem where approaches cannot be
+easily mixed and matched due to their specialized nature.
+A critical gap remains in range query support, which is essential for spatial and temporal
+analytics.
 
-Special-purpose systems used for in-situ aggregation and visualization.
-In-situ indexing and reordering less widespread but demonstrated to be viable.
-Deltafs (insitu hash partitioning).
-But too much reliance on bitmap indices etc, as partitioning is expensive.
-Partitioning for range queries is hard: this currently uses post-processing sorts, which need to
-read all data again and write them, requiring extra hardware and delaying time to insight.
+% Ingestion efficiency essential. WAF of 1X ideal and essential to ingest at max storage system
+% bandwidth. Databases are not ideal.
 
-The biggest missing piece in the in-situ toolking is range partitioning.
+% Special-purpose systems used for in-situ aggregation and visualization. In-situ indexing and
+% reordering less widespread but demonstrated to be viable. Deltafs (insitu hash partitioning). But
+% too much reliance on bitmap indices etc, as partitioning is expensive. Partitioning for range
+% queries is hard: this currently uses post-processing sorts, which need to read all data again and
+% write them, requiring extra hardware and delaying time to insight.
+
+% The biggest missing piece in the in-situ toolking is range partitioning.
 
 \section{Compute Efficiency}
 
 \subsection{Workload Characterization}
-Reliance on aggregate metrics.
-Did this improve runtime overall?
+Performance analysis in large-scale BSP systems relies on aggregate metrics and post-hoc trace
+analysis.
+Fine-grained performance artifacts can only be captured through comprehensive tracing, as aggregate
+metrics obscure the detailed execution patterns necessary for optimization.
+Execution snapshots generate substantial trace datasets that are typically published for offline
+analysis by performance analysis groups.
+However, trace analysis is often conducted by researchers without direct access to the underlying
+hardware characteristics or runtime context, creating a disconnect between the data and the systems
+knowledge needed for actionable insights.
+This methodology inherently operates on historical data rather than providing real-time performance
+insights.
 
-Fine-grained effects hard to untangle, but esesential, as our work shows.
-Only available with tracing.
+\subsection{Performance Analysis Tools}
+Sampling tools provide statistical summaries, profiling tools offer detailed breakdowns, and
+tracing tools generate comprehensive execution records stored in formats such as OTF2 for HPC and
+PyTorch/Kineto traces for ML training.
+These raw trace formats produce large datasets that are not immediately amenable to interactive
+analysis.
+Similar trace-based methodologies are employed across HPC and ML training domains as scale
+increases, with ML clusters increasingly facing comparable runtime analysis challenges.
+Performance optimizations currently require domain-specific tooling with hardcoded analysis logic,
+and existing tools do not support real-time performance monitoring or adaptive runtime
+optimization.
 
-Trace analysis model: a small snapshot of execution results in a large trace.
-Published and analyzed by other groups.
-This makes learnings slow and disconnected from hardware.
-Those who analyze traces are not able to distinguish fundamental characteristics from tunable
-runtime artifacts.
+% \subsection{Workload Characterization} Reliance on aggregate metrics. Did this improve runtime
+% overall?
 
-\subsection{Perf Tools}
+% Fine-grained effects hard to untangle, but esesential, as our work shows. Only available with
+% tracing.
 
-Perf tools can be sampling, profiling, or tracing.
-Former emit summaries.
-Latter emits lots of raw data in formats like OTF2.
-These are not analytical formats and are not amenable to analytics.
+% Trace analysis model: a small snapshot of execution results in a large trace. Published and
+% analyzed by other groups. This makes learnings slow and disconnected from hardware. Those who
+% analyze traces are not able to distinguish fundamental characteristics from tunable runtime
+% artifacts.
 
-ML: Pytorch/Kineto traces.
-Clusters starting to eclipse HPC.
-Similar runtime challenges.
+% \subsection{Perf Tools}
 
-Solutions for perf challenges are hardcoded assertions in different tooling.
+% Perf tools can be sampling, profiling, or tracing. Former emit summaries. Latter emits lots of raw
+% data in formats like OTF2. These are not analytical formats and are not amenable to analytics.
+
+% ML: Pytorch/Kineto traces. Clusters starting to eclipse HPC. Similar runtime challenges.
+
+% Solutions for perf challenges are hardcoded assertions in different tooling.
 
 
 

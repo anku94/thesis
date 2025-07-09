@@ -56,12 +56,12 @@ targeted, context-aware introspection during execution.
 
 \section{Our Work: A Comprehensive Study of BSP Efficiency}
 
-Our work developed systems and algorithms to advance workflow efficiency of parallel codes on
-both the compute and data paths.
+Our work developed systems and algorithms to advance workflow efficiency of parallel codes on both
+the compute and data paths.
 These systems demonstrated that significant efficiency gains were possible and revealed key
 insights for making these wins accessible on production clusters.
-This experience led us to develop ORCA, a general-purpose approach that enables efficiency wins
-in production environments.
+This experience led us to develop ORCA, a general-purpose approach that enables efficiency wins in
+production environments.
 We describe each system in turn, highlighting the contributions and insights that collectively
 motivated our unified approach.
 
@@ -161,12 +161,11 @@ meeting strict performance requirements to avoid impacting application critical 
 
 \section{Thesis Statement}
 
+% All cluster efficiency problems are distributed state reconstruction problems.
 \begin{quote}
-  This thesis asserts that overcoming the primary data and compute bottlenecks in large-scale BSP
-  applications requires a paradigm shift from specialized, siloed tools to a unified, online
-  \emph{sense-making} engine, and demonstrates that the architectural foundation for this shift is a
-  framework that treats both in-situ analytics and performance diagnostics as a single problem of
-  composing query-driven dataflows.
+  This thesis argues that a broad and critical class of cluster efficiency problems, from data
+  organization to performance variability, can be unified and solved by reframing them as problems of
+  distributed state reconstruction.
 \end{quote}
 
 \subsection{Potential Impact}
