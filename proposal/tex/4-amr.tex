@@ -18,6 +18,26 @@ assignments for parallel workers, thereby improving overall application efficien
 \section{The Diagnostic Journey: Uncovering the Real Problem}
 
 \subsection{The Unreliability of Raw Telemetry}
+
+\begin{figure}[h]
+  \begin{subfigure}{0.64\textwidth}
+  \centering
+  \includegraphics[
+    width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
+    ]{data/figs/amr_lesson_ordering_v5.pdf}
+    \caption{AMR placement.}
+    \label{fig:amr-xx}
+  \end{subfigure}
+  \begin{subfigure}{0.36\textwidth}
+    \centering
+    \includegraphics[
+      width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
+    ]{data/figs/amr_msgcnt_regr_vert.pdf}
+    \caption{AMR placement.}
+    \label{fig:amr-xy}
+  \end{subfigure}
+\end{figure}
+
 Our initial efforts to build a model from performance telemetry failed. We observed
 poor and inconsistent correlation between expected workload drivers, such as message
 counts for a communication phase, and the observed performance. This indicated that
@@ -47,6 +67,15 @@ performance anomalies manifesting as load imbalance were in fact symptoms of sys
 noise, including hardware fail-slow behavior and network driver contention.
 
 \section{Contribution: The CPLX Placement Policy}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[
+    width=\textwidth,trim=0.2cm 0cm 0.1cm 0cm,clip
+  ]{data/figs/amr_blastwave_runtime_wide.pdf}
+  \caption{AMR placement.}
+  \label{fig:amr-runtime}
+\end{figure}
 
 \subsection{A Principled Approach to Placement Tradeoffs}
 After a systematic, full-stack tuning process to denoise the system, we were able
