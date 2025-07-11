@@ -2,7 +2,7 @@ CARPROOT := /Users/schwifty/Repos/carp-paper/figures
 AMRROOT  := /Users/schwifty/Repos/netsketch-amr-profiling/data/figs
 ORCAROOT := /Users/schwifty/Repos/mon-paper/tikz-exps/pdf
 
-CARPFILES := 
+CARPFILES := distrib6.pdf
 AMRFILES  := lesson_ordering_v5.pdf msgcnt_regr_vert.pdf
 ORCAFILES := sampling.pdf overlay-agg-new.pdf
 

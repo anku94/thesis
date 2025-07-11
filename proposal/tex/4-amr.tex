@@ -1,108 +1,193 @@
 \chapter{Lessons from Optimizing Adaptive Mesh Codes}
 
-\section{Motivation: The Problem of Load Imbalance in AMR}
+\section{Motivation: Computational Efficiency in AMR Codes}
 
-Adaptive Mesh Refinement (AMR) codes are essential for efficiently simulating physical
-phenomena with large variations in spatial or temporal scales. These applications
-dynamically refine a computational grid in regions of interest, creating a highly
-irregular and evolving workload. The process of assigning these grid blocks to
-parallel workers is known as placement. A naive placement can lead to significant
-load imbalance, where some workers have far more computation than others, causing them
-to become stragglers that delay the entire application at synchronization points.
+Adaptive Mesh Refinement (AMR) is a widely used technique for efficiently simulating physical
+systems that exhibit large variations in spatial or temporal scales, such as astrophysical
+phenomena, fluid dynamics, and climate modeling.
+AMR codes dynamically refine and coarsen the computational grid to concentrate resources in regions
+of interest, resulting in highly irregular and rapidly evolving mesh structures.
+This approach enables fine-grained resolution where needed, but creates significant computational
+challenges: the workload becomes highly imbalanced, dependencies between tasks grow complex, and
+the dynamic nature of the mesh makes it difficult to achieve efficient parallel execution and
+balanced load across compute resources.
 
-The initial goal of this work was to mitigate this widely-assumed problem of
-algorithmic load imbalance. We sought to create a telemetry-driven placement policy
-that would use fine-grained runtime information to create more balanced work
-assignments for parallel workers, thereby improving overall application efficiency.
+Our goal was to develop placement policies that leveraged runtime telemetry to improve placement
+and efficiency.
+Access to our research cluster enabled us to experiment with fine-grained telemetry and placement
+under full-stack administrative control, providing the ability to analyze and intervene at all
+levels of the software and hardware stack.
 
-\section{The Diagnostic Journey: Uncovering the Real Problem}
+\section{Challenges of Telemetry-Driven Placement}
 
-\subsection{The Unreliability of Raw Telemetry}
+Developing telemetry-driven placement policies in AMR codes exposed several
+key challenges:
+
+\begin{itemize}
+  \item \textbf{Establishing measurement fidelity.}
+        Initial telemetry was often unreliable and did not match intuition.
+        Only by using full-stack access and low-level debugging could we identify and correct sources of
+        error across hardware, drivers, MPI, and the application.
+
+  \item \textbf{Scaling analysis for high-volume telemetry.}
+        Analyzing per-rank, per-timestep telemetry required moving beyond standard profiling and tracing
+        tools to query-driven workflows that could surface root causes from massive data.
+
+  \item \textbf{Low-overhead, effective placement.}
+        Even with reliable telemetry, incorporating it into placement imposed strict timing constraints and
+        required new algorithms to balance objectives like load and locality in dynamic, NP-hard settings.
+\end{itemize}
+
+\section{Contribution 1: A Diagnostic Workflow}
+
+The process of developing placement policies required understanding what our telemetry was
+capturing.
+Initially, our telemetry showed no correlation between expected workload drivers and observed
+performance (Figure~\ref{fig:amr-tele-reg}).
+Deeper investigation revealed cross-stack artifacts: fail-slow hardware, system tuning issues, and
+fabric-level problems that had to be systematically mitigated.
+Only after this full-stack debugging and tuning process could we obtain reliable telemetry that
+correlated with expected application behavior.
+
+While our full-stack access enabled these investigations, we found identifying and isolating these
+transient challenges to be difficult.
+Our workflow started with standard profiling and tracing tools.
+The former did not capture these artifacts, and the latter provided too much unstructured detail.
+We organically evolved a workflow that allowed targeted collection of structured and queryable
+telemetry, starting from CSV exports and pandas analysis, and culminating in ClickHouse and SQL
+queries.
+This custom approach enabled correlation of performance data across ranks and system layers,
+allowing us to isolate the true sources of performance deviation.
+
+% \section{Motivation: The Problem of Load Imbalance in AMR}
+
+% Adaptive Mesh Refinement (AMR) codes are essential for efficiently simulating physical phenomena
+% with large variations in spatial or temporal scales. These applications dynamically refine a
+% computational grid in regions of interest, creating a highly irregular and evolving workload. The
+% process of assigning these grid blocks to parallel workers is known as placement. A naive
+% placement can lead to significant load imbalance, where some workers have far more computation
+% than others, causing them to become stragglers that delay the entire application at
+% synchronization points.
+
+% The initial goal of this work was to mitigate this widely-assumed problem of algorithmic load
+% imbalance. We sought to create a telemetry-driven placement policy that would use fine-grained
+% runtime information to create more balanced work assignments for parallel workers, thereby
+% improving overall application efficiency.
+
+% \section{The Diagnostic Journey: Uncovering the Real Problem}
+
+% \subsection{The Unreliability of Raw Telemetry}
 
 \begin{figure}[h]
   \begin{subfigure}{0.64\textwidth}
-  \centering
-  \includegraphics[
-    width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
+    \centering
+    \includegraphics[
+      width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
     ]{data/figs/amr_lesson_ordering_v5.pdf}
-    \caption{AMR placement.}
-    \label{fig:amr-xx}
+    \caption{AMR telemetry.}
+    \label{fig:amr-tele-comm}
   \end{subfigure}
   \begin{subfigure}{0.36\textwidth}
     \centering
     \includegraphics[
       width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
     ]{data/figs/amr_msgcnt_regr_vert.pdf}
-    \caption{AMR placement.}
-    \label{fig:amr-xy}
+    \caption{AMR regression.}
+    \label{fig:amr-tele-reg}
   \end{subfigure}
+  \caption{AMR telemetry.}
+  \label{fig:amr-tele}
 \end{figure}
 
-Our initial efforts to build a model from performance telemetry failed. We observed
-poor and inconsistent correlation between expected workload drivers, such as message
-counts for a communication phase, and the observed performance. This indicated that
-other factors were influencing runtime, forcing us to embark on a deep, cross-stack
-investigation into the sources of this unpredictable variability.
+% Our initial efforts to build a model from performance telemetry failed. We observed poor and
+% inconsistent correlation between expected workload drivers, such as message counts for a
+% communication phase, and the observed performance. This indicated that other factors were
+% influencing runtime, forcing us to embark on a deep, cross-stack investigation into the sources of
+% this unpredictable variability.
 
-\subsection{An Evolving Analysis Workflow}
-This diagnostic process revealed the limitations of the standard performance analysis
-workflow. Initial analysis with profiling tools provided only coarse-grained aggregates
-that obscured transient effects. Examining detailed traces proved to be impractical due
-to the sheer volume of data and the lack of queryable interfaces.
+% \subsection{An Evolving Analysis Workflow} This diagnostic process revealed the limitations of the
+% standard performance analysis workflow. Initial analysis with profiling tools provided only
+% coarse-grained aggregates that obscured transient effects. Examining detailed traces proved to be
+% impractical due to the sheer volume of data and the lack of queryable interfaces.
 
-To make progress, our analysis workflow evolved organically. We moved from standard
-tools to instrumenting the code to emit custom, structured logs. As the scale of
-this data grew, we eventually built a pipeline to ingest it into a relational
-analytics database. This ad-hoc system provided the query-driven, interactive
-capability necessary to correlate events across ranks and system layers, allowing us
-to isolate the true sources of performance deviation.
+% To make progress, our analysis workflow evolved organically. We moved from standard tools to
+% instrumenting the code to emit custom, structured logs. As the scale of this data grew, we
+% eventually built a pipeline to ingest it into a relational analytics database. This ad-hoc system
+% provided the query-driven, interactive capability necessary to correlate events across ranks and
+% system layers, allowing us to isolate the true sources of performance deviation.
 
-\subsection{Finding: Algorithmic Imbalance vs. System Noise}
-The key insight from this diagnostic journey is that in a complex parallel system,
-performance variability from different sources can be easily conflated. Without the
-ability to perform fine-grained, query-driven analysis, it is impossible to
-distinguish between true algorithmic load imbalance and performance bottlenecks
-originating from the underlying system. The diagnostic process revealed that many
-performance anomalies manifesting as load imbalance were in fact symptoms of system
-noise, including hardware fail-slow behavior and network driver contention.
+% \subsection{Finding: Algorithmic Imbalance vs. System Noise} The key insight from this diagnostic
+% journey is that in a complex parallel system, performance variability from different sources can
+% be easily conflated. Without the ability to perform fine-grained, query-driven analysis, it is
+% impossible to distinguish between true algorithmic load imbalance and performance bottlenecks
+% originating from the underlying system. The diagnostic process revealed that many performance
+% anomalies manifesting as load imbalance were in fact symptoms of system noise, including hardware
+% fail-slow behavior and network driver contention.
 
-\section{Contribution: The CPLX Placement Policy}
+\section{Contribution 2: The CPLX Placement Policy}
+
+With reliable telemetry established, we turned to the challenge of developing placement policies.
+Placement conventionally considers locality maximization to be a fundamental tenet, with
+Space-Filling Curves co-locating spatially adjacent grid blocks to preserve communication locality.
+However, we found locality maximization to be at odds with computational load balance.
+After substantial experimentation, we identified this as the core tradeoff requiring explicit
+management rather than assuming one objective should always dominate.
+
+CPLX provides predictable control over the tradeoff between locality and load balance through a
+single tunable parameter X.
+At X=0, CPLX is locality maximizing; at X=100, CPLX is pure computational load balance.
+CPLX is a hybrid of two policies: CDP (a dynamic programming-based locality maximizing policy) and
+LPT (Longest Processing Time).
+The algorithm computes an initial placement using CDP, then examines allocated load among ranks and
+only rebalances X\% of the most overloaded and underloaded ranks, preserving locality for
+well-balanced portions.
 
 \begin{figure}[h]
   \centering
   \includegraphics[
     width=\textwidth,trim=0.2cm 0cm 0.1cm 0cm,clip
   ]{data/figs/amr_blastwave_runtime_wide.pdf}
-  \caption{AMR placement.}
-  \label{fig:amr-runtime}
+  \caption{AMR runtime.}
+  \label{fig:amr-eval-rt}
 \end{figure}
 
-\subsection{A Principled Approach to Placement Tradeoffs}
-After a systematic, full-stack tuning process to denoise the system, we were able
-to obtain reliable and interpretable telemetry. With this trustworthy data, we could
-then reason about the fundamental tradeoffs in AMR placement. Standard placements use
-Space-Filling Curves (SFCs) to co-locate spatially adjacent grid blocks, which
-preserves communication locality at the cost of placement flexibility. Our goal was
-to manage the tradeoff between this communication locality and compute load balance.
+\section{Key Results}
 
-\subsection{Design and Results}
-To explore this tradeoff, we first developed two policies representing the extremes:
-a locality-preserving policy (Contiguous-DP) that optimizes load balance within the
-constraints of the SFC ordering, and a standard greedy load-balancing policy
-(Longest-Processing-Time, or LPT) that ignores locality entirely. Finding that
-neither was consistently optimal, we designed CPLX, a hybrid policy that interpolates
-between them. CPLX provides a single tunable parameter, X, from 0 to 100. At X=0,
-the policy is purely locality-preserving. At X=100, it is equivalent to LPT.
-Intermediate values apply LPT to only the X\% most imbalanced workers, allowing for
-a fine-grained, empirical balancing of the two objectives. By managing this
-tradeoff, CPLX yields up to a 21.6\% runtime improvement over an already-optimized
-baseline.
+Our evaluation was conducted on an in-house research cluster with full-stack administrative
+control.
+Experiments scaled from 512 to 4096 ranks to evaluate performance across different system sizes.
+We used the Sedov blast wave simulation, considered a standard challenging AMR problem with dynamic
+refinement patterns.
+Baseline comparisons were made against already-optimized placement policies including standard
+Space-Filling Curve approaches, with fine-grained telemetry collection enabling precise measurement
+of placement policy effects.
 
-\section{Lesson: Performance Tuning as State Reconstruction}
+CPLX achieves up to 21.6\% runtime reduction over already-optimized baselines.
+Performance follows a U-shaped curve with best performance at intermediate X values
+(Figure~\ref{fig:amr-eval-rt}).
+We observe diminishing gains in synchronization time after moderate X values, reflecting
+diminishing computational load balance gains.
+Performance degradation at high X values occurs due to locality penalties offsetting load balance
+benefits.
+Gains from load balancing increase with scale, demonstrating that larger systems benefit more from
+the hybrid approach.
+These results show that neither pure locality (X=0) nor pure load balance (X=100) is consistently
+optimal.
 
-This work reframes performance tuning not as a simple algorithmic optimization problem,
-but as a distributed state reconstruction problem. The central challenge is to
-reconstruct a faithful model of the system's true performance state from a stream of
-noisy, incomplete, and distributed signals. This experience exposes the critical need
-for a general-purpose, programmable observability framework capable of performing this
-reconstruction in real-time, a challenge we address in the next chapter.
+\section{Lessons}
+
+Elevated synchronization time is traditionally ascribed to algorithmic load imbalance in
+performance analyses, but while system variability issues are known, they are not systematically
+factored into diagnosis.
+Our study demonstrates the risks of this approach---many "load imbalance" problems are actually
+cross-stack variability masquerading as algorithmic issues.
+The biggest bottleneck was understanding performance rather than algorithmic optimization, as
+performance characteristics are inherently idiosyncratic to specific hardware and software stacks.
+This highlights the need for real-time visibility into application performance for effective
+diagnosis and tuning.
+Our structured telemetry pipeline demonstrates the path forward from ad-hoc tools to queryable,
+programmable observability that can be made real-time, enabling adaptive control loops and
+reframing performance tuning as distributed state reconstruction requiring streaming analytics
+capabilities.
+
+\newpage
