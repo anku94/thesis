@@ -110,6 +110,8 @@
 - Snicket: declarative query-driven RPC tracing + WASM (Berg2011:Snicket)
 - Mach: single-node ingestion engine (like SysX)
 - DFTracer (Devar2024)
+- TAU 2024 runtime overhead/ML etc: Huck2025:TAU
+-- Also does streaming stuff using ADIOS2!!
 
 
 ## George mentioned
