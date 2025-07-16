@@ -4,18 +4,35 @@
 
 Range queries are an essential component of a complete analysis toolkit.
 Analyses on scientific attributes of interest, such as wavefronts and energy bands, naturally map
-to range queries because of the continuous nature of this data.
-However, efficient range queries require an ordered data layout, which is currently achieved by
-periodically reordering previously written data.
-This diverts finite I/O bandwidth and slows ingestion.
-Post-processing sorts reorder data in bulk, but still require additional passes over the data
-(2$\times$ for in-memory sorts, 4$\times$ for out-of-core sorts).
-While streaming data reorganization using hash-based partitioning has been demonstrated viable at
-HPC scale, it destroys the key ordering needed for range queries.
-Streaming range-based partitioning, commonly used in distributed databases, would enable range
-queries but requires periodic partition rebalancing.
+to range queries~\cite{Byna2012} because of the continuous nature of this data.
+However, supporting efficient range-based analyses remains expensive.
+Efficient range queries require an ordered data layout, which is created using bulk postprocessing
+sorts after the application has finished executing.
+These sorts require multiple passes over the data --- 2$\times$ for in-memory
+~\cite{Sunda2013:HykSort,Dong2016} sorts and 4$\times$ for out-of-core~\cite{Rasmu2011:TritonSort}
+sorts --- diverting finite I/O bandwidth, slowing down ingestion, and delaying the time to insight.
+As an alternative to postprocessing, in-situ indexing techniques have gained
+traction~\cite{Bauer2016:SituMethodsInfrastructures}.
+These techniques process data while in transit from application to storage, reducing the need for
+additional passes.
+DeltaFS~\cite{Zheng2018:DeltaFS} reorganizes data using hash-based partitioning, and has been
+demonstrated to scale upto 131K ranks.
+However, it destroys the key ordering needed for range queries.
 
-CARP is a single-pass streaming in-situ range partitioner for scientific data.
+% However, efficient range queries require indexed attribute locality in the data layout to locate
+% and retrieve the relevant data efficiently, However, efficient range queries require an ordered
+% data layout, which is currently achieved by periodically reordering previously written data. This
+% diverts finite I/O bandwidth and slows ingestion. Post-processing via distributed sorts reorders
+% data in bulk, but requires additional passes over the data (2$\times$ for
+% in-memory~\cite{Sunda2013:HykSort,Dong2016} and 4$\times$ for out-of-core
+% ~\cite{Rasmu2011:TritonSort} sorts, respectively). While streaming data reorganization using
+% hash-based partitioning has been demonstrated viable at HPC scale~\cite{Zheng2018:DeltaFS}, it
+% destroys the key ordering needed for range queries.
+
+% Streaming range-based partitioning, commonly used in distributed databases, also requires periodic
+% partition rebalancing.
+
+CARP~\cite{Jain2024:CARP} is a single-pass streaming in-situ range partitioner for scientific data.
 It is designed to ingest at the maximum throughput permitted by the storage system by never
 reordering previously written data, while still enabling sub-second range queries.
 The fundamental challenge is maintaining balanced partitions for streams with skewed and dynamic

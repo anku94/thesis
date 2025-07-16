@@ -89,8 +89,8 @@ full utilization of the storage system, and scale to thousands of cores with min
 runtime overhead.
 
 \paragraph{Our Contribution}
-CARP (Continuous Adaptive Range Partitioner), an adaptive partitioner that adapts to arbitrary key
-distributions and partitions them in a single streaming pass.
+CARP (Continuous Adaptive Range Partitioner)~\cite{Jain2024:CARP}, an adaptive partitioner that
+adapts to arbitrary key distributions and partitions them in a single streaming pass.
 CARP provides query latencies comparable to those of a full sort without any ingestion overhead,
 making it 5$\times$ faster than prior work.
 
@@ -120,11 +120,11 @@ exploited in a placement policy encountered several persistent challenges.
   \item Identifying, isolating, and tracing transient performance issues in a large parallel code required
         collecting and analyzing a large volume of telemetry.
         Existing performance tools were unhelpful: profiling tools did not provide the required
-        granuliarty, while traces were slow and not analyzable.
+        granularity, while traces were slow and not analyzable.
   \item Need efficient placement computation on NP-hard problem within tight timing constraints.
 \end{enumerate}
 
-\paragraph{Our Contribution}
+\paragraph{Our Contributions}~\cite{Jain2025:AMR}
 A placement policy (CPLX) with tunable control over two placement tradeoffs: compute load balance
 and communication locality.
 By balancing these two objectives, CPLX provides upto 21.6\% runtime improvement over optimized
@@ -151,8 +151,8 @@ to its root cause, which may or may not be amenable to algorithmic solutions.
 \paragraph{Our Approach}
 We are developing a general-purpose dataflow framework for cluster observability using SQL
 semantics and Arrow.
-ORCA (Observability with Realtime Control and Aggregation) uses a tree-based overlay network with
-distributed query planning and a async control path.
+ORCA (\emph{Observability with Realtime Control and Aggregation}) uses a tree-based overlay network
+with distributed query planning and a async control path.
 
 \paragraph{Challenges}
 No existing template exists for cluster-scale streaming analytics.

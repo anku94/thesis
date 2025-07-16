@@ -1,0 +1,94 @@
+\chapter{Thesis Completion Roadmap}
+
+ORCA is under advanced stages of development.
+We first briefly describe the current state of the system, and then outline the remaining work
+required to complete the thesis.
+
+\section{Current State}
+
+\paragraph{Completed Developmental Work}
+Most core components of ORCA have been implemented.
+The system supports overlay bootstrapping with multiple aggregators and topologies, telemetry
+collection and forwarding mechanisms, and per-timestep analytics.
+Observability requirements are programmed using a domain-specific language (DSL) called OrcaFlow:
+the DSL enables defining transformations as SQL, applied in-situ while data is routed to
+configurable \emph{sinks}.
+The TS2PC protocol for the control path has been implemented.
+End-to-end telemetry visualization is available via a DuckDB and a FlightSQL server embedded into
+the controller, streamed to Grafana.
+ORCA reuses the same infrastructure to export internal metrics for realtime visualization and
+performance analysis.
+Observability requirements from recent machine learning infrastructure have been reviewed and
+incorporated in system semantics.
+
+\paragraph{Validated Capabilities}
+ORCA has been validated to be stable in a stress test with 128 MPI ranks loading a single
+aggregator with 2--3 GB/s of telemetry.
+Analytics were performed locally on the aggregator, achieving near-line rate performance under
+certain conditions on 40 Gbps NICs.
+Stress testing surfaced stability issues, which were mitigated by tuning pipeline parameters and
+implementing flow control mechanisms.
+We found that Arrow-based analytics had no trouble keeping up with the ingestion rate.
+The RDMA-based transport layer, which is typically the most fragile part of such systems, is now
+stable.
+
+\paragraph{Remaining Developmental Work}
+The primary remaining component is distributed query planning to fragment the OrcaFlow pipeline
+across the overlay at operator-level granularity.
+An initial prototype of the query planner exists but requires further refinement and integration.
+Python bindings for Pytorch integration are also under development for the planned experiments.
+
+\section{Evaluation Roadmap}
+
+The evaluation will demonstrate the practical benefits of ORCA's relational approach in terms of
+query performance, system scalability, and end-to-end impact.
+The plan consists of the following experiments:
+
+\begin{itemize}
+  \item \textbf{Microbenchmark:}
+        Compare query efficiency and analytical flexibility using on-disk Parquet telemetry versus
+        traditional trace formats.
+        AMR-inspired queries will serve as the HPC baseline, and Pytorch HTA will be used as the ML
+        baseline.
+  \item \textbf{Synthetic stress test:}
+        Measure ORCA throughput and scalability as telemetry volume increases.
+        Quantify application interference as a function of data load.
+  \item \textbf{End-to-end workload study:}
+        Measure runtime overhead and impact on scientific progress for a 4,096-rank AMR simulation and a
+        data-parallel ML training job.
+        Use tracing overheads as the baseline.
+        Evaluate ORCA in two configurations: a lightweight in-situ aggregation setup and a full
+        configuration that persists all telemetry at tracing volume.
+\end{itemize}
+
+Additionally, a survey of the machine learning observability literature is ongoing to assess
+compatibility of representative analyses with ORCA's semantics.
+This survey is not expected to have any experimental component.
+
+
+% \section{Evaluation Roadmap}
+
+% The evluation plan would involve demonstrating the analytical advantages of relational data
+% formats over tracing formats, ORCA throughput and scalability and impact on application
+% performance using synthetic stress tests, and impact on real HPC and ML workloads. Four
+% experiments are planned:
+
+% \begin{itemize} \item A microbenchmark to compare analytical efficiency of on-disk Parquet
+% telemetry over tracing formats. Pytorch HTA (Holistic Trace Analysis) would be used as an ML
+% baseline, and AMR-inspired queries as the HPC baseline. \item A synthetic stress test to evaluate
+% ORCA throughput and scalability, and quantify interference as a function of data volume. \item A
+% study of runtime overhead on two real workloads: a 4,096-rank AMR simulation and a data-parallel
+% ML training job. The runtime overhead of tracing would be used as the baseline. ORCA would be run
+% in two configurations: a lite config that does in-situ aggregation to compute summaries, and a
+% full config that persists the same volume of data as full tracing. \end{itemize}
+
+\section{Timeline}
+
+The thesis is expected to be completed by the end of 2025.
+The following timeline is proposed:
+
+\begin{itemize}
+  \item July--August 2025: Complete distributed query planning, Pytorch integration, and evaluation.
+  \item September 2025: Paper and thesis writing, and job search.
+  \item October 2025: Defend thesis.
+\end{itemize}

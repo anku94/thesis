@@ -57,22 +57,40 @@ While the parallelization strategies differ---ML employs a mix of data, tensor, 
 parallelism---the execution model still relies on the same core BSP primitives of synchronous
 collectives~\cite{Gangi2024:RDMA} and periodic checkpointing~\cite{Eisen2022:Checkpoint}.
 
-\section{Data Management}
+\section{Data Management Challenges}
 
-Checkpointing creates I/O-bound bottlenecks in BSP systems.
-Traditional post-processing analytics requires additional time and computational resources after
-simulation completion.
-Databases, while providing composable interfaces, suffer from high write amplification factors
-(WAF) that make them unsuitable for HPC ingestion workloads.
-This motivated the development of in-situ processing approaches.
+Checkpointing creates I/O-bound bottlenecks in BSP systems, as coordinated writes across thousands
+of ranks stress parallel filesystems and consume significant runtime.
+Traditional workflows then require scientists to re-read and analyze this data after simulation
+completion, consuming additional I/O bandwidth and computational resources while delaying
+scientific discovery.
+Ingesting data using conventional databases is not viable, as databases incur multiple on-disk
+writes for each application write (write amplification), offering poor tradeoffs for
+ingestion-heavy workloads.
 
-In-situ visualization systems (ParaView Catalyst, VisIt) are widely deployed and mature.
-In-situ data reorganization approaches have demonstrated viability, such as DeltaFS hash
-partitioning at large scale.
-These systems are purpose-built and specialized, creating an ecosystem where approaches cannot be
-easily mixed and matched due to their specialized nature.
-A critical gap remains in range query support, which is essential for spatial and temporal
-analytics.
+In-situ processing analyzes data while it streams from application to storage, reducing both I/O
+overhead and time-to-insight.
+This approach has matured across multiple domains, with widespread deployment of visualization
+systems.
+Data reorganization approaches like DeltaFS hash partitioning have demonstrated scalability at
+large scale.
+However, unlike databases that provide composable query interfaces and indexing strategies,
+existing in-situ systems are purpose-built for specific use cases, creating siloed tools that
+cannot be combined.
+A critical gap remains in range query support, essential for spatial and temporal analytics but
+absent from existing in-situ frameworks.
+
+% Checkpointing creates I/O-bound bottlenecks in BSP systems. Traditional post-processing analytics
+% requires additional time and computational resources after simulation completion. Databases, while
+% providing composable interfaces, suffer from high write amplification factors (WAF) that make them
+% unsuitable for HPC ingestion workloads. This motivated the development of in-situ processing
+% approaches.
+
+% In-situ visualization systems (ParaView Catalyst, VisIt) are widely deployed and mature. In-situ
+% data reorganization approaches have demonstrated viability, such as DeltaFS hash partitioning at
+% large scale. These systems are purpose-built and specialized, creating an ecosystem where
+% approaches cannot be easily mixed and matched due to their specialized nature. A critical gap
+% remains in range query support, which is essential for spatial and temporal analytics.
 
 % Ingestion efficiency essential. WAF of 1X ideal and essential to ingest at max storage system
 % bandwidth. Databases are not ideal.
@@ -85,32 +103,52 @@ analytics.
 
 % The biggest missing piece in the in-situ toolking is range partitioning.
 
-\section{Compute Efficiency}
+\section{Compute Efficiency Challenges}
 
-\subsection{Workload Characterization}
-Performance analysis in large-scale BSP systems relies on aggregate metrics and post-hoc trace
-analysis.
-Fine-grained performance artifacts can only be captured through comprehensive tracing, as aggregate
-metrics obscure the detailed execution patterns necessary for optimization.
-Execution snapshots generate substantial trace datasets that are typically published for offline
-analysis by performance analysis groups.
-However, trace analysis is often conducted by researchers without direct access to the underlying
-hardware characteristics or runtime context, creating a disconnect between the data and the systems
-knowledge needed for actionable insights.
-This methodology inherently operates on historical data rather than providing real-time performance
-insights.
+Cluster utilization challenges persist in BSP systems, but root causes remain difficult to
+establish.
+We now describe the current state-of-the-art in performance tooling and workload characterization.
 
 \subsection{Performance Analysis Tools}
-Sampling tools provide statistical summaries, profiling tools offer detailed breakdowns, and
-tracing tools generate comprehensive execution records stored in formats such as OTF2 for HPC and
-PyTorch/Kineto traces for ML training.
-These raw trace formats produce large datasets that are not immediately amenable to interactive
-analysis.
-Similar trace-based methodologies are employed across HPC and ML training domains as scale
-increases, with ML clusters increasingly facing comparable runtime analysis challenges.
-Performance optimizations currently require domain-specific tooling with hardcoded analysis logic,
-and existing tools do not support real-time performance monitoring or adaptive runtime
-optimization.
+Current tools rely on three main approaches: sampling provides statistical summaries at regular
+intervals, profiling offers detailed function-level breakdowns, and tracing generates comprehensive
+execution records.
+Sampling and profiling impose arbitrary aggregations, obscuring problem structure and temporal
+patterns necessary for optimization.
+Tracing produces massive datasets in unstructured formats requiring extensive offline processing.
+This methodology inherently operates on historical data, providing no mechanism for real-time
+performance insights or adaptive runtime optimization during execution.
+
+\subsection{Workload Characterization Bottlenecks}
+While efficiency challenges are commonly ascribed to load imbalance, fundamental aspects of this
+problem remain poorly understood.
+Application properties, computational requirements, and the constraints that must be honored during
+optimization are not well characterized.
+Fine-grained performance studies typically involve exporting large representative traces, which are
+then analyzed by other research groups often without access to the underlying hardware
+characteristics or runtime context needed for actionable insights.
+This disconnect between data collection and analysis creates fundamental barriers to understanding
+system behavior, leaving the actual nature of performance bottlenecks obscured despite widespread
+acknowledgment of their importance.
+
+% \subsection{Workload Characterization Bottlenecks} Performance analysis in large-scale BSP systems
+% relies on aggregate metrics and post-hoc trace analysis. Fine-grained performance artifacts can
+% only be captured through comprehensive tracing, as aggregate metrics obscure the detailed
+% execution patterns necessary for optimization. Execution snapshots generate substantial trace
+% datasets that are typically published for offline analysis by performance analysis groups.
+% However, trace analysis is often conducted by researchers without direct access to the underlying
+% hardware characteristics or runtime context, creating a disconnect between the data and the
+% systems knowledge needed for actionable insights. This methodology inherently operates on
+% historical data rather than providing real-time performance insights.
+
+% \subsection{Performance Analysis Tools} Sampling tools provide statistical summaries, profiling
+% tools offer detailed breakdowns, and tracing tools generate comprehensive execution records stored
+% in formats such as OTF2 for HPC and PyTorch/Kineto traces for ML training. These raw trace formats
+% produce large datasets that are not immediately amenable to interactive analysis. Similar
+% trace-based methodologies are employed across HPC and ML training domains as scale increases, with
+% ML clusters increasingly facing comparable runtime analysis challenges. Performance optimizations
+% currently require domain-specific tooling with hardcoded analysis logic, and existing tools do not
+% support real-time performance monitoring or adaptive runtime optimization.
 
 % \subsection{Workload Characterization} Reliance on aggregate metrics. Did this improve runtime
 % overall?

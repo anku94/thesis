@@ -15,71 +15,99 @@ CARP automatically uses this reconstructed state to inform online range partitio
 work reveals the urgent need for such capability on the compute path, where disambiguating between
 load imbalance, system variability,a nd execution startrategies is essential for computational
 efficiency.
-While we evolved a telemetry workflow in our AMR work, it was still ad-hoc and limited.
-From these experiences, we derive three requirements for powerful observability capabilities
-deployable in production clusters.
 
+Although the telemetry workflow evolved during our AMR placement work demonstrated the utility of
+analytical telemetry, the pipeline itself remained ad hoc and limited.
+From the lessons learned from our AMR work, we derive three requirements for powerful observability
+capabilities deployable in production clusters.
 
 \begin{itemize}
-  \item \textbf{Real-time and Coordinated Analytics}
-        Framework must be able to produce insights in realtime with minimal application overhead, as well
-        as optionally persist detailed telemetry for offline analysis.
-        This requires coordinated collection of timestep-wise telemetry from all ranks.
+  \item \textbf{Real-time and Coordinated Analytics.}
+        Insights should be available in real time, with minimal application overhead, while also allowing
+        the option to persist detailed telemetry for offline analysis.
+        This requires coordinated, timestep-wise telemetry collection from all ranks.
 
   \item \textbf{Complete Programmability.}
-        Observability workflows require collecting and aggregating data from different data sources, with
-        different schemas, and different aggregation strategies in different contexts.
-        Imposing arbitrary constraints on any of these limits the applicability of the framework.
+        Effective observability requires supporting data collection and aggregation across arbitrary
+        sources, each potentially with its own schema and aggregation logic relevant to the current
+        performance question.
+        In our experience, tools with fixed aggregations or rigid schemas quickly become limiting as soon
+        as requirements evolve—flexibility is essential for sustained utility.
 
-
-  \item \textbf{Interactivity}
-        It is necessary to be able to change aggregations and data sources mid-execution.
-        In the common case, summary statistics are sufficient to monitor for the presence of problems.
-        In the presence of problems, it is necessary to be able to enable more telemetry to localize the
-        root cause of the problem.
-        Such a capability would enable a full spectrum of workflows upto tracing.
-        Instead of imposing fixed costs for data collection as with tracing, this allows for the costs to
-        be proportional to workflow requirements.
+  \item \textbf{Interactivity.}
+        Observability workflows vary significantly across the lifetime of a long-running BSP application,
+        and an effective framework must support the full span of these workflows while incurring costs
+        commensurate with the analysis requirement.
+        Lightweight monitoring may suffice in the common case, but when performance anomalies arise,
+        detailed telemetry becomes essential.
+        The framework must enable dynamic transitions between these modes without fixed overhead penalties.
 \end{itemize}
 
 \section{Background: The Observability Gap in BSP Systems}
 
-Currently, comprehensive tracing is the only method that preserves the fine-grained, coordinated
-event data needed to diagnose complex performance issues in large-scale BSP systems.
-However, the high application overhead, unstructured and analytics-unfriendly output, and delayed
-feedback from post-processing make tracing impractical for production use.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\textwidth,trim=0cm 0cm 0cm 0cm,clip
+  ]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
+  \caption{AMR lesson.}
+  \label{fig:orca-spike}
+\end{figure}
+
+Among existing approaches~\cite{Wylie2025:15Years}, comprehensive
+tracing~\cite{2025:kineto,Shend2006:TAU,Knupf2012:ScoreP} is the only method that preserves the
+fine-grained telemetry needed to diagnose complex performance issues in large-scale BSP systems
+(see \cref{fig:orca-spike}).
+However, the high application overhead, unstructured and analytics-unfriendly
+output~\cite{Eschw2012:OTF2,Devar2024:DFTracer}, and delayed feedback from post-processing make
+tracing impractical for production use.
 As clusters and their resource footprints continue to grow, these limitations become more acute,
 necessitating a ground-up rethinking of observability architectures to keep pace with modern system
 demands.
 
-Profiling and sampling tools, while lower overhead, impose arbitrary fixed collection and
-aggregation patterns that obscure the structure of underlying problems and mask important temporal
-or spatial correlations.
-Time Series Databases (TSDBs), widely used for metrics in distributed services, are not a direct
-fit for scalable BSP observability, as they cannot support low-overhead coordinated collection,
-dynamic workflows, or aggressive in-situ filtering.
-These issues mean that gaps in cluster efficiency persist not due to unsolved algorithmic
-bottlenecks, but because of persistent limitations in what can be observed, analyzed, and acted on
-in real time.
+Profiling~\cite{Shend2006:TAU} and sampling~\cite{Schwa2021:LDMS} tools, while lower overhead,
+impose arbitrary fixed collection and aggregation patterns that obscure the structure of underlying
+problems and mask important temporal or spatial correlations.
+Time Series Databases (TSDBs)~\cite{2022:InfluxDB,:Prometheus} --- widely used for metrics in
+distributed services --- are not a direct fit for scalable BSP observability, as they are not
+optimized for continuous time-windowed aggregations rather than discrete timestep-synchronized
+analytical queries over BSP telemetry.
+As a result, cluster efficiency challenges persist not due to algorithmic bottlenecks, but because
+of persistent limitations in what can be observed, analyzed, and acted on in real time.
 
-
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
+  ]{data/figs/orca_sampling.pdf}
+  \caption{Sampling.}
+  \label{fig:orca-approaches}
+\end{figure}
 
 \section{ORCA Architecture}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.7\textwidth,trim=0cm 0cm 0cm 0cm,clip
+  ]{data/figs/orca_overlay-agg-new.pdf}
+  \caption{ORCA architecture.}
+  \label{fig:orca-overlay}
+\end{figure}
 
 ORCA is designed to address the challenges of scalable, real-time observability in large parallel
 systems via programmable aggregation and control paths.
 The framework enables users to express analytic intent as SQL over telemetry.
 Unlike tracing, which collects and stores all event data, ORCA leverages distributed query planning
 to transfer only the data necessary to materialize each requested view.
+The entire pipeline, from collection to aggregation to storage, is optimized to preserve the BSP
+structure of the data.
 Its control semantics enable dynamic transitions between different views at runtime, supporting
 interactive, low-overhead workflows.
 Below, we briefly describe the core components of the ORCA architecture.
 
 \begin{itemize}
   \item \textbf{Tree-Based Overlay Network (TBON):}
-        ORCA organizes application ranks into a logical tree-based overlay with a controller at the root, a
-        tier of aggregators, optionally a tier of lead ranks (aggregating within node groups), and
-        application ranks as leaves.
+        As shown in \cref{fig:orca-overlay}, ORCA organizes application ranks into a logical
+        tree-based overlay with a controller at the root, a tier of aggregators, optionally a tier of
+        lead ranks (aggregating within node groups), and application ranks as leaves.
         Aggregators handle data collection from a subset of ranks, using RDMA for data transfer when
         available.
 
@@ -89,8 +117,9 @@ Below, we briefly describe the core components of the ORCA architecture.
         Projection, filtering, and partial aggregation are pushed down to lower tiers, so only necessary
         data is transferred up the tree.
 
-  \item \textbf{Timestep-Linked Two-Phase Commit (TS2PC) Control Path:}
-        ORCA implements a control path using the TS2PC protocol.
+  \item \textbf{Control Semantics.}
+        ORCA implements a control path using a novel variant of two-phase commit, called
+        \textit{timestep-linked two-phase commit} (TS2PC).
         TS2PC is an asynchronous protocol that enables control actions to be applied consistently at a
         specified timestep across all ranks.
         This provides low-overhead replicated state machine semantics and supports dynamic observability
@@ -113,10 +142,11 @@ workflow disruption.
 \paragraph{ML Workloads}
 Distributed ML workloads, because of their shared BSP characteristics, present similar performance
 and observability challenges as HPC codes~\cite{Gangi2024:RDMA}.
-For example, PyTorch~\cite{Paszk2019:PyTorch} enables tracing each node using Kineto, but no mechanism exists to aggregate
-per-node telemetry into global views.
-Delayed feedback, lack of analytical capabilities, and the other limitations studied for HPC apply
-equally here.
+For example, PyTorch~\cite{Paszk2019:PyTorch} enables tracing each node using
+Kineto~\cite{2025:kineto}, but relies on post-processing to aggregate per-node telemetry into
+global views~\cite{:HolisticTraceAnalysis}.
+Limitations discussed in the context of HPC observability --- data volume, delayed feedback, and
+lack of analytical capabilities --- apply equally here.
 Beyond performance, recent ML research has emphasized the need for runtime observability over
 application state to enforce correctness invariants~\cite{Jiang2025:TrainingwithConfidence}.
 We find that ORCA naturally accommodates such use cases because of its focus on programmability,
@@ -128,36 +158,11 @@ Arrow~\cite{:ApacheArrow}, Datafusion~\cite{Lamb2024:DataFusion}, and
 Mercury~\cite{Souma2013:MercuryRPC} over libfabric --- makes it naturally extensible.
 Many scientific analyses depend on multidimensional and sometimes unstructured meshes, which are
 not straightforward to represent in the relational model of standard SQL.
-Prior work~\cite{:TileDB,Lee2004:MeshSQL,Kerst2011:SciQL,Rezae2014:UnstructuredMeshAlgebra} provides clear paths for extending SQL to cover these data types, and ORCA is is
-amenable to absorbing these capabilities, enabling in-situ visualization workflows within the same
-pipeline.
-Previous work has
-also shown how accelerators can be used for in-situ analysis on Arrow
+Prior work~\cite{:TileDB,Lee2004:MeshSQL,Kerst2011:SciQL,Rezae2014:UnstructuredMeshAlgebra}
+provides clear paths for extending SQL to cover these data types, and ORCA is is amenable to
+absorbing these capabilities, enabling in-situ visualization workflows within the same pipeline.
+Previous work has also shown how accelerators can be used for in-situ analysis on Arrow
 data~\cite{Liu2022:ProcessingParticleData, Ulmer2023:ExtendingComposableData}, and ORCA makes this
 practical by exposing accelerators and smart network resources as nodes within its dataflow graph.
 This enables a unified analytics and control fabric for scientific and data-intensive computing
 ecosystems to emerge organically over time.
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.7\textwidth,trim=0cm 0cm 0cm 0cm,clip
-  ]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
-  \caption{AMR lesson.}
-  \label{fig:orca-spike}
-\end{figure}
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
-  ]{data/figs/orca_sampling.pdf}
-  \caption{Sampling.}
-  \label{fig:orca-approaches}
-\end{figure}
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.7\textwidth,trim=0cm 0cm 0cm 0cm,clip
-  ]{data/figs/orca_overlay-agg-new.pdf}
-  \caption{ORCA architecture.}
-  \label{fig:orca-overlay}
-\end{figure}
