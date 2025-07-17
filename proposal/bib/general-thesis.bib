@@ -79,6 +79,43 @@
   file = {/Users/schwifty/Zotero/storage/9RC2MAFR/architecting-scalable-checkpoint-storage-for-large-scale-ml-training-on-aws.html}
 }
 
+@inproceedings{Ayach2015:Catalyst,
+  title = {{{ParaView Catalyst}}: {{Enabling In Situ Data Analysis}} and {{Visualization}}},
+  shorttitle = {Catalyst},
+  booktitle = {Proceedings of the {{First Workshop}} on {{In Situ Infrastructures}} for {{Enabling Extreme-Scale Analysis}} and {{Visualization}}},
+  author = {Ayachit, Utkarsh and Bauer, Andrew and Geveci, Berk and O'Leary, Patrick and Moreland, Kenneth and Fabian, Nathan and Mauldin, Jeffrey},
+  date = {2015-11-15},
+  pages = {25--29},
+  publisher = {ACM},
+  location = {Austin TX USA},
+  doi = {10.1145/2828612.2828624},
+  url = {https://dl.acm.org/doi/10.1145/2828612.2828624},
+  urldate = {2025-07-17},
+  eventtitle = {{{SC15}}: {{The International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  isbn = {978-1-4503-4003-8},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/General-Thesis/insitu/2015_ayachit_et_al_paraview_catalyst.pdf}
+}
+
+@inproceedings{Ayach2016:SENSEI,
+  title = {The {{SENSEI Generic In Situ Interface}}},
+  shorttitle = {{{SENSEI}}},
+  booktitle = {2016 {{Second Workshop}} on {{In Situ Infrastructures}} for {{Enabling Extreme-Scale Analysis}} and {{Visualization}} ({{ISAV}})},
+  author = {Ayachit, Utkarsh and Whitlock, Brad and Wolf, Matthew and Loring, Burlen and Geveci, Berk and Lonie, David and Bethel, E. Wes},
+  date = {2016-11},
+  pages = {40--44},
+  publisher = {IEEE},
+  location = {Salt Lake City, UT, USA},
+  doi = {10.1109/ISAV.2016.013},
+  url = {http://ieeexplore.ieee.org/document/7836400/},
+  urldate = {2025-07-17},
+  abstract = {The SENSEI generic in situ interface is an API that promotes code portability and reusability. From the simulation view, a developer can instrument their code with the SENSEI API and then make make use of any number of in situ infrastructures. From the method view, a developer can write an in situ method using the SENSEI API, then expect it to run in any number of in situ infrastructures, or be invoked directly from a simulation code, with little or no modification. This paper presents the design principles underlying the SENSEI generic interface, along with some simplified coding examples.},
+  eventtitle = {2016 {{Second Workshop}} on {{In Situ Infrastructures}} for {{Enabling Extreme-Scale Analysis}} and {{Visualization}} ({{ISAV}})},
+  isbn = {978-1-5090-3872-5},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/39B4CLHZ/Ayachit et al. - 2016 - The SENSEI Generic In Situ Interface.pdf}
+}
+
 @article{Bird2022:VPIC2.0,
   title = {{{VPIC}} 2.0: {{Next Generation Particle-in-Cell Simulations}}},
   shorttitle = {{{VPIC}} 2.0},
@@ -164,6 +201,41 @@
   file = {/Users/schwifty/Zotero/storage/R5CRBVJ6/Do et al. - 2022 - Accelerating Scientific Workflows on HPC Platforms.pdf}
 }
 
+@inproceedings{Docan2010:DataSpaces,
+  title = {{{DataSpaces}}: An Interaction and Coordination Framework for Coupled Simulation Workflows},
+  shorttitle = {{{DataSpaces}}},
+  booktitle = {Proceedings of the 19th {{ACM International Symposium}} on {{High Performance Distributed Computing}}},
+  author = {Docan, Ciprian and Parashar, Manish and Klasky, Scott},
+  date = {2010-06-21},
+  series = {{{HPDC}} '10},
+  pages = {25--36},
+  publisher = {Association for Computing Machinery},
+  location = {New York, NY, USA},
+  doi = {10.1145/1851476.1851481},
+  url = {https://dl.acm.org/doi/10.1145/1851476.1851481},
+  urldate = {2025-07-17},
+  abstract = {Emerging high-performance distributed computing environments are enabling new end-to-end formulations in science and engineering that involve multiple interacting processes and data-intensive application workflows. For example, current fusion simulation efforts are exploring coupled models and codes that simultaneously simulate separate application processes, such as the core and the edge turbulence, and run on different high performance computing resources. These components need to interact, at runtime, with each other and with services for data monitoring, data analysis and visualization, and data archiving. As a result, they require efficient support for dynamic and flexible couplings and interactions, which remains a challenge. This paper presents DataSpaces, a flexible interaction and coordination substrate that addresses this challenge. DataSpaces essentially implements a semantically specialized virtual shared space abstraction that can be associatively accessed by all components and services in the application workflow. It enables live data to be extracted from running simulation components, indexes this data online, and then allows it to be monitored, queried and accessed by other components and services via the space using semantically meaningful operators. The underlying data transport is asynchronous, low-overhead and largely memory-to-memory. The design, implementation, and experimental evaluation of DataSpaces using a coupled fusion simulation workflow is presented.},
+  isbn = {978-1-60558-942-8},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/General-Thesis/insitu/2010_docan_et_al_dataspaces.pdf}
+}
+
+@article{Dorie2023:ElasticSituAnalysis,
+  title = {Towards {\mkbibemph{Elastic}} in Situ Analysis for High-Performance Computing Simulations},
+  author = {Dorier, Matthieu and Wang, Zhe and Ramesh, Srinivasan and Ayachit, Utkarsh and Snyder, Shane and Ross, Rob and Parashar, Manish},
+  date = {2023-07-01},
+  journaltitle = {Journal of Parallel and Distributed Computing},
+  shortjournal = {Journal of Parallel and Distributed Computing},
+  volume = {177},
+  pages = {106--116},
+  issn = {0743-7315},
+  doi = {10.1016/j.jpdc.2023.02.014},
+  url = {https://www.sciencedirect.com/science/article/pii/S0743731523000369},
+  urldate = {2024-11-25},
+  abstract = {In situ analysis and visualization have grown increasingly popular for enabling direct access to data from high-performance computing (HPC) simulations. As a simulation progresses and interesting physical phenomena emerge, however, the data produced may become increasingly complex, and users may need to dynamically change the type and scale of in situ analysis tasks being carried out and consequently adapt the amount of resources allocated to such tasks. To date, none of the production in situ analysis frameworks offer such an elasticity feature, and for good reason: the assumption that the number of processes could vary during run time would force developers to rethink software and algorithms at every level of the in situ analysis stack. In this paper we present Colza, a data staging service with elastic in situ visualization capabilities. We demonstrate the use of Colza with the Deep Water Impact and the AMR-Wind simulations, coupling them with the ParaView Catalyst and Ascent in situ libraries, and show that Colza enables dynamic rescaling of these widely-used frameworks with no interruption to the simulation or staging service. We highlight the challenges of enabling such elasticity, which requires overcoming these frameworks' reliance on MPI, using distinct engineering approaches, namely dependency injection and dependency overload. To the best of our knowledge, this work is the first to enable elastic in situ visualization capabilities for HPC applications on top of existing production analysis tools.},
+  keywords = {Colza,Elastic,In situ analysis,In situ visualization,Mochi},
+  file = {/Users/schwifty/Zotero/storage/65ENXBH7/S0743731523000369.html}
+}
+
 @inproceedings{Eisen2022:Checkpoint,
   title = {\{\vphantom\}{{Check-N-Run}}\vphantom\{\}: A {{Checkpointing System}} for {{Training Deep Learning Recommendation Models}}},
   shorttitle = {Checkpoint},
@@ -216,6 +288,22 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/General-Thesis/2024_grattafiori_et_al_the_llama_3_herd_of_models.pdf;/Users/schwifty/Zotero/storage/ETD8PHT2/2407.html}
 }
 
+@inproceedings{Gross2021:LightweightInterfaceSitu,
+  title = {Lightweight {{Interface}} for {{In Situ Analysis}} and {{Visualization}} of {{Particle Data}}},
+  booktitle = {{{ISAV}}'21: {{In Situ Infrastructures}} for {{Enabling Extreme-Scale Analysis}} and {{Visualization}}},
+  author = {Grosset, Pascal and Ahrens, James},
+  date = {2021-11-15},
+  pages = {12--17},
+  publisher = {ACM},
+  location = {St. Louis MO USA},
+  doi = {10.1145/3490138.3490143},
+  url = {https://dl.acm.org/doi/10.1145/3490138.3490143},
+  urldate = {2024-12-05},
+  eventtitle = {{{ISAV}}'21: {{In Situ Infrastructures}} for {{Enabling Extreme-Scale Analysis}} and {{Visualization}}},
+  isbn = {978-1-4503-8715-6},
+  langid = {english}
+}
+
 @article{Henne2020:DAOS,
   title = {Daos: {{A}} Scale-out High Performance Storage Stack for Storage Class Memory},
   shorttitle = {{{DAOS}}},
@@ -258,6 +346,95 @@
   eventtitle = {{{SC}} '10: The 2010 {{ACM}}/{{IEEE International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
   keywords = {Analytical models,Benchmark testing,Delay,Noise,Noise measurement,Receivers,Synchronization},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/General-Thesis/2010_hoefler_et_al_characterizing_the_influence_of_system_noise_on_large-scale_applications_by.pdf}
+}
+
+@inproceedings{Ibrah2019:InteractiveSituVisualization,
+  title = {Interactive in Situ Visualization and Analysis Using {{Ascent}} and {{Jupyter}}},
+  booktitle = {Proceedings of the {{Workshop}} on {{In Situ Infrastructures}} for {{Enabling Extreme-Scale Analysis}} and {{Visualization}}},
+  author = {Ibrahim, Seif and Stitt, Thomas and Larsen, Matthew and Harrison, Cyrus},
+  date = {2019-11-18},
+  pages = {44--48},
+  publisher = {ACM},
+  location = {Denver Colorado USA},
+  doi = {10.1145/3364228.3364232},
+  url = {https://dl.acm.org/doi/10.1145/3364228.3364232},
+  urldate = {2025-06-21},
+  eventtitle = {{{ISAV}}'19: {{In Situ Infrastructures}} for {{Enabling Extreme-Scale Analysis}} and {{Visualization}}},
+  isbn = {978-1-4503-7723-2},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/2019_ibrahim_et_al_interactive_in_situ_visualization_and_analysis_using_ascent_and_jupyter.pdf}
+}
+
+@inproceedings{Jones2012:Checkpointing,
+  title = {Application Monitoring and Checkpointing in {{HPC}}: Looking towards Exascale Systems},
+  shorttitle = {Checkpointing},
+  booktitle = {Proceedings of the 50th {{Annual Southeast Regional Conference}}},
+  author = {Jones, William M. and Daly, John T. and DeBardeleben, Nathan},
+  date = {2012-03-29},
+  pages = {262--267},
+  publisher = {ACM},
+  location = {Tuscaloosa Alabama},
+  doi = {10.1145/2184512.2184574},
+  url = {https://dl.acm.org/doi/10.1145/2184512.2184574},
+  urldate = {2025-07-17},
+  eventtitle = {{{ACM SE}} '12: {{ACM Southeast Regional Conference}}},
+  isbn = {978-1-4503-1203-5},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/Biology/2012_jones_et_al_application_monitoring_and_checkpointing_in_hpc.pdf}
+}
+
+@inproceedings{Larse2017:ALPINE,
+  title = {The {{ALPINE In Situ Infrastructure}}: {{Ascending}} from the {{Ashes}} of {{Strawman}}},
+  shorttitle = {{{ALPINE}}},
+  booktitle = {Proceedings of the {{In Situ Infrastructures}} on {{Enabling Extreme-Scale Analysis}} and {{Visualization}}},
+  author = {Larsen, Matthew and Ahrens, James and Ayachit, Utkarsh and Brugger, Eric and Childs, Hank and Geveci, Berk and Harrison, Cyrus},
+  date = {2017-11-12},
+  series = {{{ISAV}}'17},
+  pages = {42--46},
+  publisher = {Association for Computing Machinery},
+  location = {New York, NY, USA},
+  doi = {10.1145/3144769.3144778},
+  url = {https://dl.acm.org/doi/10.1145/3144769.3144778},
+  urldate = {2023-08-28},
+  abstract = {This paper introduces ALPINE, a flyweight in situ infrastructure. The infrastructure is designed for leading-edge supercomputers, and has support for both distributed-memory and shared-memory parallelism. It can take advantage of computing power on both conventional CPU architectures and on many-core architectures such as NVIDIA GPUs or the Intel Xeon Phi. Further, it has a flexible design that supports for integration of new visualization and analysis routines and libraries. The paper describes ALPINE's interface choices and architecture, and also reports on initial experiments performed using the infrastructure.},
+  isbn = {978-1-4503-5139-3},
+  keywords = {HPC,In Situ,Scientific Visualization},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2017_larsen_et_al_the_alpine_in_situ_infrastructure.pdf}
+}
+
+@inproceedings{Larse2022:Ascent,
+  title = {Ascent: {{A Flyweight In Situ Library}} for~{{Exascale Simulations}}},
+  shorttitle = {Ascent},
+  booktitle = {In {{Situ Visualization}} for {{Computational Science}}},
+  author = {Larsen, Matthew and Brugger, Eric and Childs, Hank and Harrison, Cyrus},
+  editor = {Childs, Hank and Bennett, Janine C. and Garth, Christoph},
+  date = {2022},
+  pages = {255--279},
+  publisher = {Springer International Publishing},
+  location = {Cham},
+  doi = {10.1007/978-3-030-81627-8_12},
+  abstract = {This chapter describes Ascent, a production library for in situ visualization and analysis on exascale architectures. It begins by describing the library’s focal points: minimizing encumbrance on simulation codes and enabling diverse and powerful capabilities. The chapter then describes Ascent’s abstractions, interface, and design. It concludes with success stories that highlight its capabilities: in situ visualization of a 97.8 billion element inertial confinement fusion simulation using 16,384 GPUs, delivering radiography capabilities for a Kelvin-Helmholtz simulation, and native rendering of higher-order elements.},
+  isbn = {978-3-030-81627-8},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/General-Thesis/insitu/2022_larsen_et_al_ascent.pdf}
+}
+
+@inproceedings{Luttg2018:UnderstandingBehaviorHPC,
+  title = {Toward {{Understanding I}}/{{O Behavior}} in {{HPC Workflows}}},
+  booktitle = {2018 {{IEEE}}/{{ACM}} 3rd {{International Workshop}} on {{Parallel Data Storage}} \& {{Data Intensive Scalable Computing Systems}} ({{PDSW-DISCS}})},
+  author = {Luttgau, Jakob and Snyder, Shane and Carns, Philip and Wozniak, Justin M. and Kunkel, Julian and Ludwig, Thomas},
+  date = {2018-11},
+  pages = {64--75},
+  publisher = {IEEE},
+  location = {Dallas, TX, USA},
+  doi = {10.1109/PDSW-DISCS.2018.00012},
+  url = {https://ieeexplore.ieee.org/document/8638425/},
+  urldate = {2025-07-17},
+  abstract = {Scientific discovery increasingly depends on complex workflows consisting of multiple phases and sometimes millions of parallelizable tasks or pipelines. These workflows access storage resources for a variety of purposes, including preprocessing, simulation output, and postprocessing steps. Unfortunately, most workflow models focus on the scheduling and allocation of computational resources for tasks while the impact on storage systems remains a secondary objective and an open research question. I/O performance is not usually accounted for in workflow telemetry reported to users.},
+  eventtitle = {2018 {{IEEE}}/{{ACM}} 3rd {{International Workshop}} on {{Parallel Data Storage}} \& {{Data Intensive Scalable Computing Systems}} ({{PDSW-DISCS}})},
+  isbn = {978-1-72810-192-7},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/XQ6JPJ7Y/Luttgau et al. - 2018 - Toward Understanding IO Behavior in HPC Workflows.pdf}
 }
 
 @inproceedings{Metz2024:UltraEthernet,
@@ -349,6 +526,22 @@
   abstract = {This blog explores how parallelism affects checkpoint and restore operations in the most complex LLMs.},
   langid = {american},
   file = {/Users/schwifty/Zotero/storage/SFU9EP79/a-checkpoint-on-checkpoints-in-llms.html}
+}
+
+@inproceedings{Xie2012:CharacterizingOutputBottlenecks,
+  title = {Characterizing Output Bottlenecks in a Supercomputer},
+  booktitle = {{{SC}} '12: {{Proceedings}} of the {{International Conference}} on {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  author = {Xie, Bing and Chase, Jeffrey and Dillow, David and Drokin, Oleg and Klasky, Scott and Oral, Sarp and Podhorszki, Norbert},
+  date = {2012-11},
+  pages = {1--11},
+  issn = {2167-4337},
+  doi = {10.1109/SC.2012.28},
+  url = {https://ieeexplore.ieee.org/document/6468446/},
+  urldate = {2025-07-17},
+  abstract = {Supercomputer I/O loads are often dominated by writes. HPC (High Performance Computing) file systems are designed to absorb these bursty outputs at high bandwidth through massive parallelism. However, the delivered write bandwidth often falls well below the peak. This paper characterizes the data absorption behavior of a center-wide shared Lustre parallel file system on the Jaguar supercomputer. We use a statistical methodology to address the challenges of accurately measuring a shared machine under production load and to obtain the distribution of bandwidth across samples of compute nodes, storage targets, and time intervals. We observe and quantify limitations from competing traffic, contention on storage servers and I/O routers, concurrency limitations in the client compute node operating systems, and the impact of variance (stragglers) on coupled output such as striping. We then examine the implications of our results for application performance and the design of I/O middleware systems on shared supercomputers.},
+  eventtitle = {{{SC}} '12: The {{International Conference}} on {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  keywords = {Absorption,Aggregates,Bandwidth,Benchmark testing,Pipelines,Servers,Supercomputers},
+  file = {/Users/schwifty/Zotero/storage/GVWXKS4S/Xie et al. - 2012 - Characterizing output bottlenecks in a supercomput.pdf}
 }
 
 @inproceedings{Yildi2016:IONoise,

@@ -17,7 +17,7 @@ These techniques process data while in transit from application to storage, redu
 additional passes.
 DeltaFS~\cite{Zheng2018:DeltaFS} reorganizes data using hash-based partitioning, and has been
 demonstrated to scale upto 131K ranks.
-However, it destroys the key ordering needed for range queries.
+However, partitioning by key hash destroys the ordering needed for efficient range queries.
 
 % However, efficient range queries require indexed attribute locality in the data layout to locate
 % and retrieve the relevant data efficiently, However, efficient range queries require an ordered
