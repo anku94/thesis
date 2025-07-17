@@ -10,36 +10,42 @@
   While traditionally addressed by separate tools, this thesis demonstrates that both problems can be
   unified by treating them as challenges of organizing and processing streaming data for insight.
 
-  To address the data path, we present CARP, an adaptive range partitioner that reorders data
-  in-situ.
-  To enable efficient range queries on continuous physical attributes (e.g., particle energy) without
-  expensive post-processing sorts, CARP adaptively tracks highly skewed and evolving data
-  distributions as they are generated.
-  By doing so, it approximates the query performance of a perfect sort with no ingestion overhead,
-  achieving up to 5x faster end-to-end performance than prior work and query latencies up to 100x
-  faster than other in-situ techniques.
+  We first address a critical data path challenge: enabling efficient ingestion for range queries
+  over scientific data.
+  Range queries are essential for scientific discovery, but require ordering via expensive
+  postprocessing sorts that require multiple passes over on-disk data.
+  An ideal solution would support single-pass, streaming ingestion that reorganizes data on the fly,
+  even in the presence of highly dynamic and skewed key distributions.
+  CARP provides this capability by adaptively tracking the evolving data distribution and performing
+  in-situ reordering as data is written.
+  This allows CARP to approximate the query performance of a fully sorted dataset with no ingestion
+  overhead, achieving up to $5\times$ faster end-to-end performance than prior approaches and up to
+  $100\times$ lower query latency compared to other in-situ techniques.
 
-  We then turn to the compute path, where our investigation revealed that genuine load imbalance in
-  adaptive codes was frequently confounded by deeper sources of variability—hardware faults, system
-  noise, and unpredictable cross-stack interactions—exacerbated by global synchronization.
-  Isolating these effects required fine-grained telemetry that standard tools could not provide,
-  compelling us to develop custom, query-driven analytics pipelines.
-  This diagnostic process yielded CPLX, a tunable placement policy that improves runtime by up to
-  21.6\% .
-  More importantly, it exposed the critical need for queryable, real-time feedback to rapidly
-  characterize performance bottlenecks.
+  We then turn to the compute path, where we investigate low cluster efficiency in adaptive mesh
+  codes.
+  While often attributed to load imbalance, its underlying causes have not been systematically
+  explored.
+  Our analysis revealed that genuine load imbalance is frequently confounded by factors such as
+  hardware faults, system noise, and unpredictable interactions across the system stack, all of which
+  are amplified by global synchronization.
+  To disentangle these effects, we developed custom, fine-grained telemetry and query-driven
+  analytics pipelines.
+  This diagnostic process led to CPLX, a tunable placement policy that improves runtime by up to
+  $21.6\%$.
+  More importantly, it highlighted the need for real-time, queryable feedback to rapidly identify and
+  address performance bottlenecks.
 
-  Our experiences with streaming data reorganization in CARP and the diagnostic challenges
-  encountered during our load-balancing work culminated in ORCA, a framework for online, declarative,
-  and dynamic observability.
-  ORCA reconstructs on-demand views of distributed system state, streaming only the telemetry
-  required to synthesize the requested views.
-  These views can evolve over time through a control path that supports consistent, asynchronous
-  updates.
-  ORCA uses columnar telemetry formats, distributed query planning, and operator pushdown to minimize
-  data movement and support low-latency introspection.
-  By providing a single, programmable substrate for query-driven dataflows, ORCA bridges
-  long-standing silos between performance diagnostics and in-situ data analytics, offering a unified
-  response to the data and compute challenges of large-scale parallel systems.
+  Our experiences revealed that large-scale cluster efficiency is fundamentally bottlenecked by the
+  difficulty of reconstructing a coherent view from system-wide state that remains fragmented across
+  nodes and software layers.
+  Existing methods for constructing global views---whether mesh visualizations, performance traces,
+  or data distributions---are brittle, slow, and specialized for narrow domains.
+  Our experience with custom telemetry pipelines demonstrated that relational analytics could enable
+  a unified approach to observability through programmable, query-driven dataflows.
+  ORCA realizes this vision, providing a streaming analytics framework that 
+  translates observability requirements into optimized data movements between application and analysis tiers.
+  This unified substrate offers a programmable foundation to address longstanding
+  efficiency challenges across both data and compute paths in large-scale parallel systems.
 \end{abstract}
 \newpage
