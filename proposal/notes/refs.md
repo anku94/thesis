@@ -113,6 +113,8 @@
 - TAU 2024 runtime overhead/ML etc: Huck2025:TAU
 -- Also does streaming stuff using ADIOS2!!
 
+- Jones2012: "Failure probability increases with scale, so checkpointing becomes more frequent"
+
 
 ## George mentioned
 - SysX (may not be published)

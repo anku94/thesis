@@ -1112,6 +1112,24 @@
   file = {/Users/schwifty/Zotero/storage/6AKQBBDH/S0020025503001981.html}
 }
 
+@online{Lian2025:UniversalCheckpointing,
+  title = {Universal {{Checkpointing}}: {{A Flexible}} and {{Efficient Distributed Checkpointing System}} for {{Large-Scale DNN Training}} with {{Reconfigurable Parallelis}}},
+  shorttitle = {Universal {{Checkpointing}}},
+  author = {Lian, Xinyu and Jacobs, Sam Ade and Kurilenko, Lev and Tanaka, Masahiro and Bekman, Stas and Ruwase, Olatunji and Zhang, Minjia},
+  date = {2025-07-04},
+  eprint = {2406.18820},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2406.18820},
+  url = {http://arxiv.org/abs/2406.18820},
+  urldate = {2025-07-17},
+  abstract = {Deep neural network (DNN) training continues to scale rapidly in terms of model size, data volume, and sequence length, to the point where multiple machines are required to fit large models for training. Different distributed and parallel training strategies have been developed to support large-scale DNN training by partitioning the training state across GPUs. However, existing DNN training systems provide very limited support for reconfiguring parallelism strategies in the middle of the training via checkpointing. This limitation arises because distributed checkpoints are tightly coupled to specific model parallelism and hardware configurations, preventing large-scale training jobs from efficiently adapting to hardware failures or resource elasticity. This paper presents Universal Checkpointing (UCP), a novel checkpointing system that enables flexible and efficient DNN training with reconfigurable parallelism. UCP overcomes challenges in existing systems by decoupling checkpoint structure from parallel training strategies and hardware configurations. In addition, we present a pattern-based reconfiguration pipeline that enables automatic, flexible, and efficient mapping of checkpoint state to various parallelism strategies. Evaluation on a range of DNN models, including state-of-the-art dense and sparse LLMs, shows that UCP enables reconfiguration for a broader set of widely used parallelism strategies than existing solutions while adding negligible reconfiguration cost. UCP has been successfully employed in real LLM training workloads, greatly enhancing their flexibility and resilience to dynamic hardware environments.},
+  pubstate = {prepublished},
+  version = {3},
+  keywords = {Computer Science - Distributed Parallel and Cluster Computing,Computer Science - Machine Learning},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/ML/2025_lian_et_al_universal_checkpointing.pdf;/Users/schwifty/Zotero/storage/6W98IF4G/2406.html}
+}
+
 @article{Liang:FinegrainedTracedrivenPerformance,
   title = {Fine-Grained {{Trace-driven Performance Modeling}} and {{Simulation}} for {{Large-scale ML Training}}},
   author = {Liang, Mingyu and Kassa, Hiwot Tadese and Fu, Wenyin and Coutinho, Brian and Feng, Louis and Delimitrou, Christina},
