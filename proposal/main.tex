@@ -65,7 +65,15 @@
 \usepackage[capitalize]{cleveref}
 
 % For captions and subfigures
-\usepackage{caption}
+\usepackage[
+    font=small,
+    labelfont={bf,it},
+    textfont=it,
+    singlelinecheck=false,
+    format=hang,
+    justification=justified,
+    singlelinecheck=on
+]{caption}
 \usepackage{subcaption}
 
 %%% --- Commands ---
@@ -94,7 +102,7 @@
 \frontmatter{}
 \input{frontmatter}
 
-%%% --- Main Matter Begins ---
+% %% --- Main Matter Begins ---
 \mainmatter{}
 \input{tex/0-abstract}
 % \markdownInput{notes/outline-ch1-v4.md}
@@ -120,12 +128,10 @@
 \newpage
 \input{tex/6-timeline}
 
-%%% --- Appendix (Optional) ---
-%\appendix
-% \chapter{Supplementary Material}
-% Add raw data, code listings, or extended discussion here.
+% %% --- Appendix (Optional) --- \appendix \chapter{Supplementary Material} Add raw data, code
+% listings, or extended discussion here.
 
-%%% --- Bibliography ---
+% %% --- Bibliography ---
 
 % x plus y: x is inter-bib space
 \newpage

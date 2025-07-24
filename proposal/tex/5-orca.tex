@@ -49,7 +49,11 @@ capabilities deployable in production clusters.
   \centering
   \includegraphics[width=0.7\textwidth,trim=0cm 0cm 0cm 0cm,clip
   ]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
-  \caption{AMR lesson.}
+  \caption{An example of a BSP performance problem from a real AMR code, simplified as a volatile
+  function followed by global synchronization. (Left) Aggregated telemetry shows elevated average
+  synchronization times, but does not reveal the problem structure. (Right) Fine-grained telemetry 
+  shows random spikes in the volatile function delaying synchronization. Tuning the volatile function
+  does not affects its average time, but leads to a 50\% reduction in their combined time. }
   \label{fig:orca-spike}
 \end{figure}
 
@@ -78,7 +82,9 @@ of persistent limitations in what can be observed, analyzed, and acted on in rea
   \centering
   \includegraphics[width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
   ]{data/figs/orca_sampling.pdf}
-  \caption{Sampling.}
+  \caption{A comparison of different observability approaches for BSP systems, modeled as a two-dimensional
+  grid of ranks and timesteps. Tracing captures all event data, but re
+  }
   \label{fig:orca-approaches}
 \end{figure}
 
@@ -88,7 +94,9 @@ of persistent limitations in what can be observed, analyzed, and acted on in rea
   \centering
   \includegraphics[width=0.7\textwidth,trim=0cm 0cm 0cm 0cm,clip
   ]{data/figs/orca_overlay-agg-new.pdf}
-  \caption{ORCA architecture.}
+  \caption{An example of an ORCA tree-based overlay topology, with 16 MPI ranks across 4 nodes connecting to a
+  controller via a  hierarchy of aggregators, and optionally a tier of local lead ranks. Application ranks form
+  the synchronous domain while ORCA executes asynchronously.}
   \label{fig:orca-overlay}
 \end{figure}
 

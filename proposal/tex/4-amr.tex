@@ -84,7 +84,7 @@ allowing us to isolate the true sources of performance deviation.
     \includegraphics[
       width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
     ]{data/figs/amr_lesson_ordering_v5.pdf}
-    \caption{AMR telemetry.}
+    \caption{Rank-wise AMR telemetry, before and after tuning}
     \label{fig:amr-tele-comm}
   \end{subfigure}
   \begin{subfigure}{0.36\textwidth}
@@ -92,10 +92,15 @@ allowing us to isolate the true sources of performance deviation.
     \includegraphics[
       width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
     ]{data/figs/amr_msgcnt_regr_vert.pdf}
-    \caption{AMR regression.}
+    \caption{AMR telemetry regression analysis}
     \label{fig:amr-tele-reg}
   \end{subfigure}
-  \caption{AMR telemetry.}
+  \caption{
+    (Left) Fine-grained per-rank telemetry from communication functions showing significant variability,
+    that progressively reduces with tuning.
+    (Right) Regression analysis of communication telemetry showing poor initial correlation with work,
+    that improves significantly with tuning.
+  }
   \label{fig:amr-tele}
 \end{figure}
 
@@ -147,7 +152,11 @@ well-balanced portions.
   \includegraphics[
     width=\textwidth,trim=0.2cm 0cm 0.1cm 0cm,clip
   ]{data/figs/amr_blastwave_runtime_wide.pdf}
-  \caption{AMR runtime.}
+  \caption{End-to-end AMR code runtime as a function of policy at four scales (512--4096 ranks), classified
+  into four phases.
+  CPLX achieves up to 21.6\% runtime reduction over already-optimized baselines. Total runtime follows a
+  U-shaped curve as X increases, with best performance at intermediate values, from balancing the constituent
+  tradeoffs. Impact of CPLX increases with scale. }
   \label{fig:amr-eval-rt}
 \end{figure}
 

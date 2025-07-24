@@ -2,7 +2,7 @@ CARPROOT := /Users/schwifty/Repos/carp-paper/figures
 AMRROOT  := /Users/schwifty/Repos/netsketch-amr-profiling/data/figs
 ORCAROOT := /Users/schwifty/Repos/mon-paper/tikz-exps/pdf
 
-CARPFILES := distrib6.pdf
+CARPFILES := distrib6.pdf distrib.amr.pdf distrib.vpic.pdf
 AMRFILES  := lesson_ordering_v5.pdf msgcnt_regr_vert.pdf
 ORCAFILES := sampling.pdf overlay-agg-new.pdf
 
@@ -14,14 +14,14 @@ ALLTARGETS := $(CARPTARGETS) $(AMRTARGETS) $(ORCATARGETS)
 
 all: $(ALLTARGETS)
 
-carp_%: 
-	cp $(CARPROOT)/$* $@
+carp_%: $(CARPROOT)/%
+	cp $< $@
 
-amr_%: 
-	cp $(AMRROOT)/$* $@
+amr_%: $(AMRROOT)/%
+	cp $< $@
 
-orca_%: 
-	cp $(ORCAROOT)/$* $@
+orca_%: $(ORCAROOT)/%
+	cp $< $@
 
 clean:
 	rm -f $(ALLTARGETS)
