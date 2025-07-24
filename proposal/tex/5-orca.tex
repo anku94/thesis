@@ -82,8 +82,11 @@ of persistent limitations in what can be observed, analyzed, and acted on in rea
   \centering
   \includegraphics[width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
   ]{data/figs/orca_sampling.pdf}
-  \caption{A comparison of different observability approaches for BSP systems, modeled as a two-dimensional
-  grid of ranks and timesteps. Tracing captures all event data, but re
+  \caption{A comparison of different observability approaches for BSP telemetry, modeled as a two-dimensional
+  grid of ranks and timesteps. Tracing captures all event data, but writes it as separate per-rank streams
+  to storage, posing analytical challenges. Profing and sampling offer arbitrary fixed reductions of data, obscuring
+  insight. ORCA enables coordinated collection of timestep-wise telemetry from all ranks, with programmable
+  in-situ aggregation.
   }
   \label{fig:orca-approaches}
 \end{figure}
