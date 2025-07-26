@@ -12,15 +12,15 @@
 
 Both CARP and our work on AMR placement reveal a persistent and recurring need to reconstruct
 cluster state to synthesize views that enable better decision-making.
-CARP automatically uses this reconstructed state to inform online range partitioning, and our AMR
+CARP automatically uses this reconstructed state to inform online data reorganization, and our AMR
 work reveals the urgent need for such capability on the compute path, where disambiguating between
-load imbalance, system variability,a nd execution startrategies is essential for computational
+load imbalance, system variability, and execution strategies is essential for computational
 efficiency.
 
-Although the telemetry workflow evolved during our AMR placement work demonstrated the utility of
-analytical telemetry, the pipeline itself remained ad hoc and limited.
-From the lessons learned from our AMR work, we derive three requirements for powerful observability
-capabilities deployable in production clusters.
+Although the telemetry workflow evolved during our AMR placement work demonstrated the importance
+of structured and queryable telemetry, the pipeline itself remained ad hoc and limited.
+From this experience, we derive three requirements for powerful observability capabilities
+deployable in production clusters.
 
 \begin{itemize}
   \item \textbf{Real-time and Coordinated Analytics.}
@@ -29,11 +29,10 @@ capabilities deployable in production clusters.
         This requires coordinated, timestep-wise telemetry collection from all ranks.
 
   \item \textbf{Complete Programmability.}
-        Effective observability requires supporting data collection and aggregation across arbitrary
-        sources, each potentially with its own schema and aggregation logic relevant to the current
-        performance question.
-        In our experience, tools with fixed aggregations or rigid schemas quickly become limiting as soon
-        as requirements evolve—flexibility is essential for sustained utility.
+        Effective observability requires supporting analytics over arbitrary data sources across the
+        application stack, with varying schemas and aggregation requirements.
+        We found fixed aggregations or rigid schemas to quickly become limiting as requirements
+        evolve---programmability is essential for sustained utility.
 
   \item \textbf{Interactivity.}
         Observability workflows vary significantly across the lifetime of a long-running BSP application,
@@ -174,8 +173,8 @@ ORCA's software-based architecture --- incorporating open standards such as Apac
 Arrow~\cite{:ApacheArrow}, Datafusion~\cite{Lamb2024:DataFusion}, and
 Mercury~\cite{Souma2013:MercuryRPC} over libfabric~\cite{Grun2015:Libfabric} --- makes it naturally
 extensible.
-Many scientific analyses depend on multidimensional and unstructured meshes, which are
-not straightforward to represent in the relational model of standard SQL.
+Many scientific analyses depend on multidimensional and unstructured meshes, which are not
+straightforward to represent in the relational model of standard SQL.
 Prior work~\cite{:TileDB,Lee2004:MeshSQL,Kerst2011:SciQL,Rezae2014:UnstructuredMeshAlgebra}
 provides clear paths for extending SQL to cover these data types, and ORCA is is amenable to
 absorbing these capabilities, and enabling in-situ visualization workflows within the same
