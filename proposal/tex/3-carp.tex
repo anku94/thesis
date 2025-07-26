@@ -51,7 +51,9 @@ it at runtime.
     width=0.6\textwidth,trim=0cm 0cm 2cm 2cm,clip
   ]{data/figs/carp_distrib.vpic.pdf}
   \caption{Energy distributions across 7 timesteps of a particle simulation (VPIC~\cite{Byna2012}).
-    Intra-timestep distributions are highly skewed, with a long tail that grows significantly over time.}
+    Intra-timestep distributions are highly skewed, with a long tail that grows significantly over
+    time.
+  }
   \label{fig:carp-distrib}
 \end{figure}
 
@@ -62,9 +64,11 @@ it at runtime.
   \includegraphics[
     width=0.6\textwidth,trim=8cm 7cm 8cm 6cm,clip
   ]{data/figs/carp_arch_v12mini.pdf}
-  \caption{Example of an N-rank application using CARP. Writes are intercepted and partitioned
-  via an all-to-all shuffler. Each rank is both a shuffle sender and a receiver. Partitioned data collected
-  by receives is stored by a lock storage backend (\emph{KoiDB}).}
+  \caption{Example of an N-rank application using CARP.
+    Writes are intercepted and partitioned via an all-to-all shuffler.
+    Each rank is both a shuffle sender and a receiver.
+    Partitioned data collected by receives is stored by a lock storage backend (\emph{KoiDB}).
+  }
   \label{fig:carp-arch}
 \end{figure}
 
@@ -119,9 +123,9 @@ per-rank log.
   \end{subfigure}
 
   \caption{(Left) CARP incurs no overhead over
-  unpartitioned I/O and is 3--5$\times$ faster than post-processing.
-  (Right) CARP matches the query latency of TritonSort's fully-sorted data layout and outperforms
-  FastQuery by 100$\times$.
+    unpartitioned I/O and is 3--5$\times$ faster than post-processing.
+    (Right) CARP matches the query latency of TritonSort's fully-sorted data layout and outperforms
+    FastQuery by 100$\times$.
   }
   \label{fig:carp-eval}
 \end{figure}
@@ -149,11 +153,22 @@ queries.
 
 \section{Lessons}
 
-CARP works because its greedy single-pass approach produces a partially ordered data layout that
-enables queries to significantly narrow the search space to a small number of partitions.
-By ordering data like a clustered index, CARP enables a data layout that is contiguous enough to be
-amenable to efficient retrieval without compromising ingestion performance.
-The gap with auxliliary indices demonstrates the importance of partitioning as the indexing scheme
-of choice.
-Databases employ sophisticated query planning to leverage an ensemble of available indexes --- CARP
-demonstrates the need for efficient scientific analytics to follow a similar template.
+% CARP works because its greedy single-pass approach produces a partially ordered data layout that
+% enables queries to significantly narrow the search space to a small number of partitions. By
+% ordering data like a clustered index, CARP enables a data layout that is contiguous enough to be
+% amenable to efficient retrieval without compromising ingestion performance. The gap with
+% auxliliary indices demonstrates the importance of partitioning as the indexing scheme of choice.
+% Databases employ sophisticated query planning to leverage an ensemble of available indexes ---
+% CARP demonstrates the need for efficient scientific analytics to follow a similar template.
+
+CARP demonstrates that a greedy, single-pass approach can produce a partially ordered layout that
+supports efficient range queries without compromising ingestion performance.
+By approximating a clustered index over streaming data, it narrows query scope to a small number of
+partitions, reducing retrieval cost.
+The performance gap between CARP and auxiliary index-based approaches highlights the importance of
+physical partitioning as a first-class indexing mechanism.
+More broadly, CARP shows that scientific data systems benefit from the same design principles as
+databases, yet they currently lack the crucial ability to compose different indexing strategies at
+query time.
+The practical realization of these benefits requires adopting interoperable data formats and query
+engines that can leverage the available indexing and partitioning schemes.

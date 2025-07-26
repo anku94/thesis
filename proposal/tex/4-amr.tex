@@ -154,10 +154,12 @@ well-balanced portions.
     width=\textwidth,trim=0.2cm 0cm 0.1cm 0cm,clip
   ]{data/figs/amr_blastwave_runtime_wide.pdf}
   \caption{End-to-end AMR code runtime as a function of policy at four scales (512--4096 ranks), classified
-  into four phases.
-  CPLX achieves up to 21.6\% runtime reduction over already-optimized baselines. Total runtime follows a
-  U-shaped curve as X increases, with best performance at intermediate values, from balancing the constituent
-  tradeoffs. Impact of CPLX increases with scale. }
+    into four phases.
+    CPLX achieves up to 21.6\% runtime reduction over already-optimized baselines.
+    Total runtime follows a U-shaped curve as X increases, with best performance at intermediate
+    values, from balancing the constituent tradeoffs.
+    Impact of CPLX increases with scale.
+  }
   \label{fig:amr-eval-rt}
 \end{figure}
 
@@ -186,18 +188,33 @@ optimal.
 
 \section{Lessons}
 
-Elevated synchronization time is traditionally ascribed to algorithmic load imbalance in
-performance analyses, but while system variability issues are known, they are not systematically
-factored into diagnosis.
-Our study demonstrates the risks of this approach---many "load imbalance" problems are actually
-cross-stack variability masquerading as algorithmic issues.
-The biggest bottleneck was understanding performance rather than algorithmic optimization, as
-performance characteristics are inherently idiosyncratic to specific hardware and software stacks.
-This highlights the need for real-time visibility into application performance for effective
-diagnosis and tuning.
-Our structured telemetry pipeline demonstrates the path forward from ad-hoc tools to queryable,
-programmable observability that can be made real-time, enabling adaptive control loops and
-reframing performance tuning as distributed state reconstruction requiring streaming analytics
-capabilities.
+Elevated synchronization time in AMR codes is commonly ascribed to algorithmic load imbalance.
+While execution variability is a known issue, it is often overlooked in performance analyses, which
+are typically conducted offline and disconnected from runtime context.
+Our work shows that accurate diagnosis requires holistic, in-situ performance analysis to isolate
+the true sources of variability.
+We find that algorithmic techniques can improve placement, but they also expose tunable
+tradeoffs---such as load balance versus communication locality---whose optimal configuration
+also benefits from real-time visibility into application behavior.
+Our organically evolved pipeline demonstrates the value of structured, queryable telemetry, and
+motivates the realization of real-time observability capabilities tailored to the needs of
+tightly-coupled parallel applications.
+
+% Our structured telemetry pipeline offers a path beyond ad hoc tooling---toward queryable,
+% programmable observability that supports principled diagnosis and tuning. The primary challenge
+% was not algorithmic optimization, but understanding performance behavior within the constraints of
+% specific hardware and software stacks. This underscores the need for real-time visibility into
+% application performance. Our structured telemetry pipeline offers a path beyond ad hoc
+% tooling—toward queryable, programmable observability that supports principled diagnosis and tuning
+
+% Elevated synchronization time in AMR codes is commonly ascribed to algorithmic load imbalance in
+% performance analyses. While execution variability is a known problem, it is typically not factored
+% into performance analyses, which are often conducted separately from data collection. Our work
+% demonstrates the importance of carrying out a holistic performance analysis in-situ to identify
+% and isolate the true sources of performance variability. This requires real-time visibility into
+% application performance for effective diagnosis and tuning. The biggest bottleneck was
+% understanding performance rather than algorithmic optimization, as performance characteristics are
+% inherently idiosyncratic to specific hardware and software stacks. Our structured telemetry
+% pipeline demonstrates the path forward from ad-hoc tools to queryable, programmable observability.
 
 \newpage
