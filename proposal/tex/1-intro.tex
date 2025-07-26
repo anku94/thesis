@@ -183,60 +183,89 @@ baselines~\cite{Jain2025:AMR}.
 % efficient workflows to trace variability to its root cause, which may or may not be amenable to
 % algorithmic solutions.
 
-Our experience with adaptive mesh codes highlighted a fundamental limitation: that of establishing
-visibility into runtime behavior on large-scale clusters.
-Even basic characteristics --- such as the straggler rank --- are difficult to establish in
-production environments, because of a lack of real-time mechanisms for visibility.
-% Even basic questions---such as how load is distributed across ranks---are difficult to answer in
-% production environments. Existing tooling is fragmented, brittle, or too intrusive to support
-% ongoing analysis. These challenges are not unique to HPC; distributed ML workflows face similar
-% limitations, often relying on delayed, indirect traces to reconstruct system
-% behavior~\cite{Jain2025:ML}.
-Across CARP, placement, and tuning, we found that every meaningful intervention was gated on the
-ability to reconstruct distributed system state.
-We realized that these were all amenable to a general-purpose substrate for programmable and
-real-time observability.
-% We realized these were all instances of a broader visibility problem—one that demands a real-time,
-% programmable substrate for materializing system state from fragmented signals. ORCA was designed
-% to provide that capability.
+Our work on both CARP and adaptive mesh codes revealed a common prerequisite for efficiency: the
+ability to construct a global view of distributed state to guide intervention.
+For CARP, this meant reconstructing the global key distribution to drive adaptive data
+reorganization.
+For mesh codes, it meant building a coherent performance picture to distinguish algorithmic
+bottlenecks from system noise.
+This visibility currently relies on tracing~\cite{Wylie2025:15Years,2025:kineto}, where prohibitive
+collection and analysis costs make it unviable at scale.
+Our goal was to build a general-purpose substrate that could efficiently materialize system views
+using on-demand and in-situ aggregation of telemetry.
+% Currently, these insights depend on tracing and postprocessing, which delay analysis and increase
+% its cost. We concluded that the necessary information can be materialized through a single,
+% unified, programmable substrate, suitable for deployment in production environments.
+
+% Our experience with adaptive mesh codes highlighted a fundamental limitation: that of establishing
+% visibility into runtime behavior on large-scale clusters. Even basic characteristics --- such as
+% the straggler rank --- are difficult to establish in production environments, because of a lack of
+% real-time mechanisms for visibility. Across CARP, placement, and tuning, we found that every
+% meaningful intervention was gated on the ability to reconstruct distributed system state. We
+% realized that these were all amenable to a general-purpose substrate for programmable and
+% real-time observability. Even basic questions---such as how load is distributed across ranks---are
+% difficult to answer in production environments. Existing tooling is fragmented, brittle, or too
+% intrusive to support ongoing analysis. These challenges are not unique to HPC; distributed ML
+% workflows face similar limitations, often relying on delayed, indirect traces to reconstruct
+% system behavior~\cite{Jain2025:ML}. We realized these were all instances of a broader visibility
+% problem—one that demands a real-time, programmable substrate for materializing system state from
+% fragmented signals. ORCA was designed to provide that capability.
 
 \paragraph{Our Approach}
 ORCA (\emph{Observability with Real-time Control and Aggregation}) is a general-purpose dataflow
 framework for cluster observability.
-Users define telemetry and control requirements as SQL queries over Arrow-formatted data streams.
+Users define telemetry and control requirements as SQL queries over
+Arrow~\cite{:ApacheArrow}-formatted data streams.
 These queries are compiled into distributed execution plans over a tree-structured overlay of
-aggregators, and executed over per-timestep telemetry within a tree-based overlay.
+aggregators and executed over per-timestep telemetry.
+Data is collected and analyzed only in response to active queries, enabling analytical costs to
+scale with analytical requirements.
+% analyses whose cost scales with user intent.
 An asynchronous but timestep-consistent control path provides primitives to act on the basis of the
 feedback.
+
+% Users define telemetry and control requirements as SQL queries over Arrow-formatted data streams.
+% These queries are compiled into distributed execution plans over a tree-structured overlay of
+% aggregators, and executed over per-timestep telemetry within a tree-based overlay. An asynchronous
+% but timestep-consistent control path provides primitives to act on the basis of the feedback.
 % safe, real-time intervention by synchronizing configuration changes with application timesteps. We
 % are developing a general-purpose dataflow framework for cluster observability using SQL semantics
 % and Arrow. ORCA (\emph{Observability with Realtime Control and Aggregation}) uses a tree-based
 % overlay network with distributed query planning and a async control path.
 
 \paragraph{Challenges}
-ORCA aims to bridge the semantics between a synchronous execution and an asynchronous human
-operator, enabling high-performance ingestion and in-memory distributed analytics
-with timestep-consistent control and aggregation semantics.
-There is no existing template for such a real-time observability system in tightly coupled parallel
-systems.
-% No existing template exists for cluster-scale streaming analytics. The system requires complex
-% distributed coordination with multiple interacting components while meeting strict performance
-% requirements to avoid impacting application critical paths.
-% No existing template exists for cluster-scale streaming analytics. The system requires complex
-% distributed coordination with multiple interacting components while meeting strict performance
-% requirements to avoid impacting application critical paths.
-% No existing template exists for cluster-scale streaming analytics. The system requires complex
-% distributed coordination with multiple interacting components while meeting strict performance
-% requirements to avoid impacting application critical paths.
+The core research challenge is designing the first query-driven real-time observability system for
+tightly-coupled parallel applications.
+This requires solving novel problems across the stack: from high-throughput, low-overhead data
+collection and scalable in-situ query processing, to the design of a control path that provides
+timestep-consistent semantics for an asynchronous operator.
+% ORCA aims to bridge the semantics between a synchronous execution and an asynchronous human
+% operator, enabling high-performance ingestion and in-memory distributed analytics with
+% timestep-consistent control and aggregation semantics. There is no existing template for such a
+% real-time observability system in tightly coupled parallel systems. No existing template exists
+% for cluster-scale streaming analytics. The system requires complex distributed coordination with
+% multiple interacting components while meeting strict performance requirements to avoid impacting
+% application critical paths. No existing template exists for cluster-scale streaming analytics. The
+% system requires complex distributed coordination with multiple interacting components while
+% meeting strict performance requirements to avoid impacting application critical paths. No existing
+% template exists for cluster-scale streaming analytics. The system requires complex distributed
+% coordination with multiple interacting components while meeting strict performance requirements to
+% avoid impacting application critical paths.
 
 \section{Thesis Statement}
 
-% All cluster efficiency problems are distributed state reconstruction problems.
-\begin{quote}
-  This thesis argues that a broad and critical class of cluster efficiency problems, from data
-  organization to performance variability, can be unified and solved by reframing them as problems of
-  distributed state reconstruction.
-\end{quote}
+% All cluster efficiency problems are distributed state reconstruction problems. \begin{quote} This
+% thesis argues that a broad and critical class of cluster efficiency problems, from data
+% organization to performance variability, can be unified and solved by reframing them as problems
+% of distributed state reconstruction.
+\begin{tcolorbox}[thesisbox]
+  This thesis argues that persistent efficiency bottlenecks in \emph{Bulk Synchronous Parallel} (BSP)
+  systems—across both the compute and data paths—stem from a missing abstraction: the ability to
+  reconstruct distributed application state in real time.
+  It proposes ORCA, a programmable observability and control plane, as a unifying solution that fills
+  this gap using declarative, query-driven dataflows.
+\end{tcolorbox}
+% \end{quote}
 
 \subsection{Potential Impact}
 

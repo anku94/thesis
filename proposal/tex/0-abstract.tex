@@ -16,12 +16,13 @@
   postprocessing sorts that require multiple passes over on-disk data.
   An ideal solution would support single-pass, streaming ingestion that reorganizes data on the fly,
   even in the presence of highly dynamic and skewed key distributions.
-  CARP provides this capability by adaptively tracking the evolving data distribution and performing
-  in-situ reordering as data is written.
+  CARP provides this capability by reconstructing these distributions at runtime from rank-local
+  statistics, and using it to inform in-situ reordering as data is written.
+  % CARP provides this capability by adaptively tracking the evolving data distribution and performing
+  % in-situ reordering as data is written.
   This allows CARP to approximate the query performance of a fully sorted dataset with no ingestion
   overhead, achieving up to $5\times$ faster end-to-end ingestion performance than prior approaches.
-  %  and up to
-  % $100\times$ lower query latency compared to other in-situ techniques.
+  % and up to $100\times$ lower query latency compared to other in-situ techniques.
 
   We then turn to the compute path, where we investigate low cluster efficiency in adaptive mesh
   codes.
@@ -32,21 +33,55 @@
   are amplified by global synchronization.
   To disentangle these effects, we developed custom, fine-grained telemetry and query-driven
   analytics pipelines.
-  This diagnostic process led to CPLX, a tunable placement policy that improves runtime by up to
-  $21.6\%$.
-  More importantly, it highlighted the need for real-time, queryable feedback to rapidly identify and
-  address performance bottlenecks.
+  This process led to CPLX, a tunable placement policy that improves runtime by up to $21.6\%$.
+  More importantly, it showed that the practical realization of compute efficiency depends as much on
+  real-time visibility into runtime anomalies as on the placement algorithms themselves.
+  % More importantly, it highlighted that More importantly, it highlighted the need for real-time,
+  % queryable feedback to rapidly identify and address performance bottlenecks. This diagnostic
+  % process led to CPLX, a tunable placement policy that improves runtime by up to $21.6\%$. More
+  % importantly, it highlighted the need for real-time, queryable feedback to rapidly identify and
+  % address performance bottlenecks.
 
-  Our experiences revealed that large-scale cluster efficiency is fundamentally bottlenecked by the
-  difficulty of reconstructing a coherent view from system-wide state that remains fragmented across
-  nodes and software layers.
-  Existing methods for constructing global views---whether mesh visualizations, performance traces,
-  or data distributions---are brittle, slow, and specialized for narrow domains.
-  Our experience with custom telemetry pipelines demonstrated that relational analytics could enable
-  a unified approach to observability through programmable, query-driven dataflows.
-  ORCA realizes this vision, providing a streaming analytics framework that 
-  translates observability requirements into optimized data movements between application and analysis tiers.
-  This unified substrate offers a programmable foundation to address longstanding
-  efficiency challenges across both data and compute paths in large-scale parallel systems.
+  % Our experiences revealed that large-scale cluster efficiency is fundamentally bottlenecked by the
+  % difficulty of reconstructing a coherent view from system-wide state that remains fragmented across
+  % nodes and software layers. Existing methods for constructing global views---whether mesh
+  % visualizations, performance traces, or data distributions---are brittle, slow, and specialized for
+  % narrow domains. Our experience with custom telemetry pipelines demonstrated that relational
+  % analytics could enable a unified approach to observability through programmable, query-driven
+  % dataflows. ORCA realizes this vision, providing a streaming analytics framework that translates
+  % observability requirements into optimized data movements between application and analysis tiers.
+  % This unified substrate offers a programmable foundation to address longstanding efficiency
+  % challenges across both data and compute paths in large-scale parallel systems.
+
+  % We realized that both the CARP and AMR efforts ultimately relied on building specialized systems
+  % to support a common capability: reconstructing distributed cluster views in real time. Modern
+  % observability stacks—especially those centered on tracing—log vast volumes of event-level data for
+  % offline analysis, but computing even basic cluster-wide summaries from such traces is
+  % prohibitively expensive. Similar patterns exist in distributed machine learning workflows, where
+  % fixed-function instrumentation and analysis of persisted traces are used for tasks ranging from
+  % validating application correctness (e.g., detecting divergence or NaNs) to monitoring performance.
+  % We propose a shift from this model: instead of recording everything upfront, treat execution as a
+  % fragmented system image, where fragments are queried and composed on demand to reconstruct only
+  % the views needed. ORCA realizes this approach through a tree-based overlay that leverages
+  % declarative interfaces for programmable, on-demand aggregation of telemetry. It unifies
+  % observability and control across both data and compute paths, enabling real-time introspection and
+  % adaptation in large-scale parallel systems.
+
+  While CARP and AMR targeted different problems, both revealed the same underlying constraint:
+  meaningful efficiency gains were bottlenecked on the ability to rapidly reconstruct distributed
+  application state.
+  Today, BSP workloads across scientific computing and machine learning training rely on massive
+  traces to identify correctness and performance bottlenecks.
+  Tracing incurs significant runtime overheads, requires expensive postprocessing, and remains
+  prohibitive at scale.
+  We propose a fundamental shift: instead of proactive collection of all event logs, treat them as
+  fragments of the global view, and use declarative dataflows for programmable, on-demand collection
+  and aggregation of these fragments.
+  ORCA enables these capabilities through an aggregation and control plane optimized for BSP
+  telemetry structure, leveraging a tree-based overlay with SQL semantics and distributed query
+  planning to minimize data movement.
+  This replaces a fractured ecosystem of bespoke tools with a unified, query-driven
+  framework for real-time observability across all layers and phases of distributed execution.
+
 \end{abstract}
 \newpage

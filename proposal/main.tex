@@ -24,6 +24,26 @@
 \usepackage{titlesec} % for para fmting
 \usepackage{enumitem} % to customize enumerate
 
+% For thesis statement box
+\usepackage[most]{tcolorbox}
+\tcbset{
+  thesisbox/.style={
+    colback=gray!2,
+    colframe=black,
+    boxrule=0.4pt,
+    arc=2pt,
+    left=6pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    boxsep=4pt,
+    fonttitle=\bfseries,
+    width=\textwidth-2em,
+    enlarge left by=1em,
+  }
+}
+
+
 %%% --- Bibliography ---
 \usepackage[
     style=numeric,
