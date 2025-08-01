@@ -7,8 +7,8 @@
 The Bulk Synchronous Parallel (BSP) paradigm powers some of our most critical computational tools,
 from large-scale scientific simulations in astrophysics and climate science to distributed training
 of foundation models in machine learning.
-These workloads---consisting of large parallel computations interspersed with I/O and global
-synchronization---currently operate at the scale of tens of thousands of accelerator
+These workloads ---- consisting of large parallel computations interspersed with I/O and global
+synchronization ---- currently operate at the scale of tens of thousands of accelerator
 nodes~\cite{Das2023:LargeScale,Stock2024:LargeScale,Gratt2024:Llama3Scale,:LlamaScale} and continue
 to grow with time~\cite{Rahma2024:MLScale}.
 As these applications scale, their efficiency has datacenter-level impacts on both cost and
@@ -37,18 +37,17 @@ Scientific applications generate massive volumes of data, particularly during ch
 places intense pressure on I/O systems.
 Reading and analyzing this data after the fact is costly and can significantly slow
 time-to-insight.
-To mitigate this, many workflows now employ in-situ
+To mitigate this, many workflows now employ in situ
 analytics~\cite{Bauer2016:SituMethodsInfrastructures,Child2020:TerminologySituVisualization}, which
 process data as it is produced to reduce storage overhead and improve interactivity.
-While promising, most in-situ frameworks remain specialized: they are typically tailored for
+While promising, most in situ frameworks remain specialized: they are typically tailored for
 visualization~\cite{Larse2022:Ascent,Ayach2015:Catalyst,Ibrah2019:InteractiveSituVisualization,Gross2021:LightweightInterfaceSitu,Larse2017:ALPINE}
 or fixed-function transformations~\cite{Eisen2024:ADIOS}, and offer limited flexibility for
 general-purpose data organization.
-Critically, support for efficient range queries---essential for analyzing continuous scientific
-variables---is still missing.
+Critically, support for efficient range queries ---- essential for analyzing continuous scientific
+variables ---- is still missing.
 As a result, users are often forced to perform expensive post-processing
-sorts~\cite{Dong2016,Sunda2013:HykSort,Rasmu2011:TritonSort}, reintroducing the I/O bottlenecks
-that in-situ techniques aim to eliminate.
+sorts~\cite{Dong2016,Sunda2013:HykSort,Rasmu2011:TritonSort}, reintroducing the I / O bottlenecks that in situ techniques aim to eliminate.
 % The explosive growth in scientific data volumes has made in-situ analytics an essential strategy
 % for reducing I/O overhead and accelerating time-to-insight. While widely used for visualization
 % and occasionally adopted for data transformation or staging, current in-situ systems are
@@ -150,7 +149,7 @@ exploited in a placement policy encountered several persistent challenges.
   \item Raw telemetry measurements did not correlate with expected behavior, forcing deep investigation of
         cross-stack performance anomalies, and revealing issues with hardware, network stack parameters, operation
         ordering etc.
-        These constituted runtime noise that had to be eliminated before telemetry and plpacement effects
+        These constituted runtime noise that had to be eliminated before telemetry and placement effects
         could be reliably observed.
   \item Identifying, isolating, and tracing transient performance issues in a large parallel code required
         collecting and analyzing a large volume of telemetry.
