@@ -68,6 +68,9 @@
 - Applying graph partitioning: Bhate2011
 - Multi-level load-balancing: Bak2018
 
+- First SFC/locality preservation paper: Warre1993
+- Theoretical analysis of locality maximization as a goal: Sasid2015
+
 # ORCA-related
 
 ## ML Problems

@@ -18,9 +18,11 @@ load imbalance, system variability, and execution strategies is essential for co
 efficiency.
 
 Although the telemetry workflow evolved during our AMR placement work demonstrated the importance
-of structured and queryable telemetry, the pipeline itself remained ad hoc and limited.
-From this experience, we derive three requirements for powerful observability capabilities
-deployable in production clusters.
+of structured and queryable fine-grained telemetry, the pipeline itself remained ad hoc and limited.
+We derive three requirements for practical observability capabilities for production clusters from
+our experience.
+% From this experience, we derive three requirements for powerful observability capabilities
+% deployable in production clusters.
 
 \begin{itemize}
   \item \textbf{Real-time and Coordinated Analytics.}
@@ -43,11 +45,9 @@ deployable in production clusters.
         The framework must enable dynamic transitions between these modes without fixed overhead penalties.
 \end{itemize}
 
-\section{Background: The Observability Gap in BSP Systems}
-
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.7\textwidth,trim=0cm 0cm 0cm 0cm,clip
+  \includegraphics[width=0.6\textwidth,trim=0cm 0cm 0cm 0cm,clip
   ]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
   \caption{An example of a BSP performance problem from a real AMR code, simplified as a volatile
     function followed by global synchronization. (Left) Aggregated telemetry shows elevated average
@@ -59,6 +59,10 @@ deployable in production clusters.
   \label{fig:orca-spike}
 \end{figure}
 
+\section{Background: The Observability Gap in BSP Systems}
+
+\cref{fig:orca-approaches} compares different observability approaches for BSP telemetry, modeled
+as a two-dimensional grid of ranks and timesteps.
 Among existing approaches~\cite{Wylie2025:15Years}, comprehensive
 tracing~\cite{2025:kineto,Shend2006:TAU,Knupf2012:ScoreP} is the only method that preserves the
 fine-grained telemetry needed to diagnose complex performance issues in large-scale BSP systems

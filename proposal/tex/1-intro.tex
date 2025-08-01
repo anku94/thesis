@@ -37,15 +37,18 @@ Scientific applications generate massive volumes of data, particularly during ch
 places intense pressure on I/O systems.
 Reading and analyzing this data after the fact is costly and can significantly slow
 time-to-insight.
-To mitigate this, many workflows now employ in-situ analytics, which process data as it is produced
-to reduce storage overhead and improve interactivity.
+To mitigate this, many workflows now employ in-situ
+analytics~\cite{Bauer2016:SituMethodsInfrastructures,Child2020:TerminologySituVisualization}, which
+process data as it is produced to reduce storage overhead and improve interactivity.
 While promising, most in-situ frameworks remain specialized: they are typically tailored for
-visualization or fixed-function transformations, and offer limited flexibility for general-purpose
-data organization.
-Critically, support for efficient range queries—which are essential for analyzing continuous
-scientific variables—is still missing.
-As a result, users are often forced to perform expensive post-processing sorts, reintroducing the
-I/O bottlenecks that in-situ techniques aim to eliminate.
+visualization~\cite{Larse2022:Ascent,Ayach2015:Catalyst,Ibrah2019:InteractiveSituVisualization,Gross2021:LightweightInterfaceSitu,Larse2017:ALPINE}
+or fixed-function transformations~\cite{Eisen2024:ADIOS}, and offer limited flexibility for
+general-purpose data organization.
+Critically, support for efficient range queries---essential for analyzing continuous scientific
+variables---is still missing.
+As a result, users are often forced to perform expensive post-processing
+sorts~\cite{Dong2016,Sunda2013:HykSort,Rasmu2011:TritonSort}, reintroducing the I/O bottlenecks
+that in-situ techniques aim to eliminate.
 % The explosive growth in scientific data volumes has made in-situ analytics an essential strategy
 % for reducing I/O overhead and accelerating time-to-insight. While widely used for visualization
 % and occasionally adopted for data transformation or staging, current in-situ systems are
@@ -67,16 +70,18 @@ I/O bottlenecks that in-situ techniques aim to eliminate.
 % synchronization delays. As a result, performance tuning remains ad-hoc and reactive, lacking the
 % infrastructure for targeted, context-aware introspection during execution.
 
-Achieving high utilization remains challenging for many real-world BSP workloads.
-In adaptive mesh codes, for instance, workload characteristics evolve dynamically as the simulation
-tracks changing physics, making it difficult to model or predict execution behavior.
+Achieving high utilization remains challenging for many real-world BSP
+workloads~\cite{Klenk2017:OverviewMPICharacteristics}.
+In adaptive mesh codes~\cite{Dubey2014:Survey}, for instance, workload characteristics evolve
+dynamically as the simulation tracks changing physics, making it difficult to model or predict
+execution behavior.
 Even basic questions about compute load distribution, placement sensitivity, and communication
 overheads often lack clear answers.
 These effects are further confounded by environmental variability such as hardware faults or system
 noise—factors that can only be disentangled through in-situ observation.
-Traditional reliance on fine-grained tracing complicates diagnosis: traces are large, opaque, and
-difficult to query, while profiling tools lack the granularity to expose short-lived slowdowns that
-affect global synchronization.
+Traditional reliance on fine-grained tracing~\cite{Wylie2025:15Years,Eschw2012:OTF2} complicates
+diagnosis: traces are large, opaque, and difficult to query, while profiling tools lack the
+granularity to expose short-lived slowdowns that affect global synchronization.
 
 \section{Our Work: A Comprehensive Study of BSP Efficiency}
 
@@ -94,11 +99,12 @@ The following sections describe each effort in turn.
 
 \paragraph{Motivation}
 Scientific analyses on continuous physical properties such as wavefronts or energy bands require
-efficient range queries.
-Existing workflows typically achieve this by using a bulk sort to reorder data after it is written,
-at the cost of multiple additional passes over the data.
-While in-situ ingestion systems exist for hash-partitioned layouts, it is unsuitable for range
-queries as it destroys key locality in the on-disk layout.
+efficient range queries~\cite{Byna2012}.
+Existing workflows typically achieve this by using a bulk
+sort~\cite{Dong2016,Sunda2013:HykSort,Rasmu2011:TritonSort} to reorder data after it is written, at
+the cost of multiple additional passes over the data.
+While in-situ ingestion systems exist for hash-partitioned layouts~\cite{Zheng2018:DeltaFS}, they
+are unsuitable for range queries as hash-partitioning destroys key locality in the on-disk layout.
 Our goal was to build a completely in-situ ingestion mechanism for range queries, that did not
 require any reordering of on-disk data.
 
@@ -131,10 +137,10 @@ making it 5$\times$ faster than prior work.
 % mechanisms that would incorporate fine-grained runtime telemetry from these codes, and incorporate
 % them into a placement policy that conferred meaningful runtime gains.
 Poor utilization in adaptive mesh codes is a well-known problem, typically characterized as load
-imbalance.
+imbalance~\cite{Klenk2017:OverviewMPICharacteristics,Dubey2014:Survey,Burst2008:ALPS}.
 We aimed to design placement policies that would incorporate runtime telemetry into placement
-decisions---not only to mitigate load imbalance, but also to balance other properties that
-materially affected application runtime.
+decisions---not only to mitigate load imbalance, but also to balance other properties that we found
+to materially affect application runtime.
 
 \paragraph{Challenges}
 Our efforts to collect and interpret telemetry, and create models of code performance that could be
@@ -234,23 +240,26 @@ feedback.
 % overlay network with distributed query planning and a async control path.
 
 \paragraph{Challenges}
-The core research challenge is designing the first query-driven real-time observability system for
+To the best of our knowledge, ORCA is the first query-driven real-time observability system for
 tightly-coupled parallel applications.
-This requires solving novel problems across the stack: from high-throughput, low-overhead data
+This requires solving challenges across the stack: from high-throughput, low-overhead data
 collection and scalable in-situ query processing, to the design of a control path that provides
-timestep-consistent semantics for an asynchronous operator.
-% ORCA aims to bridge the semantics between a synchronous execution and an asynchronous human
-% operator, enabling high-performance ingestion and in-memory distributed analytics with
-% timestep-consistent control and aggregation semantics. There is no existing template for such a
-% real-time observability system in tightly coupled parallel systems. No existing template exists
-% for cluster-scale streaming analytics. The system requires complex distributed coordination with
-% multiple interacting components while meeting strict performance requirements to avoid impacting
-% application critical paths. No existing template exists for cluster-scale streaming analytics. The
-% system requires complex distributed coordination with multiple interacting components while
-% meeting strict performance requirements to avoid impacting application critical paths. No existing
-% template exists for cluster-scale streaming analytics. The system requires complex distributed
-% coordination with multiple interacting components while meeting strict performance requirements to
-% avoid impacting application critical paths.
+timestep-consistent semantics for an asynchronous human operator.
+% This requires solving challenges across the stack: from high-throughput, low-overhead data
+% collection and scalable in-situ query processing, to the design of a control path that provides
+% timestep-consistent semantics for an asynchronous human operator. ORCA aims to bridge the
+% semantics between a synchronous execution and an asynchronous human operator, enabling
+% high-performance ingestion and in-memory distributed analytics with timestep-consistent control
+% and aggregation semantics. There is no existing template for such a real-time observability system
+% in tightly coupled parallel systems. No existing template exists for cluster-scale streaming
+% analytics. The system requires complex distributed coordination with multiple interacting
+% components while meeting strict performance requirements to avoid impacting application critical
+% paths. No existing template exists for cluster-scale streaming analytics. The system requires
+% complex distributed coordination with multiple interacting components while meeting strict
+% performance requirements to avoid impacting application critical paths. No existing template
+% exists for cluster-scale streaming analytics. The system requires complex distributed coordination
+% with multiple interacting components while meeting strict performance requirements to avoid
+% impacting application critical paths.
 
 \section{Thesis Statement}
 
@@ -259,11 +268,15 @@ timestep-consistent semantics for an asynchronous operator.
 % organization to performance variability, can be unified and solved by reframing them as problems
 % of distributed state reconstruction.
 \begin{tcolorbox}[thesisbox]
-  This thesis argues that persistent efficiency bottlenecks in \emph{Bulk Synchronous Parallel} (BSP)
-  systems—across both the compute and data paths—stem from a missing abstraction: the ability to
-  reconstruct distributed application state in real time.
-  It proposes ORCA, a programmable observability and control plane, as a unifying solution that fills
-  this gap using declarative, query-driven dataflows.
+  % This thesis argues that persistent efficiency bottlenecks in \emph{Bulk Synchronous Parallel}
+  % (BSP) systems—across both the compute and data paths—stem from a missing abstraction: the ability
+  % to reconstruct distributed application state in real time. It proposes ORCA, a programmable
+  % observability and control plane, as a unifying solution that fills this gap using declarative,
+  % query-driven dataflows.
+  This thesis argues that persistent efficiency bottlenecks in \emph{Bulk Synchronous Parallel}
+  (BSP) systems are fundamentally visibility problems, stemming from an inability to reconstruct global
+  views from distributed local state in real time, and proposes a programmable, query-driven
+  observability and control plane to fill this gap.
 \end{tcolorbox}
 % \end{quote}
 

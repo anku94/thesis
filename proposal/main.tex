@@ -2,7 +2,8 @@
 \documentclass[11pt,oneside,article]{memoir}
 
 \newcommand{\thesisTitle}{
-    Unifying Bulk-Synchronous Parallel Observability Paradigms Using Relational Dataflows
+    % Unifying Bulk-Synchronous Parallel Observability Paradigms Using Relational Dataflows
+    A Unified Approach to Bulk-Synchronous Parallel Observability Using Relational Dataflows
 }
 \newcommand{\thesisAuthor}{Ankush Jain}
 
@@ -66,19 +67,19 @@
   \clearfield{note}%
   \clearfield{language}%
   \clearfield{urldate}%
-  \clearfield{booktitle}%
+  \clearfield{eventtitle}%
+  % \clearfield{booktitle}%
   \clearfield{issn}%
   \clearfield{isbn}%
   \clearfield{location}%
   \clearfield{address}%
   \clearfield{doi}%
   \clearfield{pages}%
-  \clearfield{series}%
-  \clearfield{location}%
+  % \clearfield{series}%
 }
 
 % clear both url and urldate in biblatex
-\renewbibmacro*{url+urldate}{}
+\renewbibmacro*{url+urldate}{\printfield{url}}
 \renewbibmacro*{publisher+location+date}{\printdate}
 
 % For terse references
@@ -96,8 +97,12 @@
 ]{caption}
 \usepackage{subcaption}
 
+% For math symbols
+\usepackage{amsmath}
+\usepackage{amssymb}
 %%% --- Commands ---
 \newcommand{\ga}[1]{\textcolor{red!70!black}{@GA: #1}}
+\newcommand{\aj}[1]{\textcolor{blue!70!black}{@AJ: #1}}
 
 %%% --- Spacing and Counters ---
 \OnehalfSpacing{} % line spacing
