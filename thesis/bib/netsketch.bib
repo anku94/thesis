@@ -1,0 +1,384 @@
+@misc{:TAUUserGuide,
+  title = {{{TAU User Guide}}},
+  url = {https://web.ics.purdue.edu/~aai/TAU/tau-usersguide.pdf}
+}
+
+@inproceedings{Agarwal2022:HeteroSketchCoordinatingNetworkwide,
+  title = {\$\{\$\vphantom\}{{HeteroSketch}}\$\vphantom\{\}\$: {{Coordinating Network-wide Monitoring}} in {{Heterogeneous}} and {{Dynamic Networks}}},
+  booktitle = {19th {{USENIX Symposium}} on {{Networked Systems Design}} and {{Implementation}} ({{NSDI}} 22)},
+  author = {Agarwal, Anup and Liu, Zaoxing and Seshan, Srinivasan},
+  date = {2022},
+  pages = {719--741}
+}
+
+@online{Burgohai:ReplicationLinearizabilityDistributed,
+  title = {Replication and {{Linearizability}} in {{Distributed Systems}}},
+  author = {Burgohain, Chiranjeeb},
+  url = {https://medium.com/swlh/replication-and-linearizability-in-distributed-systems-cd9036ea7b40}
+}
+
+@inproceedings{Burke2021:PRISM,
+  title = {{{PRISM}}: {{Rethinking}} the {{RDMA Interface}} for {{Distributed Systems}}},
+  shorttitle = {{{PRISM}}},
+  booktitle = {Proceedings of the {{ACM SIGOPS}} 28th {{Symposium}} on {{Operating Systems Principles}}},
+  author = {Burke, Matthew and Dharanipragada, Sowmya and Joyner, Shannon and Szekeres, Adriana and Nelson, Jacob and Zhang, Irene and Ports, Dan R. K.},
+  date = {2021-10-26},
+  series = {{{SOSP}} '21},
+  pages = {228--242},
+  publisher = {Association for Computing Machinery},
+  location = {New York, NY, USA},
+  doi = {10.1145/3477132.3483587},
+  url = {https://dl.acm.org/doi/10.1145/3477132.3483587},
+  urldate = {2023-07-27},
+  abstract = {Remote Direct Memory Access (RDMA) has been used to accelerate a variety of distributed systems, by providing low-latency, CPU-bypassing access to a remote host's memory. However, most of the distributed protocols used in these systems cannot easily be expressed in terms of the simple memory READs and WRITEs provided by RDMA. As a result, designers face a choice between introducing additional protocol complexity (e.g., additional round trips) or forgoing the benefits of RDMA entirely. This paper argues that an extension to the RDMA interface can resolve this dilemma. We introduce the PRISM interface, which adds four new primitives: indirection, allocation, enhanced compare-and-swap, and operation chaining. These increase the expressivity of the RDMA interface, while still being implementable using the same underlying hardware features. We show their utility by designing three new applications using PRISM primitives, that require little to no server-side CPU involvement: (1) PRISM-KV, a key-value store; (2) PRISM-RS, a replicated block store; and (3) PRISM-TX, a distributed transaction protocol. Using a software-based implementation of the PRISM primitives, we show that these systems outperform prior RDMA-based equivalents.},
+  isbn = {978-1-4503-8709-5},
+  keywords = {distributed systems,RDMA,remote memory access},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RDMAetc/2021_burke_et_al_prism.pdf}
+}
+
+@inproceedings{Burke2021:PRISMRethinkingRDMA,
+  title = {{{PRISM}}: {{Rethinking}} the {{RDMA Interface}} for {{Distributed Systems}}},
+  booktitle = {Proceedings of the {{ACM SIGOPS}} 28th {{Symposium}} on {{Operating Systems Principles}}},
+  author = {Burke, Matthew and Dharanipragada, Sowmya and Joyner, Shannon and Szekeres, Adriana and Nelson, Jacob and Zhang, Irene and Ports, Dan RK},
+  date = {2021},
+  pages = {228--242}
+}
+
+@inproceedings{Chowdhur2012:CoflowNetworkingAbstraction,
+  title = {Coflow: {{A}} Networking Abstraction for Cluster Applications},
+  booktitle = {Proceedings of the 11th {{ACM Workshop}} on {{Hot Topics}} in {{Networks}}},
+  author = {Chowdhury, Mosharaf and Stoica, Ion},
+  date = {2012},
+  pages = {31--36}
+}
+
+@inproceedings{Chowdhur2014:EfficientCoflowScheduling,
+  title = {Efficient Coflow Scheduling with Varys},
+  booktitle = {Proceedings of the 2014 {{ACM}} Conference on {{SIGCOMM}}},
+  author = {Chowdhury, Mosharaf and Zhong, Yuan and Stoica, Ion},
+  date = {2014},
+  pages = {443--454}
+}
+
+@article{Dubey:StructuredAdaptiveMesh,
+  entrysubtype = {magazine},
+  title = {Structured {{Adaptive Mesh Refinement Adaptations}} to {{Retain Performance Portability With Increasing Heterogeneity}}},
+  author = {Dubey, Anshu},
+  journaltitle = {IEEE Computing in Science \& Engineering},
+  url = {https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=5992}
+}
+
+@inproceedings{Fireston2018:AzureAcceleratedNetworking,
+  title = {Azure {{Accelerated Networking}}:\$\{\$\vphantom\}{{SmartNICs}}\$\vphantom\{\}\$ in the {{Public Cloud}}},
+  booktitle = {15th {{USENIX Symposium}} on {{Networked Systems Design}} and {{Implementation}} ({{NSDI}} 18)},
+  author = {Firestone, Daniel and Putnam, Andrew and Mundkur, Sambhrama and Chiou, Derek and Dabagh, Alireza and Andrewartha, Mike and Angepat, Hari and Bhanu, Vivek and Caulfield, Adrian and Chung, Eric and others},
+  date = {2018},
+  pages = {51--66}
+}
+
+@inproceedings{Garg2021:PerfLensDatadrivenPerformance,
+  title = {{{PerfLens}}: A Data-Driven Performance Bug Detection and Fix Platform},
+  booktitle = {Proceedings of the 10th {{ACM SIGPLAN International Workshop}} on the {{State Of}} the {{Art}} in {{Program Analysis}}},
+  author = {Garg, Spandan and Moghaddam, Roshanak Zilouchian and Sundaresan, Neel and Wu, Chen},
+  date = {2021},
+  pages = {19--24}
+}
+
+@inproceedings{Ghasemir2022:PacketOrderMatters,
+  title = {Packet {{Order Matters}}! {{Improving Application Performance}} by {{Deliberately Delaying Packets}}},
+  booktitle = {19th {{USENIX Symposium}} on {{Networked Systems Design}} and {{Implementation}} ({{NSDI}} 22)},
+  author = {Ghasemirahni, Hamid and Barbette, Tom and Katsikas, Georgios P and Farshin, Alireza and Roozbeh, Amir and Girondi, Massimo and Chiesa, Marco and Maguire Jr, Gerald Q and Kostić, Dejan},
+  date = {2022},
+  pages = {807--827}
+}
+
+@article{Grandl2014:MultiresourcePackingCluster,
+  title = {Multi-Resource Packing for Cluster Schedulers},
+  author = {Grandl, Robert and Ananthanarayanan, Ganesh and Kandula, Srikanth and Rao, Sriram and Akella, Aditya},
+  date = {2014},
+  journaltitle = {ACM SIGCOMM Computer Communication Review},
+  volume = {44},
+  number = {4},
+  pages = {455--466},
+  publisher = {ACM New York, NY, USA}
+}
+
+@inproceedings{Grandl2016:GRAPHENEPackingDependencyAware,
+  title = {\$\{\$\vphantom\}{{GRAPHENE}}\$\vphantom\{\}\$: {{Packing}} and \$\{\$\vphantom\}{{Dependency-Aware}}\$\vphantom\{\}\$ {{Scheduling}} for \$\{\$\vphantom\}{{Data-Parallel}}\$\vphantom\{\}\$ {{Clusters}}},
+  booktitle = {12th {{USENIX Symposium}} on {{Operating Systems Design}} and {{Implementation}} ({{OSDI}} 16)},
+  author = {Grandl, Robert and Kandula, Srikanth and Rao, Sriram and Akella, Aditya and Kulkarni, Janardhan},
+  date = {2016},
+  pages = {81--97}
+}
+
+@inproceedings{Hugerich2021:NohopInnetworkDistributed,
+  title = {No-Hop: {{In-network Distributed Hash Tables}}},
+  booktitle = {Proceedings of the {{Symposium}} on {{Architectures}} for {{Networking}} and {{Communications Systems}}},
+  author = {Hügerich, Lily and Shukla, Apoorv and Smaragdakis, Georgios},
+  date = {2021},
+  pages = {80--87}
+}
+
+@inproceedings{Jain2025:AMR,
+  title = {Lessons from {{Profiling}} and {{Optimizing Placement}} in {{AMR Codes}}},
+  shorttitle = {{{AMR}} Placement},
+  booktitle = {2025 {{IEEE International Conference}} on {{Cluster Computing}} ({{CLUSTER}})},
+  author = {Jain, Ankush and Cranor, Chuck and Zheng, Qing and Manno, Dominic and Amvrosiadis, George and Grider, Gary},
+  date = {2025-09-XX},
+  publisher = {IEEE},
+  location = {Edinburgh, UK},
+  langid = {english}
+}
+
+@inproceedings{Jajoo2019:YourCoflowHas,
+  title = {Your Coflow Has Many Flows: Sampling Them for Fun and Speed},
+  booktitle = {2019 {{USENIX Annual Technical Conference}} ({{USENIX ATC}} 19)},
+  author = {Jajoo, Akshay and Hu, Y Charlie and Lin, Xiaojun},
+  date = {2019},
+  pages = {833--848}
+}
+
+@article{Jalapart2015:NetworkawareSchedulingDataparallel,
+  title = {Network-Aware Scheduling for Data-Parallel Jobs: {{Plan}} When You Can},
+  author = {Jalaparti, Virajith and Bodik, Peter and Menache, Ishai and Rao, Sriram and Makarychev, Konstantin and Caesar, Matthew},
+  date = {2015},
+  journaltitle = {ACM SIGCOMM Computer Communication Review},
+  volume = {45},
+  number = {4},
+  pages = {407--420},
+  publisher = {ACM New York, NY, USA}
+}
+
+@inproceedings{Jin2018:NetChainScaleFreeSubRTT,
+  title = {\$\{\$\vphantom\}{{NetChain}}\$\vphantom\{\}\$:\$\{\$\vphantom\}{{Scale-Free}}\$\vphantom\{\}\$\$\{\$\vphantom\}{{Sub-RTT}}\$\vphantom\{\}\$ {{Coordination}}},
+  booktitle = {15th {{USENIX Symposium}} on {{Networked Systems Design}} and {{Implementation}} ({{NSDI}} 18)},
+  author = {Jin, Xin and Li, Xiaozhou and Zhang, Haoyu and Foster, Nate and Lee, Jeongkeun and Soulé, Robert and Kim, Changhoon and Stoica, Ion},
+  date = {2018},
+  pages = {35--49}
+}
+
+@inproceedings{Killian2010:FindingLatentPerformance,
+  title = {Finding Latent Performance Bugs in Systems Implementations},
+  booktitle = {Proceedings of the Eighteenth {{ACM SIGSOFT}} International Symposium on {{Foundations}} of Software Engineering},
+  author = {Killian, Charles and Nagaraj, Karthik and Pervez, Salman and Braud, Ryan and Anderson, James W and Jhala, Ranjit},
+  date = {2010},
+  pages = {17--26}
+}
+
+@inproceedings{Kong2022:CollieFindingPerformance,
+  title = {Collie: {{Finding Performance Anomalies}} in \$\{\$\vphantom\}{{RDMA}}\$\vphantom\{\}\$ {{Subsystems}}},
+  booktitle = {19th {{USENIX Symposium}} on {{Networked Systems Design}} and {{Implementation}} ({{NSDI}} 22)},
+  author = {Kong, Xinhao and Zhu, Yibo and Zhou, Huaping and Jiang, Zhuo and Ye, Jianxi and Guo, Chuanxiong and Zhuo, Danyang},
+  date = {2022},
+  pages = {287--305}
+}
+
+@inproceedings{Lee2021:MIND,
+  title = {{{MIND}}: {{In-Network Memory Management}} for {{Disaggregated Data Centers}}},
+  shorttitle = {{{MIND}}},
+  booktitle = {Proceedings of the {{ACM SIGOPS}} 28th {{Symposium}} on {{Operating Systems Principles}}},
+  author = {Lee, Seung-seob and Yu, Yanpeng and Tang, Yupeng and Khandelwal, Anurag and Zhong, Lin and Bhattacharjee, Abhishek},
+  date = {2021-10-26},
+  series = {{{SOSP}} '21},
+  pages = {488--504},
+  publisher = {Association for Computing Machinery},
+  location = {New York, NY, USA},
+  doi = {10.1145/3477132.3483561},
+  url = {https://dl.acm.org/doi/10.1145/3477132.3483561},
+  urldate = {2023-07-27},
+  abstract = {Memory disaggregation promises transparent elasticity, high resource utilization and hardware heterogeneity in data centers by physically separating memory and compute into network-attached resource "blades". However, existing designs achieve performance at the cost of resource elasticity, restricting memory sharing to a single compute blade to avoid costly memory coherence traffic over the network. In this work, we show that emerging programmable network switches can enable an efficient shared memory abstraction for disaggregated architectures by placing memory management logic in the network fabric. We find that centralizing memory management in the network permits bandwidth and latency-efficient realization of in-network cache coherence protocols, while programmable switch ASICs support other memory management logic at line-rate. We realize these insights into MIND1, an in-network memory management unit for rack-scale disaggregation. MIND enables transparent resource elasticity while matching the performance of prior memory disaggregation proposals for real-world workloads.},
+  isbn = {978-1-4503-8709-5},
+  keywords = {Memory disaggregation,Programmable networks},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch/2021_lee_et_al_mind.pdf}
+}
+
+@inproceedings{Li2020:PegasusToleratingSkewed,
+  title = {Pegasus: {{Tolerating Skewed Workloads}} in {{Distributed Storage}} with \$\{\$\vphantom\}{{In-Network}}\$\vphantom\{\}\$ {{Coherence Directories}}},
+  booktitle = {14th {{USENIX Symposium}} on {{Operating Systems Design}} and {{Implementation}} ({{OSDI}} 20)},
+  author = {Li, Jialin and Nelson, Jacob and Michael, Ellis and Jin, Xin and Ports, Dan RK},
+  date = {2020},
+  pages = {387--406}
+}
+
+@inproceedings{Liu2016:OneSketchRule,
+  title = {One Sketch to Rule Them All: {{Rethinking}} Network Flow Monitoring with Univmon},
+  booktitle = {Proceedings of the 2016 {{ACM SIGCOMM Conference}}},
+  author = {Liu, Zaoxing and Manousis, Antonis and Vorsanger, Gregory and Sekar, Vyas and Braverman, Vladimir},
+  date = {2016},
+  pages = {101--114}
+}
+
+@inproceedings{McGeer2010:NetworkTestbedMapping,
+  title = {The Network Testbed Mapping Problem},
+  booktitle = {International {{Conference}} on {{Testbeds}} and {{Research Infrastructures}}},
+  author = {McGeer, Rick and Andersen, David G and Schwab, Stephen},
+  date = {2010},
+  pages = {383--398},
+  publisher = {Springer}
+}
+
+@inproceedings{Monga2021:BirdsofaFeatherFlockTogether,
+  title = {Birds of a {{Feather Flock Together}}: {{Scaling RDMA RPCs}} with {{Flock}}},
+  shorttitle = {Birds of a {{Feather Flock Together}}},
+  booktitle = {Proceedings of the {{ACM SIGOPS}} 28th {{Symposium}} on {{Operating Systems Principles}}},
+  author = {Monga, Sumit Kumar and Kashyap, Sanidhya and Min, Changwoo},
+  date = {2021-10-26},
+  series = {{{SOSP}} '21},
+  pages = {212--227},
+  publisher = {Association for Computing Machinery},
+  location = {New York, NY, USA},
+  doi = {10.1145/3477132.3483576},
+  url = {https://dl.acm.org/doi/10.1145/3477132.3483576},
+  urldate = {2023-07-27},
+  abstract = {RDMA-capable networks are gaining traction with datacenter deployments due to their high throughput, low latency, CPU efficiency, and advanced features, such as remote memory operations. However, efficiently utilizing RDMA capability in a common setting of high fan-in, fan-out asymmetric network topology is challenging. For instance, using RDMA programming features comes at the cost of connection scalability, which does not scale with increasing cluster size. To address that, several works forgo some RDMA features by only focusing on conventional RPC APIs. In this work, we strive to exploit the full capability of RDMA, while scaling the number of connections regardless of the cluster size. We present Flock, a communication framework for RDMA networks that uses hardware provided reliable connection. Using a partially shared model, Flock departs from the conventional RDMA design by enabling connection sharing among threads, which provides significant performance improvements contrary to the widely held belief that connection sharing deteriorates performance. At its core, Flock uses a connection handle abstraction for connection multiplexing; a new coalescing-based synchronization approach for efficient network utilization; and a load-control mechanism for connections with symbiotic send-recv scheduling, which reduces the synchronization overheads associated with connection sharing along with ensuring fair utilization of network connections. We demonstrate the benefits for a distributed transaction processing system and an in-memory index, where it outperforms other RPC systems by up to 88\% and 50\%, respectively, with significant reductions in median and tail latency.},
+  isbn = {978-1-4503-8709-5},
+  keywords = {Network hardware,Remote Memory Access},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch/2021_monga_et_al_birds_of_a_feather_flock_together.pdf}
+}
+
+@inproceedings{Ousterho2013:SparrowDistributedLow,
+  title = {Sparrow: Distributed, Low Latency Scheduling},
+  booktitle = {Proceedings of the {{Twenty-Fourth ACM Symposium}} on {{Operating Systems Principles}}},
+  author = {Ousterhout, Kay and Wendell, Patrick and Zaharia, Matei and Stoica, Ion},
+  date = {2013},
+  pages = {69--84}
+}
+
+@inproceedings{Ousterho2017:MonotasksArchitectingPerformance,
+  title = {Monotasks: {{Architecting}} for Performance Clarity in Data Analytics Frameworks},
+  booktitle = {Proceedings of the 26th {{Symposium}} on {{Operating Systems Principles}}},
+  author = {Ousterhout, Kay and Canel, Christopher and Ratnasamy, Sylvia and Shenker, Scott},
+  date = {2017},
+  pages = {184--200}
+}
+
+@inproceedings{Ports2019:WhenShouldNetwork,
+  title = {When Should the Network Be the Computer?},
+  booktitle = {Proceedings of the {{Workshop}} on {{Hot Topics}} in {{Operating Systems}}},
+  author = {Ports, Dan RK and Nelson, Jacob},
+  date = {2019},
+  pages = {209--215}
+}
+
+@inproceedings{Romero2022:AcceleratingCollectiveCommunication,
+  title = {Accelerating {{Collective Communication}} in {{Data Parallel Training}} across {{Deep Learning Frameworks}}},
+  booktitle = {19th {{USENIX Symposium}} on {{Networked Systems Design}} and {{Implementation}} ({{NSDI}} 22)},
+  author = {Romero, Joshua and Yin, Junqi and Laanait, Nouamane and Xie, Bing and Young, M Todd and Treichler, Sean and Starchenko, Vitalii and Borisevich, Albina and Sergeev, Alex and Matheson, Michael},
+  date = {2022},
+  pages = {1027--1040}
+}
+
+@unpublished{Sapio2019:ScalingDistributedMachine,
+  title = {Scaling Distributed Machine Learning with In-Network Aggregation},
+  author = {Sapio, Amedeo and Canini, Marco and Ho, Chen-Yu and Nelson, Jacob and Kalnis, Panos and Kim, Changhoon and Krishnamurthy, Arvind and Moshref, Masoud and Ports, Dan RK and Richtárik, Peter},
+  date = {2019},
+  eprint = {1903.06701},
+  eprinttype = {arXiv}
+}
+
+@article{Schornba2018:ExtremescaleBlockstructuredAdaptive,
+  title = {Extreme-Scale Block-Structured Adaptive Mesh Refinement},
+  author = {Schornbaum, Florian and Rüde, Ulrich},
+  date = {2018},
+  journaltitle = {SIAM Journal on Scientific Computing},
+  volume = {40},
+  number = {3},
+  pages = {C358--C387},
+  publisher = {SIAM}
+}
+
+@article{Severini2021:NetivusManifestoMaking,
+  title = {The {{Netivus Manifesto}}: Making Collaborative Network Management Easier for the Rest of Us},
+  author = {Severini, Joseph and Mysore, Radhika Niranjan and Sekar, Vyas and Banerjee, Sujata and Reiter, Michael K},
+  date = {2021},
+  journaltitle = {ACM SIGCOMM Computer Communication Review},
+  volume = {51},
+  number = {2},
+  pages = {10--17},
+  publisher = {ACM New York, NY, USA}
+}
+
+@inproceedings{Sidler2020:StRoMSmartRemote,
+  title = {{{StRoM}}: Smart Remote Memory},
+  booktitle = {Proceedings of the {{Fifteenth European Conference}} on {{Computer Systems}}},
+  author = {Sidler, David and Wang, Zeke and Chiosa, Monica and Kulkarni, Amit and Alonso, Gustavo},
+  date = {2020},
+  pages = {1--16}
+}
+
+@misc{Spear:IntroductionTAUPerformance,
+  title = {Introduction to {{TAU Performance System}}},
+  author = {Spear, Wyatt},
+  url = {https://www.alcf.anl.gov/files/taucq12-05.pdf}
+}
+
+@inproceedings{VanS2009:ScalabilityChallenges,
+  title = {Scalability Challenges for Massively Parallel {{AMR}} Applications},
+  shorttitle = {{{ScalabilityChallenges}}},
+  booktitle = {2009 {{IEEE International Symposium}} on {{Parallel}} \& {{Distributed Processing}}},
+  author = {Van Straalen, Brian and Shalf, John and Ligocki, Terry and Keen, Noel and Yang, Woo-Sun},
+  date = {2009},
+  pages = {1--12},
+  publisher = {IEEE}
+}
+
+@inproceedings{Wang2010:CThroughParttimeOptics,
+  title = {C-{{Through}}: {{Part-time}} Optics in Data Centers},
+  booktitle = {Proceedings of the {{ACM SIGCOMM}} 2010 {{Conference}}},
+  author = {Wang, Guohui and Andersen, David G and Kaminsky, Michael and Papagiannaki, Konstantina and Ng, TS Eugene and Kozuch, Michael and Ryan, Michael},
+  date = {2010},
+  pages = {327--338}
+}
+
+@article{Xu2020:SchedulingMixcoflowsDatacenter,
+  title = {Scheduling Mix-Coflows in Datacenter Networks},
+  author = {Xu, Renhai and Li, Wenxin and Li, Keqiu and Zhou, Xiaobo and Qi, Heng},
+  date = {2020},
+  journaltitle = {IEEE Transactions on Network and Service Management},
+  volume = {18},
+  number = {2},
+  pages = {2002--2015},
+  publisher = {IEEE}
+}
+
+@inproceedings{Zeno2022:SwiShDistributedShared,
+  title = {\$\{\$\vphantom\}{{SwiSh}}\$\vphantom\{\}\$: {{Distributed Shared State Abstractions}} for {{Programmable Switches}}},
+  booktitle = {19th {{USENIX Symposium}} on {{Networked Systems Design}} and {{Implementation}} ({{NSDI}} 22)},
+  author = {Zeno, Lior and Ports, Dan RK and Nelson, Jacob and Kim, Daehyeok and Landau-Feibish, Shir and Keidar, Idit and Rinberg, Arik and Rashelbach, Alon and De-Paula, Igor and Silberstein, Mark},
+  date = {2022},
+  pages = {171--191}
+}
+
+@inproceedings{Zhang2016:CodaAutomaticallyIdentifying,
+  title = {Coda: {{Toward}} Automatically Identifying and Scheduling Coflows in the Dark},
+  booktitle = {Proceedings of the 2016 {{ACM SIGCOMM Conference}}},
+  author = {Zhang, Hong and Chen, Li and Yi, Bairen and Chen, Kai and Chowdhury, Mosharaf and Geng, Yanhui},
+  date = {2016},
+  pages = {160--173}
+}
+
+@inproceedings{Zhang2021:DemikernelDatapathOS,
+  title = {The {{Demikernel Datapath OS Architecture}} for {{Microsecond-scale Datacenter Systems}}},
+  booktitle = {Proceedings of the {{ACM SIGOPS}} 28th {{Symposium}} on {{Operating Systems Principles}}},
+  author = {Zhang, Irene and Raybuck, Amanda and Patel, Pratyush and Olynyk, Kirk and Nelson, Jacob and Leija, Omar S. Navarro and Martinez, Ashlie and Liu, Jing and Simpson, Anna Kornfeld and Jayakar, Sujay and Penna, Pedro Henrique and Demoulin, Max and Choudhury, Piali and Badam, Anirudh},
+  date = {2021-10-26},
+  series = {{{SOSP}} '21},
+  pages = {195--211},
+  publisher = {Association for Computing Machinery},
+  location = {New York, NY, USA},
+  doi = {10.1145/3477132.3483569},
+  url = {https://dl.acm.org/doi/10.1145/3477132.3483569},
+  urldate = {2023-07-27},
+  abstract = {Datacenter systems and I/O devices now run at single-digit microsecond latencies, requiring ns-scale operating systems. Traditional kernel-based operating systems impose an unaffordable overhead, so recent kernel-bypass OSes [73] and libraries [23] eliminate the OS kernel from the I/O datapath. However, none of these systems offer a general-purpose datapath OS replacement that meet the needs of μs-scale systems.' AB@This paper proposes Demikernel, a flexible datapath OS and architecture designed for heterogenous kernel-bypass devices and μs-scale datacenter systems. We build two prototype Demikernel OSes and show that minimal effort is needed to port existing μs-scale systems. Once ported, Demikernel lets applications run across heterogenous kernel-bypass devices with ns-scale overheads and no code changes.},
+  isbn = {978-1-4503-8709-5},
+  keywords = {datacenters,kernel bypass,operating system},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RDMAetc/2021_zhang_et_al_the_demikernel_datapath_os_architecture_for_microsecond-scale_datacenter_systems.pdf}
+}
+
+@inproceedings{Zhou2022:EvolvableNetworkTelemetry,
+  title = {Evolvable {{Network Telemetry}} at {{Facebook}}},
+  booktitle = {19th {{USENIX Symposium}} on {{Networked Systems Design}} and {{Implementation}} ({{NSDI}} 22)},
+  author = {Zhou, Yang and Zhang, Ying and Yu, Minlan and Wang, Guangyu and Cao, Dexter and Sung, Eric and Wong, Starsky},
+  date = {2022},
+  pages = {961--975}
+}

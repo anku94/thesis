@@ -1,0 +1,259 @@
+@online{:JohnDoyle,
+  title = {John {{C}}. {{Doyle}}},
+  url = {https://doyle.caltech.edu/Main_Page},
+  urldate = {2023-07-14},
+  file = {/Users/schwifty/Zotero/storage/M6L4FXDW/Main_Page.html}
+}
+
+@article{Chiang2007:LayeringOptimizationDecomposition,
+  title = {Layering as {{Optimization Decomposition}}: {{A Mathematical Theory}} of {{Network Architectures}}},
+  shorttitle = {Layering as {{Optimization Decomposition}}},
+  author = {Chiang, Mung and Low, Steven H. and Calderbank, A. Robert and Doyle, John C.},
+  date = {2007-01},
+  journaltitle = {Proceedings of the IEEE},
+  volume = {95},
+  number = {1},
+  pages = {255--312},
+  issn = {1558-2256},
+  doi = {10.1109/JPROC.2006.887322},
+  abstract = {Network protocols in layered architectures have historically been obtained on an ad hoc basis, and many of the recent cross-layer designs are also conducted through piecemeal approaches. Network protocol stacks may instead be holistically analyzed and systematically designed as distributed solutions to some global optimization problems. This paper presents a survey of the recent efforts towards a systematic understanding of “layering” as “optimization decomposition,” where the overall communication network is modeled by a generalized network utility maximization problem, each layer corresponds to a decomposed subproblem, and the interfaces among layers are quantified as functions of the optimization variables coordinating the subproblems. There can be many alternative decompositions, leading to a choice of different layering architectures. This paper surveys the current status of horizontal decomposition into distributed computation, and vertical decomposition into functional modules such as congestion control, routing, scheduling, random access, power control, and channel coding. Key messages and methods arising from many recent works are summarized, and open issues discussed. Through case studies, it is illustrated how “Layering as Optimization Decomposition” provides a common language to think about modularization in the face of complex, networked interactions, a unifying, top-down approach to design protocol stacks, and a mathematical theory of network architectures.},
+  eventtitle = {Proceedings of the {{IEEE}}},
+  keywords = {Ad hoc network,channel coding,Communication networks,Computer architecture,computer network,congestion control,Cross layer design,cross-layer design,Design optimization,distributed algorithm,Distributed computing,feedback control,game theory,Internet,Lagrange duality,medium access control (MAC),network utility maximization (NUM),optimization,power control,Power control,Processor scheduling,Protocols,r everse-engineering,routing,Routing,scheduling,stochastic networks,transmission control protocol (TCP)/Internet protocol (IP),Utility programs,wireless communications},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2007_chiang_et_al_layering_as_optimization_decomposition.pdf;/Users/schwifty/Zotero/storage/37PMBKC4/4118456.html}
+}
+
+@inproceedings{Draxler2017:SONATAServiceprogramming,
+  title = {{{SONATA}}: {{Service}} Programming and Orchestration for Virtualized Software Networks},
+  shorttitle = {{{SONATA}}},
+  booktitle = {2017 {{IEEE International Conference}} on {{Communications Workshops}} ({{ICC Workshops}})},
+  author = {Dräxler, Sevil and Karl, Holger and Peuster, Manuel and Kouchaksaraei, Hadi Razzaghi and Bredel, Michael and Lessmann, Johannes and Soenen, Thomas and Tavernier, Wouter and Mendel-Brin, Sharon and Xilouris, George},
+  date = {2017-05},
+  pages = {973--978},
+  issn = {2474-9133},
+  doi = {10.1109/ICCW.2017.7962785},
+  abstract = {In conventional large-scale networks, creation and management of network services are costly and complex tasks that often consume a lot of resources, including time and manpower. Network softwarization and network function virtualization have been introduced to tackle these problems, aiming at decreasing costs and complexity of implementing new services, maintaining the implemented services, and managing available resources in service provisioning platforms and underlying infrastructures. To experience the full potential of these approaches, innovative development support tools and service provisioning environments are needed. To answer these needs, we introduce the architecture of the open-source SONATA system, a service programming, orchestration, and management framework. We present a development toolchain for virtualized network services, fully integrated with a service platform and orchestration system. We introduce the modular and flexible architecture of our system and discuss its main components and features, such as function- and service-specific managers that allow fine-grained service management, slicing support to facilitate multi-tenancy, recursiveness for improved scalability, and full-featured DevOps support.},
+  eventtitle = {2017 {{IEEE International Conference}} on {{Communications Workshops}} ({{ICC Workshops}})},
+  keywords = {Computer architecture,Debugging,Measurement,Monitoring,Programming,Software,Tools},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2017_dräxler_et_al_sonata.pdf;/Users/schwifty/Zotero/storage/4ERD4FPN/7962785.html}
+}
+
+@article{Hindman:MesosPlatformFineGrained,
+  title = {Mesos: {{A Platform}} for {{Fine-Grained Resource Sharing}} in the {{Data Center}}},
+  author = {Hindman, Benjamin and Konwinski, Andy and Zaharia, Matei and Ghodsi, Ali and Joseph, Anthony D and Katz, Randy and Shenker, Scott and Stoica, Ion},
+  abstract = {We present Mesos, a platform for sharing commodity clusters between multiple diverse cluster computing frameworks, such as Hadoop and MPI. Sharing improves cluster utilization and avoids per-framework data replication. Mesos shares resources in a fine-grained manner, allowing frameworks to achieve data locality by taking turns reading data stored on each machine. To support the sophisticated schedulers of today’s frameworks, Mesos introduces a distributed two-level scheduling mechanism called resource offers. Mesos decides how many resources to offer each framework, while frameworks decide which resources to accept and which computations to run on them. Our results show that Mesos can achieve near-optimal data locality when sharing the cluster among diverse frameworks, can scale to 50,000 (emulated) nodes, and is resilient to failures.},
+  langid = {english}
+}
+
+@inproceedings{Hindman2011:Mesosplatformfinegrained,
+  title = {Mesos: A Platform for Fine-Grained Resource Sharing in the Data Center},
+  shorttitle = {Mesos},
+  booktitle = {Proceedings of the 8th {{USENIX}} Conference on {{Networked}} Systems Design and Implementation},
+  author = {Hindman, Benjamin and Konwinski, Andy and Zaharia, Matei and Ghodsi, Ali and Joseph, Anthony D. and Katz, Randy and Shenker, Scott and Stoica, Ion},
+  date = {2011-03-30},
+  series = {{{NSDI}}'11},
+  pages = {295--308},
+  publisher = {USENIX Association},
+  location = {USA},
+  abstract = {We present Mesos, a platform for sharing commodity clusters between multiple diverse cluster computing frameworks, such as Hadoop and MPI. Sharing improves cluster utilization and avoids per-framework data replication. Mesos shares resources in a fine-grained manner, allowing frameworks to achieve data locality by taking turns reading data stored on each machine. To support the sophisticated schedulers of today's frameworks, Mesos introduces a distributed two-level scheduling mechanism called resource offers. Mesos decides how many resources to offer each framework, while frameworks decide which resources to accept and which computations to run on them. Our results show that Mesos can achieve near-optimal data locality when sharing the cluster among diverse frameworks, can scale to 50,000 (emulated) nodes, and is resilient to failures.},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2011_hindman_et_al_mesos.pdf}
+}
+
+@article{Hu2018:MulticontrollerBasedSoftwareDefined,
+  title = {Multi-Controller {{Based Software-Defined Networking}}: {{A Survey}}},
+  shorttitle = {Multi-Controller {{Based Software-Defined Networking}}},
+  author = {Hu, Tao and Guo, Zehua and Yi, Peng and Baker, Thar and Lan, Julong},
+  date = {2018},
+  journaltitle = {IEEE Access},
+  shortjournal = {IEEE Access},
+  volume = {6},
+  pages = {15980--15996},
+  issn = {2169-3536},
+  doi = {10.1109/ACCESS.2018.2814738},
+  url = {http://ieeexplore.ieee.org/document/8314783/},
+  urldate = {2023-07-14},
+  abstract = {Software-Defined Networking (SDN) is a novel network paradigm that enables flexible management for networks. As the network size increases, the single centralized controller cannot meet the increasing demand for flow processing. Thus, the promising solution for SDN with large-scale networks is the multi-controller. In this paper, we present a compressive survey for multi-controller research in SDN. First, we introduce the overview of multi-controller, including the origin of multi-controller and its challenges. Then, we classify multi-controller research into four aspects (scalability, consistency, reliability, load balancing) depending on the process of implementing the multi-controller. Finally, we propose some relevant research issues to deal with in the future and conclude the multi-controller research.},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2018_hu_et_al_multi-controller_based_software-defined_networking.pdf}
+}
+
+@inproceedings{Kim2015:Kineticverifiabledynamic,
+  title = {Kinetic: Verifiable Dynamic Network Control},
+  shorttitle = {Kinetic},
+  booktitle = {Proceedings of the 12th {{USENIX Conference}} on {{Networked Systems Design}} and {{Implementation}}},
+  author = {Kim, Hyojoon and Reich, Joshua and Gupta, Arpit and Shahbaz, Muhammad and Feamster, Nick and Clark, Russ},
+  date = {2015-05-04},
+  series = {{{NSDI}}'15},
+  pages = {59--72},
+  publisher = {USENIX Association},
+  location = {USA},
+  abstract = {Network conditions are dynamic; unfortunately, current approaches to configuring networks. Network operators need tools to express how a network's data-plane behavior should respond to a wide range of events and changing conditions, ranging from unexpected failures to shifting traffic patterns to planned maintenance. Yet, to update the network configuration today, operators typically rely on a combination of manual intervention and ad hoc scripts. In this paper, we present Kinetic, a domain specific language and network control system that enables operators to control their networks dynamically in a concise, intuitive way. Kinetic also automatically verifies the correctness of these control programs with respect to user-specified temporal properties. Our user study of Kinetic with several hundred network operators demonstrates that Kinetic is intuitive and usable, and our performance evaluation shows that realistic Kinetic programs scale well with the number of policies and the size of the network.},
+  isbn = {978-1-931971-21-8},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2015_kim_et_al_kinetic.pdf}
+}
+
+@article{Koponen:OnixDistributedControl,
+  title = {Onix: {{A Distributed Control Platform}} for {{Large-scale Production Networks}}},
+  author = {Koponen, Teemu and Casado, Martin and Gude, Natasha and Stribling, Jeremy and Poutievski, Leon and Zhu, Min and Ramanathan, Rajiv and Iwata, Yuichiro and Inoue, Hiroaki and Hama, Takayuki and Shenker, Scott},
+  abstract = {Computer networks lack a general control paradigm, as traditional networks do not provide any networkwide management abstractions. As a result, each new function (such as routing) must provide its own state distribution, element discovery, and failure recovery mechanisms. We believe this lack of a common control platform has significantly hindered the development of flexible, reliable and feature-rich network control planes. To address this, we present Onix, a platform on top of which a network control plane can be implemented as a distributed system. Control planes written within Onix operate on a global view of the network, and use basic state distribution primitives provided by the platform. Thus Onix provides a general API for control plane implementations, while allowing them to make their own trade-offs among consistency, durability, and scalability.},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/_koponen_et_al_onix.pdf}
+}
+
+@inproceedings{Kreutz2013:securedependablesoftwaredefined,
+  title = {Towards Secure and Dependable Software-Defined Networks},
+  booktitle = {Proceedings of the Second {{ACM SIGCOMM}} Workshop on {{Hot}} Topics in Software Defined Networking},
+  author = {Kreutz, Diego and Ramos, Fernando M.V. and Verissimo, Paulo},
+  date = {2013-08-16},
+  pages = {55--60},
+  publisher = {ACM},
+  location = {Hong Kong China},
+  doi = {10.1145/2491185.2491199},
+  url = {https://dl.acm.org/doi/10.1145/2491185.2491199},
+  urldate = {2023-07-14},
+  abstract = {Software-defined networking empowers network operators with more flexibility to program their networks. With SDN, network management moves from codifying functionality in terms of low-level device configurations to building software that facilitates network management and debugging. By separating the complexity of state distribution from network specification, SDN provides new ways to solve long-standing problems in networking — routing, for instance — while simultaneously allowing the use of security and dependability techniques, such as access control or multi-path.},
+  eventtitle = {{{SIGCOMM}}'13: {{ACM SIGCOMM}} 2013 {{Conference}}},
+  isbn = {978-1-4503-2178-5},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2013_kreutz_et_al_towards_secure_and_dependable_software-defined_networks.pdf}
+}
+
+@inproceedings{Li2004:firstprinciplesapproachunderstanding,
+  title = {A First-Principles Approach to Understanding the Internet's Router-Level Topology},
+  booktitle = {Proceedings of the 2004 Conference on {{Applications}}, Technologies, Architectures, and Protocols for Computer Communications},
+  author = {Li, Lun and Alderson, David and Willinger, Walter and Doyle, John},
+  date = {2004-08-30},
+  pages = {3--14},
+  publisher = {ACM},
+  location = {Portland Oregon USA},
+  doi = {10.1145/1015467.1015470},
+  url = {https://dl.acm.org/doi/10.1145/1015467.1015470},
+  urldate = {2023-07-14},
+  eventtitle = {{{SIGCOMM04}}: {{ACM SIGCOMM}} 2004 {{Conference}}},
+  isbn = {978-1-58113-862-7},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2004_li_et_al_a_first-principles_approach_to_understanding_the_internet's_router-level.pdf}
+}
+
+@inproceedings{Matni2015:casestudynetwork,
+  title = {A Case Study in Network Architecture Tradeoffs},
+  booktitle = {Proceedings of the 1st {{ACM SIGCOMM Symposium}} on {{Software Defined Networking Research}}},
+  author = {Matni, Nikolai and Tang, Ao and Doyle, John C.},
+  date = {2015-06-17},
+  pages = {1--7},
+  publisher = {ACM},
+  location = {Santa Clara California},
+  doi = {10.1145/2774993.2775011},
+  url = {https://dl.acm.org/doi/10.1145/2774993.2775011},
+  urldate = {2023-07-14},
+  eventtitle = {{{SOSR}} 2015: {{ACM SIGCOMM Symposium}} on {{SDN Research}}},
+  isbn = {978-1-4503-3451-8},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2015_matni_et_al_a_case_study_in_network_architecture_tradeoffs.pdf}
+}
+
+@inproceedings{Muqaddas2016:IntercontrollertrafficONOS,
+  title = {Inter-Controller Traffic in {{ONOS}} Clusters for {{SDN}} Networks},
+  booktitle = {2016 {{IEEE International Conference}} on {{Communications}} ({{ICC}})},
+  author = {Muqaddas, Abubakar Siddique and Bianco, Andrea and Giaccone, Paolo and Maier, Guido},
+  date = {2016-05},
+  pages = {1--6},
+  issn = {1938-1883},
+  doi = {10.1109/ICC.2016.7511034},
+  abstract = {In distributed SDN architectures, the network is controlled by a cluster of multiple controllers. This distributed approach permits to meet the scalability and reliability requirements of large operational networks. Despite that, a logical centralized view of the network state should be guaranteed, enabling the simple development of network applications. Achieving a consistent network state requires a consensus protocol, which generates control traffic among the controllers whose timely delivery is crucial for network performance. We focus on the state-of-art ONOS controller, designed to scale to large networks, based on a cluster of self-coordinating controllers, and concentrate on the inter-controller control traffic. Based on real traffic measurements, we develop a model to quantify the traffic exchanged among the controllers, which depends on the topology of the controlled network. This model is useful to design and dimension the control network interconnecting the controllers.},
+  eventtitle = {2016 {{IEEE International Conference}} on {{Communications}} ({{ICC}})},
+  keywords = {Data structures,Network topology,Protocols,Scalability,Servers,Synchronization,Topology},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2016_muqaddas_et_al_inter-controller_traffic_in_onos_clusters_for_sdn_networks.pdf}
+}
+
+@inproceedings{Newell2021:RASContinuouslyOptimized,
+  title = {{{RAS}}: {{Continuously Optimized Region-Wide Datacenter Resource Allocation}}},
+  shorttitle = {{{RAS}}},
+  booktitle = {Proceedings of the {{ACM SIGOPS}} 28th {{Symposium}} on {{Operating Systems Principles}}},
+  author = {Newell, Andrew and Skarlatos, Dimitrios and Fan, Jingyuan and Kumar, Pavan and Khutornenko, Maxim and Pundir, Mayank and Zhang, Yirui and Zhang, Mingjun and Liu, Yuanlai and Le, Linh and Daugherty, Brendon and Samudra, Apurva and Baid, Prashasti and Kneeland, James and Kabiljo, Igor and Shchukin, Dmitry and Rodrigues, Andre and Michelson, Scott and Christensen, Ben and Veeraraghavan, Kaushik and Tang, Chunqiang},
+  date = {2021-10-26},
+  pages = {505--520},
+  publisher = {ACM},
+  location = {Virtual Event Germany},
+  doi = {10.1145/3477132.3483578},
+  url = {https://dl.acm.org/doi/10.1145/3477132.3483578},
+  urldate = {2023-09-21},
+  abstract = {Capacity reservation is a common offering in public clouds and on-premise infrastructure. However, no prior work provides capacity reservation with SLO guarantees that takes into account random and correlated hardware failures, datacenter maintenance, and heterogeneous hardware. In this paper, we describe how Facebook’s region-scale Resource Allowance System (RAS) addresses these issues and provides guaranteed capacity. RAS uses a capacity abstraction called reservation to represent a set of servers dynamically assigned to a logical cluster. We take a two-level approach to scale resource allocation to all datacenters in a region, where a mixed-integer-programming solver continuously optimizes server-to-reservation assignments off the critical path, and a traditional container allocator does real-time placement of containers on servers in a reservation. As a relatively new component of Facebook’s 10-year old cluster manager Twine, RAS has been running in production for almost two years, continuously optimizing the allocation of millions of servers to thousands of reservations. We describe the design of RAS and share our experience of deploying it at scale.},
+  eventtitle = {{{SOSP}} '21: {{ACM SIGOPS}} 28th {{Symposium}} on {{Operating Systems Principles}}},
+  isbn = {978-1-4503-8709-5},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2021_newell_et_al_ras.pdf}
+}
+
+@article{Sherry2023:DrivenServerSmartNICs,
+  title = {The {{I}}/{{O Driven Server}}: {{From SmartNICs}} to {{Data Movement Controllers}}},
+  shorttitle = {The {{I}}/{{O Driven Server}}},
+  author = {Sherry, Justine},
+  date = {2023-10-30},
+  journaltitle = {ACM SIGCOMM Computer Communication Review},
+  shortjournal = {SIGCOMM Comput. Commun. Rev.},
+  volume = {53},
+  number = {3},
+  pages = {9--17},
+  issn = {0146-4833},
+  doi = {10.1145/3649171.3649174},
+  url = {https://dl.acm.org/doi/10.1145/3649171.3649174},
+  urldate = {2024-05-29},
+  abstract = {Many researchers are turning to SmartNIC offloads to improve the performance of high-performance networked systems. In this editorial, I discuss why SmartNICs are an especially powerful form factor for improving I/O intensive applications, and how their position in the dataplane enables them to take on central role in managing I/O. Rather than focusing on the benefits of individual offloads, this paper aims to explore the position of SmartNICs in the overall system integration of datacenter servers at the hardware and software level. I argue that SmartNICs should be viewed as ‘data movement controllers’ (NIC-DMCs) which are responsible for tasks involved in moving data between network, CPU, accelerators, and other endpoints: multiplexing/steering, interfacing between protocols, and enforcing I/O policies. I then enumerate open questions in how the hardware and software systems of the future will evolve to accommodate a dedicated NIC-DMC which is independent of the CPU complex.},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2023_sherry_the_i-o_driven_server.pdf}
+}
+
+@article{Tan2021:InbandNetworkTelemetry,
+  title = {In-Band {{Network Telemetry}}: {{A Survey}}},
+  shorttitle = {In-Band {{Network Telemetry}}},
+  author = {Tan, Lizhuang and Su, Wei and Zhang, Wei and Lv, Jianhui and Zhang, Zhenyi and Miao, Jingying and Liu, Xiaoxi and Li, Na},
+  date = {2021-02-26},
+  journaltitle = {Computer Networks},
+  shortjournal = {Computer Networks},
+  volume = {186},
+  pages = {107763},
+  issn = {1389-1286},
+  doi = {10.1016/j.comnet.2020.107763},
+  url = {https://www.sciencedirect.com/science/article/pii/S1389128620313396},
+  urldate = {2023-09-22},
+  abstract = {With the development of software-defined network and programmable data-plane technology, in-band network telemetry has emerged. In-band network telemetry technology collects hop-by-hop network status information through business packets to achieve end-to-end visualization of network services. In-band network telemetry uses the data plane to directly drive the network measurement process, subverting the research idea of traditional network measurement that treats network switching device as an intermediate black box. In-band network telemetry technology has the advantages of flexible programming, strong real-time, less noise and path-level network status perception, etc. It has become an emerging representative of network telemetry technology and has received extensive attention from academia and industry. In this survey, we conduct a comprehensive investigation on the situation of in-band network telemetry technology. Firstly, we review the different development stages of network measurement and give a chronology. And we sort out the development history and research results of in-band network telemetry. Secondly, we introduce in detail several existing representative solutions of in-band network telemetry, including INT, IOAM, AM-PM and ANT, in terms of systems, implementation idea, technical features, standardization, and research results. Thirdly, we analyze several key technologies of the in-band network telemetry system, which runs through data generation, export, storage, and analysis. We summarize the advantages and disadvantages of the existing solutions. Moreover, we investigate the latest applications of in-band network telemetry from two aspects: performance measurement and function measurement. Furthermore, we highlight the technical opportunities brought by in-band network telemetry technology to network measurement and management, as well as several technical challenges and future research directions.},
+  keywords = {In-band network telemetry,Network management,Network measurement,Network telemetry,Programmable data plane,Software-defined network},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2021_tan_et_al_in-band_network_telemetry.pdf;/Users/schwifty/Zotero/storage/B8QYXS4P/S1389128620313396.html}
+}
+
+@inproceedings{Ulmer2023:ExtendingComposableData,
+  title = {Extending {{Composable Data Services}} into {{SmartNICs}}},
+  booktitle = {2023 {{IEEE International Parallel}} and {{Distributed Processing Symposium Workshops}} ({{IPDPSW}})},
+  author = {Ulmer, Craig and Liu, Jianshen and Maltzahn, Carlos and Curry, Matthew L.},
+  date = {2023-05},
+  pages = {953--959},
+  doi = {10.1109/IPDPSW59300.2023.00158},
+  abstract = {Advanced scientific-computing workflows rely on composable data services to migrate data between simulation and analysis jobs that run in parallel on high-performance computing (HPC) platforms. Unfortunately, these services consume compute-node memory and processing resources that could otherwise be used to complete the workflow’s tasks. The emergence of programmable network interface cards, or SmartNICs, presents an opportunity to host data services in an isolated space within a compute node that does not impact host resources. In this paper we explore extending data services into SmartNICs and describe a software stack for services that uses Faodel and Apache Arrow. To illustrate how this stack operates, we present a case study that implements a distributed, particle-sifting service for reorganizing simulation results. Performance experiments from a 100-node cluster equipped with 100Gb/s BlueField-2 SmartNICs indicate that current SmartNICs can perform useful data management tasks, albeit at a lower throughput than hosts.},
+  eventtitle = {2023 {{IEEE International Parallel}} and {{Distributed Processing Symposium Workshops}} ({{IPDPSW}})},
+  keywords = {BlueField-2,Conferences,Distributed databases,Distributed processing,Full stack,High performance computing,HPC data services,Simulation,SmartNICs,Throughput},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2023_ulmer_et_al_extending_composable_data_services_into_smartnics.pdf;/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/2023_ulmer_et_al_extending_composable_data_services_into_smartnics2.pdf;/Users/schwifty/Zotero/storage/KAXXMF5E/10196516.html}
+}
+
+@inproceedings{Ulmer2023:ExtendingComposableDataa,
+  title = {Extending {{Composable Data Services}} into {{S}}},
+  booktitle = {2023 {{IEEE International Parallel}} and {{Distributed Processing Symposium Workshops}} ({{IPDPSW}})},
+  author = {Ulmer, Craig and Liu, Jianshen and Maltzahn, Carlos and Curry, Matthew L.},
+  date = {2023-05},
+  pages = {953--959},
+  publisher = {IEEE},
+  location = {St. Petersburg, FL, USA},
+  doi = {10.1109/IPDPSW59300.2023.00158},
+  url = {https://ieeexplore.ieee.org/document/10196516/},
+  urldate = {2023-09-22},
+  eventtitle = {2023 {{IEEE International Parallel}} and {{Distributed Processing Symposium Workshops}} ({{IPDPSW}})},
+  isbn = {9798350311990},
+  langid = {english}
+}
+
+@article{Zhao:Achieving100GbpsIntrusion,
+  title = {Achieving {{100Gbps Intrusion Prevention}} on a {{Single Server}}},
+  author = {Zhao, Zhipeng and Sadok, Hugo and Atre, Nirav and Hoe, James C and Sekar, Vyas and Sherry, Justine},
+  abstract = {Intrusion Detection and Prevention Systems (IDS/IPS) are among the most demanding stateful network functions. Today’s network operators are faced with securing 100Gbps networks with 100K+ concurrent connections by deploying IDS/IPSes to search for 10K+ rules concurrently. In this paper we set an ambitious goal: Can we do all of the above in a single server? Through the Pigasus IDS/IPS, we show that this goal is achievable, perhaps for the first time, by building on recent advances in FPGA-capable SmartNICs. Pigasus’ design takes an FPGA-first approach, where the majority of processing, and all state and control flow are managed on the FPGA. However, doing so requires careful design of algorithms and data structures to ensure fast common-case performance while densely utilizing system memory resources. Our experiments with a variety of traces show that Pigasus can support 100Gbps using an average of 5 cores and 1 FPGA, using 38× less power than a CPU-only approach.},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/P3ReadingList/_zhao_et_al_achieving_100gbps_intrusion_prevention_on_a_single_server.pdf}
+}

@@ -1,0 +1,171 @@
+% article type removes large chapter titles, remove it for full version
+\documentclass[11pt,oneside,article]{memoir}
+
+\newcommand{\thesisTitle}{
+    % Unifying Bulk-Synchronous Parallel Observability Paradigms Using Relational Dataflows
+    A Unified Approach to Bulk-Synchronous Parallel Observability Using Relational Dataflows
+}
+\newcommand{\thesisAuthor}{Ankush Jain}
+
+%%% --- PDF Metadata ---
+\usepackage[pdftex,
+    pdfauthor={\thesisAuthor},
+    pdftitle={\thesisTitle},
+    pdfsubject={PhD Dissertation, ECE, CMU},
+    pdfkeywords={PhD, Dissertation, CMU, Electrical and Computer Engineering},
+    hidelinks
+]{hyperref}
+
+%%% --- Packages ---
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{tocbibind} % ensures TOC entries for references?
+\usepackage{lipsum} % for dummy text
+\usepackage{markdown} % for outlines, temporary
+\usepackage{xcolor} % for colored text
+\usepackage{titlesec} % for para fmting
+\usepackage{enumitem} % to customize enumerate
+
+% For thesis statement box
+\usepackage[most]{tcolorbox}
+\tcbset{
+  thesisbox/.style={
+    colback=gray!2,
+    colframe=black,
+    boxrule=0.4pt,
+    arc=2pt,
+    left=6pt,
+    right=6pt,
+    top=4pt,
+    bottom=4pt,
+    boxsep=4pt,
+    fonttitle=\bfseries,
+    width=\textwidth-2.5em,
+    enlarge left by=1.25em,
+  }
+}
+
+
+%%% --- Bibliography ---
+\usepackage[
+    style=numeric,
+    backend=biber,
+    sorting=none,
+    citestyle=numeric-comp,
+]{biblatex}
+
+\addbibresource{bib/amr.bib}
+\addbibresource{bib/general-thesis.bib}
+\addbibresource{bib/netsketch.bib}
+\addbibresource{bib/netsketch-mon.bib}
+\addbibresource{bib/p3.bib}
+\addbibresource{bib/range_queries.bib}
+
+% remove some metadata
+\AtEveryBibitem{%
+  \clearfield{day}%
+  \clearfield{month}%
+  \clearfield{note}%
+  \clearfield{language}%
+  \clearfield{urldate}%
+  \clearfield{eventtitle}%
+  % \clearfield{booktitle}%
+  \clearfield{issn}%
+  \clearfield{isbn}%
+  \clearfield{location}%
+  \clearfield{address}%
+  \clearfield{doi}%
+  \clearfield{pages}%
+  % \clearfield{series}%
+}
+
+% clear both url and urldate in biblatex
+\renewbibmacro*{url+urldate}{\printfield{url}}
+\renewbibmacro*{publisher+location+date}{\printdate}
+
+% For terse references
+\usepackage[capitalize]{cleveref}
+
+% For captions and subfigures
+\usepackage[
+    font=small,
+    labelfont={bf,it},
+    textfont=it,
+    singlelinecheck=false,
+    format=hang,
+    justification=justified,
+    singlelinecheck=on
+]{caption}
+\usepackage{subcaption}
+
+% For math symbols
+\usepackage{amsmath}
+\usepackage{amssymb}
+%%% --- Commands ---
+\newcommand{\ga}[1]{\textcolor{red!70!black}{@GA: #1}}
+\newcommand{\aj}[1]{\textcolor{blue!70!black}{@AJ: #1}}
+
+%%% --- Spacing and Counters ---
+\OnehalfSpacing{} % line spacing
+ % This makes section the top-level entity
+% \renewcommand{\thesection}{\arabic{section}}
+\setsecnumdepth{subsubsection}
+% \settocdepth{subsection}
+
+\chapterstyle{article}
+\setsecheadstyle{\normalfont\large\bfseries} % default is usually \Large
+\setsubsecheadstyle{\normalfont\normalsize\bfseries}
+
+%% -- Paragraph styling --
+\titleformat{\paragraph}[runin]{\normalfont\normalsize\bfseries}{}{0pt}{}[.]
+\titlespacing{\paragraph}{0pt}{1ex plus 0.5ex minus 0.2ex}{1ex}
+
+%% -- Enumerate styling --
+\setlist{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
+
+%%% --- Document Begins ---
+\begin{document}
+\frontmatter{}
+\input{frontmatter}
+
+% %% --- Main Matter Begins ---
+\mainmatter{}
+\input{tex/0-abstract}
+% \markdownInput{notes/outline-ch1-v4.md}
+\input{tex/1-intro}
+
+\newpage
+% \markdownInput{notes/outline-ch2-v1.md}
+\input{tex/2-background}
+
+\newpage
+% \markdownInput{notes/outline-ch3-v1.md}
+\input{tex/3-carp}
+
+\newpage
+% \markdownInput{notes/outline-ch4-v1.md}
+\input{tex/4-amr}
+
+\newpage
+\newpage
+% \markdownInput{notes/outline-ch5-v1.md}
+\input{tex/5-orca}
+
+\newpage
+\input{tex/6-timeline}
+
+% %% --- Appendix (Optional) --- \appendix \chapter{Supplementary Material} Add raw data, code
+% listings, or extended discussion here.
+
+% %% --- Bibliography ---
+
+% x plus y: x is inter-bib space
+\newpage
+\begingroup
+\renewcommand*{\bibfont}{\small}  % or \footnotesize or custom \fontsize
+\renewcommand{\baselinestretch}{0.9}
+\setlength{\bibitemsep}{4pt plus 0.3ex}
+\printbibliography{}
+\endgroup
+
+\end{document}

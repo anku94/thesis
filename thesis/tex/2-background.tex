@@ -1,0 +1,220 @@
+\chapter{Background: Efficiency Bottlenecks in BSP Systems}
+\label{chap:bg}
+
+% Maybe note ML differences as a separate section
+
+We first review key concepts and challenges in the bulk-synchronous parallel (BSP) paradigm,
+beginning with an overview of the computing environment (\S\ref{sec:bg:hpc}), followed by a review
+of data management (\S\ref{sec:bg:data}) and compute efficiency challenges (\S\ref{sec:bg:compute}).
+While we primarily focus on scientific computing, we also discuss distributed machine learning
+training workloads, as their shared bulk-synchronous characteristics create similar challenges and
+inform our later work.
+
+\section{The High-Performance Computing Environment}
+\label{sec:bg:hpc}
+
+\paragraph{System Architecture}
+Large-scale HPC clusters typically consist of O(10,000) nodes~\cite{:TOP500ListJune} connected by a
+high-performance fabric~\cite{Pfist2001:Infiniband,Rowet2022:Slingshot,Metz2024:UltraEthernet}.
+Each node typically consists of CPUs and typically multiple GPUs, which are increasingly important
+for scientific computing~\cite{DeBar2014:HPCGPU,Snell2017:HPCGPU}.
+Storage is traditionally provided by parallel filesystems~\cite{Braam2002:Lustre} but object
+stores~\cite{Henne2020:DAOS} and richer commercial offerings~\cite{2024:Hammerspace,:VASTPlatform}
+are increasingly common~\cite{Glenn2025:NoPFS}.
+
+\paragraph{Applications}
+Scientific applications target fundamental questions across domains such as cosmology and climate
+science, problems that require simulating complex physical phenomena over extended spatial and
+temporal scales.
+These applications can occupy the majority of a supercomputer's resources for months at a
+time~\cite{Das2023:LargeScale, Stock2024:LargeScale,Gary2023:LANLPlatformPlanning}.
+From a systems perspective, they can be simplified into two common archetypes: \emph{particle
+  codes}~\cite{Bird2022:VPIC2.0} and \emph{mesh codes}~\cite{Dubey2014:Survey}.
+Particle codes track the state and interactions of billions individual discrete entities as they
+move through the simulation domain.
+Mesh codes discretize the spatial domain into grids and compute the evolution of properties of
+interest at each grid point.
+
+\paragraph{The BSP Model}
+The BSP model consists of alternating compute and synchronization phases.
+Execution begins with decomposition of the problem into independent subproblems assigned to
+workers, and proceeds as discrete timesteps.
+Each timestep consists of a compute phase followed by a global synchronization phase, where
+synchronous collectives~\cite{:MPI, :NCCL} ensure all ranks advance together.
+Every few timesteps, a checkpoint is triggered for both fault tolerance and offline analysis.
+This tight coupling is the root of cluster efficiency problems: synchronous checkpoints create
+coordinated I/O bursts that stress the storage system, while global collectives make overall
+performance acutely sensitive to the slowest worker.
+% As clusters scale, checkpointing frequency increases as failure probability rises 
+Growth in cluster sizes leads to increased checkpointing frequency, as the increased failure
+probabilty makes forward progress more valuable~\cite{Jones2012:Checkpointing}.
+% Checkpointing frequency increases with application scale, intra-checkpoint failure probability
+% rises, creating periodic I/O-bound operations that stress the storage system. Checkpointing
+% frequency increases with application scale as intra-checkpoint failure probability rises, creating
+% periodic I/O-bound operations that stress the storage system.
+
+
+\paragraph{Distributed ML Training}
+Distributed ML training represents a similar and increasingly important cluster workload, occupying
+tens of thousands of GPUs and running for
+months~\cite{:LlamaScale,Rahma2024:MLScale,Gratt2024:Llama3Scale}.
+The cluster architectures are comparable, though ML clusters often add a \emph{frontend} Ethernet
+network for general datacenter connectivity~\cite{Gangi2024:RDMA}.
+While the parallelization strategies differ---ML employs a mix of data, tensor, and pipeline
+parallelism---the execution model still relies on the same core BSP primitives of synchronous
+collectives~\cite{Gangi2024:RDMA} and periodic checkpointing~\cite{Eisen2022:Checkpoint}.
+
+\section{Data Management Challenges}
+\label{sec:bg:data}
+
+Checkpointing creates I/O-bound bottlenecks in BSP systems, as coordinated writes across thousands
+of ranks stress parallel filesystems and consume significant
+runtime~\cite{Xie2012:CharacterizingOutputBottlenecks}.
+Traditional workflows then require scientists to re-read and analyze this data after simulation
+completion, consuming additional I/O bandwidth and computational resources while delaying
+scientific discovery.
+Ingesting data using conventional databases is not viable, as databases incur multiple on-disk
+writes for each application write~\cite{Raju2017:PebblesDB} (\emph{write amplification}), offering
+poor tradeoffs for ingestion-heavy workloads.
+
+In-situ processing~\cite{Child2020:TerminologySituVisualization} analyzes data while it streams
+from application to storage, reducing both I/O overhead and time-to-insight.
+This approach is employed for multiple scientific use cases ranging from
+visualization~\cite{Ayach2015:Catalyst,Ayach2016:SENSEI,Larse2017:ALPINE,Larse2022:Ascent} to
+indexing~\cite{Eisen2024:ADIOS,Docan2010:DataSpaces}.
+In-situ reorganization using hash-partitioning and shuffling has been demonstrated to be viable at
+HPC scale~\cite{Zheng2018:DeltaFS}.
+However, unlike databases that provide general query interfaces over composable indexes, existing
+in-situ systems are purpose-built for specific use cases and lack programmability.
+A critical gap remains in range query support, essential for analytics on continuous physical
+attributes but absent from existing in-situ frameworks.
+
+% Checkpointing creates I/O-bound bottlenecks in BSP systems. Traditional post-processing analytics
+% requires additional time and computational resources after simulation completion. Databases, while
+% providing composable interfaces, suffer from high write amplification factors (WAF) that make them
+% unsuitable for HPC ingestion workloads. This motivated the development of in-situ processing
+% approaches.
+
+% In-situ visualization systems (ParaView Catalyst, VisIt) are widely deployed and mature. In-situ
+% data reorganization approaches have demonstrated viability, such as DeltaFS hash partitioning at
+% large scale. These systems are purpose-built and specialized, creating an ecosystem where
+% approaches cannot be easily mixed and matched due to their specialized nature. A critical gap
+% remains in range query support, which is essential for spatial and temporal analytics.
+
+% Ingestion efficiency essential. WAF of 1X ideal and essential to ingest at max storage system
+% bandwidth. Databases are not ideal.
+
+% Special-purpose systems used for in-situ aggregation and visualization. In-situ indexing and
+% reordering less widespread but demonstrated to be viable. Deltafs (insitu hash partitioning). But
+% too much reliance on bitmap indices etc, as partitioning is expensive. Partitioning for range
+% queries is hard: this currently uses post-processing sorts, which need to read all data again and
+% write them, requiring extra hardware and delaying time to insight.
+
+% The biggest missing piece in the in-situ toolking is range partitioning.
+
+\section{Compute Efficiency Challenges}
+\label{sec:bg:compute}
+
+Cluster utilization challenges persist in BSP systems: a study of exported traces found more than
+60\% of runtime spent in MPI~\cite{:MPI} operations (communication and synchronization), even at
+modest scales.
+We now provide additional context on performance tooling and workload characterization bottlenecks
+that contribute to these challenges.
+
+% \subsection{Performance Analysis Tools}
+
+\paragraph{Performance Analysis Tools}
+While real time cluster-level monitoring is common~\cite{Schwa2021:LDMS}, application-level
+performance analyses are largely
+post-mortem~\cite{Wylie2025:15Years,Shend2006:TAU,2025:kineto,:HolisticTraceAnalysis}.
+Two main approaches are tracing and profiling.
+Tracing generates fine-grained event logs for each worker (\emph{rank}), which are then aggregated
+into a composite view via postprocessing.
+The volume of generated trace data presents an analytics challenge, delaying
+insight~\cite{Devar2024:DFTracer}, and remains unviable at the largest
+scales~\cite{Cui2025:XPUTimer}.
+In comparison, profiling generates phase-wise summaries of execution for each rank.
+While far more scalable, this obscures fine-grained interactions that degrade tightly-coupled BSP
+execution.
+% Current tools rely on three main approaches: sampling provides statistical summaries at regular
+% intervals, profiling offers detailed function-level breakdowns, and tracing generates
+% comprehensive execution records. Sampling and profiling impose arbitrary aggregations, obscuring
+% problem structure and temporal patterns necessary for optimization. Tracing produces massive
+% datasets in unstructured formats requiring extensive offline processing. This methodology
+% inherently operates on historical data, providing no mechanism for real-time performance insights
+% or adaptive runtime optimization during execution. Current tools rely on three main approaches:
+% sampling provides statistical summaries at regular intervals, profiling offers detailed
+% function-level breakdowns, and tracing generates comprehensive execution records. Sampling and
+% profiling impose arbitrary aggregations, obscuring problem structure and temporal patterns
+% necessary for optimization. Tracing produces massive datasets in unstructured formats requiring
+% extensive offline processing. This methodology inherently operates on historical data, providing
+% no mechanism for real-time performance insights or adaptive runtime optimization during execution.
+
+\paragraph{Workload Characterization Bottlenecks}
+While efficiency challenges are known and attributed to load
+imbalance~\cite{Dubey2014:Survey,Burst2008:ALPS,Klenk2017:OverviewMPICharacteristics}, deeper
+understanding remains elusive, partly because of visibility bottlenecks discussed above.
+Characterization of workload properties such as compute kernel distributions, communication
+bottlenecks, placement and load-balancing requirements remain poorly understood.
+This is further exacerbated by the separation of analyses from data collection, as the latter are
+undertaken by separate groups without access to the underlying hardware that generated the
+data~\cite{:DOEProxyApps}.
+As a result, distinguishing workload characteristics from environment artifacts becomes even more
+difficult.
+% As a result of visibility bottlenecks, efficiency challenges, while commonly ascribed to load
+% imbalance, While efficiency challenges are commonly ascribed to load imbalance, fundamental
+% aspects of this problem remain poorly understood. Application properties, computational
+% requirements, and the constraints that must be honored during optimization are not well
+% characterized. Fine-grained performance studies typically involve exporting large representative
+% traces, which are then analyzed by other research groups often without access to the underlying
+% hardware characteristics or runtime context needed for actionable insights. This disconnect
+% between data collection and analysis creates fundamental barriers to understanding system
+% behavior, leaving the actual nature of performance bottlenecks obscured despite widespread
+% acknowledgment of their importance.
+
+% \subsection{Workload Characterization Bottlenecks} Performance analysis in large-scale BSP systems
+% relies on aggregate metrics and post-hoc trace analysis. Fine-grained performance artifacts can
+% only be captured through comprehensive tracing, as aggregate metrics obscure the detailed
+% execution patterns necessary for optimization. Execution snapshots generate substantial trace
+% datasets that are typically published for offline analysis by performance analysis groups.
+% However, trace analysis is often conducted by researchers without direct access to the underlying
+% hardware characteristics or runtime context, creating a disconnect between the data and the
+% systems knowledge needed for actionable insights. This methodology inherently operates on
+% historical data rather than providing real-time performance insights.
+
+% \subsection{Performance Analysis Tools} Sampling tools provide statistical summaries, profiling
+% tools offer detailed breakdowns, and tracing tools generate comprehensive execution records stored
+% in formats such as OTF2 for HPC and PyTorch/Kineto traces for ML training. These raw trace formats
+% produce large datasets that are not immediately amenable to interactive analysis. Similar
+% trace-based methodologies are employed across HPC and ML training domains as scale increases, with
+% ML clusters increasingly facing comparable runtime analysis challenges. Performance optimizations
+% currently require domain-specific tooling with hardcoded analysis logic, and existing tools do not
+% support real-time performance monitoring or adaptive runtime optimization.
+
+% \subsection{Workload Characterization} Reliance on aggregate metrics. Did this improve runtime
+% overall?
+
+% Fine-grained effects hard to untangle, but esesential, as our work shows. Only available with
+% tracing.
+
+% Trace analysis model: a small snapshot of execution results in a large trace. Published and
+% analyzed by other groups. This makes learnings slow and disconnected from hardware. Those who
+% analyze traces are not able to distinguish fundamental characteristics from tunable runtime
+% artifacts.
+
+% \subsection{Perf Tools}
+
+% Perf tools can be sampling, profiling, or tracing. Former emit summaries. Latter emits lots of raw
+% data in formats like OTF2. These are not analytical formats and are not amenable to analytics.
+
+% ML: Pytorch/Kineto traces. Clusters starting to eclipse HPC. Similar runtime challenges.
+
+% Solutions for perf challenges are hardcoded assertions in different tooling.
+
+
+
+
+
+
+
+

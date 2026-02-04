@@ -1,0 +1,174 @@
+\chapter{CARP: Adaptive In-Situ Range Partitioning}
+\label{chap:carp}
+
+\section{Motivation: Efficient Ingestion for Range Queries}
+
+Range queries are an essential component of a complete analysis toolkit.
+Analyses on scientific attributes of interest, such as wavefronts and energy bands, naturally map
+to range queries~\cite{Byna2012} because of the continuous nature of this data.
+However, supporting efficient range-based analyses remains expensive.
+Efficient range queries require an ordered data layout, which is created using bulk post-processing
+sorts after the application has finished executing.
+These sorts require multiple passes over the data --- 2$\times$ for in-memory
+~\cite{Sunda2013:HykSort,Dong2016} sorts and 4$\times$ for out-of-core~\cite{Rasmu2011:TritonSort}
+sorts --- diverting finite I/O bandwidth, slowing down ingestion, and delaying the time to insight.
+As an alternative to post-processing, in situ indexing techniques have gained
+traction~\cite{Bauer2016:SituMethodsInfrastructures}.
+These techniques process data while in transit from application to storage, reducing the need for
+additional passes.
+DeltaFS~\cite{Zheng2018:DeltaFS} reorganizes data using hash-based partitioning, and has been
+demonstrated to scale up to 131K ranks.
+However, partitioning by key hash destroys the ordering needed for efficient range queries.
+
+% However, efficient range queries require indexed attribute locality in the data layout to locate
+% and retrieve the relevant data efficiently, However, efficient range queries require an ordered
+% data layout, which is currently achieved by periodically reordering previously written data. This
+% diverts finite I/O bandwidth and slows ingestion. Post-processing via distributed sorts reorders
+% data in bulk, but requires additional passes over the data (2$\times$ for
+% in-memory~\cite{Sunda2013:HykSort,Dong2016} and 4$\times$ for out-of-core
+% ~\cite{Rasmu2011:TritonSort} sorts, respectively). While streaming data reorganization using
+% hash-based partitioning has been demonstrated viable at HPC scale~\cite{Zheng2018:DeltaFS}, it
+% destroys the key ordering needed for range queries.
+
+% Streaming range-based partitioning, commonly used in distributed databases, also requires periodic
+% partition rebalancing.
+
+CARP~\cite{Jain2024:CARP} is a single-pass streaming in situ range partitioner for scientific data.
+It is designed to ingest at the maximum throughput permitted by the storage system by never
+reordering previously written data, while still enabling subsecond range queries.
+The fundamental challenge is maintaining balanced partitions for streams with skewed and dynamic
+key distributions.
+Our analysis demonstrates that scientific key distributions are highly skewed and evolve
+significantly as simulations progress, rendering any static partitioning approach ineffective
+(\cref{fig:carp-distrib}).
+CARP makes no assumptions about the workload key distribution, and instead discovers and adapts to
+it at runtime.
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[
+    width=0.6\textwidth,trim=0cm 0cm 2cm 2cm,clip
+  ]{data/figs/carp_distrib.vpic.pdf}
+  \caption{Energy distributions across 7 timesteps of a particle simulation (VPIC~\cite{Byna2012}).
+    Intra-timestep distributions are highly skewed, with a long tail that grows significantly over
+    time.
+  }
+  \label{fig:carp-distrib}
+\end{figure}
+
+\section{CARP: System Design}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[
+    width=0.6\textwidth,trim=8cm 7cm 8cm 6cm,clip
+  ]{data/figs/carp_arch_v12mini.pdf}
+  \caption{Example of an N-rank application using CARP.
+    Writes are intercepted and partitioned via an all-to-all shuffler.
+    Each rank is both a shuffle sender and a receiver.
+    Partitioned data collected by receives is stored by a lock storage backend (\emph{KoiDB}).
+  }
+  \label{fig:carp-arch}
+\end{figure}
+
+CARP is implemented as an in situ shuffling pipeline built around an all-to-all shuffler,
+\emph{3-hop}, from the DeltaFS~\cite{Zheng2018:DeltaFS} project (see Figure~\ref{fig:carp-arch}).
+Each application rank acts as both a shuffle sender and receiver.
+In the common case, all ranks are assigned disjoint ranges, and shuffling simply forwards data to
+the rank responsible for the partition containing the indexed attribute value.
+On the receiver side, each rank accumulates writes into an embedded storage backend called
+\emph{KoiDB}, which periodically flushes to a per-rank append-only log on the parallel filesystem.
+
+CARP augments this shuffling pipeline with a primitive called \emph{renegotiation}, which discovers
+the current global partitioning and computes new partition assignments.
+Any rank may invoke renegotiation.
+When triggered, each rank summarizes its local key distribution and sends it to the lead rank (rank
+0), which merges the summaries to reconstruct the global key distribution.
+The lead rank then divides the global keyspace into partitions with equal area under the curve and
+broadcasts the new boundaries to all ranks.
+When partitions are updated, ranks flush their KoiDB instance and resume shuffling.
+For scalability, renegotiation is implemented as a tree-based reduction protocol.
+
+In addition to renegotiation, CARP includes mechanisms to trigger the process, bootstrap the
+distribution, and buffer data for unassigned ranges via the \emph{out-of-bounds} (OOB) buffer.
+Filling the OOB buffer is one trigger for renegotiation, and its contents are factored into the
+partition computation.
+The KoiDB backend performs additional reprocessing to maintain partition quality despite
+out-of-order receives and rapidly changing boundaries, before periodically appending data to the
+per-rank log.
+
+
+\section{Key Results: Ingestion and Query Performance}
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[
+      width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
+    ]{data/figs/carp_runtime.v4.werr.pdf}
+
+    \caption{Ingestion Throughput vs Application Scale}
+    \label{fig:carp-eval-write}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[
+      width=\textwidth,trim=0cm 0cm 0cm 0cm,clip
+    ]{data/figs/carp_qlatvssel.v6.pdf}
+
+    \caption{Query Latency vs Selectivity}
+    \label{fig:carp-eval-query}
+  \end{subfigure}
+
+  \caption{(Left) CARP incurs no overhead over
+    unpartitioned I/O and is 3--5$\times$ faster than post-processing.
+    (Right) CARP matches the query latency of TritonSort's fully-sorted data layout and outperforms
+    FastQuery by 100$\times$.
+  }
+  \label{fig:carp-eval}
+\end{figure}
+
+\paragraph{Ingestion Performance} \cref{fig:carp-eval-write} shows the ingestion performance of CARP
+compared to TritonSort~\cite{Rasmu2011:TritonSort} (an out-of-core sort), FastQuery~\cite{Byna2012}
+(an auxiliary bitmap index), and DeltaFS~\cite{Zheng2018:DeltaFS} (in-situ hash partitioning).
+Being embedded in-situ approaches, CARP and DeltaFS are evaluated with different application ranks,
+while TritonSort and FastQuery are run as postprocessing stages directly on the storage nodes.
+CARP achieves the maximum throughput permitted by the storage and network bounds.
+CARP has no measurable overhead on the ingestion path.
+At 1024 ranks, it is 2.8$\times$ faster than FastQuery and 4.9$\times$ faster than TritonSort.
+
+\paragraph{Query Performance} \cref{fig:carp-eval-query} shows the query performance of CARP
+compared to FastQuery, TritonSort, and a complete sequential scan (DeltaFS/FullScan) for 8 queries
+with different selectivities.
+For all but the most selective query, CARP queries are as fast as a full sort and 1-2 orders of
+magnitude faster than FastQuery.
+Being an auxiliary index, FastQuery is forced to perform millions of random I/Os, resulting in
+relatively poor query performance approaching the cost of a complete sequential scan.
+The gap between CARP and TritonSort for the most selective query is explained by CARP being a
+partitioner, and is thus forced to read a complete partition for highly selective queries.
+Given the small absolute value (25ms) for such queries, the gap is not meaningful for analytics
+queries.
+
+\section{Lessons}
+
+% CARP works because its greedy single-pass approach produces a partially ordered data layout that
+% enables queries to significantly narrow the search space to a small number of partitions. By
+% ordering data like a clustered index, CARP enables a data layout that is contiguous enough to be
+% amenable to efficient retrieval without compromising ingestion performance. The gap with
+% auxliliary indices demonstrates the importance of partitioning as the indexing scheme of choice.
+% Databases employ sophisticated query planning to leverage an ensemble of available indexes ---
+% CARP demonstrates the need for efficient scientific analytics to follow a similar template.
+
+CARP demonstrates that a greedy, single-pass approach can produce a partially ordered layout that
+supports efficient range queries without compromising ingestion performance.
+By approximating a clustered index over streaming data, it narrows query scope to a small number of
+partitions, reducing retrieval cost.
+The performance gap between CARP and auxiliary index-based approaches highlights the importance of
+physical partitioning as a first-class indexing mechanism.
+More broadly, CARP shows that scientific data systems benefit from the same design principles as
+databases, yet they currently lack the crucial ability to compose different indexing strategies at
+query time.
+The practical realization of these benefits requires adopting interoperable data formats and query
+engines that can leverage the available indexing and partitioning schemes.
