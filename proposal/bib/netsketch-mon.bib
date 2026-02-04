@@ -39,6 +39,15 @@
   file = {/Users/schwifty/Zotero/storage/AC86TPII/Caliper.html}
 }
 
+@online{:DeployingDeepSeekPD,
+  title = {Deploying {{DeepSeek}} with {{PD Disaggregation}} and {{Large-Scale Expert Parallelism}} on 96 {{H100 GPUs}} | {{LMSYS Org}}},
+  url = {https://lmsys.org/blog/2025-05-05-large-scale-ep},
+  urldate = {2025-08-29},
+  abstract = {{$<$}p{$>$}DeepSeek is a popular open-source large language model (LLM) praised for its strong performance. However, its large size and unique architecture, which us...},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/QWT7ZPXS/2025-05-05-large-scale-ep.html}
+}
+
 @online{:eBPF,
   title = {What Is {{eBPF}}? {{An Introduction}} and {{Deep Dive}} into the {{eBPF Technology}}},
   shorttitle = {{{eBPF}}},
@@ -65,6 +74,13 @@
   url = {https://hta.readthedocs.io/en/latest/index.html},
   urldate = {2025-07-14},
   file = {/Users/schwifty/Zotero/storage/VXHXLD23/index.html}
+}
+
+@online{:HowThinkGPUs,
+  title = {How to {{Think About GPUs}} | {{How To Scale Your Model}}},
+  url = {https://jax-ml.github.io/scaling-book/gpus/},
+  urldate = {2025-08-20},
+  file = {/Users/schwifty/Zotero/storage/H2WQXJGF/gpus.html}
 }
 
 @online{:NVIDIAEthernetSwitch,
@@ -154,6 +170,13 @@
   file = {/Users/schwifty/Zotero/storage/THQULAAC/Mellanox-WJH.html}
 }
 
+@online{:WhySemanticLayers,
+  title = {Why {{Semantic Layers Matter}} (and How to Build One with {{DuckDB}}) | {{Hacker News}}},
+  url = {https://news.ycombinator.com/item?id=44953575},
+  urldate = {2025-08-20},
+  file = {/Users/schwifty/Zotero/storage/8XIXSZ83/item.html}
+}
+
 @online{2022:InfluxDB,
   title = {{{InfluxDB}} | {{Real-time}} Insights at Any Scale},
   shorttitle = {{{InfluxDB}}},
@@ -229,6 +252,21 @@
   file = {/Users/schwifty/Zotero/storage/6EK67MPL/Adamson et al. - STREAM A Scalable Federated HPC Telemetry Platfor.pdf}
 }
 
+@inproceedings{Alali2017:MeasurementStudyCongestion,
+  title = {A Measurement Study of Congestion in an {{InfiniBand}} Network},
+  booktitle = {2017 {{Network Traffic Measurement}} and {{Analysis Conference}} ({{TMA}})},
+  author = {Alali, Fatma and Mizero, Fabrice and Veeraraghavan, Malathi and Dennis, John M.},
+  date = {2017-06},
+  pages = {1--9},
+  doi = {10.23919/TMA.2017.8002911},
+  url = {https://ieeexplore.ieee.org/document/8002911/},
+  urldate = {2025-08-18},
+  abstract = {This paper presents a measurement study of congestion on a production, highly utilized, 72K-core InfiniBand cluster called Yellowstone. The measurement study consists of a 23-day data collection phase in which port counters of the Yellowstone switches were read multiple times every hour to check for stalls during which the port is unable to send data due to a lack of flow-control credits. A total of 30M data records were obtained and analyzed. Results showed that a significant number of the 100-ms intervals over which a port counter was observed, there were transmission stalls. For example, out of 6M observations of Top-of-Rack (ToR) switch uplink ports, we found that the port was forced to wait for credits in 60\% of these 100-ms intervals. Such transmission stalls could increase application execution time, and also decrease cluster utilization. The latter will occur when Message Passing Interface (MPI) Barrier calls are issued for synchronization and communication delays cause one or more MPI ranks to be slower than others.},
+  eventtitle = {2017 {{Network Traffic Measurement}} and {{Analysis Conference}} ({{TMA}})},
+  keywords = {Atmospheric measurements,congestion,Data analysis,Delays,Fat-tree,InfiniBand,Ports (Computers),Production,Radiation detectors,Topology},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/ibcc/2017_alali_et_al_a_measurement_study_of_congestion_in_an_infiniband_network.pdf}
+}
+
 @online{Amado2024:Peregrine,
   title = {Peregrine: {{ML-based Malicious Traffic Detection}} for {{Terabit Networks}}},
   shorttitle = {Peregrine},
@@ -256,6 +294,31 @@
   location = {USA},
   abstract = {The increasing availability of high-performance computing systems with thousands, tens of thousands, and even hundreds of thousands of computational nodes is driving the demand for programming models and infrastructures that allow effective use of such large-scale environments. Tree-based Overlay Networks (TBŌNs) have proven to provide such a model for distributed tools like performance profilers, parallel debuggers, system monitors and system administration tools.We demonstrate that the extensibility and flexibility of the TBŌN distributed computing model, along with its performance characteristics, make it surprisingly general, particularly for applications outside the tool domain. We describe many interesting applications and commonly-used algorithms for which TBŌNs are well-suited and provide a new (non-tool) case study, a distributed implementation of the mean-shift algorithm commonly used in computer vision to delineate arbitrarily shaped clusters in complex, multi-modal feature spaces.},
   isbn = {978-1-4244-0054-6}
+}
+
+@inproceedings{Arnol2006:TreebasedOverlayNetworksa,
+  title = {Tree-Based Overlay Networks for Scalable Applications},
+  booktitle = {Proceedings of the 20th International Conference on {{Parallel}} and Distributed Processing},
+  author = {Arnold, Dorian C. and Pack, Gary D. and Miller, Barton P.},
+  date = {2006-04-25},
+  series = {{{IPDPS}}'06},
+  pages = {223},
+  publisher = {IEEE Computer Society},
+  location = {USA},
+  abstract = {The increasing availability of high-performance computing systems with thousands, tens of thousands, and even hundreds of thousands of computational nodes is driving the demand for programming models and infrastructures that allow effective use of such large-scale environments. Tree-based Overlay Networks (TBŌNs) have proven to provide such a model for distributed tools like performance profilers, parallel debuggers, system monitors and system administration tools.We demonstrate that the extensibility and flexibility of the TBŌN distributed computing model, along with its performance characteristics, make it surprisingly general, particularly for applications outside the tool domain. We describe many interesting applications and commonly-used algorithms for which TBŌNs are well-suited and provide a new (non-tool) case study, a distributed implementation of the mean-shift algorithm commonly used in computer vision to delineate arbitrarily shaped clusters in complex, multi-modal feature spaces.},
+  isbn = {978-1-4244-0054-6}
+}
+
+@inproceedings{Barha2004:Magpie,
+  title = {Using {{Magpie}} for {{Request Extraction}} and {{Workload Modelling}}},
+  shorttitle = {Magpie},
+  author = {Barham, Paul and Donnelly, Austin and Isaacs, Rebecca and Mortier, Richard},
+  date = {2004},
+  url = {https://www.usenix.org/conference/osdi-04/using-magpie-request-extraction-and-workload-modelling},
+  urldate = {2025-09-11},
+  eventtitle = {6th {{Symposium}} on {{Operating Systems Design}} \& {{Implementation}} ({{OSDI}} 04)},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/XYS2TWTJ/Barham et al. - 2004 - Using Magpie for Request Extraction and Workload Modelling.pdf}
 }
 
 @inproceedings{Bened2010:PERISCOPE,
@@ -332,6 +395,59 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/2011_bernat_miller_anywhere,_any-time_binary_instrumentation.pdf}
 }
 
+@inproceedings{Bhate2019:Hatchet,
+  title = {Hatchet: Pruning the Overgrowth in Parallel Profiles},
+  shorttitle = {Hatchet},
+  booktitle = {Proceedings of the {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  author = {Bhatele, Abhinav and Brink, Stephanie and Gamblin, Todd},
+  date = {2019-11-17},
+  pages = {1--21},
+  publisher = {ACM},
+  location = {Denver Colorado},
+  doi = {10.1145/3295500.3356219},
+  url = {https://dl.acm.org/doi/10.1145/3295500.3356219},
+  urldate = {2025-08-06},
+  abstract = {Performance analysis is critical for eliminating scalability bottlenecks in parallel codes. There are many profiling tools that can instrument codes and gather performance data. However, analytics and visualization tools that are general, easy to use, and programmable are limited. In this paper, we focus on the analytics of structured profiling data, such as that obtained from calling context trees or nested region timers in code. We present a set of techniques and operations that build on the pandas data analysis library to enable analysis of parallel profiles. We have implemented these techniques in a Python-based library called Hatchet that allows structured data to be filtered, aggregated, and pruned. Using performance datasets obtained from profiling parallel codes, we demonstrate performing common performance analysis tasks reproducibly with a few lines of Hatchet code. Hatchet brings the power of modern data science tools to bear on performance analysis.},
+  eventtitle = {{{SC}} '19: {{The International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}}, and {{Analysis}}},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/RG8HCZLX/Bhatele et al. - 2019 - Hatchet pruning the overgrowth in parallel profil.pdf}
+}
+
+@online{Bhate2024:Pipit,
+  title = {Pipit: {{Scripting}} the Analysis of Parallel Execution Traces},
+  shorttitle = {Pipit},
+  author = {Bhatele, Abhinav and Dhakal, Rakrish and Movsesyan, Alexander and Ranjan, Aditya K. and Cankur, Onur},
+  date = {2024-05-14},
+  eprint = {2306.11177},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2306.11177},
+  url = {http://arxiv.org/abs/2306.11177},
+  urldate = {2025-08-12},
+  abstract = {Performance analysis is a critical step in the oft-repeated, iterative process of performance tuning of parallel programs. Per-process, per-thread traces (detailed logs of events with timestamps) enable in-depth analysis of parallel program execution to identify different kinds of performance issues. Often times, trace collection tools provide a graphical tool to analyze the trace output. However, these GUI-based tools only support specific file formats, are challenging to scale to large trace sizes, limit data exploration to the implemented graphical views, and do not support automated comparisons of two or more datasets. In this paper, we present a programmatic approach to analyzing parallel execution traces by leveraging pandas, a powerful Python-based data analysis library. We have developed a Python library, Pipit, on top of pandas that can read traces in different file formats (OTF2, HPCToolkit, Projections, Nsight Systems, etc.) and provides a uniform data structure in the form of a pandas DataFrame. Pipit provides operations to aggregate, filter, and transform the events in a trace to present the data in different ways. We also provide several functions to quickly and easily identify performance issues in parallel executions. More importantly, the API is easily extensible to support custom analyses by different end users.},
+  pubstate = {prepublished},
+  version = {2},
+  keywords = {Computer Science - Distributed Parallel and Cluster Computing,Computer Science - Performance},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2024_bhatele_et_al_pipit.pdf;/Users/schwifty/Zotero/storage/BCAWNPW6/2306.html}
+}
+
+@inproceedings{Boehm2016:Caliper,
+  title = {Caliper: {{Performance Introspection}} for {{HPC Software Stacks}}},
+  shorttitle = {Caliper},
+  booktitle = {{{SC}} '16: {{Proceedings}} of the {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  author = {Boehme, David and Gamblin, Todd and Beckingsale, David and Bremer, Peer-Timo and Gimenez, Alfredo and LeGendre, Matthew and Pearce, Olga and Schulz, Martin},
+  date = {2016-11},
+  pages = {550--560},
+  issn = {2167-4337},
+  doi = {10.1109/SC.2016.46},
+  url = {https://ieeexplore.ieee.org/abstract/document/7877125},
+  urldate = {2025-08-06},
+  abstract = {Many performance engineering tasks, from long-term performance monitoring to post-mortem analysis and online tuning, require efficient runtime methods for introspection and performance data collection. To understand interactions between components in increasingly modular HPC software, performance introspection hooks must be integrated into runtime systems, libraries, and application codes across the software stack. This requires an interoperable, cross-stack, general-purpose approach to performance data collection, which neither application-specific performance measurement nor traditional profile or trace analysis tools provide. With Caliper, we have developed a general abstraction layer to provide performance data collection as a service to applications, runtime systems, libraries, and tools. Individual software components connect to Caliper in independent data producer, data consumer, and measurement control roles, which allows them to share performance data across software stack boundaries. We demonstrate Caliper's performance analysis capbilities with two case studies of production scenarios.},
+  eventtitle = {{{SC}} '16: The {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  keywords = {Computer performance,Context,Data models,High performance computing,Instruments,Libraries,Parallel processing,Performance analysis,Runtime,Semantics,Software,Software performance,Software reusability,Software tools},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2016_boehme_et_al_caliper.pdf}
+}
+
 @inproceedings{Brand2021:IntegratingSystemStateandApplicationPerformanceMonitoring,
   title = {Integrating {{System State}} and {{Application Performance Monitoring}}: {{Network Contention Impact}}.},
   shorttitle = {Integrating {{System State}} and {{Application Performance Monitoring}}},
@@ -345,6 +461,14 @@
   eventtitle = {Proposed for Presentation at the {{CUG}} 2021 Held {{May}} 3-14, 2021 In ,},
   langid = {english},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2021_brandt_integrating_system_state_and_application_performance_monitoring.pdf}
+}
+
+@article{Brim:MRNETSCALABLEINFRASTRUCTURE,
+  title = {{{MRNET}}: {{A SCALABLE INFRASTRUCTURE FOR DEVELOPMENT OF PARALLEL TOOLS AND APPLICATIONS}}},
+  author = {Brim, Michael J and DeRose, Luiz and Miller, Barton P and Olichandran, Ramya and Roth, Philip C},
+  abstract = {MRNet is a customizable, high-throughput communication software system for parallel tools and applications. It reduces the cost of these tools’ activities by incorporating a tree-based overlay network (TBON) of processes between the tool’s front-end and back-ends. MRNet was recently ported and released for Cray XT systems. In this paper we describe the main features that make MRNet well-suited as a general facility for building scalable parallel tools. We present our experiences with MRNet and examples of its use.},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/N26ZP8KT/Brim et al. - MRNET A SCALABLE INFRASTRUCTURE FOR DEVELOPMENT O.pdf}
 }
 
 @legislation{Brown:NetworkBandwidthShaping,
@@ -403,6 +527,23 @@
   langid = {english}
 }
 
+@online{Chakr2024:Thallus,
+  title = {Thallus: {{An RDMA-based Columnar Data Transport Protocol}}},
+  shorttitle = {Thallus},
+  author = {Chakraborty, Jayjeet and Dorier, Matthieu and Carns, Philip and Ross, Robert and Maltzahn, Carlos and Litz, Heiner},
+  date = {2024-12-03},
+  eprint = {2412.02192},
+  eprinttype = {arXiv},
+  doi = {10.48550/arXiv.2412.02192},
+  url = {http://arxiv.org/abs/2412.02192},
+  urldate = {2025-09-06},
+  abstract = {The volume of data generated and stored in contemporary global data centers is experiencing exponential growth. This rapid data growth necessitates efficient processing and analysis to extract valuable business insights. In distributed data processing systems, data undergoes exchanges between the compute servers that contribute significantly to the total data processing duration in adequately large clusters, necessitating efficient data transport protocols. Traditionally, data transport frameworks such as JDBC and ODBC have used TCP/IP-over-Ethernet as their underlying network protocol. Such frameworks require serializing the data into a single contiguous buffer before handing it off to the network card, primarily due to the requirement of contiguous data in TCP/IP. In OLAP use cases, this serialization process is costly for columnar data batches as it involves numerous memory copies that hurt data transport duration and overall data processing performance. We study the serialization overhead in the context of a widely-used columnar data format, Apache Arrow, and propose leveraging RDMA to transport Arrow data over Infiniband in a zero-copy manner. We design and implement Thallus, an RDMA-based columnar data transport protocol for Apache Arrow based on the Thallium framework from the Mochi ecosystem, compare it with a purely Thallium RPC-based implementation, and show substantial performance improvements can be achieved by using RDMA for columnar data transport.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Databases,Computer Science - Distributed Parallel and Cluster Computing,Computer Science - Operating Systems},
+  annotation = {Phil/re: Arrow+Mercury, arXiv:2412.02192 [cs]},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/2024_chakraborty_et_al_thallus.pdf;/Users/schwifty/Zotero/storage/WZ2UA5ZD/2412.html}
+}
+
 @article{Chatz2024:EfficientPlacementDecomposable,
   title = {Efficient {{Placement}} of {{Decomposable Aggregation Functions}} for {{Stream Processing}} over {{Large Geo-Distributed Topologies}}},
   author = {Chatziliadis, Xenofon and Zacharatou, Eleni Tzirita and Eracar, Alphan and Zeuch, Steffen and Markl, Volker},
@@ -437,6 +578,14 @@
   langid = {english},
   annotation = {random arxiv search},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2023_chheda_et_al_performance_study_on_cpu-based_machine_learning_with_pytorch.pdf}
+}
+
+@article{Clasc:NSYS2PRVDetailedQuantitative,
+  title = {{{NSYS2PRV}}: Detailed and Quantitative Analysis of Large-Scale {{GPU}} Execution Traces with {{Paraver}}},
+  author = {Clasca, Marc and Labarta, Jesus and Garcia-Gasulla, Marta},
+  abstract = {This work presents a tool, a methodology, a set of metrics, and practical examples for evaluating the performance of large-scale AI and traditional HPC applications using GPUs. NSYS2PRV is a tool that converts NVIDIA Nsight Systems reports into traces compatible with Paraver, enabling significantly enhanced insight compared to current performance analysis practices.},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/PWVE3S3K/Clasca et al. - NSYS2PRV detailed and quantitative analysis of la.pdf}
 }
 
 @online{Cui2025:XPUTimer,
@@ -514,9 +663,9 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2024_devarajan_et_al_dftracer.pdf}
 }
 
-@inproceedings{Dong2025:EvolutionofAegis,
+@inproceedings{Dong2025:Aegis,
   title = {Evolution of {{Aegis}}: {{Fault Diagnosis}} for \{\vphantom\}{{AI}}\vphantom\{\} {{Model Training Service}} in {{Production}}},
-  shorttitle = {Evolution of {{Aegis}}},
+  shorttitle = {Aegis},
   author = {Dong, Jianbo and Qian, Kun and Zhang, Pengcheng and Zheng, Zhilong and Chen, Liang and Feng, Fei and Xu, Yichi and Zhu, Yikai and Lu, Gang and Li, Xue and Ren, Zhihui and Wang, Zhicheng and Luo, Bin and Zhang, Peng and Liu, Yang and Chen, Yanqing and Guan, Yu and Wang, Weicheng and Yang, Chaojie and Zhang, Yang and Yuan, Man and Zhao, Hanyu and Li, Yong and Zhao, Zihan and Li, Shan and Zeng, Xianlong and Yao, Zhiping and Fu, Binzhang and Zhai, Ennan and Lin, Wei and Wang, Chao and Cai, Dennis},
   date = {2025},
   pages = {865--881},
@@ -703,6 +852,22 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2020_godoy_et_al_adios_2.pdf}
 }
 
+@inproceedings{Gran2012:ExploringScopeInfiniBand,
+  title = {Exploring the {{Scope}} of the {{InfiniBand Congestion Control Mechanism}}},
+  booktitle = {2012 {{IEEE}} 26th {{International Parallel}} and {{Distributed Processing Symposium}}},
+  author = {Gran, Ernst Gunnar and Reinemo, Sven-Arne and Lysne, Olav and Skeie, Tor and Zahavi, Eitan and Shainer, Gilad},
+  date = {2012-05},
+  pages = {1131--1143},
+  issn = {1530-2075},
+  doi = {10.1109/IPDPS.2012.104},
+  url = {https://ieeexplore.ieee.org/document/6267917/},
+  urldate = {2025-08-18},
+  abstract = {In a loss less interconnection network, network congestion needs to be detected and resolved to ensure high performance and good utilization of network resources at high network load. If no countermeasure is taken, congestion at a node in the network will stimulate the growth of a congestion tree that not only affects contributors to congestion, but also other traffic flows in the network. Left untouched, the congestion tree will block traffic flows, lead to underutilization of network resources and result in a severe drop in network performance. The InfiniBand standard specifies a congestion control (CC) mechanism to detect and resolve congestion before a congestion tree is able to grow and, by that, hamper the network performance. The InfiniBand CC mechanism includes a rich set of parameters that can be tuned in order to achieve effective CC. Even though it has been shown that the CC mechanism, properly tuned, is able to improve both throughput and fairness in an interconnection network, it has been questioned whether the mechanism is fast enough to keep up with dynamic network traffic, and if a given set of parameter values for a topology is robust when it comes to different traffic patterns, or if the parameters need to be tuned depending on the applications in use. In this paper we address both these questions. Using the three-stage fat-tree topology from the Sun Data center InfiniBand Switch 648 as a basis, and a simulator tuned against CC capable InfiniBand hardware, we conduct a systematic study of the efficiency of the InfiniBand CC mechanism as the network traffic becomes increasingly more dynamic. Our studies show that the InfiniBand CC, even when using a single set of parameter values, performs very well as the traffic patterns becomes increasingly more dynamic, outperforming a network without CC in all cases. Our results show throughput increases varying from a few percent, to a seventeen-fold increase.},
+  eventtitle = {2012 {{IEEE}} 26th {{International Parallel}} and {{Distributed Processing Symposium}}},
+  keywords = {Multiprocessor interconnection,Network topology,Peer to peer computing,Standards,Switches,Vegetation},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/ibcc/2012_gran_et_al_exploring_the_scope_of_the_infiniband_congestion_control_mechanism.pdf}
+}
+
 @inproceedings{Gross2020:PersonalizedSituSteering,
   title = {Personalized {{In Situ Steering}} for {{Analysis}} and {{Visualization}}},
   booktitle = {{{ISAV}}'20 {{In Situ Infrastructures}} for {{Enabling Extreme-Scale Analysis}} and {{Visualization}}},
@@ -844,9 +1009,17 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2025_huck_et_al_preparing_the_tau_performance_system_for_exascale_and_beyond.pdf}
 }
 
-@online{Jiang2025:TrainingwithConfidence,
+@article{Jiang:MegaScaleScalingLarge,
+  title = {{{MegaScale}}: {{Scaling Large Language Model Training}} to {{More Than}} 10,000 {{GPUs}}},
+  author = {Jiang, Ziheng and Lin, Haibin and Zhong, Yinmin and Huang, Qi and Chen, Yangrui and Zhang, Zhi and Peng, Yanghua and Li, Xiang and Xie, Cong and Nong, Shibiao and Jia, Yulu and He, Sun and Chen, Hongmin and Bai, Zhihao and Hou, Qi and Yan, Shipeng and Zhou, Ding and Sheng, Yiyao and Jiang, Zhuo and Xu, Haohan and Wei, Haoran and Zhang, Zhang and Nie, Pengfei and Zou, Leqi and Zhao, Sida and Xiang, Liang and Liu, Zherui and Li, Zhe and Jia, Xiaoying and Ye, Jianxi and Jin, Xin and Liu, Xin},
+  abstract = {We present the design, implementation and engineering experience in building and deploying MegaScale, a production system for training large language models (LLMs) at the scale of more than 10,000 GPUs. Training LLMs at this scale brings unprecedented challenges to training efficiency and stability. We take a full-stack approach that co-designs the algorithmic and system components across model block and optimizer design, computation and communication overlapping, operator optimization, data pipeline, and network performance tuning. Maintaining high efficiency throughout the training process (i.e., stability) is an important consideration in production given the long extent of LLM training jobs. Many hard stability issues only emerge at large scale, and in-depth observability is the key to address them. We develop a set of diagnosis tools to monitor system components and events deep in the stack, identify root causes, and derive effective techniques to achieve fault tolerance and mitigate stragglers. MegaScale achieves 55.2\% Model FLOPs Utilization (MFU) when training a 175B LLM model on 12,288 GPUs, improving the MFU by 1.34× compared to Megatron-LM. We share our operational experience in identifying and fixing failures and stragglers. We hope by articulating the problems and sharing our experience from a systems perspective, this work can inspire future LLM systems research.},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/2EPPRUCQ/Jiang et al. - MegaScale Scaling Large Language Model Training t.pdf}
+}
+
+@online{Jiang2025:TrainCheck,
   title = {Training with {{Confidence}}: {{Catching Silent Errors}} in {{Deep Learning Training}} with {{Automated Proactive Checks}}},
-  shorttitle = {Training with {{Confidence}}},
+  shorttitle = {{{TrainCheck}}},
   author = {Jiang, Yuxuan and Zhou, Ziming and Xu, Boyu and Liu, Beijie and Xu, Runhui and Huang, Peng},
   date = {2025-06-06},
   eprint = {2506.14813},
@@ -990,6 +1163,22 @@
   langid = {english},
   organization = {Matt Klein},
   file = {/Users/schwifty/Zotero/storage/WPVL33Y3/do-you-need-to-store-that-telemetry.html}
+}
+
+@inproceedings{Klenk2017:OverviewMPICharacteristics,
+  title = {An {{Overview}} of {{MPI Characteristics}} of {{Exascale Proxy Applications}}},
+  booktitle = {High {{Performance Computing}}: 32nd {{International Conference}}, {{ISC High Performance}} 2017, {{Frankfurt}}, {{Germany}}, {{June}} 18–22, 2017, {{Proceedings}}},
+  author = {Klenk, Benjamin and Fröning, Holger},
+  date = {2017-06-18},
+  pages = {217--236},
+  publisher = {Springer-Verlag},
+  location = {Berlin, Heidelberg},
+  doi = {10.1007/978-3-319-58667-0_12},
+  url = {https://doi.org/10.1007/978-3-319-58667-0_12},
+  urldate = {2025-08-01},
+  abstract = {The scale of applications and computing systems is tremendously increasing and needs to increase even more to realize exascale systems. As the number of nodes keeps growing, communication has become key to high performance.The Message Passing Interface (MPI) has evolved to the de facto standard for inter-node data transfers. Consequently, MPI is well suited to serve as proxy for an analysis of communication characteristics of exascale proxy applications.This work presents characteristics like time spent in certain operations, point-to-point versus collective communication, and message sizes and rates, gathered from a comprehensive trace analysis. We provide an understanding of how applications use MPI to exploit node-level parallelism, always with respect to scalability, and also locate parts which require more optimization. We emphasize on the analysis of the message matching and report queue lengths and associated matching rates.It is shown that most data is transferred via point-to-point operations, but the most time is spent in collectives. Message matching rates significantly depend on the length of message queues, which tend to increase with the number of processes. As messages are also become smaller, the matching is important to high message rates in large-scale applications.},
+  isbn = {978-3-319-58666-3},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2017_klenk_froning_an_overview_of_mpi_characteristics_of_exascale_proxy_applications.pdf}
 }
 
 @article{Kline:WhatEverySystems,
@@ -1147,6 +1336,14 @@
   file = {/Users/schwifty/Zotero/storage/MB3W73YM/Liang et al. - Fine-grained Trace-driven Performance Modeling and.pdf}
 }
 
+@article{Liang:FinegrainedTracedrivenPerformancea,
+  title = {Fine-Grained {{Trace-driven Performance Modeling}} and {{Simulation}} for {{Large-scale ML Training}}},
+  author = {Liang, Mingyu and Kassa, Hiwot Tadese and Fu, Wenyin and Coutinho, Brian and Feng, Louis and Delimitrou, Christina},
+  abstract = {The widespread adoption of machine learning (ML) models, especially with the emergence of large language models (LLMs), has introduced growing challenges in understanding and optimizing both the models and their deployment systems. Performance modeling plays an essential role to predict model performance across various scenarios and guide optimization techniques. In this work, we present TraceSim, a fine-grained, trace-driven performance modeling and simulation framework. TraceSim captures runtime details of models without any modelspecific instrumentation, and constructs a comprehensive execution graph to describe model execution. Evaluation with GPT-3 on a production-scale cluster of 256 GPUs achieves, on average, 95.6\% accuracy in reproducing the end-to-end execution time, and up to 99.5\% accuracy in predicting performance for unseen scaled-up scenarios.},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/BSE7VK3Z/Liang et al. - Fine-grained Trace-driven Performance Modeling and.pdf}
+}
+
 @online{Liang2025:Lumos,
   title = {Lumos: {{Efficient Performance Modeling}} and {{Estimation}} for {{Large-scale LLM Training}}},
   shorttitle = {Lumos},
@@ -1162,6 +1359,22 @@
   keywords = {Computer Science - Artificial Intelligence,Computer Science - Distributed Parallel and Cluster Computing},
   annotation = {random arxiv search, arXiv:2504.09307 [cs]},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2025_liang_et_al_lumos.pdf;/Users/schwifty/Zotero/storage/EHIPR4SP/2504.html}
+}
+
+@inproceedings{Liu2016:ImprovementsInfiniBandCongestion,
+  title = {Improvements to the {{InfiniBand Congestion Control Mechanism}}},
+  booktitle = {2016 {{IEEE}} 24th {{Annual Symposium}} on {{High-Performance Interconnects}} ({{HOTI}})},
+  author = {Liu, Qian and Russell, Robert D. and Gran, Ernst Gunnar},
+  date = {2016-08},
+  pages = {27--36},
+  issn = {2332-5569},
+  doi = {10.1109/HOTI.2016.018},
+  url = {https://ieeexplore.ieee.org/document/7801435/},
+  urldate = {2025-08-18},
+  abstract = {The InfiniBand Congestion Control mechanism (IB CC) is able to reduce the negative consequences of congestion in many situations. However, its effectiveness depends on a set of parameters that must be set by administrators. If the parameters are not appropriately configured, IB CC could negatively impact network performance. Additionally, no one has been able to find a universal parameter setting that can fit all situations. These difficulties prevent IB CC from being widely used. In this paper we propose several enhancements to the existing IB CC. First, our improved IB CC significantly reduces parameter configuration. Second, the congestion will be removed quickly. Third, a new utilization-driven approach and a new Link Bandwidth Availability Report (LBAR) approach are implemented to guide sending interfaces on how and when to adjust their injection rates. These adjustments are aware of the actual network condition, rather than relying on preconfigured parameters, as in the existing IB CC. Simulation results have demonstrated that our improved IB CC is able to reduce the congestion consequences efficiently and can adapt to various network topologies and traffic patterns.},
+  eventtitle = {2016 {{IEEE}} 24th {{Annual Symposium}} on {{High-Performance Interconnects}} ({{HOTI}})},
+  keywords = {Bandwidth,Congestion Control,Delays,Electronic mail,Indexes,InfiniBand,Injection Rate,Network topology,Packet loss,Ports (Computers)},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2016_liu_et_al_improvements_to_the_infiniband_congestion_control_mechanism.pdf}
 }
 
 @online{Liu2022:ProcessingParticleData,
@@ -1244,8 +1457,9 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2016_mijakovic_et_al_an_architecture_for_flexible_auto-tuning.pdf}
 }
 
-@article{Mille2008:TreebasedOverlayNetworks,
+@article{Mille2008:TBONs,
   title = {Tree-Based {{Overlay Networks}} for {{Scalable Middleware}} and {{Systems}}},
+  shorttitle = {{{TBONs}}},
   author = {Miller, Barton P},
   date = {2008},
   langid = {english},
@@ -1270,24 +1484,6 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2017_narayana_et_al_language-directed_hardware_design_for_network_performance_monitoring.pdf}
 }
 
-@article{Natar2010:FrameworkScalableParallel,
-  title = {A Framework for Scalable, Parallel Performance Monitoring},
-  author = {Nataraj, Aroon and Malony, Allen D. and Morris, Alan and Arnold, Dorian C. and Miller, Barton P.},
-  date = {2010-04-25},
-  journaltitle = {Concurrency and Computation: Practice and Experience},
-  shortjournal = {Concurrency and Computation},
-  volume = {22},
-  number = {6},
-  pages = {720--735},
-  issn = {1532-0626, 1532-0634},
-  doi = {10.1002/cpe.1544},
-  url = {https://onlinelibrary.wiley.com/doi/10.1002/cpe.1544},
-  urldate = {2024-10-23},
-  abstract = {Performance monitoring of HPC applications offers opportunities for adaptive optimization based on dynamic performance behavior, unavailable in purely post-mortem performance views. However, a parallel performance monitoring system must have low overhead and high efficiency to make these opportunities tangible. We describe a scalable parallel performance monitor called TAUoverMRNet (ToM), created from the integration of the TAU performance system and the Multicast Reduction Network (MRNet). The integration is achieved through a plug-in architecture in TAU that allows selection of different transport substrates to offload online performance data. A method to establish the transport overlay structure of the monitor from within TAU, one that requires no added support from the job manager or application, is presented. We demonstrate the distribution of performance analysis from the sink to the overlay nodes and the reduction in large-scale profile data that could otherwise overwhelm any single sink. Results show low perturbation and significant savings accrued from reduction at large processor-counts.},
-  langid = {english},
-  file = {/Users/schwifty/Zotero/storage/LSC9T9DY/Nataraj et al. - 2010 - A framework for scalable, parallel performance mon.pdf}
-}
-
 @article{Natar2010:FrameworkScalableParallelb,
   title = {A Framework for Scalable, Parallel Performance Monitoring},
   author = {Nataraj, Aroon and Malony, Allen D. and Morris, Alan and Arnold, Dorian C. and Miller, Barton P.},
@@ -1304,6 +1500,25 @@
   langid = {english},
   keywords = {monitoring,MRNet,overlay,performance,TAU,tree-based},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2010_nataraj_et_al_a_framework_for_scalable,_parallel_performance_monitoring.pdf;/Users/schwifty/Zotero/storage/V8UE2LVF/cpe.html}
+}
+
+@article{Natar2010:TAUMRNet,
+  title = {A Framework for Scalable, Parallel Performance Monitoring},
+  shorttitle = {{{TAUMRNet}}},
+  author = {Nataraj, Aroon and Malony, Allen D. and Morris, Alan and Arnold, Dorian C. and Miller, Barton P.},
+  date = {2010-04-25},
+  journaltitle = {Concurrency and Computation: Practice and Experience},
+  shortjournal = {Concurrency and Computation},
+  volume = {22},
+  number = {6},
+  pages = {720--735},
+  issn = {1532-0626, 1532-0634},
+  doi = {10.1002/cpe.1544},
+  url = {https://onlinelibrary.wiley.com/doi/10.1002/cpe.1544},
+  urldate = {2024-10-23},
+  abstract = {Performance monitoring of HPC applications offers opportunities for adaptive optimization based on dynamic performance behavior, unavailable in purely post-mortem performance views. However, a parallel performance monitoring system must have low overhead and high efficiency to make these opportunities tangible. We describe a scalable parallel performance monitor called TAUoverMRNet (ToM), created from the integration of the TAU performance system and the Multicast Reduction Network (MRNet). The integration is achieved through a plug-in architecture in TAU that allows selection of different transport substrates to offload online performance data. A method to establish the transport overlay structure of the monitor from within TAU, one that requires no added support from the job manager or application, is presented. We demonstrate the distribution of performance analysis from the sink to the overlay nodes and the reduction in large-scale profile data that could otherwise overwhelm any single sink. Results show low perturbation and significant savings accrued from reduction at large processor-counts.},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/LSC9T9DY/Nataraj et al. - 2010 - A framework for scalable, parallel performance mon.pdf}
 }
 
 @inproceedings{Newel2021:RAS,
@@ -1639,6 +1854,22 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/AsyncFrameworks/2006_shende_malony_the_tau_parallel_performance_system.pdf}
 }
 
+@inproceedings{Shipm2006:InfinibandScalabilityOpen,
+  title = {Infiniband Scalability in {{Open MPI}}},
+  booktitle = {Proceedings 20th {{IEEE International Parallel}} \& {{Distributed Processing Symposium}}},
+  author = {Shipman, G.M. and Woodall, T.S. and Graham, R.L. and Maccabe, A.B. and Bridges, P.G.},
+  date = {2006-04},
+  pages = {10 pp.-},
+  issn = {1530-2075},
+  doi = {10.1109/IPDPS.2006.1639335},
+  url = {https://ieeexplore.ieee.org/document/1639335/},
+  urldate = {2025-08-18},
+  abstract = {Infiniband is becoming an important interconnect technology in high performance computing. Efforts in large scale Infiniband deployments are raising scalability questions in the HPC community. Open MPI, a new open source implementation of the MPI standard targeted for production computing, provides several mechanisms to enhance Infiniband scalability. Initial comparisons with MVAPICH, the most widely used Infiniband MPI implementation, show similar performance but with much better scalability characteristics. Specifically, small message latency is improved by up to 10\% in medium/large jobs and memory usage per host is reduced by as much as 300\%. In addition, Open MPI provides predictable latency that is close to optimal without sacrificing bandwidth performance.},
+  eventtitle = {20th {{IEEE International Parallel}} \& {{Distributed Processing Symposium}}},
+  keywords = {Bandwidth,Bridges,Computer science,Delay,High performance computing,Laboratories,Large-scale systems,Production,Samarium,Scalability},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/ibcc/2006_shipman_et_al_infiniband_scalability_in_open_mpi.pdf}
+}
+
 @article{Sigel:DapperLargeScaleDistributed,
   title = {Dapper, a {{Large-Scale Distributed Systems Tracing Infrastructure}}},
   author = {Sigelman, Benjamin H and Barroso, Luiz Andre and Burrows, Mike and Stephenson, Pat and Plakal, Manoj and Beaver, Donald and Jaspan, Saul and Shanbhag, Chandan},
@@ -1906,6 +2137,41 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2024_xiong_et_al_ superbench .pdf}
 }
 
+@article{Xuan2025:IdentifyingPerformanceInefficiencies,
+  title = {Identifying {{Performance Inefficiencies}} of {{Parallel Program With Spatial}} and {{Temporal Trace Analysis}}},
+  author = {Xuan, Zhibo and Sun, Xin and You, Xin and Yang, Hailong and Luan, Zhongzhi and Liu, Yi and Qian, Depei},
+  date = {2025-07},
+  journaltitle = {IEEE Transactions on Parallel and Distributed Systems},
+  volume = {36},
+  number = {7},
+  pages = {1387--1400},
+  issn = {1558-2183},
+  doi = {10.1109/TPDS.2025.3566735},
+  url = {https://ieeexplore.ieee.org/document/10982439/},
+  urldate = {2025-09-02},
+  abstract = {Performance inefficiencies can lead to performance anomalies in parallel programs. Existing performance analysis tools either have a limited detection scope or require significant domain knowledge to use, which constrains their practical adoption to identify performance inefficiencies. In this paper, we propose STAD, a performance analysis tool for parallel programs that considers both spatial and temporal patterns within trace data. STAD captures the spatial communication patterns between processes using a spatial communication pattern graph. It then adopts a dynamic graph neural network-based unsupervised model to learn the evolving temporal patterns along the timeline. Additionally, STAD diagnoses the root causes of performance anomalies by exploiting the aggregated feature of anomalies along the call tree. Our evaluation results demonstrate that STAD can effectively detect performance anomalies with acceptable overhead and diagnose the root causes attributed to both the program itself and the running environment.},
+  keywords = {Accuracy,Analytical models,Anomalies,Graph neural networks,Hardware,Heating systems,Libraries,parallel programs,performance analysis,Performance analysis,Phasor measurement units,root cause,Sun,Training},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/perfvar/2025_xuan_et_al_identifying_performance_inefficiencies_of_parallel_program_with_spatial_and.pdf}
+}
+
+@inproceedings{Yang2025:eGPU,
+  title = {{{eGPU}}: {{Extending eBPF Programmability}} and {{Observability}} to {{GPUs}}},
+  shorttitle = {{{eGPU}}},
+  booktitle = {Proceedings of the 4th {{Workshop}} on {{Heterogeneous Composable}} and {{Disaggregated Systems}}},
+  author = {Yang, Yiwei and Yu, Tong and Zheng, Yusheng and Quinn, Andrew},
+  date = {2025-03-30},
+  pages = {73--79},
+  publisher = {ACM},
+  location = {Rotterdam Netherlands},
+  doi = {10.1145/3723851.3726984},
+  url = {https://dl.acm.org/doi/10.1145/3723851.3726984},
+  urldate = {2025-08-28},
+  eventtitle = {{{HCDS}} '25: 4th {{Workshop}} on {{Heterogeneous Composable}} and {{Disaggregated Systems}}},
+  isbn = {9798400714702},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/ml/2025_yang_et_al_egpu.pdf}
+}
+
 @inproceedings{Yao2025:Holmes,
   title = {Holmes: {{Localizing Irregularities}} in \{\vphantom\}{{LLM}}\vphantom\{\} {{Training}} with {{Mega-scale}} \{\vphantom\}{{GPU}}\vphantom\{\} {{Clusters}}},
   shorttitle = {Holmes},
@@ -1952,6 +2218,64 @@
   abstract = {This paper presents Meta’s FBDetect system, which advances the state of the art in performance regression detection by catching regressions as small as 0.005\% in noisy production environments. FBDetect monitors around 800,000 time series covering various types of metrics (e.g., throughput, latency, CPU and memory usage) to detect regressions caused by code or configuration changes in hundreds of services running on millions of servers. FBDetect introduces advanced techniques to capture stack traces fleet-wide, measure finegrained subroutine-level performance differences, filter out deceptive false-positive regressions, deduplicate correlated regressions, and analyze root causes. Beyond these individual techniques, a key strength of FBDetect over prior work is its battle-tested robustness, proven by seven years of production use, and each year catching regressions that would have wasted millions of servers if left undetected.},
   langid = {english},
   file = {/Users/schwifty/Zotero/storage/NU4VGF9G/Yoon et al. - FBDetect Catching Tiny Performance Regressions  a.pdf}
+}
+
+@inproceedings{You2023:TrivialSpy,
+  title = {{{TrivialSpy}}: {{Identifying Software Triviality}} via {{Fine-grained}} and {{Dataflow-based Value Profiling}}},
+  shorttitle = {{{TrivialSpy}}},
+  booktitle = {Proceedings of the {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  author = {You, Xin and Yang, Hailong and Lei, Kelun and Luan, Zhongzhi and Qian, Depei},
+  date = {2023-11-12},
+  pages = {1--13},
+  publisher = {ACM},
+  location = {Denver CO USA},
+  doi = {10.1145/3581784.3607052},
+  url = {https://dl.acm.org/doi/10.1145/3581784.3607052},
+  urldate = {2025-09-02},
+  eventtitle = {{{SC}} '23: {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  isbn = {9798400701092},
+  langid = {english}
+}
+
+@inproceedings{You2023:VClinic,
+  title = {{{VClinic}}: {{A Portable}} and {{Efficient Framework}} for {{Fine-Grained Value Profilers}}},
+  shorttitle = {{{VClinic}}},
+  booktitle = {Proceedings of the 28th {{ACM International Conference}} on {{Architectural Support}} for {{Programming Languages}} and {{Operating Systems}}, {{Volume}} 2},
+  author = {You, Xin and Yang, Hailong and Lei, Kelun and Luan, Zhongzhi and Qian, Depei},
+  date = {2023-01-27},
+  pages = {892--904},
+  publisher = {ACM},
+  location = {Vancouver BC Canada},
+  doi = {10.1145/3575693.3576934},
+  url = {https://dl.acm.org/doi/10.1145/3575693.3576934},
+  urldate = {2025-09-02},
+  eventtitle = {{{ASPLOS}} '23: 28th {{ACM International Conference}} on {{Architectural Support}} for {{Programming Languages}} and {{Operating Systems}}, {{Volume}} 2},
+  isbn = {978-1-4503-9916-6},
+  langid = {english}
+}
+
+@inproceedings{You2024:GVARP,
+  title = {{{GVARP}}: {{Detecting Performance Variance}} on {{Large-Scale Heterogeneous Systems}}},
+  shorttitle = {{{GVARP}}},
+  booktitle = {{{SC24}}: {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  author = {You, Xin and Xuan, Zhibo and Yang, Hailong and Luan, Zhongzhi and Liu, Yi and Qian, Depei},
+  date = {2024-11},
+  pages = {1--16},
+  doi = {10.1109/SC41406.2024.00063},
+  url = {https://ieeexplore.ieee.org/document/10793232/},
+  urldate = {2025-09-02},
+  abstract = {Performance variance is one of the nasty pitfalls of large-scale heterogeneous systems, which can lead to unexpected and unpredictable performance degradation for parallel programs. Such performance issues typically arise from various random hardware and software faults, making it exceedingly difficult to pinpoint the exact causes of performance variance in specific instances. In this paper, we propose GVARP, a performance variance detection tool for large-scale heterogeneous systems. GVARP employs static analysis to identify the performancecritical parameters of kernel functions. Additionally, GVARP segments the program execution with external library calls and asynchronous kernel operations. Then GVARP constructs a state transfer graph and estimates the workload of each program segment to identify and cluster instances of similar workloads, facilitating the detection of performance variance. Our evaluation results demonstrate that GVARP effectively detects performance variance at a large scale with acceptable overhead and provides intuitive insights to locate the sources of performance variance.},
+  eventtitle = {{{SC24}}: {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  keywords = {Degradation,Hardware,High performance computing,Kernel,Large-Scale Heterogeneous System,Libraries,Performance Analysis,Performance Variance,Software,Static analysis},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/perfvar/2024_you_et_al_gvarp.pdf}
+}
+
+@article{Zhang:VulcanAutomaticQuery,
+  title = {Vulcan: {{Automatic Query Planning}} for {{Live ML Analytics}}},
+  author = {Zhang, Yiwen and Zhang, Xumiao and Ananthanarayanan, Ganesh and Iyer, Anand and Shu, Yuanchao and Bahl, Victor and Mao, Z Morley and Chowdhury, Mosharaf},
+  abstract = {Live ML analytics have gained increasing popularity with large-scale deployments due to recent evolution of ML technologies. To serve live ML queries, experts nowadays still need to perform manual query planning, which involves pipeline construction, query configuration, and pipeline placement across multiple edge tiers in a heterogeneous infrastructure. Finding the best query plan for a live ML query requires navigating a huge search space, calling for an efficient and systematic solution.},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/JXVKPEIZ/Zhang et al. - Vulcan Automatic Query Planning for Live ML Analy.pdf}
 }
 
 @inproceedings{Zhang2023:OptimizingDataMovement,
@@ -2023,4 +2347,22 @@
   abstract = {Network telemetry is essential for service availability and performance in large-scale production environments. While there is recent advent in novel measurement primitives and algorithms for network telemetry, a challenge that is not well studied is Change. Facebook runs fast-evolving networks to adapt to varying application requirements. Changes occur not only in the data collection and processing stages but also when interpreted and consumed by applications. In this paper, we present PCAT, a production change-aware telemetry system that handles changes in fast-evolving networks. We propose to use a change cube abstraction to systematically track changes, and an intent-based layering design to confine and track changes. By sharing our experiences with PCAT, we bring a new aspect to the monitoring research area: improving the adaptivity and evolvability of network telemetry.},
   langid = {english},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/_zhou_et_al_evolvable_network_telemetry_at_facebook.pdf}
+}
+
+@inproceedings{Zhu2015:CongestionControlLargeScale,
+  title = {Congestion {{Control}} for {{Large-Scale RDMA Deployments}}},
+  booktitle = {Proceedings of the 2015 {{ACM Conference}} on {{Special Interest Group}} on {{Data Communication}}},
+  author = {Zhu, Yibo and Eran, Haggai and Firestone, Daniel and Guo, Chuanxiong and Lipshteyn, Marina and Liron, Yehonatan and Padhye, Jitendra and Raindel, Shachar and Yahia, Mohamad Haj and Zhang, Ming},
+  date = {2015-08-17},
+  pages = {523--536},
+  publisher = {ACM},
+  location = {London United Kingdom},
+  doi = {10.1145/2785956.2787484},
+  url = {https://dl.acm.org/doi/10.1145/2785956.2787484},
+  urldate = {2025-09-05},
+  abstract = {Modern datacenter applications demand high throughput (40Gbps) and ultra-low latency ({$<$} 10 µs per hop) from the network, with low CPU overhead. Standard TCP/IP stacks cannot meet these requirements, but Remote Direct Memory Access (RDMA) can. On IP-routed datacenter networks, RDMA is deployed using RoCEv2 protocol, which relies on Priority-based Flow Control (PFC) to enable a drop-free network. However, PFC can lead to poor application performance due to problems like head-of-line blocking and unfairness. To alleviates these problems, we introduce DCQCN, an end-to-end congestion control scheme for RoCEv2. To optimize DCQCN performance, we build a fluid model, and provide guidelines for tuning switch buffer thresholds, and other protocol parameters. Using a 3-tier Clos network testbed, we show that DCQCN dramatically improves throughput and fairness of RoCEv2 RDMA traffic. DCQCN is implemented in Mellanox NICs, and is being deployed in Microsoft’s datacenters.},
+  eventtitle = {{{SIGCOMM}} '15: {{ACM SIGCOMM}} 2015 {{Conference}}},
+  isbn = {978-1-4503-3542-3},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/X9EBYMRT/Zhu et al. - 2015 - Congestion Control for Large-Scale RDMA Deployment.pdf}
 }

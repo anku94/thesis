@@ -15,3 +15,14 @@ local
 .DS_Store
 .*swp
 .cursor
+ppts/proposal/ext
+ppts/proposal/main_files/libs
+ppts/proposal/main.html
+ppts/proposal/main.pdf
+ppts/proposal/main.pptx
+ppts/proposal/main.qmd
+ppts/proposal/proposal_talk.pdf
+ppts/proposal/talk_bak.pptx
+ppts/proposal/talk_forpdf.pptx
+ppts/proposal/talk_pdf.pdf
+ppts/proposal/talk_shared.pptx

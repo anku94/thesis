@@ -15,6 +15,25 @@
   file = {/Users/schwifty/Zotero/storage/5Z2XQRTE/AMReX_ParallelDescriptor.html}
 }
 
+@online{:ApacheArrow,
+  title = {Apache {{Arrow}}},
+  url = {https://arrow.apache.org/},
+  urldate = {2025-05-26},
+  abstract = {The universal columnar format and multi-language toolbox for fast data interchange and in-memory analytics},
+  langid = {american},
+  organization = {Apache Arrow},
+  file = {/Users/schwifty/Zotero/storage/7PNDA9TJ/arrow.apache.org.html}
+}
+
+@online{:ApacheParquet,
+  title = {Apache {{Parquet}}},
+  url = {https://parquet.apache.org/docs/overview/},
+  urldate = {2025-05-26},
+  abstract = {All about Parquet.},
+  langid = {english},
+  organization = {Apache Parquet}
+}
+
 @online{:DatafusionraySrcContextrs,
   title = {Datafusion-Ray/Src/Context.Rs at Main · Apache/Datafusion-Ray},
   url = {https://github.com/apache/datafusion-ray/blob/main/src/context.rs},
@@ -119,6 +138,21 @@
   url = {https://web.archive.org/web/20240423160500/http://charm.cs.illinois.edu/newPapers/20-04/paper.pdf},
   urldate = {2024-09-30},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/AsyncFrameworks/2024__wayback_machine.pdf}
+}
+
+@inproceedings{Aaziz2019:FineGrainedAnalysisCommunication,
+  title = {Fine-{{Grained Analysis}} of {{Communication Similarity}} between {{Real}} and {{Proxy Applications}}},
+  booktitle = {2019 {{IEEE}}/{{ACM Performance Modeling}}, {{Benchmarking}} and {{Simulation}} of {{High Performance Computer Systems}} ({{PMBS}})},
+  author = {Aaziz, Omar and Vaughan, Courtenay and Cook, Jonathan and Cook, Jeanine and Kuehn, Jeffery and Richards, David},
+  date = {2019-11},
+  pages = {93--102},
+  doi = {10.1109/PMBS49563.2019.00016},
+  url = {https://ieeexplore.ieee.org/document/9059265},
+  urldate = {2025-08-04},
+  abstract = {In this work we investigate the dynamic communication behavior of parent and proxy applications, and investigate whether or not the dynamic communication behavior of the proxy matches that of its respective parent application. The idea of proxy applications is that they should match their parent well, and should exercise the hardware and perform similarly, so that from them lessons can be learned about how the HPC system and the application can best be utilized. We show here that some proxy/parent pairs do not need the extra detail of dynamic behavior analysis, while others can benefit from it, and through this we also identified a parent/proxy mismatch and improved the proxy application.},
+  eventtitle = {2019 {{IEEE}}/{{ACM Performance Modeling}}, {{Benchmarking}} and {{Simulation}} of {{High Performance Computer Systems}} ({{PMBS}})},
+  keywords = {Computational modeling,High performance computing,Performance evaluation,Proxy applications,Time-varying systems,Workload characterization},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/workloads/2019_aaziz_et_al_fine-grained_analysis_of_communication_similarity_between_real_and_proxy.pdf}
 }
 
 @inproceedings{Acun2014:Charm++,
@@ -238,6 +272,14 @@
   file = {/Users/schwifty/Zotero/storage/6DR3EIC6/Alipourfard and Yu - CherryPick Adaptively Unearthing the Best Cloud C.pdf}
 }
 
+@software{Ankus2025:cplx,
+  title = {{{AMR Tools}}},
+  shorttitle = {Cplx},
+  author = {{Ankush Jain}},
+  date = {2025-08-08},
+  url = {https://github.com/pdlfs/amr-tools}
+}
+
 @inproceedings{Bak2018:MultiLevelLoadBalancing,
   title = {Multi-{{Level Load Balancing}} with an {{Integrated Runtime Approach}}},
   booktitle = {2018 18th {{IEEE}}/{{ACM International Symposium}} on {{Cluster}}, {{Cloud}} and {{Grid Computing}} ({{CCGRID}})},
@@ -338,6 +380,41 @@
   eventtitle = {2015 {{IEEE International Parallel}} and {{Distributed Processing Symposium}}},
   keywords = {congestion,Data models,Hardware,interconnection network,machine learning,modeling,performance prediction,Prediction algorithms,Predictive models,Regression tree analysis,root cause,Three-dimensional displays,Vegetation},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/AsyncFrameworks/2015_bhatele_et_al_identifying_the_culprits_behind_network_congestion.pdf;/Users/schwifty/Zotero/storage/PNSX9DAV/7161501.html}
+}
+
+@inproceedings{Bhate2019:Hatchet,
+  title = {Hatchet: Pruning the Overgrowth in Parallel Profiles},
+  shorttitle = {Hatchet},
+  booktitle = {Proceedings of the {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  author = {Bhatele, Abhinav and Brink, Stephanie and Gamblin, Todd},
+  date = {2019-11-17},
+  pages = {1--21},
+  publisher = {ACM},
+  location = {Denver Colorado},
+  doi = {10.1145/3295500.3356219},
+  url = {https://dl.acm.org/doi/10.1145/3295500.3356219},
+  urldate = {2025-08-06},
+  abstract = {Performance analysis is critical for eliminating scalability bottlenecks in parallel codes. There are many profiling tools that can instrument codes and gather performance data. However, analytics and visualization tools that are general, easy to use, and programmable are limited. In this paper, we focus on the analytics of structured profiling data, such as that obtained from calling context trees or nested region timers in code. We present a set of techniques and operations that build on the pandas data analysis library to enable analysis of parallel profiles. We have implemented these techniques in a Python-based library called Hatchet that allows structured data to be filtered, aggregated, and pruned. Using performance datasets obtained from profiling parallel codes, we demonstrate performing common performance analysis tasks reproducibly with a few lines of Hatchet code. Hatchet brings the power of modern data science tools to bear on performance analysis.},
+  eventtitle = {{{SC}} '19: {{The International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}}, and {{Analysis}}},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/RG8HCZLX/Bhatele et al. - 2019 - Hatchet pruning the overgrowth in parallel profil.pdf}
+}
+
+@inproceedings{Boehm2016:Caliper,
+  title = {Caliper: {{Performance Introspection}} for {{HPC Software Stacks}}},
+  shorttitle = {Caliper},
+  booktitle = {{{SC}} '16: {{Proceedings}} of the {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  author = {Boehme, David and Gamblin, Todd and Beckingsale, David and Bremer, Peer-Timo and Gimenez, Alfredo and LeGendre, Matthew and Pearce, Olga and Schulz, Martin},
+  date = {2016-11},
+  pages = {550--560},
+  issn = {2167-4337},
+  doi = {10.1109/SC.2016.46},
+  url = {https://ieeexplore.ieee.org/abstract/document/7877125},
+  urldate = {2025-08-06},
+  abstract = {Many performance engineering tasks, from long-term performance monitoring to post-mortem analysis and online tuning, require efficient runtime methods for introspection and performance data collection. To understand interactions between components in increasingly modular HPC software, performance introspection hooks must be integrated into runtime systems, libraries, and application codes across the software stack. This requires an interoperable, cross-stack, general-purpose approach to performance data collection, which neither application-specific performance measurement nor traditional profile or trace analysis tools provide. With Caliper, we have developed a general abstraction layer to provide performance data collection as a service to applications, runtime systems, libraries, and tools. Individual software components connect to Caliper in independent data producer, data consumer, and measurement control roles, which allows them to share performance data across software stack boundaries. We demonstrate Caliper's performance analysis capbilities with two case studies of production scenarios.},
+  eventtitle = {{{SC}} '16: The {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  keywords = {Computer performance,Context,Data models,High performance computing,Instruments,Libraries,Parallel processing,Performance analysis,Runtime,Semantics,Software,Software performance,Software reusability,Software tools},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2016_boehme_et_al_caliper.pdf}
 }
 
 @article{Bordn:AdaptiveMeshRe,
@@ -594,6 +671,21 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/2019_emerick_enzo-e-cello_project.pdf}
 }
 
+@incollection{Eschw2012:OTF2,
+  title = {Open {{Trace Format}} 2: {{The Next Generation}} of {{Scalable Trace Formats}} and {{Support Libraries}}},
+  shorttitle = {{{OTF2}}},
+  booktitle = {Advances in {{Parallel Computing}}},
+  author = {{Eschweiler Dominic} and {Wagner Michael} and {Geimer Markus} and {Kn\&uuml;pfer Andreas} and {Nagel Wolfgang E.} and {Wolf Felix}},
+  date = {2012},
+  publisher = {IOS Press},
+  doi = {10.3233/978-1-61499-041-3-481},
+  url = {https://www.medra.org/servlet/aliasResolver?alias=iospressISSNISBN&issn=0927-5452&volume=22&spage=481},
+  urldate = {2025-07-15},
+  abstract = {A well designed event trace data format is the basis of all trace-based analysis methods. In this paper, we introduce the Open Trace Format Version 2 (OTF2). It is a major re-design based on the experiences of its predecessor formats, the Open Trace Format (Version 1) and the EPILOG trace format. It comes with a new file encoding, a close integration in the trace recording system Score-P, and a number of improvements for performance and scalability. Besides the actual format, it consists of a read/write support library with a powerful API plus supportive tools, which are distributed as Open Source software. Furthermore, OTF2 will serve as a joint data source for the analysis tools Scalasca and Vampir in the near future.},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/SL42S8NF/Eschweiler Dominic et al. - 2012 - Open Trace Format 2 The Next Generation of Scalab.pdf}
+}
+
 @inproceedings{Gangi2024:RDMA,
   title = {{{RDMA}} over {{Ethernet}} for {{Distributed Training}} at {{Meta Scale}}},
   shorttitle = {{{RDMA}}},
@@ -662,6 +754,15 @@
   urldate = {2024-06-10},
   langid = {english},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/AMR-Codes/2008_gittings_et_al_the_rage_radiation-hydrodynamic_code.pdf}
+}
+
+@online{Googl:TraceEventFmt,
+  title = {Catapult - {{The}} Trace-Event File Format},
+  shorttitle = {{{TraceEventFmt}}},
+  author = {{Google}},
+  url = {https://chromium.googlesource.com/catapult/+/HEAD/docs/trace-event-format.md},
+  urldate = {2025-08-08},
+  file = {/Users/schwifty/Zotero/storage/CDB2DVUA/trace-event-format.html}
 }
 
 @article{Graha1969:LPT,
@@ -1487,6 +1588,13 @@
   isbn = {9798400702297},
   keywords = {network/storage co-design,rack-scale storage,software-defined flash,software-defined networking},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/2023_reidys_et_al_rackblox.pdf}
+}
+
+@article{Richa:QuantitativePerformanceAssessment,
+  title = {Quantitative {{Performance Assessment}} of {{Proxy Apps}} and {{Parents}}},
+  author = {Richards, David and Aaziz, Omar and Cook, Jeanine and Kuehn, Jeffery and Moore, Shirley and Pruitt, David and Vaughan, Courtenay},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/DUV9AL9I/Richards et al. - Quantitative Performance Assessment of Proxy Apps .pdf}
 }
 
 @article{Rider:VeryBriefHistory,
