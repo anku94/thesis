@@ -1,0 +1,30 @@
+\section{Range Query Challenges}
+\label{sec:carp:distrib}
+
+Sorted, clustered indexes provide the lowest query latency but require post-processing to reorder data. Sorting large on-disk datasets is even more expensive than building auxiliary indices, as it requires multiple read/write passes over the data~\cite{Rasmu2011:TritonSort}.
+
+As an alternative to reordering via post-processing, data can be partitioned into \emph{range-based partitions} while in transit from the application to storage. This accelerate queries, as only a small number of relevant partitions need to be retrieved from storage for each query. While range partitioning is a well-known technique in distributed databases, adapting it to in-situ partitioning of scientific data requires overcoming two key challenges we describe next.
+
+\textbf{Write Rate.} To organize data in a way that does not reduce the application write throughput,
+it is not sufficient to partition data online. The indexing pipeline must be designed to not require any storage bandwidth for reordering or index maintenance. Conventional databases use reordering to maintain their partitions, which reduces effective storage bandwidth~\cite{Ganes2004:OnlineRangePartitioning,Konst2011:FastCostEffectiveOnline}. As on-disk partitions grow beyond configured sizes, they are split into smaller partitions and migrated across nodes.
+
+The maximum achievable write rate is a function of the average number of I/O operations performed for each application write, also called the \emph{Write Amplification Factor} (WAF). A WAF of 10 will turn an I/O phase lasting 12 minutes into 2 hours, which is wasteful for write-intensive large-scale scientific applications. WAF for write-optimized single-node database indexes has been measured at 19-37~\cite{Raju2017:PebblesDB} and is much higher for B-tree indexes and distributed databases~\cite{Qiao2022:ClosingTreeVs}. In-situ strategies that have a high WAF would not outperform post-processing approaches (WAF of 2-3$\times$). To maximize gains from an in-situ indexing approach, we constrain our design to a WAF of 1$\times$.
+
+\textbf{Adaptivity.} Effective range-partitioning requires the key space to be partitioned such that the generated data partitions are relatively balanced. This is important for both write and query performance. On the write path, this ensures that the application is not slowed down by a straggler writing a significantly larger partition than others. On the query path, imbalanced partitions will lead to much slower performance for queries corresponding to those partitions.
+
+However, we find that keys in scientific data are often skewed in unpredictable ways and change as the simulation progresses. Specifically, we studied the energy distributions of two applications --- VPIC and Phoebus. VPIC is a plasma physics code that simulates particle physics phenomena such as magnetic reconnection \cite{Byna2012}. Phoebus is a mesh-based hydrodynamics code that we run with a Sedov blast wave setup \cite{Barke2024:Phoebus}. We ran both codes at 512 ranks and studied the energy distributions in the output data.
+
+\cref{fig:carp:distrib} shows the energy distributions of both the codes over time. For VPIC (\cref{fig:carp:distrib-vpic}), we find that the energy distributions are highly skewed with most particles falling between 0 and 1 with long tails that get longer and heavier as the simulation progresses. Towards the second half of the simulation, 20-30\% of the data is contained within the tail generating a bimodal distribution with a second mode between 16 and 64. For Phoebus (\cref{fig:carp:distrib-amr}), we also see a highly skewed distribution with a tail. Initially, there is a high energy explosion but most of the mesh has no energy. Over time, the energy from the explosion dissipates into a bigger area and moves the distribution into a medium energy band.
+
+These findings highlight the challenges with partitioning keys from scientific workloads. A highly precise reconstruction of the key distribution is necessary to divide the keyspace into  a large number of balanced partitions. It is also impractical for any user-provided static range partitioning scheme to accommodate such skewed and dynamic key distributions. A distributed database would only be able to balance its partitions after a series of splitting, rewriting, and merging operations, incurring prohibitive index construction costs. An ideal range query index would discover and adapt to workload characteristics and reorder data without consuming excess storage bandwidth.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.5\textwidth}
+  \figdistribvpic
+  \end{subfigure}
+  \begin{subfigure}[b]{0.5\textwidth}
+  \figdistribamr
+  \end{subfigure}
+  \capfigdistrib
+\end{figure}

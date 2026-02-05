@@ -1,0 +1,37 @@
+\section{Discussion}
+\label{sec:carp:disc}
+
+In this section, we discuss how CARP can be adapted for different query types, analyses, and architectures. We also describe how CARP can interoperate with other storage formats and indexing techniques.
+
+\textbf{Multi-attribute Queries}. In this paper, we focus on using CARP to build a sorted, clustered index on a preferred attribute. For applications such as VPIC, indexing on a single attribute is sufficient to identify and retrieve points of interest (high-energy particles), and apply subsequent transformations in memory. However, CARP can be extended to build sorted, auxiliary attributes on additional attributes. This would require CARP to track distributions of all configured attributes and use a two-stage shuffling pipeline as described below:
+
+\begin{itemize}
+  \item First, the entire row is shuffled using the primary attribute as usual. The receiver serializes all rows, assigns them a unique \texttt{row\_id}, and writes them to the local storage backend. Each receiver then computes a \texttt{(key, partition\_id, row\_id)} tuple for each additional indexed attribute and shuffles it via the same pipeline.
+  \item Each receiver of the auxiliary attribute tuples writes them to separate storage backend instances, where each row points to the full row on the primary key partition.
+\end{itemize}
+
+The additional attributes will not have the query performance of the primary attribute but will still benefit from the space efficiency and index lookup performance of sorted indices (vs bitmap indexes).
+
+\textbf{Applications and architectures}. CARP can be used to ingest data from any parallel application where storage bandwidth is the bottleneck. The assumptions we make are typical of such analysis workflows:
+
+\begin{enumerate}
+  \item Data is not modified once ingested.
+  \item Spare network bandwidth is available for shuffling. This is true by definition for any storage-bound workflow and holds for most HPC clusters. The Aurora cluster~\cite{Morga2023:AuroraRising} at ANL, for example, has a bisection bandwidth of 690 TB/s, more than 20$\times$ the storage bandwidth (31 TB/s).
+  \item Write performance is paramount, and the goal is to provide acceptable query performance without compromising write performance. Where the goal is optimal query performance (as with a web service), a distributed database is more appropriate.
+\end{enumerate}
+
+\textbf{Storage Formats.} Developing our own storage backend allowed us to identify the most important properties for an efficient storage backend and on-disk format. CARP-partitioned output can be directly written to columnar formats like Parquet. This would automatically accelerate queries, as Parquet maintains statistics (min/max etc.) on each rowgroup, and CARP-partitioned rowgroups would have a tighter range and require less I/O at query time.
+
+However, as we show in \S\ref{sec:carp:eval_mb}, repartitioning on shuffle receivers significantly improves partition quality. A writer that can receive repartitioning hints from CARP and use them to further optimize data before writing to Parquet or other storage formats can improve query latencies by 1-2 orders of magnitude.
+
+\textbf{Indexing Techniques.} As an alternative to auxiliary CARP indices as described above, it is also possible to combine CARP with other indexing techniques.
+This also requires query engines that can generate efficient query plans by leveraging the strengths of different indexing techniques. We provide some examples below:
+
+\begin{enumerate}
+\item Different auxiliary index structures (such as bitmap indexes) can be built either in-situ on auxiliary nodes, or as a post-processing stage.
+\item On the query path, raw-data indexing approaches can further improve index quality incrementally, in response to user queries.
+\item CARP's approximately sorted output can be incrementally converted into a fully sorted layout on the query path by writing back the merged SSTs that are computed for user queries.
+
+\end{enumerate}
+
+To leverage the full potential of different indexing techniques, it is necessary to develop end-to-end analysis engines that can understand user analysis requirements and generate an appropriate combination of in-situ embedded, in-situ auxiliary, and (if necessary) post-processing transformations using different techniques.
