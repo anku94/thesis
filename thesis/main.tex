@@ -54,12 +54,13 @@
     citestyle=numeric-comp,
 ]{biblatex}
 
-\addbibresource{bib/amr.bib}
-\addbibresource{bib/general-thesis.bib}
-\addbibresource{bib/netsketch.bib}
-\addbibresource{bib/netsketch-mon.bib}
-\addbibresource{bib/p3.bib}
-\addbibresource{bib/range_queries.bib}
+\addbibresource{bib/zotero.bib}
+% \addbibresource{bib/amr.bib}
+% \addbibresource{bib/general-thesis.bib}
+% \addbibresource{bib/netsketch.bib}
+% \addbibresource{bib/netsketch-mon.bib}
+% \addbibresource{bib/p3.bib}
+% \addbibresource{bib/range_queries.bib}
 
 % remove some metadata
 \AtEveryBibitem{%
@@ -101,6 +102,11 @@
 % For math symbols
 \usepackage{amsmath}
 \usepackage{amssymb}
+
+% For tables
+\usepackage{booktabs}
+\usepackage{array}
+
 %%% --- Commands ---
 \newcommand{\ga}[1]{\textcolor{red!70!black}{@GA: #1}}
 \newcommand{\aj}[1]{\textcolor{blue!70!black}{@AJ: #1}}
@@ -122,6 +128,10 @@
 
 %% -- Enumerate styling --
 \setlist{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
+
+%%% --- Macros and Figures ---
+\input{tex/99-macros}
+\input{tex/99-figs-carp}
 
 %%% --- Document Begins ---
 \begin{document}
@@ -153,6 +163,20 @@
 
 \newpage
 \input{tex/6-timeline}
+
+%%% --- CARP Paper ---
+\chapter{CARP Paper}
+\label{chap:carp-paper}
+\input{tex/01-carp/00-abstract}
+\input{tex/01-carp/01-intro}
+\input{tex/01-carp/02-background}
+\input{tex/01-carp/03-challenges}
+\input{tex/01-carp/04-principles}
+\input{tex/01-carp/05-design}
+\input{tex/01-carp/06-impl}
+\input{tex/01-carp/07-eval}
+\input{tex/01-carp/08-disc}
+\input{tex/01-carp/09-relwork}
 
 % %% --- Appendix (Optional) --- \appendix \chapter{Supplementary Material} Add raw data, code
 % listings, or extended discussion here.
