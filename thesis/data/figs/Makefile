@@ -4,7 +4,7 @@ ORCAROOT := /Users/schwifty/Repos/mon-paper/data/tikz-exps/pdf
 
 CARPFILES := distrib6.pdf distrib.amr.pdf distrib.vpic.pdf
 CARPEVALFILES := qlatvssel.v6.pdf runtime.v4.werr.pdf query.ycsb.v3.pdf pvtbench.adapt.pdf rtp.latvspvtcnt.pdf pvtbench.epxpp.pdf carpdb.impact.alt4.pdf load.vs.params.pdf runtime.vs.params.pdf
-AMRFILES  := lesson_ordering_v5.pdf msgcnt_regr_vert.pdf blastwave_runtime_wide.pdf lesson_volfunc_v2_short_zoom.pdf
+AMRFILES  := msgcnt_regr.pdf lesson_volfunc_v2_short_zoom.pdf lesson_throttling_v4.pdf lesson_ordering_v5.pdf criticalpath2.pdf criticalpath.pdf sendorder_v2.pdf octree.pdf blastwave_runtime_wide.pdf blastwave_tradeoff_wide_mini.pdf blastwave_comm_wide_mini.pdf meshdriver_locbench.pdf scaling.pdf
 ORCAFILES := sampling.pdf overlay-agg-new.pdf
 
 CARPTARGETS := $(addprefix carp_,$(CARPFILES)) $(addprefix carp_,$(CARPEVALFILES))

@@ -1,0 +1,280 @@
+% ! TeX root = ./main_ieee.tex
+\section{Evaluation of Placement Policies}\label{sec:amr:eval}
+
+\newcommand{\baseline}{\texttt{Baseline}} \newcommand{\cpla}{\texttt{CPL0}}
+\newcommand{\cplb}{\texttt{CPL25}} \newcommand{\cplc}{\texttt{CPL50}}
+\newcommand{\cpld}{\texttt{CPL75}} \newcommand{\cple}{\texttt{CPL100}}
+
+\tableruns
+\figevalbwwidemini
+
+In this section, we evaluate CPLX under real AMR workloads and synthetic microbenchmarks.
+While {\cple} (pure LPT) and the baseline policy represent known quantities, our key question is
+whether intermediate values of $X$ can provide meaningful control over the locality-balance
+tradeoff.
+For CPLX to be successful, it must achieve three goals: intermediate values should demonstrate
+measurable control over both communication patterns and runtime performance, achieve minimum
+runtime if the tradeoff is worth balancing, and maintain low runtime overhead even in setups with
+rapid refinement.
+We evaluate these aspects by comparing different values of $X$ against {\cple} as our reference
+point.
+
+We primarily evaluate CPLX using the Sedov Blast Wave 3D problem in
+Phoebus~\cite{Barke2024:Phoebus}, a hydrodynamics code built on top of the
+Parthenon~\cite{Grete2023:Parthenon} framework.
+While we also studied placement in other codes, such as a galaxy cooling setup in
+AthenaPK~\cite{Grete2023:Parthenon}, results were directionally similar: codes with high compute
+variability benefit more from better placement, and vice-versa.
+We describe our hardware setup in \S\ref{sec:amr:eval:setup}, present Sedov results in
+\S\ref{sec:amr:eval:sedov}, and use microbenchmarks to evaluate CPLX's load balance and locality
+properties under different synthetic regimes in \S\ref{sec:amr:eval:micro}.
+
+
+\subsection{Experimental Setup}\label{sec:amr:eval:setup}
+
+% We use four setups of the Sedov Blast Wave problem, as shown in Table 1. We configure the initial
+% mesh size to initially have one block per rank. The number of blocks quickly increases due to
+% refinement, settling at $\sim$2 blocks per rank towards the end of the simulation. The initial and
+% final block counts, and the total and the load-balancing timesteps are also shown in Table 1. 
+We evaluate four configurations of the Sedov Blast Wave problem, as detailed in Table 1.
+Each run begins with one block per rank, increasing as refinement proceeds, and finally settling at
+\mytilde{}two blocks per rank.
+The table reports initial and final block counts, total steps, and load-balancing invocations.
+
+% All experiments were run on the tuned research cluster described in \S\ref{sec:amr:tele}, with 16
+% ranks per node, at scales ranging from 512--4096 ranks. All telemetry was collected using the
+% custom profiling tool described in \S\ref{sec:amr:chal}. We compare the baseline policy with 5
+% parameters for CPLX (0--100 in increments of 25). The results reported here are gains from
+% placement against the tuned baseline. We do not report runtime gains from tuning because of the
+% variable impact of different parameters across codes and scales, and the difficulty of reproducing
+% issues with fail-slow hardware.
+
+All experiments ran on the tuned Emulab-backed cluster described in \S\ref{sec:amr:tele}, with 16 ranks
+per node, at scales from 512--4096 ranks.
+Telemetry was collected using the custom profiling stack described in \S\ref{sec:amr:chal}.
+We compare the tuned baseline against CPLX with X $\in \{0, 25, 50, 75, 100\}$, and only report
+runtime gains from placement.
+Runtime gains from tuning are omitted because of variable impact across different codes and scales.
+
+\parahead{Hardware Checks}
+To ensure experimental integrity, all reserved nodes were scanned for hardware issues---thermal
+throttling, memory errors etc.---before every individual run in each parameter suite using the
+process described in \S\ref{sec:amr:tele}.
+All reported results are from runs where no participating node showed issues either before or after
+execution.
+
+\parahead{Software Stack}
+All experiments used MVAPICH2~v2.3.7~\cite{Panda2021:MVAPICH}, compiled against a tuned version of
+PSM~\cite{2020:IntelPerformanceScaled}, the userspace library for our QLogic fabric.
+
+\subsection{Sedov Blast Wave Results}\label{sec:amr:eval:sedov}
+
+We evaluate five placement policies on the Sedov Blast Wave problem across four scales (512--4096
+ranks), comparing baseline performance against CPLX, as $X$ is varied from 0--100.
+% : baseline (CPL0), pure LPT (CPL100), and three CPLX hybrids with intermediate values of the
+% locality parameter $X$. All runs were executed on a tuned cluster with verified measurement
+% stability.
+The analysis focuses on overall runtime behavior (\cref{fig:amr:eval:runtime:wide}), the
+synchronization---communication tradeoff (\cref{fig:amr:eval:tradeoff:wide}), and P2P communication
+patterns (\cref{fig:amr:eval:comm:wide}).
+
+\finding{1}{Baseline: synchronization reaches 50\% of total runtime at scale}
+
+\Cref{fig:amr:eval:runtime:wide} shows total runtime across all policies,
+decomposed into computation, communication, synchronization, and rebalancing
+phases.
+With baseline placement, computation and synchronization dominate the profile, jointly accounting
+for over 90\% of execution time at all scales.
+Communication and rebalancing remain minor components, contributing approximately 7\% and 3\%
+respectively.
+Synchronization overhead grows sharply with scale---from 35\% at 512 ranks to 50\% at 4096 ranks,
+despite the tuned environment.
+These results demonstrate the challenge of managing dynamic behavior in bulk-synchronous parallel
+applications.
+Unless mitigated, runtime is dictated by stragglers, the likelihood of which only goes up with
+scale.
+
+\finding{2}{CPLX achieves up to 21.6\% overall runtime reduction, with impact increasing with scale}
+
+\Cref{fig:amr:eval:runtime:wide} also shows that all CPLX configurations outperform
+the baseline, with runtime improvements that grow more pronounced at larger scales.
+At 4096 ranks, the best-performing variant (\cple) reduces total runtime by up to \textbf{21.6\%}
+relative to baseline.
+Even at 512 ranks, CPLX achieves a 15.3\% reduction, and all values of $X$ tested yield
+improvements above 12\%.
+
+Runtime follows a clear U-shaped curve as a function of $X$: starting from \cpla{}
+(locality-preserving), decreasing to a minimum with intermediate values, and rising again toward
+\cple{} (pure LPT).
+This shape reflects the ability of CPLX to control the load-locality tradeoff in a manner that
+yields meaningful overall runtime gains.
+
+% This shape reflects the realized runtime effect of competing effects of improved load balance
+% (which reduces synchronization) and degraded locality (which increases communication), with
+% intermediate values of $X$ achieving the best compromise. 
+Crucially, compute time remains flat across all policies, confirming that the total amount of work
+is invariant to placement.
+The observed improvements arise entirely from reductions in synchronization overhead, which
+dominate non-compute runtime in the baseline configuration.
+Measured as reduction in non-compute time, the impact of CPLX becomes even more pronounced---up to
+36\% reduction at 4096 ranks.
+
+\finding{3}{CPLX enables consistent control over the load-locality tradeoff, and tradeoff impact increases with scale}
+
+\Cref{fig:amr:eval:tradeoff:wide} isolates the core tradeoff by showing P2P communication
+and synchronization times, normalized against the baseline, for all policy configurations at 512 and 4096 ranks.
+Intermediate scales are omitted for compactness, but we find them to demonstrate similar trends.
+Increasing $X$ reduces synchronization time, as expected from better load balance, while increasing
+communication time due to loss of locality.
+
+We find that modest values of $X$ (25--50) capture almost all of LPT load-balancing benefits,
+without incurring the commensurate locality cost.
+While LPT incurs a relative increase of 55\% in locality cost, its impact on the overall runtime
+remains modest as even at 4096 ranks, communication is only 13\% of the overall runtime.
+The increasing spread between intermediate $X$ values and LPT with scale suggests that the runtime
+impact of balancing the two increases with scale.
+Given the strong performance of LPT vs commercial ILP solvers (\S\ref{sec:amr:des:lpt}), this is likely
+close to the practically achievable optimum under our model of AMR placement.
+
+At 512 ranks, some CPLX configurations even reduce communication time relative to baseline---this
+is explained by the compounding effects captured by boundary communication time.
+High variance in the preceding compute kernels results in more time spent in \mpiw{} by some ranks,
+and improving load-balance has a positive downstream impact that overrides the locality cost.
+This is an illustration of higher-order placement effects that we discard for computational
+tractability.
+
+\finding{4}{P2P message volume statistics confirm locality degradation with increasing $X$}
+
+\cref{fig:amr:eval:comm:wide} shows the breakdown of local (intra-node shared memory) and
+remote (inter-node MPI) P2P messages, normalized to the total baseline message volume,
+for \cplx{} variants at 512 and 4096 ranks.
+As $X$ increases, remote message counts rise while local messages fall, reflecting the fact that
+CPLX progressively expands LPT coverage at the expense of locality.
+This tradeoff is enacted mechanically by CPLX, independent of the underlying application or
+mesh---only the runtime impact of this shift depends on workload characteristics.
+We explore workload variations further in \S\ref{sec:amr:eval:micro} using synthetic microbenchmarks.
+
+A subtler effect visible in \cref{fig:amr:eval:comm:wide} is the growth in total MPI-visible message
+volume with increasing $X$.
+This occurs because intra-rank communication---handled via \texttt{memcpy} when blocks are
+co-located---is replaced by MPI messages when placement breaks locality.
+% When placement breaks locality, these transfers become inter-rank messages, now visible in
+% MPI-level statistics.
+This shift explains part of the communication time increase observed in
+\cref{fig:amr:eval:tradeoff:wide}.
+
+Finally, even the baseline placement routes a majority of messages across nodes: at 4096 ranks,
+\textbf{64\%} of messages are already remote.
+This is an intrinsic property of space-filling curves---dimensionality reduction to 1-D preserves
+only partial spatial locality.
+\cplx{} does not introduce a new communication cost class, but extends an existing placement pattern and exposes it as a tunable parameter.
+% It extends an existing tradeoff and exposes it as a tunable axis for balancing locality against
+% synchronization overhead.
+
+\subsection{Microbenchmarks}\label{sec:amr:eval:micro}
+
+\figmicro
+
+To complement the application-level Sedov results (\S\ref{sec:amr:eval:sedov}) and enable controlled
+evaluation across a broader range of conditions, we developed two microbenchmarks.
+\commbench{} isolates P2P communication under varying placements, while \scalebench{} evaluates the effectiveness and
+computational cost of placement policies under synthetic compute imbalance.
+
+\parahead{Commbench: Simulating Boundary Communication Patterns}
+
+% \commbench{} is a synthetic microbenchmark designed to isolate boundary communication patterns and
+% evaluate the impact of placement locality on end-to-end round latency. It constructs octree-based
+% AMR meshes with realistic refinement, and derives P2P communication patterns from geometric
+% neighbor relationships (face, edge, vertex) tracked across refinement levels. \commbench{} is
+% inspired by the Halo3D-26 benchmark, but instead of using fixed-grid meshes with fixed placements,
+% it simulates a complete AMR placement pipeline and supports custom placement policies as drop-in
+% modules.
+
+\commbench{} is a synthetic microbenchmark that isolates boundary communication and
+evaluates how placement locality affects end-to-end round latency.
+It constructs octree-based AMR meshes with realistic refinement, deriving P2P patterns from
+geometric neighbor relationships (face, edge, vertex) across refinement levels.
+While inspired by the Halo3D-26 fixed-grid benchmark~\cite{Vitti2015:Ember}, \commbench{} simulates
+a full AMR placement pipeline and accepts custom placement policies as drop-in modules.
+
+Each communication round emulates a boundary exchange, with blocks exchanging messages based on
+neighbor type.
+Message sizes are realistic: face-neighbor exchanges are proportionally larger than edge or vertex
+ones.
+Meshes are refined to yield 1--2 blocks per rank, and each round includes all neighbor types.
+Timing is captured using MPI barriers before and after each round.
+Results are averaged over 100 rounds and 10 random meshes per policy.
+We discard cold-start rounds and those with latency above 10\,ms, which we found to reflect
+fabric-level recovery behavior unrelated to placement.
+
+% Each communication round emulates a boundary exchange, with blocks exchanging messages based on
+% their geometric neighbor types. Message sizes are modeled realistically: face-neighbor exchanges
+% are larger than edge or vertex ones. Meshes are refined to yield 1--2 blocks per rank, and each
+% round includes all neighbor types. Timing is captured using MPI barriers before and after each
+% round. Results are averaged over 100 rounds and 10 random meshes per policy. We discard cold-start
+% rounds as well as those with latency above 10\,ms, which we found to reflect fabric-level recovery
+% behavior that obscures placement-driven trends.
+
+\Cref{fig:amr:eval:loc} shows average round latency across placement policies as
+locality decreases from \cpla{} to \cple.
+While higher locality yields lower latency at small scales (512 ranks and below), a surprising
+U-shaped trend emerges at larger scales: intermediate values of $X$ outperform both extremes.
+This inversion is driven by face-neighbor communication, which increases as meshes get denser.
+Locality-preserving policies cluster high-traffic neighbors unevenly, increasing per-rank load.
+Intermediate \cplx{} settings diffuse this clustering without fully randomizing placement, leading
+to more uniform traffic patterns.
+Though the latency differences are modest ($\pm$0.5\,ms), the reversal of expected trends
+underscores how observed system behavior can defy theoretical intuitions.
+\commbench{} provides a practical mechanism for empirically selecting $X$ in different environments.
+
+\parahead{Scalebench: Evaluating Imbalance and Placement Overhead}
+\scalebench{} evaluates different policies at scales from 512 to 128K ranks, with 1--2 blocks per rank to enable flexible load-balancing.
+Block costs are drawn from three representative distributions---exponential, Gaussian, and
+power-law---with variability bounds chosen to create meaningful balancing opportunities while
+remaining within realistic AMR ranges.
+
+\Cref{fig:amr:eval:scal_a} plots the normalized makespan across placement policies (lower is better).
+We see that \cple{} (LPT) achieves the lowest makespan across distributions, but \cpla{} and
+\cplb{} capture the bulk of the benefits with much higher locality retention.
+\Cref{fig:amr:eval:scal_b} reports placement computation overhead as a function of scale.
+Compute costs increase with scale, but remain tractable (\mytilde{}10\,ms) up to 16K ranks, rising
+to 100\,ms at 128K ranks.
+At the largest scales, zonal placement architectures can be adopted to mitigate placement
+overhead---dividing ranks into $k$ zones to compute placement independently and in
+parallel~\cite{Zheng2011:PeriodicHierarchicalLoad}.
+
+
+% Loaded data for runs: nd512.2, nd1024.3, nd2048.2, nd4096.4 Analyzing run: nd512.2
+% ========================== Phase order: ['Total', 'Compute', 'Communication', 'Synchronization',
+% 'Rebalancing'] Expected order: ['Total', 'Compute', 'Communication', 'Synchronization',
+% 'Rebalancing'] Total : 8458s (100.00%), 7430s (100.00%), 7241s (100.00%), 7163s (100.00%), 7240s
+% (100.00%), 7357s (100.00%) Compute : 4692s (55.47%), 4694s (63.18%), 4696s (64.85%), 4701s
+% (65.63%), 4703s (64.96%), 4707s (63.98%) Communication : 668s (7.90% ), 637s (8.57% ), 638s (8.81%
+% ), 640s (8.93% ), 680s (9.39% ), 781s (10.62%) Synchronization: 3028s (35.80%), 2028s (27.29%),
+% 1834s (25.33%), 1746s (24.38%), 1777s (24.54%), 1791s (24.34%) Rebalancing : 70s (0.83% ), 71s
+% (0.96% ), 73s (1.01% ), 76s (1.06% ), 80s (1.10% ), 78s (1.06% ) Analyzing run: nd1024.3
+% ========================== Phase order: ['Total', 'Compute', 'Communication', 'Synchronization',
+% 'Rebalancing'] Expected order: ['Total', 'Compute', 'Communication', 'Synchronization',
+% 'Rebalancing'] Total : 12764s (100.00%),10770s (100.00%),10671s (100.00%),10452s (100.00%),10604s
+% (100.00%),10905s (100.00%) Compute : 6446s (50.50%), 6465s (60.03%), 6448s (60.43%), 6451s
+% (61.72%), 6448s (60.81%), 6508s (59.68%) Communication : 909s (7.12% ), 948s (8.80% ), 960s (9.00%
+% ), 984s (9.41% ), 1050s (9.90% ), 1253s (11.49%) Synchronization: 5175s (40.54%), 3115s (28.92%),
+% 3001s (28.12%), 2742s (26.23%), 2819s (26.58%), 2844s (26.08%) Rebalancing : 234s (1.83% ), 242s
+% (2.25% ), 262s (2.46% ), 275s (2.63% ), 287s (2.71% ), 300s (2.75% ) Analyzing run: nd2048.2
+% ========================== Phase order: ['Total', 'Compute', 'Communication', 'Synchronization',
+% 'Rebalancing'] Expected order: ['Total', 'Compute', 'Communication', 'Synchronization',
+% 'Rebalancing'] Total : 9719s (100.00%), 8039s (100.00%), 7739s (100.00%), 7712s (100.00%), 7737s
+% (100.00%), 8049s (100.00%) Compute : 4382s (45.09%), 4396s (54.68%), 4389s (56.71%), 4389s
+% (56.91%), 4389s (56.73%), 4419s (54.90%) Communication : 709s (7.29% ), 790s (9.83% ), 804s
+% (10.39%), 818s (10.61%), 839s (10.84%), 1045s (12.98%) Synchronization: 4462s (45.91%), 2677s
+% (33.30%), 2364s (30.55%), 2321s (30.10%), 2318s (29.96%), 2377s (29.53%) Rebalancing : 166s (1.71%
+% ), 176s (2.19% ), 182s (2.35% ), 184s (2.39% ), 191s (2.47% ), 208s (2.58% ) Analyzing run:
+% nd4096.4 ========================== Phase order: ['Total', 'Compute', 'Communication',
+% 'Synchronization', 'Rebalancing'] Expected order: ['Total', 'Compute', 'Communication',
+% 'Synchronization', 'Rebalancing'] Total : 12403s (100.00%),10311s (100.00%), 9924s (100.00%),
+% 9730s (100.00%), 9748s (100.00%),10352s (100.00%) Compute : 5012s (40.41%), 5048s (48.96%), 5013s
+% (50.51%), 5006s (51.45%), 5006s (51.35%), 5072s (49.00%) Communication : 871s (7.02% ), 971s
+% (9.42% ), 987s (9.95% ), 1010s (10.38%), 1036s (10.63%), 1347s (13.01%) Synchronization: 6204s
+% (50.02%), 3925s (38.07%), 3556s (35.83%), 3331s (34.23%), 3313s (33.99%), 3525s (34.05%)
+% Rebalancing : 316s (2.55% ), 367s (3.56% ), 368s (3.71% ), 383s (3.94% ), 393s (4.03% ), 408s
+% (3.94% ) -------------------------- 

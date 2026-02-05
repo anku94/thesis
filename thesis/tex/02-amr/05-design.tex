@@ -1,0 +1,219 @@
+% ! TeX root = ./main.tex
+
+\section{Designing a Placement Policy}\label{sec:amr:design}
+
+With the reliable and interpretable telemetry foundation established in \S\ref{sec:amr:tele}, we turned
+to the final challenge: using this runtime information to design effective placement policies.
+Validated measurements confirmed that MPI collective synchronization dominated runtime, accounting
+for 35\%--50\% of total time and increasing with scale (512--4096 ranks), while direct
+communication and redistribution overhead remained below 10\%.
+This cost was clearly a downstream effect of compute time variability between blocks.
+Mitigating the impact of this measured variability became the primary placement objective.
+
+Guided by our codes---which, in the worst case, trigger refinement every five 250\,ms
+timesteps---we set a 50\,ms placement computation budget to cap overhead at 5\% of the total
+runtime.
+This constraint ruled out complex optimization objectives such as maximizing communication-compute
+overlap or encoding network topology, due to limited expected payoff and high constraint
+complexity.
+Instead, we focused on two key optimization dimensions:
+
+\parahead{Compute Load
+  Balance} Directly minimizing the variance in per-rank compute load on the basis of measured block
+costs was the obvious objective to reduce straggler delays.
+% Guided by our codes, which in the worst case refined every five 250\,ms timesteps, we set a target
+% of 50\,ms as a guiding constraint to keep placement computation overhead under 5\% of the total
+% runtime. Within this runtime constraint, we decided to explore two key dimensions: Achieving this
+% required navigating a tradeoff between two key factors, under the constraint that each placement
+% decision must complete in under 50\,ms:
+This problem---formally known as \emph{makespan minization}---is
+NP-hard~\cite{Garey1979:Intractability}, necessitating efficient heuristics.
+
+\parahead{Communication Locality}
+Baseline SFC-based placements (\S\ref{sec:amr:des:bg}) preserve spatial locality but hinder load
+balance flexibility.
+The actual runtime benefit of this locality had to be evaluated empirically, motivating exploring
+locality-aware strategies.
+
+We now describe the baseline infrastructure used and augmented by our policies in
+\S\ref{sec:amr:des:bg}, followed by load-centric and locality-preserving policies in
+\S\ref{sec:amr:des:lpt} and \S\ref{sec:amr:des:cdp}.
+We conclude with CPLX (\S\ref{sec:amr:des:cplx}), a hybrid policy that enables tunable control over the
+tradeoff between locality and load balance.
+All policies were implemented in the Parthenon AMR framework~\cite{Grete2023:Parthenon} and are
+directly available in Parthenon-based codes such as Phoebus~\cite{Barke2024:Phoebus} and
+AthenaPK~\cite{Grete2023:Parthenon}.
+
+\vspace{-5pt}
+
+\subsection{Existing Placement Infrastructure}\label{sec:amr:des:bg}
+% - Explain octree structure and why it's used - Show how SFCs preserve locality - Walk through
+% baseline policy step by step - Highlight specific limitations that our policies address - Include
+% a figure showing octree + SFC example
+
+Modern block-based AMR codes use octrees and space-filling curves (SFCs) as foundational data
+structures for mesh management.
+This section describes these building blocks and the baseline placement policy, as understanding
+their strengths and limitations is crucial for developing better policies.
+
+\figoctree
+
+\subsubsection{Octrees and Space-Filling Curves}
+
+Octrees provide an efficient hierarchical representation of the mesh structure.
+When a block needs to be refined, it is split into 8 ($2^3$) child blocks (in 3D).
+Only leaf blocks of the octree participate in the simulation.
+Octrees serve multiple functions in AMR codes---from mesh management to neighbor tracking to
+block placement---with the latter enabled through easy construction of Z-order space-filling
+curves via a depth-first traversal of the tree, as shown in \cref{fig:amr:bg:octree}.
+Blocks are assigned sequential \emph{block IDs} in order of this traversal.
+This ordering approximately preserves spatial locality, as blocks with nearby IDs are more likely
+to be spatial neighbors.
+Some locality, however, is inevitably lost as dimensionality reduction is inherently lossy.
+
+\subsubsection{Baseline Placement Policy}
+
+Placement computation is a component of the \emph{redistribution} process, invoked if the mesh
+structure changes because of (de)refinement operations.
+Redistribution proceeds in three steps: blocks are first assigned block IDs using Z-order SFCs, the
+placement policy computes new block-rank mappings for all blocks, and finally blocks are migrated
+to their new ranks using MPI P2P operations.
+
+The baseline policy simply orders blocks by block ID and assigns contiguous ranges of $\lceil n/r
+  \rceil$ or $\lfloor n/r \rfloor$ blocks to consecutive ranks, where $n$ is the total number of
+blocks and $r$ is the number of ranks.
+While better assignments are theoretically possible, this approach provides a reasonable balance
+between compute load and communication locality by balancing block counts across ranks while
+co-locating spatial neighbors.
+
+\subsubsection{Augmenting Existing Infrastructure}
+
+Octrees and space-filling curves are fundamental, well-studied components of modern AMR codes.
+Rather than replace these proven building blocks, we augment them with mechanisms to handle
+variable block costs and flexible allocation patterns.
+While frameworks like Parthenon provide hooks for specifying per-block costs, these are typically
+initialized to $1$ in practice---treating all blocks as computationally equal.
+This simplified model persists partly because domain scientists rarely provide cost estimation
+models for their simulations, and partly because the baseline policy's strict contiguous allocation
+constraint limits its ability to accommodate variable costs.
+Our changes to the infrastructure are minimal but enable significantly more
+flexible placement policies:
+
+\begin{enumerate}
+  \item We populate the existing cost specification hooks with actual computation costs
+        measured via telemetry
+  \item We modify the block management infrastructure to support arbitrary
+        (non-contiguous) block-to-rank mappings
+\end{enumerate}
+
+The second change required minor modifications to data structures but has no correctness
+implications, as logical dependencies between blocks remain intact.
+This allows for non-contiguous placements, but communication costs increase only if policies choose
+to break locality.
+
+\subsection{LPT: Prioritizing Load Balance}\label{sec:amr:des:lpt}
+% - Brief overview of progression from LPT to CPLX
+
+% Given reliable per-block costs and strict time constraints, we developed our placement policies
+% through systematic evolution --- starting with simple, well-understood algorithms and carefully
+% adding complexity only where beneficial. This section presents this evolution from the
+% Longest-Processing-Time First (LPT) algorithm to our final hybrid policy.
+
+% \subsubsection{LPT: Prioritizing Load Balance} - Intuition behind LPT - Algorithm description -
+% 2-approximation guarantee (intuitive explanation) - Why it works surprisingly well in practice -
+% Extension to multi-phase (brief, details in appendix) - Discussion of locality impact
+We first investigated whether pure load balancing, ignoring communication locality entirely, could
+provide meaningful runtime improvements.
+The \emph{Longest-Processing-Time First} (LPT) algorithm offers a simple but powerful
+approach---sort blocks by compute cost and assign each to the least loaded rank.
+LPT is a classical greedy algorithm for makespan minimization with strong theoretical
+guarantees---the makespan of an LPT solution is provably at most 4/3 times the optimal
+makespan~\cite{Graha1969:LPT}.
+In practice, LPT performs remarkably well; we could not obtain better solutions from a commercial
+ILP solver~\cite{gurobi} despite letting it run for 200\,s.
+
+LPT demonstrated surprisingly strong performance despite completely ignoring communication
+locality.
+While it did incur higher communication costs than the baseline approach, the improvements in load
+balance more than compensated for this overhead.
+This suggested that the value of locality preservation might be lower than initially assumed,
+motivating us to explore this tradeoff further.
+
+\vspace{-5pt}
+\subsection{CDP: Preserving Locality}\label{sec:amr:des:cdp}
+% - Motivation: cases where locality matters - Algorithm description with worked example - Analysis
+% of tradeoffs vs LPT - Parallel implementation for scale - Why we need something better
+After observing LPT perform well despite its locality costs, we wanted to explore the potential of
+a locality-maximizing load-balanced placement.
+To this end, we developed \emph{Contiguous-DP} (CDP), which uses dynamic programming to select
+contiguous block ranges to improve load balance while preserving the locality patterns of the
+baseline.
+
+Consider a simulation with 10 blocks and 4 ranks.
+With an average of 2.5 blocks per rank, CDP explores allocations like \texttt{[2,2,3,3]} or
+\texttt{[2,3,2,3]}, finding one that minimizes makespan while maintaining contiguous allocations.
+As a result, CDP has identical locality-preserving properties as baseline.
+
+\parahead{Formal Description}
+CDP solves the contiguous partitioning problem: given block costs $w_1, \dots, w_n$ (in SFC order),
+partition them into $r$ contiguous segments to minimize the maximum segment sum (makespan).
+Let $W[i] = \sum_{j=1}^{i} w_j$.
+The minimum makespan $\text{DP}[i][k] $ for partitioning $i$ blocks among $k$ ranks follows
+($\text{DP}[0][0] = 0$): \[ \text{DP}[i][k] = \min_{0 \le j < i} \max\left( \text{DP}[j][k-1] ,
+  W[i] - W[j] \right) \]
+
+The algorithm has complexity $O(n^2r)$ in general, where
+$n$ is the number of blocks and $r$ is the number of ranks.
+However, we optimize it to $O(nr)$ by considering only two contiguous chunk sizes: $\lceil n/r
+  \rceil$ and $\lfloor n/r \rfloor$.
+This optimization maintains solution quality while making CDP practical for AMR timescales.
+This DP formulation guarantees an optimal makespan-minimizing placement within the explored chunk
+sizes.
+
+In our experiments, CDP improved upon baseline but only reached parity with LPT.
+While CDP showed lower communication times, its higher synchronization times suggested that perfect
+locality preservation might be unnecessarily restrictive, motivating our development of our hybrid
+policy called CPLX, described next.
+
+\parahead{Scaling CDP With Chunking}
+The overhead of computing placements with CDP became noticeable at 4096 ranks, prompting us to
+develop a parallel implementation using hierarchical chunking.
+This approach divides blocks into $c$ contiguous chunks of approximately equal cost, then applies
+CDP independently to each chunk using a subset of ranks.
+At 4096 ranks with chunk size 512, this creates 8 parallel-processed chunks.
+
+While chunking may not find the globally optimal CDP solution, this approximation has minimal
+impact since CDP's output serves only as an intermediate step for CPLX.
+The approach reduces placement overhead while retaining CDP's solution quality.
+
+\subsection{CPLX: Combining the Best of Both}\label{sec:amr:des:cplx}
+
+Our experiments with LPT and CDP revealed a clear tradeoff---LPT achieved better load balance but
+higher communication costs, while CDP preserved locality at the expense of some load imbalance.
+Neither policy consistently outperformed the other in end-to-end runtime, suggesting the potential
+for a hybrid approach that could combine their strengths.
+
+Developing such a hybrid proved challenging.
+Our initial attempts to blend the policies produced unpredictable results---small sacrifices in
+load balance did not translate to proportional gains in locality, and vice versa.
+We eventually realized that it was easier to selectively break locality in a contiguous placement
+than to restore locality in an arbitrary one.
+This insight led to the CPLX design principle: start with a locality-preserving solution from CDP
+and strategically apply LPT to address the most significant imbalances.
+
+CPLX begins by computing an initial CDP placement that reuses the chunking mechanism for
+scalability.
+It then assesses the work allocated to different ranks by sorting them in descending order of load.
+The policy selects X\% of ranks from either end of this sorted list---the most overloaded and
+underloaded ranks---for rebalancing via LPT.
+Including both ends is crucial as rebalancing needs both source and destination ranks to
+effectively redistribute work.
+
+The parameter X, ranging from 0 to 100\%, provides precise control over this locality disruption.
+At X=0 (\texttt{CPL0}), no ranks participate in rebalancing, preserving the locality
+characteristics of CDP.
+At X=100 (\texttt{CPL100}), all ranks undergo LPT rebalancing, effectively becoming pure LPT.
+Intermediate values create hybrid behaviors, only disrupting locality within the X\% most
+imbalanced ranks while preserving it elsewhere.
+This enables CPLX to systematically explore the complete locality-balance tradeoff space while
+maintaining the performance requirements of AMR codes.

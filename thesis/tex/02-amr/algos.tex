@@ -1,0 +1,116 @@
+\newcommand{\algbaseline}{
+\begin{algorithmic}[1]
+\Function{AssignBlocksBaseline}{$n_{tot}$, $r_{tot}$, costs}
+    \LComment{$n_{tot}$: number of blocks, $r_{tot}$: number of ranks}
+    \LComment{$costs$: array of block costs, $n_{tot}$-sized}
+    \State $ranks \gets \text{array of size } n_{tot} \text{ initialized to } 0$
+    \State $blocks\_remaining \gets n_{tot}$
+    \State $ranks\_remaining \gets r_{tot}$
+    \For{$r \gets 0 \text{ to } r_{tot}-1$}
+        \State $blocks\_per\_rank \gets \lceil \frac{blocks\_remaining}{ranks\_remaining} \rceil$
+        \For{$b \gets 0 \text{ to } blocks\_per\_rank-1$}
+            \State $ranks_{n_{tot} - blocks\_remaining} \gets r$
+            \State $blocks\_remaining \gets blocks\_remaining - 1$
+        \EndFor
+        \State $ranks\_remaining \gets ranks\_remaining - 1$
+    \EndFor
+    \State \Return ranks
+\EndFunction
+\end{algorithmic}
+}
+
+
+
+\newcommand{\alglpt}{
+  \begin{algorithmic}[1]
+\Function{AssignBlocksLPT}{$n_{tot}$, $r_{tot}$, costs}
+    \LComment{$n_{tot}$: number of blocks, $r_{tot}$: number of ranks}
+    \LComment{$costs$: array of block costs, $n_{tot}$-sized}
+    \State $ranks \gets \text{array of size } n_{tot} \text{ initialized to } 0$
+    \State $costs\_sorted \gets \text{sort}(costs) \text{ in descending order}$
+    \State $queue \gets \text{priority queue with } r_{tot} \text{ ranks initialized to } 0$
+    \For{$i \gets 1 \text{ to } n_{tot}$}
+        \State $(rank\_min, cost\_min) \gets queue.\text{front}()$
+        \State $ranks_i \gets rank\_min$
+        \State $queue.\text{push}(rank\_min, cost\_min + costs\_sorted_i)$
+    \EndFor
+    \State \Return ranks
+\EndFunction
+\end{algorithmic}
+}
+
+\newcommand{\algcdp}{
+\begin{algorithmic}[1]
+ \Function{AssignBlocksCDP}{$n_{tot}$, $r_{tot}, costs$}
+   \State $ranks \gets$ array of size $n_{tot}$
+   \State Create $opt$ with dimensions $(n_{tot}+1) \times (r_{tot}+1)$
+   \State $opt_{(i,j)} \gets \infty$ for all $i,j$
+   \State $opt_{(0,0} \gets 0$
+   
+   \For{$r \gets 1$ to $r_{tot}$}
+     \For{$n \gets 1$ to $n_{tot}$}
+         \For{$k \gets 0$ to $n$}
+             \State $sum_{k} \gets \sum_{i=n-k+1}^{n} costs_{i}$
+             \State $cost_{k} \gets \max(opt_{(n-k,\, r-1)},\; sum_{k})$
+             \State $opt_{n,r} \gets \min(opt_{(n,\, r)},\; cost_{k})$
+         \EndFor
+       \EndFor
+   \EndFor
+   \LComment{Backtrack to populate ranks}
+   \State \Return $ranks$
+\EndFunction
+\end{algorithmic}
+}
+
+%
+\newcommand{\allalgos}{
+% \end{noindent}
+\begin{figure}
+	%\centering
+	% \begin{minipage}[b]
+	% 	{0.45\textwidth}
+	% 	\begin{algorithm}[H]
+	% 		\algbaseline
+	% 		\caption{Baseline Block Assignment}
+	% 		\label{alg:amr:baseline}
+	% 	\end{algorithm}
+	% \end{minipage}
+
+	%\centering
+	\begin{minipage}[b]
+		{0.45\textwidth}
+		\begin{algorithm}[H]
+			\alglpt
+			\caption{LPT-based Block Assignment}
+			\label{alg:amr:lpt}
+		\end{algorithm}
+	\end{minipage}
+
+	%\centering
+	\begin{minipage}[b]
+		{0.45\textwidth}
+		\begin{algorithm}[H]
+			\algcdp
+			\caption{CDP-based Block Assignment}
+			\label{alg:amr:cdp}
+		\end{algorithm}
+	\end{minipage}
+\end{figure}
+% \end{noindent}
+}
+
+\newcommand{\lptprop}{
+\begin{proposition}[2p-Bound for LPT in p-Phase Makespan]
+  \label{prop:amr:lptagg}
+  Let there be $r$ ranks, $b$ blocks, and $p$ phases. Each block $b$ has a cost
+  $\mathrm{costs}[i][b]$ in phase $i$. Assigning blocks to ranks is fixed across
+  all phases, and the objective is
+  \[
+    \sum_{i=1}^{p} \bigl(\max_{\text{rank}}(\text{rank load in phase } i)\bigr).
+  \]
+  Applying LPT to the \emph{summed} block costs yields a $2p$-approximation.
+  % \footnote{The proof of this proposition was developed with computational assistance from large language models.}
+  \footnote{The proof of this proposition was developed with computational assistance from DeepSeek R1 and OpenAI's O1 language models.}
+
+\end{proposition}
+}

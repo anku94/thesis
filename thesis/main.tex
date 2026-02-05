@@ -106,6 +106,15 @@
 % For tables
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{threeparttable}
+
+% For algorithms (AMR paper)
+\usepackage{algorithm}
+\usepackage{algpseudocodex}
+
+% For propositions and proofs (AMR paper)
+\usepackage{amsthm}
+\newtheorem{proposition}{Proposition}
 
 %%% --- Commands ---
 \newcommand{\ga}[1]{\textcolor{red!70!black}{@GA: #1}}
@@ -132,6 +141,7 @@
 %%% --- Macros and Figures ---
 \input{tex/99-macros}
 \input{tex/99-figs-carp}
+\input{tex/99-figs-amr}
 
 %%% --- Document Begins ---
 \begin{document}
@@ -177,6 +187,21 @@
 \input{tex/01-carp/07-eval}
 \input{tex/01-carp/08-disc}
 \input{tex/01-carp/09-relwork}
+
+%%% --- AMR Paper ---
+\chapter{AMR Paper}
+\label{chap:amr-paper}
+\input{tex/02-amr/00-abstract}
+\input{tex/02-amr/algos}
+\input{tex/02-amr/01-intro}
+\input{tex/02-amr/02-background}
+\input{tex/02-amr/03-challenges}
+\input{tex/02-amr/04-telemetry}
+\input{tex/02-amr/05-design}
+\input{tex/02-amr/06-eval}
+\input{tex/02-amr/07-lessons}
+\input{tex/02-amr/08-relwork}
+\input{tex/02-amr/09-concl}
 
 % %% --- Appendix (Optional) --- \appendix \chapter{Supplementary Material} Add raw data, code
 % listings, or extended discussion here.

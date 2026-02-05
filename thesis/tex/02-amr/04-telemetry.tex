@@ -1,0 +1,178 @@
+% ! TeX root = ./main.tex
+
+\section{Denoising Telemetry For Placement}
+\label{sec:amr:tele}
+
+This section describes our methodology for establishing reliable telemetry, addressing the first
+two challenges from the previous section.
+We begin with mitigating variability from fail-slow hardware (\S\ref{sec:amr:tele:hw}), followed by
+examples from different layers of the software stack in (\S\ref{sec:amr:tele:sw}).
+We then describe the evolution of our analysis workflow in (\S\ref{sec:amr:tele:pipe}), followed by a
+critical path model to formally analyze the impact of task dependencies and scheduling on runtime
+in \S\ref{sec:amr:tele:critp}.
+While the specifics of our interventions are necessarily empirical and context-dependent, they
+serve to illustrate recurring failure modes across the stack and the analytical methods required to
+uncover them.
+% Addressing the reliability challenges described in the previous section required ensuring that our
+% performance measurements reflected actual runtime behavior. This section describes this denoising
+% process we used to get there, covering hardware-related variability (\S\ref{sec:amr:tele:hw}),
+% software layer tuning (\S\ref{sec:amr:tele:sw}), and the evolution of our analysis workflow
+% (\S\ref{sec:amr:tele:pipe}), all aimed at achieving trustworthy, predictive measurements. 
+
+\parahead{Hardware}
+All experiments ran on a research cluster with 600 compute nodes, each node having Intel Xeon
+E5-2670 16-core processors, 64GB RAM, and 40 Gbps Qlogic 7340 NICs.
+
+\parahead{Software}
+Codes using Parthenon~\cite{Grete2023:Parthenon}, Phoebus~\cite{Barke2024:Phoebus}, and
+AthenaPK~\cite{Grete2023:Parthenon}, built against MVAPICH2~\cite{Panda2021:MVAPICH} and the PSM
+fabric library~\cite{2020:IntelPerformanceScaled}.
+
+\subsection{Eliminating Faulty and Fail-Slow Hardware} \label{sec:amr:tele:hw} \figtunehw
+
+Hardware problems surfaced early in our study and had to be resolved before any software‑level
+conclusions were meaningful.
+Initially collected profiling data showed more than 70\% of runtime being spent in global
+synchronization (\cref{fig:amr:perf:throttle}).
+Per‑rank telemetry showed four‑fold compute slowdowns on clusters of 16 ranks---an unmistakable
+sign of thermal throttling, confirmed by syslogs.
+Excluding those nodes immediately cut total runtime from 10\,h to 2.5\,h.
+
+While such severe throttling is less likely to persist undetected in production clusters, it serves
+as an archetype for hardware-related fail-slow behaviors that often manifest more subtly.
+Studies report transient degradation from throttling, memory errors, or flaky links commonly
+impacting production workloads~\cite{Gunaw2018:FailSlow,Lu2023:PERSEUS}.
+Such faults can present as legitimate stragglers, but must be identified and addressed separately
+to avoid misdirected tuning efforts.
+
+To ensure measurement integrity, our launch workflow overprovisioned nodes and ran pre/post-job
+health checks (syslog and other hardware indicators).
+Failing nodes were automatically pruned from runs and blacklisted.
+
+\subsection{Tuning The Software Stack}
+\label{sec:amr:tele:sw}
+\figtunesw
+
+We found interactions within the software stack---application logic, MPI runtime, and network
+drivers---to be the primary source of performance variability impacting telemetry reliability.
+While tools exist to check for basic configuration errors or known MPI
+misuses~\cite{Hilbr2010:MUST}, they cannot capture the dynamic, workload-dependent performance
+artifacts arising from suboptimal tuning of parameters like queue depths, scheduling priorities, or
+internal thresholds.
+We present three representative examples of mitigations applied across the software stack.
+
+\parahead{Application-Level Example: \mpiw{}
+  Spikes} In one code, we traced occasional spikes in \mpiw{} following \mpiis{} to fabric driver
+behavior: missing acknowledgments (ACKs) triggered a recovery path that unnecessarily blocked the
+sender.
+Since receivers had already acknowledged the messages, blocking the senders on acknowledgments was
+avoidable.
+We implemented a drain queue that transparently allocated new MPI requests and drained the blocked
+requests in the background.
+\cref{fig:amr:chal:vol} shows the spikes and the impact of our mitigations.
+
+\parahead{Application-Level Example: Task Reordering}
+In another AMR code, MPI send tasks were scheduled after compute/wait tasks, causing cascading
+delays on CPUs (masked on GPUs where developed) Prioritizing sends (\cref{fig:amr:perf:order}, middle)
+unblocked dependent ranks without affecting senders, reducing wait times and jitter.
+
+\parahead{Network-Level Example: Queue Size Tuning}
+Persistent variance, contributing to poor correlation between communication time and work
+(\cref{fig:amr:chal:regr}), was traced using \texttt{perf}~\cite{Linux:LinuxPerf} to contention in the
+MPI library shared-memory path due to an insufficient preconfigured queue size.
+Increasing this value reduced MPI wait time variance and significantly improved the correlation
+between measured communication time and message volume (\cref{fig:amr:perf:order}, right).
+
+\parahead{Implications}
+Mitigating the anomalies described above required analytical capabilities we could not replicate
+with standard tools.
+Transient spikes would be obscured by aggregation (profiling), while the sheer volume and
+complexity of fine-grained data made manual trace inspection infeasible.
+Systematically identifying root causes---correlating events across ranks, time, application phases,
+and system layers---necessitated programmable low-level interfaces like eBPF~\cite{:eBPF},
+complemented by flexible, query-driven analysis.
+Our struggles with existing approaches directly motivated the evolution of our analysis workflow,
+detailed next, towards techniques better suited for this challenge.
+
+\subsection{Evolution of our Analysis Workflow}
+\label{sec:amr:tele:pipe}
+
+Addressing the analytical limitations described above required evolving our workflow substantially
+beyond standard tools: TAU~\cite{Shend2006:TAU} provides useful coarse summaries via profiling, but
+finer-grained telemetry is only accessible via traces, which were impractical to analyze at scale.
+We wrote TAU plugins to emit CSVs which we analyzed with \texttt{pandas} in python.
+As we scaled up, parsing time became a bottleneck, and we switched to custom binary formats for
+efficiency.
+
+As our needs evolved, we wanted programmable telemetry triggers based on reconstructed application
+state.
+We implemented our own telemetry collection using the MPI~\cite{:MPI} and
+Kokkos~\cite{Hammo2018:KokkosP} profiling interfaces.
+Eventually, we outgrew pandas’ analytical bandwidth and found our telemetry queries naturally
+mapped to SQL over data ingested into ClickHouse~\cite{Schul2024:ClickHouse}, a columnar analytics
+database.
+
+In hindsight, our pipeline mirrored modern observability stacks: structured schemas, binary
+formats, and relational queries.
+Though still ad hoc, it provided the low-latency, queryable insight needed to support targeted
+diagnosis and hypothesis-driven exploration, essential for tuning and placement at scale.
+We explore the broader implications of this model in~\S\ref{sec:amr:lessons}.
+
+\subsection{A Critical Path Model of Execution}
+\label{sec:amr:tele:critp}
+\figcritp
+
+Before turning to placement, we introduce a critical path analysis framework to identify optimal
+task ordering strategies under a fixed placement.
+This not only grounds the reordering optimization described in \S\ref{sec:amr:tele:sw}, but also helps
+formally identify other avenues for optimization.
+We define the \emph{critical path} as the chain of dependent tasks that determines the runtime of
+the straggler at the next synchronization point.
+Reduction in critical path length is then modeled as minimizing \mpiw{} time on that path, as it is
+the only flexible-duration component in the execution path.
+Compute kernels have fixed runtimes, and other communication operations such as \mpiis{} and
+\mpiir{} are similarly fixed, as they simply post buffers to the fabric.
+We now establish a key principle:
+
+\vspace{2pt} \emph{Given a single round of
+  concurrent P2P communication between two synchronization points, at most two ranks can be
+  implicated in the critical path, regardless of scale.
+  % \textbf{Principle:} 
+}
+\vspace{2pt}
+
+% This follows from Lamport's \emph{happened-before} relation --- only dependent operations can
+% create causal relationships. If the critical path is local to a single rank, it reflects compute
+% imbalance and incurs minimal \mpiw{} time. More interesting are two-rank paths, where one rank is
+% stalled waiting on a message from another. These two cases are illustrated in
+% \cref{fig:amr:model:2rcp}. This model reveals two strategies to shorten such paths:
+This follows from Lamport's \emph{happened-before}~\cite{Lampo1978:TimeClocksOrdering} relation ---
+only dependent operations can create causal relationships.
+If the critical path is local to a rank, it reflects compute imbalance and involves minimal \mpiw{}
+time.
+More interesting are two-rank paths, where one rank is stalled waiting on a message from another.
+These cases are illustrated in \cref{fig:amr:model:2rcp}.
+This model reveals two strategies to shorten such paths:
+
+\noindent\emph{Operation ordering to reduce wait stalls.
+}
+The most direct way to shorten the path is to ensure the remote message is sent as early as
+possible.
+This is precisely what our task reordering optimization accomplished: by prioritizing sends, we
+minimized the dispatch delay for messages that were on the critical path.
+
+\noindent\emph{Overlapping computation to hide wait stalls.}
+Asynchronous runtimes discussed in \S\ref{sec:amr:bg:amr} aim to hide \mpiw{} stalls by overlapping
+them with independent work.
+However, this requires both a non-zero wait time and the availability of independent tasks.
+Within a single mesh block, tasks are often data-dependent.
+While multiple blocks on the same rank can provide independent work, this creates a
+counterintuitive tension: a strict locality-preserving placement may be detrimental, as all blocks
+on a rank could end up waiting for the same remote straggler, limiting opportunities for
+independent work.
+
+This analysis demonstrates the complexity of reasoning about fine-grained execution in partially
+asynchronous codes, where runtime behavior emerges from a large number of complex and subtle
+interactions.
+It also highlights the multiple, sometimes conflicting, dynamics introduced by the
+locality-reducing placements we discuss next.

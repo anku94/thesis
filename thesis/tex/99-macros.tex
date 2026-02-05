@@ -6,3 +6,33 @@
   \textbf{Observation \arabic{obscount}: }}
 
 \newcommand{\mytexttilde}{\raisebox{0.5ex}{\texttildelow}}
+
+%%% AMR Paper Macros
+\newcommand{\comp}{\texttt{compute}}
+\newcommand{\sync}{\texttt{sync}}
+\newcommand{\iprobe}{\texttt{MPI\_Iprobe}}
+\newcommand{\mpibar}{\texttt{MPI\_Barrier}}
+\newcommand{\mpiag}{\texttt{MPI\_Allgather}}
+\newcommand{\mpiar}{\texttt{MPI\_Allreduce}}
+\newcommand{\mpiiar}{\texttt{MPI\_Iallreduce}}
+\newcommand{\mpiis}{\texttt{MPI\_Isend}}
+\newcommand{\mpiir}{\texttt{MPI\_Irecv}}
+\newcommand{\mpiw}{\texttt{MPI\_Wait}}
+
+\newcommand{\commbench}{\texttt{commbench}}
+\newcommand{\scalebench}{\texttt{scalebench}}
+\newcommand{\cplx}{CPLX}
+
+\newcommand{\parahead}[1]{%
+  \vspace{0.5em}\noindent\emph{#1.}\space
+}
+
+\newcommand{\finding}[2]{
+  \vspace{0.3em}
+  \noindent\textbf{Finding #1}: \textit{#2.}\space
+}
+
+\newcommand{\lesson}[2]{
+  \vspace{0.3em}
+  \noindent\textbf{Lesson #1}: \textit{#2.}\space
+}

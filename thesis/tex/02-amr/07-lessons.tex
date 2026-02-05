@@ -1,0 +1,75 @@
+% ! TeX root = ./main.tex
+
+\section{Lessons From Our Placement Exercise}
+\label{sec:amr:lessons}
+
+% Mirroring Petrini et al.'s~\cite{Petri2003:Missing} findings on flagship systems two decades ago,
+% our investigation underscores the persistent need for deep, cross-stack analysis to diagnose
+% hidden AMR performance bottlenecks. 
+We distill our takeaways from this exercise into the following five lessons.
+
+\lesson{1}{AMR Performance Is Straggler Mitigation}
+
+High synchronization costs in AMR codes are often attributed to load imbalance.
+Our experience suggests that this attribution may be premature: stragglers can also arise from
+tuning artifacts, execution strategy interactions, or hardware-level variability.
+Placement strategies cannot compensate for unstable system behavior---such instability must be
+identified and resolved independently before placement can be meaningfully evaluated.
+
+\lesson{2}{Effective Tuning is Empirical and Idiosyncratic}
+
+Performance tuning is not about correctness, but about aligning system behavior with the workload.
+Default configurations reflect common-case assumptions that may vary across codes.
+Tuning, therefore, is both empirical and
+workload-specific~\cite{Kruse2023:StatisticalAnalysisHPC,Mijak2016:PERISCOPE,Pelle2012:TuningMPI}.
+It improves performance directly, while also making application behavior more predictable under
+placement changes.
+In our experience, progressive tuning clarified the telemetry structure, reduced confounding noise,
+and exposed deeper residual issues that would otherwise be misattributed.
+
+\lesson{3}{P2P Communication Is A Key Variability Source}
+
+Our tuning efforts primarily focused on point-to-point (P2P) communication patterns used in ghost
+cell and halo exchanges.
+Unlike collectives, which are structured and easy to benchmark in isolation, P2P exchanges are
+fine-grained, latency-sensitive, and highly variable.
+They involve dynamic neighbor counts, varying message sizes, and inconsistent communication
+paths---each of which can activate different code paths in the network stack.
+We found these interactions to be the dominant source of variability, and they required targeted
+attention during tuning.
+% While newer MPI standards provide neighbor collectives to optimize such patterns, these mechanisms
+% often fall short of fully stabilizing P2P behavior in AMR codes.
+
+\lesson{4}{Diagnosis Needs Structured, Queryable Telemetry}
+
+Understanding why performance deviated required analytics over fine-grained telemetry to surface
+anomalous low-level behavior.
+% citation for JSON (chrome trace)
+While tracing tools capture such detail, they rely on unstructured formats like
+JSON~\cite{Googl:TraceEventFmt} or OTF2~\cite{Eschw2012:OTF2}, which are poorly suited to
+multi-dimensional analysis across rank, time, and task.
+We converged on SQL-based analytics over telemetry grouped by timestep and sorted by rank, enabling
+views of application behavior aligned with synchronization intervals.
+
+While tools like Caliper~\cite{Boehm2016:Caliper} do support structured telemetry, they---like our
+ad hoc pipeline---rely on parsing and postprocessing of plaintext data, which we found to slow down
+our iterative tuning workflows.
+Binary columnar formats like Arrow~\cite{:ApacheArrow} and Parquet~\cite{:ApacheParquet}, when
+paired with in-situ collection, offer a promising foundation for low-latency BSP telemetry by
+enabling low-overhead parsing and efficient querying via embedded statistics over partitioned data.
+
+\lesson{5}{Placement Optimization is Systems Engineering}
+
+% Designing placement policies in AMR codes is a systems engineering problem, not a theoretical
+% exercise. AMR placement is a systems engineering problem grounded in empirical constraints rather
+% than algorithmic considerations.
+AMR placement policy design is a systems engineering problem, guided primarily by empirical
+constraints rather than solely by theoretical optimality.
+Tradeoffs between compute balance, communication locality, and placement overhead must be evaluated
+based on observed performance impact, not static preferences.
+% Universal strategies or fixed priorities are rarely effective; each deployment demands empirical
+% calibration.
+Placement strategies need to be empirically calibrated to each specific deployment context.
+Their computation must also respect strict time budgets---in our case, under 50\,ms per
+redistribution---which constrains the complexity of the algorithms and necessitates focus on
+dominant effects.

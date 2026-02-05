@@ -1,0 +1,59 @@
+% ! TeX root = ./main.tex
+\section{Challenges of Telemetry–Driven Placement}
+\label{sec:amr:chal}
+
+
+\figchal
+
+In principle, fine-grained telemetry should enable placement decisions to be grounded in observed
+workload behavior.
+However, our early attempts revealed two fundamental difficulties.
+First, the telemetry itself was unreliable: metrics such as communication time showed poor
+correlation with predictors like message volume (\cref{fig:amr:chal:regr}), making it impossible to
+model baseline runtime.
+Second, the magnitude of this variability also changed unpredictably as placement properties
+were modified.
+% Second, the artifacts driving this variability behaved unpredictably as placement properties were
+% modified.
+For example, optimizing for communication locality did not reliably improve end-to-end performance initially.
+These observations forced us to treat placement not as a theoretical optimization problem, but as a
+systems engineering task grounded in empirically observed runtime behavior.
+The following challenges structure the empirical and algorithmic contributions of this work.
+
+
+\parahead{Challenge 1: Cross-stack Performance Anomalies}
+When initial telemetry proved inconsistent, showing poor correlation between workload metrics and
+runtime (\cref{fig:amr:chal:regr}), our first challenge was establishing trust in the measurements.
+In production environments, organizational and operational boundaries both constrain and scope
+analyses.
+Our full-stack access eliminated these boundaries: every deviation, across hardware, drivers, MPI,
+or application layers, became our direct responsibility to diagnose and explain.
+While this significantly increased diagnostic complexity, it also provided the crucial advantage of
+unrestricted access to low-level tools like \texttt{perf}~\cite{Linux:LinuxPerf} and
+eBPF~\cite{:eBPF}, which were necessary to establish the measurement fidelity underlying this
+work.
+
+\parahead{Challenge 2: Analyzing Fine-Grained Telemetry}
+Diagnosing anomalies required analyzing large volumes of per-timestep, per-rank, and per-block
+telemetry.
+Anomalies originated on a small subset of ranks but propagated globally through communication,
+making root cause identification nontrivial (see \cref{fig:amr:chal:vol}).
+Tracing tools~\cite{Shend2006:TAU,Mey2012:Score-P} produced unstructured, high-volume output in
+formats like OTF2~\cite{Mey2012:Score-P} unsuited for query-driven diagnosis.
+Our analytics workflow evolved organically, beginning with standard tooling such as
+TAU~\cite{Shend2006:TAU} and progressing towards custom query-driven workflows capable of surfacing
+low-level system effects at scale.
+
+\parahead{Challenge 3: Effective, Low-Overhead Placement}
+Reliable telemetry exposed genuine load imbalance that could be targeted by placement, but
+incorporating this information imposed strict new constraints.
+Placement decisions had to be computed within tight time budgets, under 50\,ms per redistribution
+for our target codes, to avoid measurable overhead on simulation runtime.
+Even simplified placement objectives, such as minimizing makespan, are
+NP-hard~\cite{Garey1979:Intractability}, and additional objectives further complicate optimization.
+Placement mechanisms had to encode relevant tradeoffs while remaining fast and robust enough for
+dynamic AMR workloads.
+
+We address these challenges sequentially: \S\ref{sec:amr:tele} describes the tuning and analytics
+infrastructure used to establish reliable telemetry, and \S\ref{sec:amr:design} presents placement
+policies enabled by this exercise.

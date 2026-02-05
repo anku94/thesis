@@ -1,0 +1,231 @@
+% ! TeX root = ./main.tex
+
+\section{Why Telemetry-driven Placement?}\label{sec:amr:bg}
+
+Block-structured AMR simulations running on O(100K) cores face significant performance challenges
+due to computational variability~\cite{VanS2009:AMR,Dubey2014:Survey,Schor2018:AMR}.
+Frequent mesh refinement necessitates periodic redistribution of work across compute resources.
+Stragglers, if left unaddressed, are particularly expensive due to frequent global synchronization
+operations---a single straggler can block the entire simulation at synchronization points,
+leading to poor cluster utilization~\cite{Petri2003:Missing}.
+
+% ~\cite{Klenk2017:OverviewMPICharacteristics}.
+
+% Two complementary approaches can improve cluster utilization for workloads with computational
+% variability --- balancing work among ranks to reduce variability, and asynchronous execution
+% strategies to mask residual variability.
+Two complementary approaches exist for computational variability---balancing work among ranks to
+reduce variability, and asynchronous execution strategies to mask residual variability.
+While asynchronous runtimes~\cite{Acun2014:Charm++, Meng2010:Uintah, Daiss2024:HPX,
+  Bauer2012:Legion} are commonly used to mask variability, significant time is lost waiting within
+MPI routines despite their widespread use ($>$60\% at 1,000
+ranks~\cite{Klenk2017:OverviewMPICharacteristics}).
+% (see% \S\ref{sec:amr:bg:amr})
+Addressing variability via placement is difficult---frameworks often lack meaningful per-block
+cost inputs, as predictive models are hard to create and codes often assume uniform costs.
+% Addressing variability via placement remains challenging --- while frameworks allow specifying
+% per-block costs, these hooks are rarely used meaningfully as predictive cost models do not exist
+% in practice. Codes typically use either simple heuristics or assume uniform block costs, ignoring
+% dynamic variations.
+This gap motivates leveraging runtime telemetry to directly measure workload behavior.
+
+This section provides background for the rest of this paper, beginning with an overview of AMR
+codes and current placement techniques in \S\ref{sec:amr:bg:amr}, followed by computational
+characteristics of AMR operations in \S\ref{sec:amr:bg:ops}.
+
+% provide hooks for incorporating variable block costs, leveraging these hooks requires cost models
+% to predict block costs. Such models require domain scientists to reason about relationships
+% between physical properties and computational work, which may not be obvious across problem
+% regimes. \ga{Do such cost models exist currently? If so, say so and cite them. If not, be
+% explicit.} Runtime telemetry offers the potential to capture fine-grained runtime variations and
+% inform placement decisions without relying on complex predictive models. Our work examines the
+% potential for telemetry-informed placement to complement asynchronous execution strategies.
+
+% \subsection{Managing Compute Variability in AMR} \label{sec:amr:bg:moti} %\paragraph{Challenge:
+% Handling Compute Variability.} Block-structured AMR simulations running on O(100K) cores face
+% significant performance challenges due to computational
+% variability~\cite{VanS2009:AMR,Dubey2014:Survey,Schor2018:AMR}. Frequent mesh refinement and
+% coarsening operations necessitate periodic redistribution of work across compute resources,
+% requiring placement policies that can efficiently handle this variability. Stragglers, if left
+% unaddressed, are particularly expensive due to frequent global synchronization operations --- a
+% single straggler can block the entire simulation at synchronization points, leading to poor
+% cluster utilization~\cite{Klenk2017:OverviewMPICharacteristics}. \paragraph{Approaches to
+% Computational Variability} Two complementary approaches are theoretically possible to improve
+% cluster utilization for workloads with computational variability --- balancing work among ranks to
+% reduce total work variability, and asynchronous execution strategies to mask residual variability
+% by using idle time to perform useful work. While considerable prior work exists on using
+% asynchronous runtimes to mask variability (see \S\ref{sec:amr:bg:amr}), significant cluster
+% underutilization attributed to load imbalance persists despite their widespread
+% use~\cite{Klenk2017:OverviewMPICharacteristics}. Addressing variability via placement remains
+% challenging --- while many frameworks provide hooks for incorporating variable block costs,
+% leveraging these hooks requires cost models to predict block costs. Developing such cost models
+% requires domain scientists to reason about the relationship between physical properties and
+% computational work --- characteristics that may not be obvious or consistent across problem
+% regimes. Our work examines the potential for telemetry-informed placement to complement
+% asynchronous execution strategies. \parahead{Need for Runtime Telemetry} This gap motivates our
+% investigation of telemetry-driven placement as a tool to augment existing placement
+% infrastructure. Rather than %ad-hoc cost heuristics, requiring complex predictive models, this
+% approach directly measures runtime behavior to guide placement decisions. However, effectively
+% collecting and utilizing such measurements, particularly at scale where system noise and
+% variability dominate, requires careful consideration of both measurement methodology and placement
+% strategies. The next subsections establish the context needed to understand these challenges.
+% \ga{I don't know what this paragraph adds, and you also mention cost models again that you provide
+% no citation for. Make sure you don't get too philosophical.} Statically estimating these costs is
+% challenging --- it requires domain scientists to reason about the relationship between physical
+% properties and computational work, characteristics that may not be obvious or consistent across
+% problem regimes. This limits the adoption of hooks to incorporate costs for frameworks that do
+% provide such hooks. While frameworks provide hooks for incorporating cost models based on proxy
+% metrics~\cite{Burst2011:p4est} like refinement levels or solution gradients, leveraging these
+% capabilities is challenging. . The challenge lies in the complexity of the relationship between
+% physical properties and computational work - it requires domain scientists to reason about
+% performance characteristics that may not be obvious or consistent across problem regimes. This has
+% led to a gap between AMR's theoretical benefits and achieved performance in practice. 
+
+\subsection{Block-based AMR: Infrastructure and Execution}\label{sec:amr:bg:amr}
+
+% This section describes block-based AMR codes, a sub-class of structured AMR codes, along with
+% their execution model and placement mechanisms. While other structured AMR codes share similar
+% challenges, we focus our discussion on block-based AMR for simplicity. 
+\parahead{Structured AMR Codes}
+Structured AMR implementations organize computational grids hierarchically while maintaining a
+logically Cartesian structure.
+Implementations typically fall into two categories: \emph{block-based} and \emph{patch-based}.
+Block-based AMR partitions the domain into uniform sized blocks at each refinement level, managed
+using octree data structures.
+This approach enables efficient parallel implementations through simplified mesh management and
+communication patterns.
+Examples include Parthenon~\cite{Grete2023:Parthenon},
+Enzo-E/Cello~\cite{Emeri2019:EnzoECelloProject}, and ALPS~\cite{Burst2008:ALPS}.
+Patch-based AMR, in contrast, refines regions using arbitrary rectangular patches rather than fixed
+blocks, allowing finer control over refinement but requires more complex load-balancing (e.g.
+AMReX~\cite{Zhang2021:AMReX}, SAMRAI~\cite{Gunne2016:SAMRAI}).
+
+% . Frameworks such as AMReX~\cite{Zhang2021:AMReX} and SAMRAI~\cite{Gunne2016:SAMRAI} follow this
+% approach. %Block- and patch-based AMR share challenges in workload estimation and communication
+% locality. The techniques we explore apply to both, but for simplicity, we focus on block-based AMR
+% in this paper.
+
+% generally fall into two categories: block-based approaches using octrees, and patch-based
+% approaches. Block-based codes partition the domain into uniform-sized blocks at each refinement
+% level, managed through octree data structures. This approach enables efficient parallel
+% implementations through simplified mesh management and communication patterns.
+
+% In contrast, patch-based frameworks like AMReX, Cactus, Uintah, and FLASH~\cite{Dubey2014:Survey}
+% allow for more flexible refinement regions. While our work focuses on block-based implementations,
+% many of our findings apply to both approaches. 
+\parahead{Execution Model}
+Block-based AMR codes operate on structured meshes that are decomposed into mesh blocks, with
+multiple blocks typically assigned to each simulation rank.
+As the simulation tracks evolving physical phenomena, blocks may be refined or coarsened to adapt
+mesh resolution, requiring periodic redistribution across ranks.
+Computationally, operations on each block are structured as a \emph{directed acyclic graph} (DAG)
+of tasks---including physics computations, mesh management operations, and inter-block
+communication.
+Beyond these per-block operations, AMR codes also invoke global operations for redistribution and
+synchronization, whose characteristics we detail in~\S\ref{sec:amr:bg:ops}.
+
+AMR codes use task-based runtimes to execute DAGs using asynchronous execution strategies.
+Some frameworks like Parthenon implement these abstractions directly, while others use
+general-purpose runtimes such as Charm++~\cite{Acun2014:Charm++}, Uintah~\cite{Meng2010:Uintah},
+HPX~\cite{Daiss2024:HPX}, and Legion~\cite{Bauer2012:Legion}.
+Our work incorporating telemetry in work placement complements execution strategies masking
+residual imbalance.
+
+% In the common case, the simulation operates on blocks assigned to each rank. Computationally,
+% block operations within each timestep are structured as an identical \emph{directed acyclic graph
+% (DAG)} of tasks. Every rank executes this DAG every timestep, for each block assigned to it. These
+% tasks include compute kernels for physics, mesh management operations, and communication between
+% blocks. In addition to these per-block operations, AMR codes also periodically invoke global
+% operations for redistribution and synchronization. We describe their characteristics in detail in
+% \S\ref{sec:amr:bg:ops}. As the simulation progresses, the number of blocks may grow or shrink over
+% time due to (de)refinement operations, necessitating \emph{redistribution}.
+
+\parahead{Placement Mechanisms}
+When a redistribution is invoked, placement mechanisms compute new block-rank assignments, and
+blocks are migrated accordingly.
+Modern block-based AMR codes rely on octree mesh structures combined with space-filling curves
+(SFCs) to enable efficient parallel mesh management while approximately preserving communication
+locality.
+SFC-based partitioning balances uniform block counts effectively but does not account for
+computational variability between blocks---a gap we address in this work.
+Octree structures, SFC ordering, and their implications for placement flexibility are discussed
+further in \S\ref{sec:amr:design} where we present our placement policies.
+
+% Octree-based mesh structures combined with space-filling curves (SFCs) form the foundation of
+% modern block-based AMR codes. This approach enables efficient parallel mesh management while
+% preserving communication locality through SFC-based block ordering. SFC-based partitioning
+% balances uniform block counts well, but must be augmented with mechanisms to handle computational
+% variability between blocks (focus of this work). We discuss octrees and SFCs in detail in
+% \S\ref{sec:amr:design}. \ga{Forward-references are not fun. Try to eliminate where possible, by either
+% removing or mentioning what is relevant and explaining that more details on that will be provided
+% when necessary. } % \red{some redudancy here}. Block-based AMR codes operate on structured meshes
+% that are decomposed into \emph{mesh blocks} and assigned to simulation ranks. These blocks are
+% hierarchically refined to concentrate computational resources on areas with the highest simulation
+% activity. The number of blocks may grow or shrink over time due to (de)refinement operations,
+% necessitating \emph{redistribution}. %
+
+% While runtimes can hide some imbalance through asynchronous execution, frequent global
+% synchronization operations - potentially multiple per timestep - make these codes highly sensitive
+% to stragglers. A single slow rank among 100,000s can block the entire simulation at sync points,
+% limiting the achievable computation-communication overlap. The lessons from our telemetry-based
+% study are applicable regardless of the runtime choice.
+
+% \subsection{Placement in AMR Codes.} \label{sec:amr:bg:octrees}
+
+% --- arising from physics complexity, adaptive solver iterations, and mesh refinement patterns.
+% Despite AMR frameworks acknowledging this variability, systematic approaches to quantifying and
+% utilizing these costs remain unexplored. Moreover, the relative impact of different placement
+% constraints (like communication locality) on overall application performance is poorly understood.
+% As scientific simulations grow in complexity and scale, the need for placement strategies that
+% automatically adapt to dynamic behaviors observed at runtime becomes increasingly critical. 
+\subsection{Characteristics of Key AMR Operations}
+\label{sec:amr:bg:ops}
+
+% Collected comments: \ga{Not a fan of calling this useful work, because it implies all our
+% improvements focus on useless work -- try something more inclusive, like 'scientific/compute work'
+% (as opposed to 'communication work' and 'synchronization work').}, \ga{Do you mean 'should
+% dominate'? Because so far you have been arguing there are evidence that significant amount (60\%)
+% of runtime is spent not doing this type of work} \ga{Are we calling it 'compute work' or 'useful
+% work'? Use the terms you define consistently throughout.} re: sync, @\ga{spell out here and
+% elsewhere}
+
+\parahead{Compute Tasks}
+Compute tasks perform the core physical and mesh operations of the simulation.
+While operations like refinement tagging often have predictable costs, physics kernels are a major
+source of variability.
+For instance, regions with steep gradients may require more solver iterations, increasing compute
+cost.
+Importantly, this cost is not directly correlated to spatial area, as each block contains the same
+number of computational points (\emph{cells}) regardless of refinement level.
+Ultimately, the execution time of these compute tasks represents the core computational cost to
+advance the simulation state, establishing the fundamental lower bound on runtime.
+
+\parahead{Communication Tasks}
+Communication tasks create complex inter-block dependencies through \emph{boundary exchanges},
+where each block communicates with up to 26 neighbors in 3D (faces, edges, and vertices).
+Communication volume depends primarily on the number of physical variables exchanged and neighbor
+relationships instead of the refinement level of the blocks.
+These exchanges typically use non-blocking MPI operations and are latency-sensitive due to small
+message sizes and the potential for blocking downstream tasks.
+\emph{Flux correction} follows a similar small-message, peer-to-peer pattern for ensuring consistency of
+conserved quantities.
+
+\parahead{Redistribution}
+Redistribution operations rebalance blocks across ranks as the simulation evolves, adapting to
+changes from mesh refinement or coarsening.
+They are triggered when blocks are tagged for refinement based on physical criteria, like solution
+gradients exceeding a threshold.
+Each redistribution computes new block-to-rank mappings and migrates data.
+Because redistribution may be invoked frequently and must complete within tight performance
+budgets, placement policies must be fast and capable of handling complex scheduling constraints.
+The frequency depends on the underlying physics---some problems require frequent adaptation,
+others are more stable.
+
+\parahead{Synchronization}
+Synchronization operations can be explicit (MPI barriers) or implicit (blocking collectives).
+They inherently expose performance variability by forcing all ranks to wait until the last rank
+reaches the synchronization point.
+This waiting time often increases with scale as the likelihood of encountering a straggler grows.
+While asynchronous collectives are suggested as an alternative~\cite{Hoefl2007:CaseAsyncColl},
+synchronous operations remain necessary for certain correctness guarantees, like ensuring that 
+all ranks execute the same timestep.

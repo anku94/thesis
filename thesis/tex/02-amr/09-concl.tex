@@ -1,0 +1,19 @@
+\section{Conclusions}
+\label{sec:amr:concl}
+
+
+Two decades ago, Petrini et al.~\cite{Petri2003:Missing} traced \emph{missing performance} in
+flagship supercomputers to noise and variability across the system stack.
+Our analysis of contemporary AMR codes shows this diagnostic challenge remains deeply relevant.
+Modern system complexity, driven by adaptive behaviors tuned for common cases, means performance is
+highly variable and context-dependent.
+% , obscuring true bottlenecks and making simple attributions to load imbalance premature.
+As a result, simple attributions to load imbalance are often incomplete, obscuring deeper sources
+of variability.
+Systematically identifying and mitigating these issues across hardware and software
+layers was crucial for effective optimization.
+Only after establishing reliable, interpretable telemetry could our CPLX placement policy
+demonstrate tunable control over the load-locality tradeoff, achieving up to 21.6\% runtime
+improvement over tuned baselines.
+Our experience suggests that low-latency analytics built on relational telemetry models may offer a
+viable foundation for resolving the persistent opacity of performance root causes.

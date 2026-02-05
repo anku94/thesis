@@ -1,0 +1,218 @@
+% ! TeX root = ./main.tex
+
+\section{Related Work}
+\label{sec:amr:relwork}
+
+
+\parahead{Variability and Runtime Analysis}
+Performance variability in HPC environments is well documented~\cite{Petri2003:Missing,
+  Hoefl2012:OptimizationPrinciplesCollective,Yildi2016:IONoise,Acun2016:Variation,VanS2009:AMR}, with
+root causes ranging from tuning to contention.
+Separately, fail-slow hardware has been reported as a source of performance
+degradation~\cite{Gunaw2018:FailSlow,Lu2023:PERSEUS}.
+Similar variability challenges have been identified in the context of collective performance in
+hyperscale ML clusters~\cite{Gangi2024:RDMA}.
+Varbench~\cite{Kocol2018:Varbench} is a framework to characterize computational variability using a
+suite of compute kernels.
+% Dedicated variability testbeds~\cite{Kocol2018:Varbench} and auto-tuning
+% frameworks~\cite{Menon2020:AutotuningParameterChoices} have emerged to address these concerns.
+Klenk et al.~\cite{Klenk2017:OverviewMPICharacteristics} analyze proxy MPI traces and report
+significant MPI overheads (60\% at 1024 ranks) and attribute them to load imbalance, while also
+noting limitations of trace analyses.
+% observed rising MPI overheads at scale (doubling beyond 500 ranks) and attributed them to load
+% imbalance.
+While prior work documents separate causes of stragglers, an end-to-end treatment combining tuning
+and placement optimization has been missing---a gap addressed by our work.
+% However, such variability is typically not incorporated into application-level performance
+% analysis or placement strategies. Our work addresses this gap by conducting an end-to-end study
+% integrating telemetry collection, tuning, and placement.
+
+\parahead{Performance Telemetry and Tooling}
+Established performance tools such as TAU~\cite{Shend2006:TAU} and Score-P~\cite{Mey2012:Score-P}
+collect profiles and traces (e.g., OTF2), but lack the queryability required for scalable
+analytics, a limitation previously noted by Klenk et
+al.~\cite{Klenk2017:OverviewMPICharacteristics}.
+Caliper~\cite{Boehm2016:Caliper} supports structured telemetry and programmable aggregation, but
+relies on plaintext data formats.
+Parquet~\cite{:ApacheParquet} provides a compact, binary columnar format with embedded statistics
+for efficient analytics, but is not widely adopted in performance tools.
+Hatchet~\cite{Bhate2019:Hatchet} builds a structured in-memory representation from external
+telemetry sources but assumes prior parsing.
+Metric frameworks like LDMS~\cite{Schwa2021:LDMS} offer low-overhead system-level metrics, but
+often lack application context needed for bottleneck attribution.
+Yang et al.~\cite{Yang1988:CriticalPath} describe a general critical path analysis framework, while
+our framework in \S\ref{sec:amr:tele:critp} is tailored for AMR codes.
+
+
+\parahead{AMR and Communication Models}
+% need to fix this
+Modern AMR codes either use MPI or asynchronous runtimes like Charm++~\cite{Acun2014:Charm++} and
+Legion~\cite{Bauer2012:Legion}.
+% Boundary communication is often handled using point-to-point patterns, though n
+Neighborhood collectives~\cite{Hoefl2011:ScalableProcessTopology,
+  Hoefl2012:OptimizationPrinciplesCollective,Ghazi:EfficientDesignsDistributed} for boundary
+communication have been proposed as an alternative to point-to-point messaging, but are currently
+not used in the AMR codes we evaluated.
+% These primitives, however, do not resolve placement or tuning challenges, especially under system
+% variability~\cite{VanS2009:AMR}.
+
+\parahead{Placement and Load Balancing}
+Graph-based partitioners such as parMETIS~\cite{Lasal2013:parMETIS} and
+Zoltan~\cite{Catal2007:Zoltan} handle complex meshes but incur high overhead.
+Sasidharan et al.~\cite{Sasid2015:GeneralSpacefillingCurve} propose a SFC-based partitioner with
+lower overhead than METIS.
+All graph-based approaches model communication as edge cuts, which we find poorly correlated with
+runtime communication overhead.
+Meta-Balancer~\cite{Menon2012:MetaBalancer} focuses on rebalancing triggers, while Zheng et
+al.~\cite{Zheng2011:PeriodicHierarchicalLoad} propose hierarchical schemes to scale load balancing.
+Solver-based approaches are used to optimize placement in cloud datacenters~\cite{Newel2021:RAS},
+but are computationally expensive (multi-hour) and impractical for AMR.
+
+
+
+% Many established performance tools~\cite{Shend2006:TAU,Mey2012:Score-P} effectively capture
+% profiles and event traces (OTF2)~\cite{Mey2012:Score-P}, but lack the queryability necessary for
+% analytics, a limitation also noted in prior work~\cite{Klenk2017:OverviewMPICharacteristics}.
+% Caliper~\cite{Boehm2016:Caliper} enables collecting structured and queryable telemetry with
+% programmable aggregation, but uses plaintext formats like our ad hoc pipeline.
+% Parquet~\cite{Apache:Parquet} is a highly efficient columnar format for analytics providing
+% structured binary data with statistics and metadata, but is not widely used in performance
+% tooling. Hatchet~\cite{Bhate2019:Hatchet} is an analysis library that parses structured telemetry
+% into pandas dataframes augmented with a tree-based index for call-graphs, but needs to parse
+% telemetry collected by other tools first. Separately, metric frameworks like
+% LDMS~\cite{Schwa2021:LDMS} enhance queryability but focus on system-level state, often lacking
+% application context for root-causing complex bottlenecks.
+
+% Studies of performance variability include dedicated frameworks~\cite{Kocol2018:Varbench},
+% analysis of causes like fail-slow hardware~\cite{Gunaw2018:FailSlow,Lu2023:PERSEUS}, and
+% optimization of collectives~\cite{Hoefl2012:OptimizationPrinciplesCollective,
+% Kanda2012:CanNetworkOffloadBased}. Related work explores proxy application
+% limitations~\cite{Kruse2023:StatisticalAnalysisHPCa} and theoretical
+% auto-tuning~\cite{Menon2020:AutotuningParameterChoices}.
+
+% Modern AMR codes use MPI directly or task-based runtimes (e.g., Charm++~\cite{Acun2014:Charm++},
+% Legion~\cite{Bauer2012:Legion}) for asynchronous execution. Neighborhood collectives have been
+% proposed within MPI for communication patterns such as boundary communication~\cite{
+% Hoefl2011:ScalableProcessTopology, Hoefl2012:OptimizationPrinciplesCollective,
+% Ghazi:EfficientDesignsDistributed}, but do not inherently solve tuning challenges. % Key
+% scalability bottlenecks include system variability and load balance~\cite{VanS2009:AMR}, with %
+% strategies like Meta-Balancer~\cite{Menon2012:MetaBalancer} focusing on rebalancing triggers.
+
+% Graph partitioning libraries (e.g., parMETIS~\cite{Lasal2013:parMETIS},
+% Zoltan~\cite{Catal2007:Zoltan}) handle complex meshes but have higher overhead than the SFCs
+% typical in AMR. Sasidharan et al.~\cite{Sasid2015:GeneralSpacefillingCurve} propose a SFC-based
+% partitioning scheme with a lower overhead than Metis. Both approaches model meshes as graphs and
+% use edge cuts as a proxy for communication load. We find the runtime impact of locality to be
+% weakly correlated with theoretical models, and tradeable for better compute load balance. While
+% hyperscaler placement solvers~\cite{Newel2021:RAS} exist, their multi-hour runtimes are unsuitable
+% for the dynamism of AMR. Zheng et al.~\cite{Zheng2011:PeriodicHierarchicalLoad} propose
+% hierarchical load-balancing schemes to circumvent scalability issues. Klenk et
+% al.~\cite{Klenk2017:OverviewMPICharacteristics} analyze traces from proxy MPI applications,
+% finding MPI overhead increases significantly with scale (\textgreater{}50\% at 500 ranks,
+% \textgreater{}60\% at 1000 ranks), due to load imbalance. Our work demonstrates the value of
+% integrating telemetry collection and analysis to understand and mitigate runtime artifacts.
+
+% Variability in HPC environments is
+% well-documented~\cite{Hoefl2012:OptimizationPrinciplesCollective,Yildi2016:IONoise,Petri2003:Missing,Acun2016:Variation}.
+% Similar problems in modern ML clusters~\cite{Gangi2024:RDMA}. Van Straalen et
+% al.~\cite{VanS2009:AMR} also identify system variability and load balance as key scalability
+% bottlenecks, while approaches like Meta-Balancer~\cite{Menon2012:MetaBalancer} focus on when to
+% trigger rebalancing.
+
+% Established performance tools~\cite{Shend2006:TAU,Mey2012:Score-P} effectively capture profiles
+% and event traces (OTF2)~\cite{Mey2012:Score-P}, but lack the inherent queryability found in
+% analytical formats such as Parquet~\cite{Apache:Parquet}. Separately, structured metric collection
+% frameworks like LDMS~\cite{Schwa2021:LDMS} enhance queryability but primarily focus on
+% system-level metrics, and lack the fine-grained application context required for root-causing
+% complex bottlenecks. %Substantial prior work exists on algorithms and techniques for parallel
+% debugging~\cite{Yang1988:CriticalPath,Holli1998:CriticalPathProfiling,Aguil2003:Perf,Mitra2014:AccurateApplicationProgress}.
+% Performance variability has been studied through frameworks like
+% Varbench~\cite{Kocol2018:Varbench}, analysis of fail-slow
+% hardware~\cite{Gunaw2018:FailSlow,Lu2023:PERSEUS}, and optimization of collective
+% operations~\cite{Hoefl2012:OptimizationPrinciplesCollective, Kanda2012:CanNetworkOffloadBased}.
+% Kruse et al.~\cite{Kruse2023:StatisticalAnalysisHPCa} study the limitations of proxy applications
+% in helping tune real codes, while Menon et al.~\cite{Menon2020:AutotuningParameterChoices}
+% describes a theoretical framework for automatic tuning. Modern AMR codes are built either directly
+% on MPI or on task-based runtimes like Charm++~\cite{Acun2014:Charm++},
+% Uintah~\cite{Holme2022:Uintah}, and Legion, which provide asynchronous execution abstractions.
+% Neighborhood collectives have been proposed within MPI for communication patterns such as boundary
+% communication~\cite{ Hoefl2011:ScalableProcessTopology,
+% Hoefl2012:OptimizationPrinciplesCollective, Ghazi:EfficientDesignsDistributed}, but do not
+% inherently solve tuning challenges. Van Straalen et al.~\cite{VanS2009:AMR} identify system
+% variability and load balance as key scalability bottlenecks, while approaches like
+% Meta-Balancer~\cite{Menon2012:MetaBalancer} focus on when to trigger rebalancing. General graph
+% partitioning libraries like parMETIS~\cite{Lasal2013:parMETIS} and Zoltan~\cite{Catal2007:Zoltan}
+% can handle complex mesh relationships but incur high overhead compared to space-filling curves.
+% While hyperscalers use solvers to place workloads and services~\cite{Newel2021:RAS}, they take
+% hours, making them unsuitable for AMR. Zheng et al.~\cite{Zheng2011:PeriodicHierarchicalLoad}
+% propose hierarchical load-balancing schemes to circumvent scalability issues. Klenk et
+% al.~\cite{Klenk2017:OverviewMPICharacteristics} analyze traces from proxy MPI applications,
+% finding MPI overhead increases significantly with scale (\textgreater{}50\% at 500 ranks,
+% \textgreater{}60\% at 1000 ranks), due to load imbalance. Our analysis demonstrates the value of
+% colocating telemetry collection with analysis to isolate runtime artifacts.
+
+% While hyperscale% placement systems~\cite{Newel2021:RAS} use mixed integer programming%
+% complemented by temporary greedy heuristics, our experiments with commercial% solvers showed they
+% cannot meet AMR timing constraints, taking hours versus our% 50ms target.%
+
+% \textbf{Asynchronous Task-based Runtimes.} While some AMR codes are built directly on top of MPI,
+% many AMR codes are built on top of frameworks that offer asynchronous task-based abstractions.
+% Such frameworks allow users to model their application as dependency graphs of tasks, which are
+% scheduled appropriately by the runtime. The goals of such frameworks are convenience, performance
+% portability, overlapping communication and compution, and better separation of concerns. Examples
+% of such frameworks are Charm++~\cite{Acun2014:Charm++}, Cello, Uintah~\cite{Holme2022:Uintah} and
+% Legion. While it is possible for these frameworks to avoid common pitfalls, it is also possible
+% for well-tuned codes directly using MPI to co-optimize the physics and the scheduling. No publicly
+% available analyses and comparisons of the two approaches are available, to the best of our
+% knowledge. \textbf{Graph stuff: } Zoltan~\cite{Catal2007:Zoltan}, METIS,
+% ParMETIS~\cite{Lasal2013:parMETIS} RAS from Meta~\cite{Newel2021:RAS} We experimented with
+% solver-based approaches but found them to be orders of magnitude slower than our target We tried
+% an ILP formulation using a commercial state-of-the-art solver but failed to get solutions that
+% outperformed simple heuristics even after 200s --- three orders of magnitude slower than our 50ms
+% target per invocation. ILP approaches \textbf{Variability}: Varbench~\cite{Kocol2018:Varbench},
+% Chombo~\cite{VanS2009:AMR} \textbf{Trace Paper}: Klenk et
+% al.~\cite{Klenk2017:OverviewMPICharacteristics} analyze a set of traces from proxy MPI
+% applications. While their analysis does not cover many AMR codes, they find the time spent by
+% applications in MPI operations increases with scale (50\% for $\ge 500$ ranks, 60\% for $\ge 1000$
+% ranks), which they ascribe to load imbalance. Our analyses suggest that while load imbalance in
+% codes is a concern, jitter also creates stragglers which manifest as elevated MPI operation times.
+% The difference between the two can be hard to establish when telemetry analysis is separated from
+% infrastructure. We echo their concerns on the need for more detailed profiling, and the challenges
+% it poses at scale. They suggest using asynchronous collectives over synchronous ones, but we find
+% that the synchronicity is necessary to ensure correctness, and you can not drop-in replace things
+% without a significant rehaul of the code. Variability from various sources and its imapct on
+% runtime for bulk-synchronous parallel codes has been studied. Soem work also exists in exploiting
+% it. - Many money quotes, need to be worked throughput the paper "The larger the scale the more
+% time is spent in MPI, as applications with more than 500 ranks show an average MPI time of 57\%"
+% "Use async collectives" "Overlap communication and computation"
+
+% - Paper: Scalability Challenges for Massively Parallel AMR Straalen et al "Variability in system
+% software was an equally important source of performance lsos" "finer-grained load-balancing
+% needed" "improve scalability by one to two orders of magnitude"
+
+% - Paper: Dubey et al, survey: achieving balanced load distribution is difficult because
+% multiphysics, solvers etc. - Performnace and scaling have been major concerns for SAMR codes -
+% Discusses heuristic-based approaches/
+
+% and Zoltan~\cite{Catal2007:Zoltan} are used for placement in some context. They can handle
+% arbitrary mesh topologies and complex relationships, their computational overhead makes simpler
+% SFC-based approaches preferable for structured meshes. Approaches using mixed integer programming
+% have been studied by hyperscalers for virtual machine allocation, but they take an hour to compute
+% a new placement. Even in their designs, they are complemented by greedy heuristics for a temporary
+% allocation while a better one is recomputed. For dynamic mesh codes these are impractical.
+
+% % Critical paths
+
+% Critical paths:~\cite{Yang1988:CriticalPath},~\cite{Aguil2003:Perf} %% Tuning It is commonly
+% understood that networks require tuning. %% Noise Significant prior work exists on characterizing
+% variability in hardware using benchmarks. Varbench~\cite{Kocol2018:Varbench} is a framework to
+% characterize variability using compute kernels to elicit on-chip factors that create variability.
+% While the existence of load-balancing and variability are both accepted, a study solving both
+% these problems has not been attempted before. Fail-slow~\cite{Gunaw2018:FailSlow,Lu2023:PERSEUS}
+% Meta-Balancer~\cite{Menon2012:MetaBalancer} is a study of when to invoke load-balancing. In
+% frequently refining AMR codes, this decision is not necessary since a refinement automatically
+% triggers a redistribution. In codes where no automatic trigger exists, this may be necessary. %%
+% Neighborhood collectives %% Scalability challenges Straalen et al AMR
+% scalability~\cite{VanS2009:AMR} %% nonblocking collectives/useless Nonblocking
+% collectives~\cite{Kanda2012:CanNetworkOffloadBased} Neighborhood
+% collectives~\cite{Hoefl2012:OptimizationPrinciplesCollective}

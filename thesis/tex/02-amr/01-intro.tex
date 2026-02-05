@@ -1,0 +1,87 @@
+% ! TeX root = ../main-ieee.tex
+
+\section{Introduction}\label{sec:amr:intro}
+
+Block-structured Adaptive Mesh Refinement (AMR) codes are critical to modern scientific computing,
+enabling large-scale simulations in astrophysics, cosmology, climate science, and fluid
+dynamics~\cite{Dubey2014:Survey, Burst2011:p4est}.
+By dynamically refining the mesh around steep gradients, AMR delivers 1--2 orders of magnitude
+performance gains over uniform approaches~\cite{Vitti:DecadeAMR}.
+These codes often run for weeks on hundreds of thousands of
+cores~\cite{Liska2022:H-AMR,Burst2011:p4est,Grete2023:Parthenon}, making performance optimization
+essential.
+Load balancing remains a major challenge~\cite{Dubey2014:Survey,Burst2008:ALPS}: while octree and
+space-filling curve (SFC) placements work for uniform workloads~\cite{Burst2011:p4est}, they do not
+account for compute kernel variability.
+% Stragglers in parallel codes are costly due to frequent global synchronization, and the
+% fine-grained adaptivity of AMR exacerbates this effect.
+Parallel codes are limited by stragglers---ranks lagging significantly behind peers---whose
+delay propagates due to frequent global synchronization, and the fine-grained adaptivity of AMR
+exacerbates this effect.
+Prior analyses of proxy application traces~\cite{Klenk2017:OverviewMPICharacteristics} document
+significant MPI waiting time (\textgreater{}60\% at 1000 ranks), while noting the limitations of
+standard trace data for the deeper, cross-stack diagnosis required to pinpoint root causes.
+The root causes, whether algorithmic or infrastructural, remain entangled.
+We ask: what changes when performance instrumentation has full visibility over a real AMR code?
+
+To answer this, we sought to improve AMR placement using fine-grained runtime telemetry on a
+research cluster providing full-stack access.
+Our goal was to replace static heuristics with telemetry-driven workload models.
+We adopted an integrated workflow that combined telemetry collection, analysis, and intervention.
+However, initial experiments immediately revealed a deeper challenge: observed metrics often
+diverged unexpectedly from predictors such as message volume, undermining our ability to construct
+reliable workload models.
+Rather than directly enabling better placement, fine-grained telemetry first required us to
+diagnose and mitigate runtime artifacts to make the data useful for placement decisions
+(\S\ref{sec:amr:chal}).
+% to create full access required us to first interpret and diagnose our stack for predictable te
+% first exposed the fundamental difficulty of interpreting cross-layer performance interactions
+% (\S\ref{sec:amr:chal}).
+
+This paper describes the end-to-end process we undertook to develop telemetry-driven placement
+policies.
+We began by systematically diagnosing variability across the stack and tuning system parameters.
+This required extensive analysis of large volumes of telemetry, prompting a shift from standard
+tracing and profiling tools to a custom analytical pipeline over structured data
+(\S\ref{sec:amr:tele}).
+Tuning the system stack resulted in predictable runtime response as placement aspects such as load
+balance and locality were varied.
+Recognizing that these two properties represented competing optimization objectives, we developed
+CPLX (\S\ref{sec:amr:design}), a hybrid placement policy balancing these two objectives via a tunable
+parameter to minimize overall runtime.
+Because AMR codes refine frequently, placement must meet strict timing constraints ($<$ 50ms in our
+target codes).
+CPLX meets these requirements while leveraging existing octree and SFC infrastructure for
+compatibility with current AMR frameworks.
+
+CPLX improves runtime by up to 21.6\% over optimized baselines (\S\ref{sec:amr:eval}) through its
+tunable control over the load-locality tradeoff, validating our process-driven methodology.
+However, our experience suggests that performance optimization in large-scale systems is inherently
+context-dependent.
+While algorithmic approaches are necessary, their application must be embedded in a broader
+empirical process---one that interprets telemetry in the context of the runtime stack and prioritizes
+objectives only insofar as they measurably impact end-to-end performance.
+Accordingly, we focus not just on CPLX itself, but on the end-to-end process that led to it, and
+distill methodological lessons applicable to other large-scale tuning efforts.
+This paper makes three key contributions:
+
+\begin{itemize}
+  \item An empirical case study documenting the challenges of achieving reliable,
+        interpretable telemetry for AMR codes using full-stack access and iterative
+        tuning.
+  \item A novel placement policy, CPLX, that provides tunable control over the tradeoff
+        between compute balance and communication locality (\S\ref{sec:amr:design}).
+  \item Broader lessons on telemetry-driven performance analysis and the empirical,
+        context-specific nature of tuning in large-scale parallel systems.
+\end{itemize}
+
+We provide background on block-structured AMR codes and current placement approaches
+(\S\ref{sec:amr:bg}), then outline the challenges of incorporating telemetry into placement decisions
+(\S\ref{sec:amr:chal}).
+We present our methodology for obtaining reliable performance measurements (\S\ref{sec:amr:tele}),
+followed by the design of our placement policies (\S\ref{sec:amr:design}) and their evaluation
+(\S\ref{sec:amr:eval}).
+We then summarize the broader lessons drawn from our experiences (\S\ref{sec:amr:lessons}) before
+concluding with related work (\S\ref{sec:amr:relwork}).
+
+All our policies and associated artifacts are open source~\cite{Ankus2025:cplx}.

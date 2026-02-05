@@ -9,7 +9,8 @@
       "Bash(/usr/bin/make:*)",
       "Bash(latexmk:*)",
       "Bash(wc:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(make:*)"
     ]
   }
 }
