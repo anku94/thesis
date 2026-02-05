@@ -10,7 +10,8 @@
       "Bash(latexmk:*)",
       "Bash(wc:*)",
       "Bash(ls:*)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "Bash(pdfinfo:*)"
     ]
   }
 }

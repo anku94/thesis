@@ -36,3 +36,21 @@
   \vspace{0.3em}
   \noindent\textbf{Lesson #1}: \textit{#2.}\space
 }
+
+%%% ORCA Paper Macros
+\newcommand{\scorep}{Score-P}
+\newcommand{\dftracer}{DFTracer}
+\newcommand{\qlogic}{QLogic}
+
+% TBON tier macros
+\newcommand{\tierctl}{\textsf{CTL}}
+\newcommand{\tieragg}{\textsf{AGG}}
+\newcommand{\tiermpi}{\textsf{MPI}}
+
+% Flow marker (matches agentic_timeline.py)
+\definecolor{flowblue}{HTML}{b3cde3}
+\newcommand{\flowmark}[1]{%
+  \tikz[baseline=(char.base)]{
+    \node[fill=flowblue,text=black,circle,inner sep=1pt,font=\small\bfseries,draw=black,line width=0.3pt] (char) {#1};
+  }%
+}

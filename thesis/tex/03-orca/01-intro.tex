@@ -1,0 +1,216 @@
+% ! TeX root = ../main.tex
+
+\section{Introduction}
+
+% # ORCA Intro — Working Draft
+
+% ---
+
+% ## Internal Notes / Open Questions
+
+% - **Contributions enumeration**: Some papers do "3 key contributions: (1)... (2)... (3)..." — do we want this? Could go at end of P3 or as a standalone mini-para between P3 and P4. Risk: formulaic. Alternative: let P3 (system) and P4 (results) carry the contributions implicitly. Decision deferred.
+% - **Open source**: Codebase is open source. Currently at end of P3. Don't bury it.
+% - **AMR calibration**: How much AMR in P1? Currently one sentence. Could be zero (just "in our experience") or could name it. Keep light — §2.2 has the detail.
+% - **Audience**: Systems + HPC. Database people are secondary but should find the OLAP framing legible.
+
+% ## Paragraph Roles
+
+% - **P1 — Stakes + Problem**: BSP at scale, efficiency matters, pathologies are context-specific and can only be found in the run where they occur. Post-hoc doesn't work. "Why now": scale is forcing the issue.
+% - **P2 — Always-on application-aware observability**: Not metrics — application-aware. Dapper parallel (requests vs collectives). ML ad-hoc pipelines don't compose. The capability model: monitor collectives cheaply, turn on detail when anomalous. Requires BSP-aware guarantees.
+% - **P3 — ORCA**: Tree-based overlay. Progression of three capabilities: (1) better offline tracing via causal partitioning, (2) streaming in-situ analytics, (3) control plane for online intervention. MRNet lineage + modern OLAP primitives.
+% - **P4 — Results + broader vision**: Headline eval numbers. Close with the wider claim (1–2 sentences).
+
+% ## Aside: Trimmed Content
+
+% **Storage efficiency numbers** (cut from P4 for density — available if we want them back):
+% - Parquet output 2–5× smaller than OTF2, 10–20× smaller than plaintext formats.
+% - Per-record overhead remains constant at scale.
+
+% **"Three capabilities in progression"** (from bullets, not explicitly serialized):
+% - The original outline had "efficient columnar collection → in-situ SQL analytics → closed-loop control via TS2PC" as a three-stage progression. P3 currently covers all three but doesn't frame them as an evolution. The paper's §4 intro uses this progression framing. Could reintroduce if we want that narrative arc in the intro.
+
+% **HPC/ML convergence** (partially absorbed into P1):
+% - The explicit point that "HPC and ML training are converging on the same pathologies but with separate tooling" got compressed. Could be made more explicit.
+
+% ## Concerns
+
+% 1. **P2 is long and dense.** It does: metrics insufficient → application-aware → Dapper parallel → collectives as BSP primitive → capability model → ML ad-hoc → common substrate + guarantees. That's a lot of moves. Might need to split, but the logic is sequential so it may hold as one dense paragraph. Defer to formatting pass.
+% 2. **P3 might split** at "ORCA builds on..." — capability vs lineage/why-now as separate typeset paragraphs.
+% 3. **"Foundational infrastructure" positioning** is implicit, not explicit. Strong enough, or do we want an explicit claim?
+% 4. **Contributions enumeration**: Still undecided.
+% 5. **Score-P and Kineto no longer named in P1.** P1 now says "capturing massive traces" generically. This is cleaner but loses the concrete signaling that we know the landscape. The specifics live in §2 now. Acceptable?
+% 6. **Dapper is named but not cited.** Need a citation if we keep the name, or just say "distributed tracing infrastructure" without naming it.
+
+% ---
+% ---
+
+% # Prose
+
+
+The \emph{bulk-synchronous parallel} (BSP)~\cite{Valia1990:BSP} paradigm powers critical computational workloads, from
+scientific simulations to large-scale machine learning training.
+These systems are uniquely fragile: at the scale of tens of thousands of processors, lockstep
+execution means a single straggler can block cluster-wide progress at every synchronization point.
+As ML training pushes BSP toward 100,000 GPUs and scientific workloads grow in tandem, the cost of
+undiagnosed performance pathologies has become economically untenable.
+% Kong2022: Collie (RDMA)
+% Xuan2026: STAD
+% You2024:GVARP: GVARP
+% Missing: Petrini2003
+% Acun2016: Mitigating
+% Acun2016: Variation
+% Gunaw2018: FailSlow
+% VanS2009: Scalability in AMR
+Yet the causes are diverse and highly
+context-dependent~\cite{Kong2022:Collie,Xuan2025:STAD,You2024:GVARP,Petri2003:Missing,Acun2016:Mitigating,Acun2016:Variation,Gunaw2018:FailSlow,VanS2009:AMR,Jain2025:AMR,Bhate2020:PerfVar,Chen2025:Reveal,Gangi2024:RDMA,Cui2025:XPUTimer,Jiang2025:TrainCheck,Deng2025:Minder,Dong2025:Aegis,Yao2025:Holmes,Wu2025:GREYHOUND}
+---load imbalance, poor overlap, hardware variability---varying with the cluster, workload, scale,
+and configuration.
+Metrics~\cite{:Prometheus,Schwa2021:LDMS} provide baseline visibility but rarely enough workload
+structure to attribute causes.
+Tracing~\cite{Shend2006:TAU,Knupf2012:Score-P,2025:PytorchKineto,Devar2024:DFTracer,Boehm2016:Caliper}
+can capture the fine-grained patterns needed for diagnosis, but prevailing approaches---exhaustive
+collection to disk followed by expensive \emph{extract-transform-load}
+(ETL)~\cite{Yildi2023:IOMax,Jain2025:AMR} ---cannot provide feedback at the speed problems demand.
+In our study of placement in AMR codes~\cite{Jain2025:AMR}, isolating the root causes of several
+performance artifacts took months, while fixes typically took days.
+Rapid visibility into production pathologies remains one of the highest-yield paths to efficiency.
+
+We argue for always-on, steerable observability as a production capability for BSP workloads---not
+just faster post-hoc analysis, but continuous visibility with the ability to escalate on demand.
+The evolution of distributed tracing~\cite{Barha2004:Magpie,Fonse2007:X-Trace,Sigel2010:Dapper}
+offers an instructive parallel.
+In microservices, tracing evolved to preserve causal relationships between requests---the unit of
+work in asynchronous systems---so tail latency is continuously monitored and attributable to
+specific services.
+% In BSP, causal relationships come from collectives
+% Causal relationships in BSP come from collectives: 
+In BSP, collectives induce causality: performance anomalies manifest as stragglers that stall
+collectives.
+And because BSP is a single coordinated workload, the system can unify observation and
+intervention---enabling operators to steer collection on demand, test hypotheses live, and act on
+feedback, all while the job runs.
+Real-time diagnostics are already proving valuable in ML
+training~\cite{Yao2025:Holmes,Wu2025:GREYHOUND,Deng2025:Minder,Cui2025:XPUTimer,Dong2025:Aegis,Jiang2025:TrainCheck,Guan2025:PerfTracker}
+for problems ranging from straggler localization to training correctness, but each system
+implements a bespoke collection and analytics pipeline.
+A common observability substrate is needed for BSP workloads, providing low-overhead
+on-fabric transport, BSP-aware coordination semantics for telemetry aggregation and control, and
+programmable interfaces for analytics (\S\ref{sec:orca:req}).
+
+% We present ORCA (\emph{Observability with Real-time Control and Aggregation}), a tree-based overlay
+% network for real-time observability and control of large-scale BSP applications.
+We present a \emph{tree-based overlay network} (TBON) for real-time observability and control of
+large-scale BSP applications, called
+ORCA~(\emph{Observability~with~Real-time~Control~and~Aggregation}).
+ORCA treats telemetry as columnar streams, transformed via a SQL-based analytics interface called
+\emph{OrcaFlow} en route to \emph{sinks} such as dashboards or parallel filesystems.
+A key contribution is the \emph{timestep dataframe} abstraction: building on the insight that
+global synchronization divides BSP telemetry into causally independent windows, ORCA transforms
+telemetry from a rank-major to a timestep-major representation (\S\ref{sec:orca:des_model}).
+An RDMA-based TBON-optimized transport (\S\ref{sec:orca:des_xport}) enables low-overhead collection of
+these dataframes.
+They can then be transformed via SQL-based analytics, routed to a dashboard, or persisted as
+partitioned Parquet for zero-ETL post-mortems.
+Distributed query planning with operator pushdown minimizes data movement across the overlay
+(\S\ref{sec:orca:des_insitu}).
+A control plane (\S\ref{sec:orca:des_ctl}) provides atomic and timestep-consistent control semantics,
+guaranteeing correctness for interventions such as new analytics, probes, parameter updates.
+ORCA combines a modern columnar analytics
+stack~\cite{:ApacheArrow,:ApacheParquet,Lamb2024:DataFusion} with RDMA and BSP-aligned data and
+control paths to realize low-overhead, real-time, closed-loop feedback.
+
+We evaluate ORCA on a real AMR code at up to 4096 CPU ranks.
+% , and progressively study its
+% transport, analytics, and control capabilities.
+
+\begin{itemize}[leftmargin=*]
+  \item In conventional tracing workflows, ORCA incurs \textasciitilde{2}\% runtime overhead
+        (vs 56--81\% for state-of-the-art tracers), produces up to 42$\times$ smaller
+        traces for equivalent telemetry, and enables up to
+        6900$\times$ faster analyses than existing trace formats (\S\ref{sec:orca:eval-trace}).
+  \item In-situ analytics enable low-overhead needle-in-the-haystack
+        workflows---outlier \mpiw{} calls are isolated in real-time at sub-2\% runtime
+        overhead, while discarding up to 99.999\% of data at MPI ranks (\S\ref{sec:orca:eval-insitu}).
+  \item In an agentic evaluation of its closed-loop capabilities using an LLM
+        agent as a proxy for a human operator, ORCA enables localizing a performance
+        anomaly---the same bug from our AMR study that took months of manual
+        investigation---in 27 minutes, while reducing data volume by up to
+        144$\times$ (\S\ref{sec:orca:eval-agent}).
+\end{itemize}
+More broadly, ORCA demonstrates that declarative SQL analytics can be embedded on the fabric
+alongside a live MPI application, enabling streaming analytics workflows beyond observability.
+ORCA is open source~\cite{Autho2026:orca-code}.
+
+% We evaluate ORCA on a real AMR code at upto 4096 CPU ranks.
+% Key results from the evaluation are summarized below.
+
+% 1.
+% ORCA outperforms conventional tracers in runtime overhead, storage efficiency, and analytics
+% performance.
+% 2.
+% In-situ analytics enable needle-in-the-haystack workflows, filtering up to 99.999\% of data at MPI
+% ranks while retaining sub-2\% runtime overhead.
+% 3.
+% In an agentic evaluation of its closed-loop capabilities using an LLM agent as a proxy for human
+% operator, ORCA localizes a performance anomaly --- the same bug from our AMR study that took months
+% of manual investigation --- in 27 minutes, while reducing data volume by up to 144x.
+
+% More broadly, ORCA demonstrates that declarative SQL analytics can be embedded on the fabric
+% alongside a live MPI application, enabling streaming analytics workflows beyond observability.
+
+% ORCA collects detailed traces at 1–2\% runtime overhead, compared to 56–81\% for state-of-the-art
+% tracers whose uncoordinated buffer flushes compound at scale.
+% Post-mortem queries over ORCA's Parquet output complete in hundreds of milliseconds—3 to 4 orders
+% of magnitude faster than equivalent queries over conventional trace formats, which are bottlenecked
+% by parsing rather than computation.
+% In-situ analytics via operator pushdown reduce transmitted data volume by 98.5--99.999\% at the MPI
+% tier while maintaining sub-2\% overhead, enabling continuous observability that would be
+% impractical with capture-everything tracing.
+% To validate the closed-loop workflow, an LLM agent acting as a proxy for a human operator localizes
+% a performance anomaly---the same bug from our AMR study that took months to diagnose manually---in
+% 27 minutes.
+% More broadly, ORCA demonstrates that declarative SQL analytics can be embedded on the fabric
+% alongside a live MPI application, enabling streaming analytics workflows beyond observability.
+
+% The bulk synchronous parallel paradigm powers some of our most critical computational tools,
+% ranging from all scientific simulations (weather, climate, fluids, engineering) to large-scale
+% distributed machine learning training.
+% Running at scales of up to 100K GPUs, these are some of the largest computational workloads out
+% there.
+% Given the resource footprints --- money, energy, hardware --- the efficiency of these workloads is
+% of paramount importance.
+
+% We have a language and taxonomy of observability from microservice-based systems that originated
+% with Dapper.
+% No such thing for BSP.
+% Production clusters rely on basic metric-level visibility but there is no structured solution for
+% deeper application-level visibility.
+% Former can only provide basic high-level visibility, but no insight into complex application-level
+% behavior.
+
+% To add to that, a supercomputer is basically the craziest thing computer scientists have built.
+% Frequent global synchronization and no appetite for stragglers.
+% Achieved by connecting nodes together by exotic fabrics that split the difference between a PCI bus
+% and a network.
+
+% There's a gap between the trace and the view.
+% A trace is write-optimized.
+% The view is a query.
+% The gap between the trace and the view is inefficiencies.
+% Spatial and temporal gap.
+% Spatial gap: trace is such a large dataset that someone else who does not know the application
+% analyzes it, without hardware context.
+% Temporal gap: latency of intervention, challenge of explaining possibly transient anomalies.
+
+% How do we optimize the view?
+% Indexing.
+% Streaming indexing.
+% But what dimension to index on?
+% This is a basic database strategy: think about the dimension the query will access.
+% The dimension that captures the causality intrinsic in the workload.
+% For distributed systems it is the RPC.
+% For parallel systems it is the thing that makes them different from distributed: the sync!
+
+% The ideal observability spectrum.
+% The ability to request exactly the needed information from any layer, aggregate it as fast as
+% possible, with zero workload interference.

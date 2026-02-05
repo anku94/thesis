@@ -1,15 +1,17 @@
 CARPROOT := /Users/schwifty/Repos/carp-paper/figures
 AMRROOT  := /Users/schwifty/Repos/netsketch-amr-profiling/data/figs
-ORCAROOT := /Users/schwifty/Repos/mon-paper/data/tikz-exps/pdf
+ORCAFIGSROOT := /Users/schwifty/Repos/mon-paper/data/figs
+ORCATIKZROOT := /Users/schwifty/Repos/mon-paper/data/tikz-figs-new
 
 CARPFILES := distrib6.pdf distrib.amr.pdf distrib.vpic.pdf
 CARPEVALFILES := qlatvssel.v6.pdf runtime.v4.werr.pdf query.ycsb.v3.pdf pvtbench.adapt.pdf rtp.latvspvtcnt.pdf pvtbench.epxpp.pdf carpdb.impact.alt4.pdf load.vs.params.pdf runtime.vs.params.pdf
 AMRFILES  := msgcnt_regr.pdf lesson_volfunc_v2_short_zoom.pdf lesson_throttling_v4.pdf lesson_ordering_v5.pdf criticalpath2.pdf criticalpath.pdf sendorder_v2.pdf octree.pdf blastwave_runtime_wide.pdf blastwave_tradeoff_wide_mini.pdf blastwave_comm_wide_mini.pdf meshdriver_locbench.pdf scaling.pdf
-ORCAFILES := sampling.pdf overlay-agg-new.pdf
+ORCAFIGSFILES := lesson_volfunc_zoom.pdf amr_tracer_runtimes.pdf amr_tracesizes_line.pdf query_suite.pdf dftracer_comp.pdf ofi_tcp_tracer_runtimes.pdf ontv_combined.pdf agentic_timeline.pdf
+ORCATIKZFILES := arch.pdf plan.pdf plan2.pdf ts2pc.pdf
 
 CARPTARGETS := $(addprefix carp_,$(CARPFILES)) $(addprefix carp_,$(CARPEVALFILES))
 AMRTARGETS  := $(addprefix amr_,$(AMRFILES))
-ORCATARGETS := $(addprefix orca_,$(ORCAFILES))
+ORCATARGETS := $(addprefix orca_,$(ORCAFIGSFILES)) $(addprefix orca_,$(ORCATIKZFILES))
 
 CARPDESIGNTARGETS := carp_layout_v2.pdf carp_arch_v12mini.pdf carp_sender_wobg_v6.pdf carp_reneg_hists_v4.pdf carp_carpdb_log_v3.pdf
 
@@ -41,7 +43,32 @@ carp_carpdb_log_v3.pdf: $(CARPROOT)/design/carpdb_log_v3.pdf
 amr_%: $(AMRROOT)/%
 	cp $< $@
 
-orca_%: $(ORCAROOT)/%
+# ORCA figures from data/figs
+orca_lesson_volfunc_zoom.pdf: $(ORCAFIGSROOT)/lesson_volfunc_zoom.pdf
+	cp $< $@
+orca_amr_tracer_runtimes.pdf: $(ORCAFIGSROOT)/amr_tracer_runtimes.pdf
+	cp $< $@
+orca_amr_tracesizes_line.pdf: $(ORCAFIGSROOT)/amr_tracesizes_line.pdf
+	cp $< $@
+orca_query_suite.pdf: $(ORCAFIGSROOT)/query_suite.pdf
+	cp $< $@
+orca_dftracer_comp.pdf: $(ORCAFIGSROOT)/dftracer_comp.pdf
+	cp $< $@
+orca_ofi_tcp_tracer_runtimes.pdf: $(ORCAFIGSROOT)/ofi_tcp_tracer_runtimes.pdf
+	cp $< $@
+orca_ontv_combined.pdf: $(ORCAFIGSROOT)/ontv_combined.pdf
+	cp $< $@
+orca_agentic_timeline.pdf: $(ORCAFIGSROOT)/agentic_timeline.pdf
+	cp $< $@
+
+# ORCA figures from tikz-figs-new
+orca_arch.pdf: $(ORCATIKZROOT)/arch.pdf
+	cp $< $@
+orca_plan.pdf: $(ORCATIKZROOT)/plan.pdf
+	cp $< $@
+orca_plan2.pdf: $(ORCATIKZROOT)/plan2.pdf
+	cp $< $@
+orca_ts2pc.pdf: $(ORCATIKZROOT)/ts2pc.pdf
 	cp $< $@
 
 clean:
