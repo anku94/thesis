@@ -144,6 +144,9 @@
 \input{tex/99-figs-amr}
 \input{tex/99-figs-orca}
 
+% Temporary: Test only the timeline chapter
+\includeonly{tex/94-amr-paper}
+
 %%% --- Document Begins ---
 \begin{document}
 \frontmatter{}
@@ -153,69 +156,32 @@
 \mainmatter{}
 \input{tex/0-abstract}
 % \markdownInput{notes/outline-ch1-v4.md}
-\input{tex/1-intro}
+\include{tex/1-intro}
 
-\newpage
+% \newpage
 % \markdownInput{notes/outline-ch2-v1.md}
-\input{tex/2-background}
+\include{tex/2-background}
 
-\newpage
+% \newpage
 % \markdownInput{notes/outline-ch3-v1.md}
-\input{tex/3-carp}
+\include{tex/3-carp}
 
-\newpage
+% \newpage
 % \markdownInput{notes/outline-ch4-v1.md}
-\input{tex/4-amr}
+\include{tex/4-amr}
 
-\newpage
-\newpage
+% \newpage
+% \newpage
 % \markdownInput{notes/outline-ch5-v1.md}
-\input{tex/5-orca}
+\include{tex/5-orca}
 
-\newpage
-\input{tex/6-timeline}
+% \newpage
+\include{tex/6-timeline}
 
-%%% --- CARP Paper ---
-\chapter{CARP Paper}
-\label{chap:carp-paper}
-\input{tex/01-carp/00-abstract}
-\input{tex/01-carp/01-intro}
-\input{tex/01-carp/02-background}
-\input{tex/01-carp/03-challenges}
-\input{tex/01-carp/04-principles}
-\input{tex/01-carp/05-design}
-\input{tex/01-carp/06-impl}
-\input{tex/01-carp/07-eval}
-\input{tex/01-carp/08-disc}
-\input{tex/01-carp/09-relwork}
-
-%%% --- AMR Paper ---
-\chapter{AMR Paper}
-\label{chap:amr-paper}
-\input{tex/02-amr/00-abstract}
-\input{tex/02-amr/algos}
-\input{tex/02-amr/01-intro}
-\input{tex/02-amr/02-background}
-\input{tex/02-amr/03-challenges}
-\input{tex/02-amr/04-telemetry}
-\input{tex/02-amr/05-design}
-\input{tex/02-amr/06-eval}
-\input{tex/02-amr/07-lessons}
-\input{tex/02-amr/08-relwork}
-\input{tex/02-amr/09-concl}
-
-%%% --- ORCA Paper ---
-\chapter{ORCA Paper}
-\label{chap:orca-paper}
-\input{tex/03-orca/00-abstract}
-\input{tex/03-orca/01-intro}
-\input{tex/03-orca/02-bg}
-\input{tex/03-orca/03-chal}
-\input{tex/03-orca/04-design}
-\input{tex/03-orca/05-impl}
-\input{tex/03-orca/06-eval}
-\input{tex/03-orca/07-related}
-\input{tex/03-orca/08-concl}
+%%% --- Paper Chapters ---
+\include{tex/93-carp-paper}
+\include{tex/94-amr-paper}
+\include{tex/95-orca-paper}
 
 % %% --- Appendix (Optional) --- \appendix \chapter{Supplementary Material} Add raw data, code
 % listings, or extended discussion here.

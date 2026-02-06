@@ -11,7 +11,9 @@
       "Bash(wc:*)",
       "Bash(ls:*)",
       "Bash(make:*)",
-      "Bash(pdfinfo:*)"
+      "Bash(pdfinfo:*)",
+      "Bash(pdflatex:*)",
+      "Bash(biber:*)"
     ]
   }
 }
