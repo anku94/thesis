@@ -1,5 +1,4 @@
-% article type removes large chapter titles, remove it for full version
-\documentclass[11pt,oneside,article]{memoir}
+\documentclass[11pt,oneside]{report}
 
 \newcommand{\thesisTitle}{
     % Unifying Bulk-Synchronous Parallel Observability Paradigms Using Relational Dataflows
@@ -13,18 +12,32 @@
     pdftitle={\thesisTitle},
     pdfsubject={PhD Dissertation, ECE, CMU},
     pdfkeywords={PhD, Dissertation, CMU, Electrical and Computer Engineering},
-    hidelinks
+    colorlinks=true,
+    linkcolor=linkblue,
+    citecolor=linkblue,
+    urlcolor=linkblue
 ]{hyperref}
 
 %%% --- Packages ---
-\usepackage{lmodern}
+%%% --- Font Options (uncomment one) ---
+\usepackage{XCharter}           % Charter - clean, modern, very readable
+% \usepackage{mathpazo}         % Palatino - classic academic look
+% \usepackage{newpxtext,newpxmath} % Palatino (newer) - with better math
+% \usepackage{libertinus}       % Libertinus - professional, good math
+% \usepackage{stix2}            % STIX Two - scientific publishing
+% \usepackage{newtxtext,newtxmath} % Times-like - compact, familiar
+% \usepackage{lmodern}          % Latin Modern - default CM-like
 \usepackage[margin=1in]{geometry}
 \usepackage{tocbibind} % ensures TOC entries for references?
 \usepackage{lipsum} % for dummy text
 \usepackage{markdown} % for outlines, temporary
+\usepackage{microtype} % subtle typographic improvements
+\usepackage{fancyhdr} % running headers
 \usepackage{xcolor} % for colored text
+\definecolor{linkblue}{RGB}{0, 80, 160} % softer academic blue
 \usepackage{titlesec} % for para fmting
 \usepackage{enumitem} % to customize enumerate
+\usepackage{setspace} % for line spacing (replaces memoir's \OnehalfSpacing)
 
 % For thesis statement box
 \usepackage[most]{tcolorbox}
@@ -55,12 +68,6 @@
 ]{biblatex}
 
 \addbibresource{bib/zotero.bib}
-% \addbibresource{bib/amr.bib}
-% \addbibresource{bib/general-thesis.bib}
-% \addbibresource{bib/netsketch.bib}
-% \addbibresource{bib/netsketch-mon.bib}
-% \addbibresource{bib/p3.bib}
-% \addbibresource{bib/range_queries.bib}
 
 % remove some metadata
 \AtEveryBibitem{%
@@ -121,15 +128,13 @@
 \newcommand{\aj}[1]{\textcolor{blue!70!black}{@AJ: #1}}
 
 %%% --- Spacing and Counters ---
-\OnehalfSpacing{} % line spacing
- % This makes section the top-level entity
-% \renewcommand{\thesection}{\arabic{section}}
-\setsecnumdepth{subsubsection}
-% \settocdepth{subsection}
+\onehalfspacing % line spacing
+\setcounter{secnumdepth}{3} % number subsubsections
 
-\chapterstyle{article}
-\setsecheadstyle{\normalfont\large\bfseries} % default is usually \Large
-\setsubsecheadstyle{\normalfont\normalsize\bfseries}
+% report class doesn't have these, define minimal versions
+\newcommand{\frontmatter}{\pagenumbering{roman}}
+\newcommand{\mainmatter}{\pagenumbering{arabic}\setcounter{page}{1}}
+\newenvironment{titlingpage}{\titlepage}{\endtitlepage}
 
 %% -- Paragraph styling --
 \titleformat{\paragraph}[runin]{\normalfont\normalsize\bfseries}{}{0pt}{}[.]
@@ -138,6 +143,14 @@
 %% -- Enumerate styling --
 \setlist{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
 
+%% -- Running headers --
+\pagestyle{fancy}
+\fancyhf{} % clear defaults
+\fancyhead[L]{\small\itshape\leftmark} % chapter name on left
+\fancyhead[R]{\small\thepage} % page number on right
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+
 %%% --- Macros and Figures ---
 \input{tex/99-macros}
 \input{tex/99-figs-carp}
@@ -145,7 +158,7 @@
 \input{tex/99-figs-orca}
 
 % Temporary: Test only the timeline chapter
-\includeonly{tex/94-amr-paper}
+% \includeonly{tex/94-amr-paper}
 
 %%% --- Document Begins ---
 \begin{document}
