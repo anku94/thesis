@@ -19,10 +19,12 @@
 ]{hyperref}
 
 %%% --- Packages ---
+
 %%% --- Font Options (uncomment one) ---
 % \usepackage{XCharter}           % Charter - clean, modern (italics less distinct)
 % \usepackage{mathpazo}           % Palatino - classic academic (italics compressed)
 % \usepackage{newpxtext,newpxmath} % Palatino (newer) - better math than mathpazo
+% This font seems to have a good balance of readability, distinct italics, and readable italics
 \usepackage{libertinus}           % Libertinus - professional, distinct italics, good math
 % \usepackage{cochineal}          % Cochineal - elegant, very distinct italics
 % \usepackage{tgpagella}          % TeX Gyre Pagella - Palatino-like, better proportions
@@ -30,7 +32,24 @@
 % \usepackage{stix2}              % STIX Two - scientific publishing
 % \usepackage{newtxtext,newtxmath} % Times-like - compact, familiar
 % \usepackage{lmodern}            % Latin Modern - default CM-like
+
 \usepackage[inner=1.25in, outer=1in, top=1in, bottom=1in]{geometry}
+
+% captions and subfigures, must be loaded before minitoc
+\usepackage[
+    font=small,
+    labelfont={bf,it},
+    textfont=it,
+    singlelinecheck=false,
+    format=hang,
+    justification=justified,
+    singlelinecheck=on
+]{caption}
+\usepackage{subcaption}
+
+% For math symbols
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{tocbibind} % ensures TOC entries for references?
 \usepackage{lipsum} % for dummy text
 \usepackage{markdown} % for outlines, temporary
@@ -42,6 +61,7 @@
 \usepackage{titlesec} % for para fmting
 \usepackage{enumitem} % to customize enumerate
 \usepackage{setspace} % for line spacing (replaces memoir's \OnehalfSpacing)
+\usepackage[capitalize]{cleveref} % for terse references
 
 % For thesis statement box
 \usepackage[most]{tcolorbox}
@@ -95,25 +115,6 @@
 \renewbibmacro*{url+urldate}{\printfield{url}}
 \renewbibmacro*{publisher+location+date}{\printdate}
 
-% For terse references
-\usepackage[capitalize]{cleveref}
-
-% For captions and subfigures
-\usepackage[
-    font=small,
-    labelfont={bf,it},
-    textfont=it,
-    singlelinecheck=false,
-    format=hang,
-    justification=justified,
-    singlelinecheck=on
-]{caption}
-\usepackage{subcaption}
-
-% For math symbols
-\usepackage{amsmath}
-\usepackage{amssymb}
-
 % For tables
 \usepackage{booktabs}
 \usepackage{array}
@@ -162,7 +163,7 @@
 \input{tex/99-figs-orca}
 
 % Temporary: Test only the timeline chapter
-\includeonly{tex/94-amr-paper}
+\includeonly{tex/1-intro}
 
 %%% --- Document Begins ---
 \begin{document}
@@ -172,39 +173,25 @@
 % %% --- Main Matter Begins ---
 \mainmatter{}
 \input{tex/0-abstract}
-% \markdownInput{notes/outline-ch1-v4.md}
 \include{tex/1-intro}
-
-% \newpage
-% \markdownInput{notes/outline-ch2-v1.md}
 \include{tex/2-background}
-
-% \newpage
-% \markdownInput{notes/outline-ch3-v1.md}
 \include{tex/3-carp}
-
-% \newpage
-% \markdownInput{notes/outline-ch4-v1.md}
 \include{tex/4-amr}
-
-% \newpage
-% \newpage
-% \markdownInput{notes/outline-ch5-v1.md}
 \include{tex/5-orca}
-
-% \newpage
-\include{tex/6-timeline}
 
 %%% --- Paper Chapters ---
 \include{tex/93-carp-paper}
 \include{tex/94-amr-paper}
 \include{tex/95-orca-paper}
 
-% %% --- Appendix (Optional) --- \appendix \chapter{Supplementary Material} Add raw data, code
+%%% --- Timeline: to remove ---
+\include{tex/6-timeline} 
+
+%%% --- Appendix (Optional) --- 
+% \appendix \chapter{Supplementary Material} Add raw data, code
 % listings, or extended discussion here.
 
-% %% --- Bibliography ---
-
+%%% --- Bibliography ---
 % x plus y: x is inter-bib space
 \newpage
 \begingroup
