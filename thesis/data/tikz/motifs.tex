@@ -1,0 +1,347 @@
+%!TEX root = ./motif-staging.tex
+
+% motifs.tex -- reusable TikZ pic definitions
+% \input this in any standalone or document preamble.
+% Requires: tikz, arrows.meta, positioning, calc
+
+\definecolor{ctlcolor}{HTML}{5E81AC}   % Steel blue
+\definecolor{aggcolor}{HTML}{8FBCBB}   % Teal
+\definecolor{mpicolor}{HTML}{D08770}   % Coral/salmon
+
+% ============================================================
+%  MOTIF: rank (CPU / chip)
+% ============================================================
+\tikzset{
+  pics/rank/.style args={#1}{
+    code={
+      % Package body
+      \draw[thick, fill=gray!8, rounded corners=1pt]
+        (-0.5,-0.5) rectangle (0.5,0.5);
+      % Die
+      \draw[semithick, fill=gray!20]
+        (-0.22,-0.22) rectangle (0.22,0.22);
+      % Label
+      \node[anchor=center, font=\sffamily\scriptsize, inner sep=0pt] at (0,0) {#1};
+      % Pins -- top & bottom
+      \foreach \x in {-0.3, -0.1, 0.1, 0.3} {
+        \draw[thin] (\x, 0.5) -- (\x, 0.62);
+        \draw[thin] (\x,-0.5) -- (\x,-0.62);
+      }
+      % Pins -- left & right
+      \foreach \y in {-0.3, -0.1, 0.1, 0.3} {
+        \draw[thin] (-0.5,\y) -- (-0.62,\y);
+        \draw[thin] ( 0.5,\y) -- ( 0.62,\y);
+      }
+      % Anchors
+      \coordinate (-north)  at (0, 0.62);
+      \coordinate (-south)  at (0,-0.62);
+      \coordinate (-east)   at ( 0.62, 0);
+      \coordinate (-west)   at (-0.62, 0);
+      \coordinate (-center) at (0, 0);
+    }
+  },
+  pics/rank/.default={}
+}
+
+% ============================================================
+%  MOTIF: fabric (network interconnect)
+% ============================================================
+\tikzset{
+  pics/fabric/.style={
+    code={
+      % Band
+      \draw[thick, draw=orange!50, fill=orange!15]
+        (-1.8,-0.18) rectangle (1.8, 0.18);
+      % Horizontal traces
+      \draw[thin, orange!50] (-1.8, 0.06) -- (1.8, 0.06);
+      \draw[thin, orange!50] (-1.8,-0.06) -- (1.8,-0.06);
+      % Vertical ticks (switch crosspoints)
+      \foreach \x in {-1.4,-1.0,-0.6,-0.2,0.2,0.6,1.0,1.4} {
+        \draw[thin, orange!50] (\x,-0.18) -- (\x,0.18);
+      }
+      % Anchors
+      \coordinate (-west)   at (-1.8, 0);
+      \coordinate (-east)   at ( 1.8, 0);
+      \coordinate (-north)  at ( 0, 0.18);
+      \coordinate (-south)  at ( 0,-0.18);
+      \coordinate (-center) at ( 0, 0);
+    }
+  }
+}
+
+% ============================================================
+%  MOTIF: storage (single disk / storage target)
+% ============================================================
+\tikzset{
+  pics/storage/.style args={#1}{
+    code={
+      % Body fill
+      \fill[blue!6]
+        (-0.4,0.25) -- (-0.4,-0.25)
+        arc (180:360:0.4 and 0.12)
+        -- (0.4,0.25)
+        arc (360:180:0.4 and 0.12) -- cycle;
+      % Body sides
+      \draw[thick] (-0.4,0.25) -- (-0.4,-0.25);
+      \draw[thick] ( 0.4,0.25) -- ( 0.4,-0.25);
+      % Bottom ellipse (front half)
+      \draw[thick] (-0.4,-0.25) arc (180:360:0.4 and 0.12);
+      % Top ellipse (full, filled)
+      \draw[thick, fill=blue!12] (0,0.25) ellipse (0.4 and 0.12);
+      % Label
+      \node[anchor=center, font=\sffamily\scriptsize, inner sep=0pt] at (0,0) {#1};
+      % Anchors
+      \coordinate (-north)  at (0, 0.37);
+      \coordinate (-south)  at (0,-0.37);
+      \coordinate (-east)   at ( 0.4, 0);
+      \coordinate (-west)   at (-0.4, 0);
+      \coordinate (-center) at (0, 0);
+    }
+  },
+  pics/storage/.default={}
+}
+
+% ============================================================
+%  MOTIF: distrib (small distribution curve / line chart)
+% ============================================================
+% Shared curve path (used by distrib and distribpart)
+\newcommand{\distribcurve}{
+  (-0.8,0)
+  .. controls (-0.65,0.05) and (-0.55,0.45) .. (-0.4,0.55)
+  .. controls (-0.3,0.6) and (-0.2,0.4) .. (-0.1,0.3)
+  .. controls (0.0,0.22) and (0.1,0.3) .. (0.2,0.4)
+  .. controls (0.3,0.48) and (0.35,0.38) .. (0.45,0.22)
+  .. controls (0.55,0.1) and (0.65,0.05) .. (0.8,0.02)
+}
+
+\tikzset{
+  pics/distrib/.style={
+    code={
+      % Fill under curve
+      \fill[teal!12] \distribcurve -- (0.8,0) -- cycle;
+      % Curve stroke
+      \draw[thick, -, teal!70!black] \distribcurve;
+      % Axes (single path, arrow tips on both ends)
+      \draw[thick, {Stealth[length=4pt]}-{Stealth[length=4pt]}]
+        (-0.8,0.75) -- (-0.8,0) -- (0.95,0);
+      % Anchors
+      \coordinate (-north)  at (0, 0.75);
+      \coordinate (-south)  at (0, 0);
+      \coordinate (-east)   at (0.85, 0.35);
+      \coordinate (-west)   at (-0.8, 0.35);
+      \coordinate (-center) at (0, 0.35);
+    }
+  }
+}
+
+% ============================================================
+%  MOTIF: distribpart (distribution with partition lines)
+% ============================================================
+\tikzset{
+  pics/distribpart/.style={
+    code={
+      % Fill under curve
+      \fill[teal!12] \distribcurve -- (0.8,0) -- cycle;
+      % Curve stroke
+      \draw[thick, -, teal!70!black] \distribcurve;
+      % Axes (single path, arrow tips on both ends)
+      \draw[thick, {Stealth[length=4pt]}-{Stealth[length=4pt]}]
+        (-0.8,0.75) -- (-0.8,0) -- (0.95,0);
+      % % Partition lines (4 dashed verticals -- adjust x/y coords for balance)
+      \foreach \px/\py in {-0.42/0.53, -0.15/0.36, 0.2/0.4} {
+        \draw[densely dashed, thick, red!60!black] (\px, 0) -- (\px, \py);
+      }
+      % Anchors
+      \coordinate (-north)  at (0, 0.75);
+      \coordinate (-south)  at (0, 0);
+      \coordinate (-east)   at (0.85, 0.35);
+      \coordinate (-west)   at (-0.8, 0.35);
+      \coordinate (-center) at (0, 0.35);
+    }
+  }
+}
+
+% ============================================================
+%  MOTIF: orcatree (TBON-style tree: 1 root, 2 children, 4 leaves)
+% ============================================================
+\tikzset{
+  orcatreenode/.style={
+    circle, draw, thick, inner sep=1.2pt, minimum size=0.4cm
+  },
+  pics/orcatree/.style={
+    code={
+      \begin{scope}[
+        grow=up,
+        level distance=0.55cm,
+        sibling distance=2.0cm,
+        every node/.style={orcatreenode, fill=ctlcolor},
+        level 1/.style={sibling distance=0.9cm, nodes={fill=aggcolor}},
+        level 2/.style={sibling distance=0.45cm, nodes={fill=mpicolor}},
+        edge from parent/.style={draw, thick}
+      ]
+        \node[orcatreenode] (root) {}
+          child { node[orcatreenode] (c1) {}
+            child { node[orcatreenode] (l1) {} }
+            child { node[orcatreenode] (l2) {} }
+          }
+          child { node[orcatreenode] (c2) {}
+            child { node[orcatreenode] (l3) {} }
+            child { node[orcatreenode] (l4) {} }
+          };
+      \end{scope}
+
+      % Anchors from bounding box
+      \path (current bounding box.north)  coordinate (-north);
+      \path (current bounding box.south)  coordinate (-south);
+      \path (current bounding box.east)   coordinate (-east);
+      \path (current bounding box.west)   coordinate (-west);
+      \path (current bounding box.center) coordinate (-center);
+    }
+  }
+}
+
+% ============================================================
+%  MOTIF: pivottable (partition boundary table)
+% ============================================================
+\tikzset{
+  pics/pivottable/.style={
+    code={
+      \def\cw{1.0}  % cell width
+      \def\ch{0.35} % cell height
+      % Header row (Rank labels)
+      \foreach \i/\lbl in {0/Rank 0, 1/Rank 1, 2/Rank 2, 3/Rank 3} {
+        \draw[thick, fill=gray!15]
+          ({\i*\cw - 2*\cw}, \ch) rectangle ({(\i+1)*\cw - 2*\cw}, {2*\ch});
+        \node[anchor=center, font=\sffamily\scriptsize] at ({(\i+0.5)*\cw - 2*\cw}, {1.5*\ch}) {\lbl};
+      }
+      % Value row (ranges)
+      \foreach \i/\val in {0/{0--0.3}, 1/{0.3--0.4}, 2/{0.4--0.6}, 3/{0.6--1.0}} {
+        \draw[thick, fill=white]
+          ({\i*\cw - 2*\cw}, 0) rectangle ({(\i+1)*\cw - 2*\cw}, \ch);
+        \node[anchor=center, font=\sffamily\scriptsize] at ({(\i+0.5)*\cw - 2*\cw}, {0.5*\ch}) {\val};
+      }
+      % Anchors
+      \coordinate (-north)  at (0, {2*\ch});
+      \coordinate (-south)  at (0, 0);
+      \coordinate (-east)   at ({2*\cw}, {\ch});
+      \coordinate (-west)   at ({-2*\cw}, {\ch});
+      \coordinate (-center) at (0, {\ch});
+    }
+  }
+}
+
+% ============================================================
+%  MOTIF: pivottablemini (compact partition table)
+% ============================================================
+\tikzset{
+  pics/pivottablemini/.style={
+    code={
+      \def\cw{0.45}  % cell width
+      \def\ch{0.35} % cell height
+      % Header row
+      \foreach \i/\lbl in {0/R0, 1/R1, 2/R2, 3/{\dots}} {
+        \draw[thick, -, draw=black, fill=gray!15]
+          ({\i*\cw - 2*\cw}, \ch) rectangle ({(\i+1)*\cw - 2*\cw}, {2*\ch});
+        \node[anchor=center, font=\sffamily\scriptsize, text=black] at ({(\i+0.5)*\cw - 2*\cw}, {1.5*\ch}) {\lbl};
+      }
+      % Value row (ellipses)
+      \foreach \i in {0,1,2,3} {
+        \draw[thick, -, draw=black, fill=white]
+          ({\i*\cw - 2*\cw}, 0) rectangle ({(\i+1)*\cw - 2*\cw}, \ch);
+        \node[anchor=center, font=\sffamily\scriptsize, text=black] at ({(\i+0.5)*\cw - 2*\cw}, {0.5*\ch}) {\dots};
+      }
+      % Anchors
+      \coordinate (-north)  at (0, {2*\ch});
+      \coordinate (-south)  at (0, 0);
+      \coordinate (-east)   at ({2*\cw}, {\ch});
+      \coordinate (-west)   at ({-2*\cw}, {\ch});
+      \coordinate (-center) at (0, {\ch});
+    }
+  }
+}
+
+% ============================================================
+%  MOTIF: rankgroup (just ranks in a box, no fabric)
+% ============================================================
+\tikzset{
+  pics/rankgroup/.style={
+    code={
+      % -- Ranks in a row --
+      \pic (-r0) at (-2.1, 0) {rank={0}};
+      \pic (-r1) at (-0.7, 0) {rank={1}};
+      \pic (-r2) at ( 0.7, 0) {rank={2}};
+      \pic (-r3) at ( 2.1, 0) {rank={$\cdots$}};
+      % -- Bounding box --
+      \draw[thick, rounded corners=3pt, gray!40]
+        (-2.85,-0.85) rectangle (2.85, 0.85);
+      % -- Anchors --
+      \coordinate (-north)  at ( 0,    0.85);
+      \coordinate (-south)  at ( 0,   -0.85);
+      \coordinate (-east)   at ( 2.85,  0);
+      \coordinate (-west)   at (-2.85,  0);
+      \coordinate (-center) at ( 0,     0);
+    }
+  }
+}
+
+% ============================================================
+%  MOTIF: pfs (parallel filesystem = storage targets + namespace)
+% ============================================================
+\tikzset{
+  pics/pfs/.style={
+    code={
+      % -- Storage targets in a row --
+      \pic (-s0) at (-1.5, 0) {storage};
+      \pic (-s1) at (-0.5, 0) {storage};
+      \pic (-s2) at ( 0.5, 0) {storage};
+      \pic (-s3) at ( 1.5, 0) {storage};
+      % -- Namespace / metadata band on top --
+      \draw[thick, fill=blue!8]
+        (-2.1, 0.52) rectangle (2.1, 0.72);
+      \draw[thin, blue!30] (-2.1, 0.62) -- (2.1, 0.62);
+      % -- Stubs from band down to storage tops --
+      \foreach \sx in {-1.5,-0.5,0.5,1.5} {
+        \draw[semithick, blue!30] (\sx, 0.52) -- (\sx, 0.37);
+      }
+      % -- Anchors --
+      \coordinate (-north)  at ( 0,   0.72);
+      \coordinate (-south)  at ( 0,  -0.37);
+      \coordinate (-east)   at ( 2.1,  0.18);
+      \coordinate (-west)   at (-2.1,  0.18);
+      \coordinate (-center) at ( 0,    0.18);
+    }
+  }
+}
+
+% ============================================================
+%  MOTIF: application (BSP app = ranks + fabric)
+% ============================================================
+\tikzset{
+  pics/application/.style={
+    code={
+      % -- Ranks in a row --
+      \pic (-r0) at (-2.1, 0) {rank={0}};
+      \pic (-r1) at (-0.7, 0) {rank={1}};
+      \pic (-r2) at ( 0.7, 0) {rank={2}};
+      \pic (-r3) at ( 2.1, 0) {rank={$\cdots$}};
+      % -- Fabric band underneath --
+      \draw[thick, draw=orange!50, fill=orange!15]
+        (-2.8,-1.0) rectangle (2.8,-0.64);
+      \draw[thin, orange!50] (-2.8,-0.78) -- (2.8,-0.78);
+      \draw[thin, orange!50] (-2.8,-0.86) -- (2.8,-0.86);
+      \foreach \x in {-2.4,-2.0,...,2.4} {
+        \draw[thin, orange!50] (\x,-1.0) -- (\x,-0.64);
+      }
+      % -- Stubs connecting rank pins to fabric --
+      \foreach \rx in {-2.1,-0.7,0.7,2.1} {
+        \draw[semithick, gray!60] (\rx,-0.62) -- (\rx,-0.64);
+      }
+      % -- Anchors --
+      \coordinate (-north)  at ( 0,    0.62);
+      \coordinate (-south)  at ( 0,   -1.0);
+      \coordinate (-east)   at ( 2.8, -0.19);
+      \coordinate (-west)   at (-2.8, -0.19);
+      \coordinate (-center) at ( 0,   -0.19);
+    }
+  }
+}

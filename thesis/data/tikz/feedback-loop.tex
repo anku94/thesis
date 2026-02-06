@@ -1,0 +1,104 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usetikzlibrary{arrows.meta, fit, positioning, calc}
+
+\input{motifs}
+
+\begin{document}
+
+% ============================================================
+%  GRAPHIC (the actual figure -- build here)
+% ============================================================
+\begin{tikzpicture}[
+    arr/.style={-{Stealth[length=6pt]}, thick},
+    fbline/.style={arr, teal!70!black, line width=1.5pt},
+    ctlline/.style={arr, red!60!black},
+    box/.style={rectangle, draw, thick, rounded corners=3pt,
+      minimum width=2.8cm, minimum height=0.9cm,
+      font=\sffamily, align=center},
+    piccap/.style={font=\sffamily\scriptsize, inner sep=1pt}
+  ]
+
+  \def\delta{0.5}
+  \def\loopylen{2cm}
+
+  % --- CARP feedback loop ---
+  \begin{scope}[local bounding box=carp loop]
+    \node[inner sep=0pt] (rg1) { \scalebox{0.8}{\tikz\pic {rankgroup};} };
+    % \node[box, below=\loopylen of rg1.south] (carp) {CARP};
+
+    \node[inner sep=0pt, below=2.5cm of rg1.south] (dpart) { \tikz\pic {distribpart}; };
+    \node[below=0.00cm of dpart, piccap, font=\sffamily\small] (dpart-text) {\emph{load-balanced partitions}};
+    \node[below=0.00cm of dpart-text, font=\sffamily\large] (dpart-inner-1) { \faCog{} };
+    \node[box, fit=(dpart) (dpart-text) (dpart-inner-1)] (carp) {};
+    \node[below=0.00cm of carp, piccap, font=\sffamily\large\bfseries, inner sep=4pt] (carp-text) {CARP};
+
+    % Feedback line
+    \draw[fbline] ([xshift=-\delta cm]rg1.south) -- ([xshift=-\delta cm]carp.north)
+      node[midway, left, inner ysep=0pt] (fb1pic) {\tikz\pic {distrib};};
+
+    % Control line
+    \draw[ctlline] ([xshift=\delta cm]carp.north) -- ([xshift=\delta cm]rg1.south)
+      node[midway, right, inner ysep=0pt] (ctl1pic) {\tikz\pic {pivottablemini};};
+
+
+    % Captions
+    \node[below=0.00cm of fb1pic, piccap, font=\sffamily\small] {distributions};
+    \node[below=0.00cm of ctl1pic, piccap, font=\sffamily\small] {boundaries};
+  \end{scope}
+
+  % --- AMR feedback loop ---
+  \begin{scope}[local bounding box=amr loop]
+    \node[inner sep=0pt, right=2.8cm of rg1] (rg2) { \scalebox{0.8}{\tikz\pic {rankgroup};} };
+    % \node[box, below=\loopylen of rg2.south] (amr) {\faUser};
+    \node[inner sep=0pt, below=\loopylen of rg2.south] (amrfig) {\includegraphics[scale=0.5]{../figs/orca_lesson_volfunc_single.pdf}};
+    \node[below=0.00cm of amrfig, font=\sffamily\large] (amr-inner-1) { \faUser };
+    \node[box, fit=(amrfig) (amr-inner-1)] (amr) {};
+    \node[below=0.00cm of amr, piccap, font=\sffamily\large\bfseries, inner sep=4pt] (amr-text) {Lessons from AMR};
+
+    \draw[fbline, densely dotted] ([xshift=-\delta cm]rg2.south) -- ([xshift=-\delta cm]amr.north)
+      node[midway, left, align=right, text width=2.8cm, font=\sffamily\small, color=black] (amrnotes) {%
+        \emph{Fail-Slow Nodes?} \\
+        \emph{Load Imbalance?} \\
+        \emph{Latency Spikes?}%
+      };
+    \draw[ctlline, densely dotted] ([xshift=\delta cm]amr.north) -- ([xshift=\delta cm]rg2.south)
+      node[midway, right, align=left, text width=4.5cm, font=\sffamily\small, color=black] (amrnotes) {%
+         \emph{Profilers/perf/...} \\
+         \emph{Manual instrumentation} \\
+         \emph{Placement policies}%
+      };
+  \end{scope}
+
+  % --- ORCA feedback loop ---
+  \begin{scope}[local bounding box=orca loop]
+    \node[inner sep=0pt, right=2.8cm of rg2] (rg3) { \scalebox{0.8}{\tikz\pic {rankgroup};} };
+    \node[below=3.2cm of rg3.south, font=\sffamily\normalsize] (orca-inner-1) { Arbitrary SQL-based Views };
+    \node[below=0.00cm of orca-inner-1, font=\large] (orca-inner-2) { \faUser \hspace{0.5em} \faRobot \hspace{0.5em} \faCog };
+    \node[box, fit=(orca-inner-1) (orca-inner-2)] (orca) {};
+    \node[below=0.00cm of orca, piccap, font=\sffamily\large\bfseries, inner sep=4pt] (orca-text) {ORCA};
+
+    % Midpoint between rankgroup and ORCA
+    \path (rg3.south) -- (orca.north) coordinate[pos=0.5] (orcamid);
+
+    \draw[fbline] ([xshift=-\delta cm]rg3.south) -- ([xshift=-\delta cm]orca.north) 
+    node[midway, left, align=right, text width=2.8cm, font=\sffamily\small, color=black, inner sep=8pt] (orcanotes) {%
+        \emph{Programmable} \\
+        \emph{Real-time} \\
+        \emph{In Situ}
+      };
+    \draw[ctlline] ([xshift=\delta cm]orca.north) -- ([xshift=\delta cm]rg3.south)
+    node[midway, right, align=left, text width=4.5cm, font=\sffamily\small, color=black, inner sep=8pt] (orcanotes) {%
+        \emph{Timestep-consistent} \\
+        \emph{control}
+      };
+
+    % Tree overlay in the middle (centered bounding box)
+    \node[inner sep=2pt,fill=white,draw=black!50,rounded corners=2pt] (orcat) at (orcamid) { \scalebox{0.7}{\tikz\pic {orcatree};} };
+  \end{scope}
+\end{tikzpicture}
+
+
+\end{document}

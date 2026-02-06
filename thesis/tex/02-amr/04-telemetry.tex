@@ -78,7 +78,7 @@ unblocked dependent ranks without affecting senders, reducing wait times and jit
 
 \parahead{Network-Level Example: Queue Size Tuning}
 Persistent variance, contributing to poor correlation between communication time and work
-(\cref{fig:amr:chal:regr}), was traced using \texttt{perf}~\cite{Linux:LinuxPerf} to contention in the
+(\cref{fig:amr:chal:regr}), was traced using \texttt{perf}~\cite{:PerfLinuxProfiling} to contention in the
 MPI library shared-memory path due to an insufficient preconfigured queue size.
 Increasing this value reduced MPI wait time variance and significantly improved the correlation
 between measured communication time and message volume (\cref{fig:amr:perf:order}, right).

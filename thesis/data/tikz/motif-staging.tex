@@ -1,0 +1,50 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, fit, positioning, calc}
+
+\input{motifs}
+
+\begin{document}
+
+% ============================================================
+%  DEMOS (playground -- delete later)
+% ============================================================
+\begin{tikzpicture}
+  % --- Primitives ---
+  \pic (r) at (0,0) {rank={0}};
+  \node[below=0.3cm of r-south, font=\sffamily\small] {rank};
+
+  \pic (f) at (3.5,0) {fabric};
+  \node[below=0.3cm of f-south, font=\sffamily\small] {fabric};
+
+  \pic (s) at (7.5,0) {storage};
+  \node[below=0.3cm of s-south, font=\sffamily\small] {storage};
+
+  \pic (d) at (10,0) {distrib};
+  \node[below=0.3cm of d-south, font=\sffamily\small] {distrib};
+
+  \pic (dp) at (12.5,0) {distribpart};
+  \node[below=0.3cm of dp-south, font=\sffamily\small] {distribpart};
+
+  \pic (ot) at (8.5,-3) {orcatree};
+  \node[below=0.3cm of ot-south, font=\sffamily\small] {orcatree};
+
+  \pic (pt) at (16,0) {pivottable};
+  \node[below=0.3cm of pt-south, font=\sffamily\small] {pivottable};
+
+  \pic (ptm) at (16,-2.5) {pivottablemini};
+  \node[below=0.3cm of ptm-south, font=\sffamily\small] {pivottablemini};
+
+  % --- Composites ---
+  \pic (rg) at (0,-3) {rankgroup};
+  \node[below=0.3cm of rg-south, font=\sffamily\small] {rankgroup};
+
+  \pic (app) at (0,-6) {application};
+  \node[below=0.3cm of app-south, font=\sffamily\small] {application};
+
+  \pic (pfs) at (0,-9.5) {pfs};
+  \node[below=0.3cm of pfs-south, font=\sffamily\small] {pfs};
+\end{tikzpicture}
+
+\end{document}
