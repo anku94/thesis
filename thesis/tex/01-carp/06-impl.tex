@@ -19,7 +19,7 @@ As CARP runs in application processes, it needs to have a low memory footprint t
 \textbf{Runtime Overhead.}
 CARP only runs during application I/O, so it does not impact the compute phase.  Data shuffling and triggered renegotiations are potential sources of additional runtime overhead.  Shuffle bandwidth increases with the number of writes and quickly outstrips storage bandwidth in our experiments. Thus, the shuffle service itself does not have any runtime overhead.  CARP could underutilize storage by pausing I/O for renegotiation, but our experiments show that shuffle receivers buffer enough outstanding writes to keep storage busy and mask this overhead.  If needed, CARP can continue routing data using the old partition table while a renegotiation is underway, however we have not found this necessary in our experiments.
 
-\begin{figure*}
+\begin{figure}[t]
   \centering
   \begin{subfigure}[b]{0.48\textwidth}
   \figktqlat
@@ -29,4 +29,4 @@ CARP only runs during application I/O, so it does not impact the compute phase. 
   \figktrt
   \end{subfigure}
   \capfigkt
-\end{figure*}
+\end{figure}

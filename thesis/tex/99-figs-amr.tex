@@ -8,7 +8,7 @@
   \begin{subfigure}{\columnwidth}
     \centering
     \includegraphics
-    [width=\columnwidth]
+    [width=\columnwidth, height=0.18\textheight, keepaspectratio]
     {data/figs/amr_msgcnt_regr.pdf}
     \caption{Correlation between message counts and timing}
     \label{fig:amr:chal:regr}
@@ -16,7 +16,7 @@
   \begin{subfigure}{0.9\columnwidth}
     \centering
     \includegraphics
-    [trim=0cm 0cm 0cm 0cm, clip, width=\columnwidth]
+    [width=\columnwidth, height=0.18\textheight, keepaspectratio]
     {data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
     \caption{Coarse vs fine-grained telemetry from an AMR code}
     \label{fig:amr:chal:vol}
@@ -38,7 +38,7 @@
 \newcommand{\figtunehw}{
   \begin{figure}[t]
     \centering
-		\includegraphics [width=\columnwidth]
+		\includegraphics [width=\columnwidth, height=0.3\textheight, keepaspectratio]
 		{data/figs/amr_lesson_throttling_v4.pdf}
 		\caption{
         Profiling data from early runs affected by CPU throttling. Compute times on impacted ranks were inflated by up to 4$\times$ and appeared in clusters of 16, leading to elevated synchronization delays across the system. Pruning affected nodes reduced overall runtime by 3$\times$ by lowering synchronization overhead
@@ -50,7 +50,7 @@
 \newcommand{\figtunesw}{
   \begin{figure}[t]
     \centering
-		\includegraphics [width=\columnwidth]
+		\includegraphics [width=\columnwidth, height=0.3\textheight, keepaspectratio]
     {data/figs/amr_lesson_ordering_v5.pdf}
 		\caption{
         Rankwise boundary communication performance before and after two optimizations. Prioritizing sends in the task schedule reduced noise, revealing faint performance trends. Subsequent queue size tuning further reduced variance, clarifying the underlying telemetry structure.
@@ -67,21 +67,21 @@
   \begin{subfigure}{0.5\textwidth}
     \centering
     \includegraphics
-    [width=0.99\linewidth, height=0.12\textheight, keepaspectratio]
+    [width=0.99\linewidth, height=0.1\textheight, keepaspectratio]
     {data/figs/amr_criticalpath2.pdf}
     \includegraphics
-    [width=0.99\linewidth, height=0.12\textheight, keepaspectratio]
+    [width=0.99\linewidth, height=0.1\textheight, keepaspectratio]
     {data/figs/amr_criticalpath.pdf}
     \caption{Critical path examples in single and multi-rank scenarios}
     \label{fig:amr:model:2rcp}
   \end{subfigure}
 
-  \vspace{10pt}
+  \vspace{5pt}
 
   \begin{subfigure}{0.4\textwidth}
     \centering
     \includegraphics
-    [width=0.99\linewidth]
+    [width=0.99\linewidth, height=0.12\textheight, keepaspectratio]
     {data/figs/amr_sendorder_v2.pdf}
     \caption{Impact of send ordering on task scheduling}
     \label{fig:amr:model:so}
@@ -102,7 +102,7 @@
 	\begin{figure}[t]
   \centering
   \includegraphics
-  [width=\columnwidth]
+  [width=\columnwidth, height=0.25\textheight, keepaspectratio]
   {data/figs/amr_octree.pdf}
 
   \caption{Example of an adaptively refined mesh, octrees, and Z-order
@@ -119,7 +119,7 @@
 % =============
 
 \newcommand{\tableruns}{
-  \begin{table}[h]
+  \begin{table}[t]
     \begin{threeparttable}
       \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}} cccccc @{}}
 
@@ -158,13 +158,13 @@
 % =============
 
 \newcommand{\figevalbwwidemini}{
-  \begin{figure*}
+  \begin{figure}[t]
     \begin{subfigure}{\textwidth}
       \centering
 			\includegraphics[
       trim=0cm 0.2cm 0cm 0.2cm,
       clip,
-      width=\textwidth]{data/figs/amr_blastwave_runtime_wide.pdf}
+      width=\textwidth, height=0.15\textheight, keepaspectratio]{data/figs/amr_blastwave_runtime_wide.pdf}
       \caption{Performance breakdown by execution phase and policy}
       \label{fig:amr:eval:runtime:wide}
     \end{subfigure}
@@ -173,7 +173,7 @@
 			\includegraphics[
       trim=0cm 0.2cm 0cm 0.2cm,
       clip,
-      width=\textwidth]{data/figs/amr_blastwave_tradeoff_wide_mini.pdf}
+      width=\textwidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_blastwave_tradeoff_wide_mini.pdf}
       \caption{Communication and synchronization time tradeoffs}
       \label{fig:amr:eval:tradeoff:wide}
     \end{subfigure}
@@ -182,7 +182,7 @@
 			\includegraphics[
       trim=0cm 0.2cm 0cm 0.2cm,
       clip,
-      width=\textwidth]{data/figs/amr_blastwave_comm_wide_mini.pdf}
+      width=\textwidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_blastwave_comm_wide_mini.pdf}
       \caption{Locality analysis by message volume} \label{fig:amr:eval:comm:wide}
     \end{subfigure}
 
@@ -197,7 +197,7 @@
       show that increasing X reduces local in favor of remote communication,
       providing evidence for the locality-performance tradeoff.}
     \label{fig:amr:eval:main:wide}
-  \end{figure*}
+  \end{figure}
 }
 
 % =============
@@ -206,7 +206,7 @@
   \begin{figure}[t]
     \begin{subfigure}{0.5\textwidth}
       \centering
-      \includegraphics[width=\columnwidth]
+      \includegraphics[width=\columnwidth, height=0.12\textheight, keepaspectratio]
       {data/figs/amr_meshdriver_locbench.pdf}
       \caption{Boundary communication latency vs. policies (\commbench)}
       \label{fig:amr:eval:loc}
@@ -215,7 +215,7 @@
     \begin{subfigure}{0.5\textwidth}
       \centering
       \includegraphics
-      [trim=.1cm 7.6cm .1cm .1cm, clip, width=\columnwidth]
+      [trim=.1cm 7.6cm .1cm .1cm, clip, width=\columnwidth, height=0.12\textheight, keepaspectratio]
       {data/figs/amr_scaling.pdf}
       \caption{
         Load balance quality vs. polices (\scalebench)
@@ -224,7 +224,7 @@
     \end{subfigure}
     \begin{subfigure}{0.5\textwidth}
       \includegraphics
-      [trim=.1cm .4cm .1cm 7.6cm, clip, width=\columnwidth]
+      [trim=.1cm .4cm .1cm 7.6cm, clip, width=\columnwidth, height=0.12\textheight, keepaspectratio]
       {data/figs/amr_scaling.pdf}
       \caption{
         Policy compute cost vs. simulated rank count (\scalebench)
