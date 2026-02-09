@@ -18,10 +18,12 @@ modifyLineBreaks:
       wrap: 0
   oneSentencePerLine:
     manipulateSentences: 1 
+    removeSentenceLineBreaks: 0
     # simultaneously wrap and break sentences
     textWrapSentences: 1
     # 1: enable
-    # sentencesBeginWith:
+    sentencesBeginWith:
       # by default, latexindent will assume sentences begin with A-Z
       # see 6.2.3 in the latexindent documentation
-      # other: "\$|[0-9]"
+      # This is necessary to get \item to wrap properly (the \\ bit)
+      other: \\|\$|[0-9]
