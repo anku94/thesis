@@ -13,7 +13,9 @@
       "Bash(make:*)",
       "Bash(pdfinfo:*)",
       "Bash(pdflatex:*)",
-      "Bash(biber:*)"
+      "Bash(biber:*)",
+      "Bash(latexindent:*)",
+      "Bash(/usr/bin/diff:*)"
     ]
   }
 }
