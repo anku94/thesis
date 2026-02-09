@@ -1,0 +1,224 @@
+% !TEX root = ../main.tex
+
+\chapter{Introduction}
+\minitoc
+
+Bulk Synchronous Parallel (BSP) execution underpins many of the most expensive and consequential
+computational workloads in use today, from large-scale scientific simulations to distributed
+training of frontier machine learning models.
+These workloads run for weeks to months on thousands to tens of thousands of accelerators, so even
+small efficiency losses translate into major costs in energy, compute time, and delayed
+time-to-discovery.
+
+The same synchronized execution model that makes BSP effective also creates two persistent
+efficiency pressure points.
+On the data path, coordinated checkpoints and analysis outputs generate bursty I/O that strains
+storage and slows downstream analysis.
+On the compute path, global synchronization makes end-to-end progress sensitive to stragglers and
+runtime anomalies, and also amplifies correctness risks when failures or corrupted state propagate
+across ranks.
+
+
+\begin{tcolorbox}[thesisbox]
+  A large class of efficiency bottlenecks in BSP systems arise from conditions that are unknowable
+  before runtime.
+  Through two studies spanning the data and compute paths, this thesis demonstrates that such
+  conditions are systematically addressable through adaptive mechanisms if the requisite feedback
+  loops exist, and perpetuate if they do not.
+  We present ORCA as general-purpose infrastructure for closing these loops at scale.
+\end{tcolorbox}
+
+\section{The Problem of Runtime Uncertainty}
+
+We investigated BSP efficiency along two paths: data-path indexing for range queries, and
+compute-path placement for adaptive mesh codes.
+Both are shaped by runtime uncertainty---conditions unknowable before execution.
+CARP builds an online mechanism to exploit this, while the AMR study highlights a broader class of
+runtime uncertainties, the tooling bottlenecks that impede their resolution, and the need for a
+general-purpose solution.
+
+\subsection{CARP: Range Query-Optimized Indexing for Streaming Data}
+
+CARP (\emph{Continuous Adaptive Range Partitioner}) is an in-situ partitioner for efficient range
+queries on scientific data, e.g.\ all particles within a given energy range.
+In-situ range partitioning is challenging because scientific key distributions are highly skewed,
+evolve over time, and make any static partitioning load-imbalanced.
+CARP uses a reconstructed view of key distributions at runtime to drive load-balanced partitioning.
+An adaptive mechanism tracks key distributions as they evolve to compute new partition boundaries,
+without reassigning existing data.
+As a result, CARP produces a partially ordered layout in a single streaming pass, deferring some
+compaction to query time.
+In evaluation, CARP approximates the query performance of a full sort without any ingestion
+overhead, making it up to $4.9\times$ faster than post-processing approaches.
+
+\subsection{Lessons from Profiling and Optimizing Placement in AMR Codes}
+
+On the compute path, we studied placement in \emph{adaptive mesh refinement} (AMR) codes, a class
+of highly dynamic simulations where work characteristics evolve to track physical phenomena.
+Poor utilization in these codes is widely attributed to load imbalance.
+We sought to develop telemetry-driven placement policies that would adapt to evolving workload
+patterns, but found genuine placement effects routinely confounded by unrelated artifacts:
+fail-slow hardware, fabric pathologies, and tuning issues.
+Diagnosis consumed months of iterative debugging even though mitigations, once identified,
+typically took days.
+With reliable telemetry established, we found that placement exposed a fundamental tradeoff between
+compute load balance and communication locality, and designed CPLX, a tunable placement policy that
+achieves up to 21.6\% runtime reduction over tuned baselines across 512--4096 ranks.
+
+\subsection{The Feedback Gap}
+
+The two studies illustrate two modes of dealing with runtime uncertainty.
+In CARP, an automated policy tracks attribute distributions and adapts partitioning in real
+time---effective, but a fixed-function mechanism for a single use case.
+In the AMR study, a human operator drives diagnosis and intervention, but the iteration latency of
+existing tools turns what should be a rapid cycle into one spanning months.
+Each artifact took months to isolate, while mitigations once identified typically took days.
+The core problem was structural:
+
+\begin{enumerate}
+  \item \textbf{Every telemetry mode requires re-execution.}
+        Profiling summaries are too coarse, traces too voluminous, and custom instrumentation requires
+        recompilation---each candidate hypothesis costs a full application run.
+
+  \item \textbf{Trace ETL delays insight.}
+        Even when traces are collected, their volume creates an ingestion and analysis bottleneck that can
+        take longer than the run itself.
+
+  \item \textbf{Post-hoc insight delays intervention.}
+        There is no way to know that an anomaly has occurred until after execution completes and traces are
+        analyzed.
+        For workloads that run for weeks, problems go undetected for the duration of the run.
+\end{enumerate}
+
+The practical consequence is that rigorous performance analysis is often not undertaken at all.
+When traces are collected, they become archival datasets analyzed by groups without access to the
+runtime environment that produced them.
+These limitations are not unique to our work---the same persistent class of structural bottlenecks
+recurs across two decades of HPC performance literature.
+
+\section{Solution: View-Driven and Steerable Observability}
+
+Addressing BSP efficiency requires infrastructure that can close feedback loops in real time with
+\emph{view-driven} and \emph{steerable} observability.
+
+\paragraph{View-driven}
+The unit of feedback should be a materialized view, not raw data.
+Tracing captures comprehensive event logs and defers analysis to post-processing, creating a cycle
+where more data begets more ETL work---cost scales with data volume regardless of what the operator
+actually needs to know.
+The alternative is to invert this relationship: specify a hypothesis, and materialize only the view
+that answers it, via in-situ reduction over distributed state.
+Cost then scales with the question, not the data.
+CARP already operates this way---it materializes a view of the global key distribution to drive
+partitioning, not a dataset to be analyzed later.
+The AMR study needed exactly this capability but lacked it, and paid for it in months of iteration
+latency.
+
+\paragraph{Steerable}
+A single observability substrate should span a continuous spectrum from lightweight summaries
+sufficient for routine monitoring to detailed per-rank per-timestep telemetry for deep diagnosis,
+with transitions between them available at runtime without re-execution or retooling.
+This replaces the current fragmented choice between profiling, tracing, and custom instrumentation.
+Steerability extends beyond observation to execution itself: views inform interventions---adjusting
+placement, tuning parameters, modifying partitioning---and the impact of those interventions must
+be assessed through further observation.
+Who drives this process is orthogonal to the infrastructure: it may be a human operator, an
+automated policy, or a combination of both.
+
+\subsection{Status Quo and Limitations}
+
+\paragraph{Tracing and post-hoc analytics}
+In HPC, tools like TAU and Score-P must be configured before execution and collect fine-grained
+traces, with analysis happening separately through post-processing.
+The PyTorch ecosystem comes closest to a complete feedback loop, with Kineto for per-node trace
+collection, Dynolog as a control plane, and HTA for trace analytics.
+But traces are voluminous per-rank JSON logs with no awareness of synchronization structure,
+requiring format-specific ETL before any analysis can begin.
+The on-disk layout offers no structure to support selective access: per-rank logs must be parsed in
+full for any query, with working sets scaling with ranks $\times$ timesteps.
+Dynolog has no notion of timestep-coordinated collection, HTA is a single-node Pandas-based tool
+that does not scale to cluster-level analysis, and collection is on-demand rather than always-on.
+In both cases, the feedback gap is driven by three compounding costs: intrinsic trace volume,
+format-dictated ETL, and suboptimal on-disk layouts.
+
+\paragraph{Cloud observability}
+Distributed systems monitoring offers an alternative lineage: Prometheus for metrics, Kafka and
+Flink for event processing.
+While viable and deployed for ML training workloads, these tools have fundamental limitations for
+tightly-coupled parallel applications.
+They do not preserve BSP causal structure---even the simplest problem of identifying a straggler at
+a collective requires knowing when all ranks' telemetry is available, and then joining it by that
+collective, both challenging for event-based analytics.
+They cannot leverage HPC fabrics for in-situ reduction, leading to unnecessary data movement and
+collection overhead.
+And they do not enable steerability, as they provide no control semantics with meaningful
+consistency guarantees.
+
+\subsection{Why Now}
+
+\paragraph{Dataframe-Style Trace Analytics}
+Performance analysis increasingly looks like dataframe-shaped analytics---columnar formats, SQL
+queries, aggregations over structured data.
+Better formats such as Parquet, and better on-disk layouts informed by query patterns, enable
+selective access and dramatically faster analytics: even offline, columnar trace analytics can be
+orders of magnitude faster than existing tools.
+In-situ reduction compounds this further by eliminating the intermediate dataset entirely.
+
+\paragraph{Columnar Ecosystem Maturity}
+Columnar formats such as Arrow and Parquet provide efficient in-memory and on-disk representations
+for structured telemetry.
+Embeddable SQL engines like DataFusion and DuckDB bring analytical query capabilities without
+external infrastructure.
+Fabric-aware RPC libraries such as Mercury over libfabric enable writing portable high-performance
+transport code across HPC interconnects.
+
+\paragraph{ML-Driven Demand}
+Large-scale training runs are driving bespoke observability pipelines for specific global
+views---correctness checks, straggler detection, throughput monitoring.
+Each is a custom solution to what should be a general capability.
+A single large training run justifies the investment; the pattern points toward a unified
+substrate.
+
+\section{ORCA: Real-time Observability and Control for BSP Workloads}
+
+ORCA (\emph{Observability with Real-time Control and Aggregation}) is a tree-based overlay network
+(TBON) for view-driven and steerable BSP observability, comprising a controller and a tier of
+dedicated aggregators attached to a parallel application.
+A SQL-based in-situ analytics interface allows telemetry, originating as columnar streams, to be
+transformed en route to configurable sinks.
+An asynchronous control plane provides atomic and timestep-consistent control semantics.
+A key contribution is the \emph{timestep dataframe} abstraction, comprising all ranks' telemetry
+for a single timestep.
+Because global synchronization already divides BSP execution into causally independent windows,
+this is the natural unit of in-situ analysis, and maps directly to \emph{(timestep, rank)}-partitioned
+Parquet for offline access.
+Queries are compiled and plan operators pushed down the TBON tiers to minimize data movement.
+On a real AMR code at 4096 ranks, ORCA collects detailed traces at 1–2\% overhead versus 56–81\%
+for existing tracers, executes queries orders of magnitude faster, and reduces data volume by
+multiple orders of magnitude through in-situ analytics.
+In an agentic evaluation of the closed-loop workflow, a performance anomaly that took months to
+diagnose manually is localized in 27 minutes.
+
+\section{List of Contributions}
+
+\begin{enumerate}
+  \item A synthesis of BSP efficiency bottlenecks as runtime-unknowable conditions whose impact is
+        governed by feedback-loop latency.
+  \item CARP, an adaptive in-situ range partitioning mechanism that replaces costly post-hoc sorting
+        with a runtime repartitioning loop driven by reconstructed global state.
+  \item A telemetry-driven diagnostic workflow for AMR performance analysis, and CPLX, a tunable
+        placement policy that manages locality/load trade-offs under runtime variability.
+  \item ORCA, an agent-agnostic, declarative observability and control substrate for closing adaptive
+        loops in tightly coupled parallel systems.
+\end{enumerate}
+
+\section{Document Structure}
+
+The remainder of this thesis is organized as follows.
+\begin{itemize}
+  \item \cref{chap:bg} provides background on BSP environments and efficiency bottlenecks.
+  \item \cref{chap:carp} presents CARP and its evaluation on ingestion/query performance.
+  \item \cref{chap:amr} presents the AMR diagnostic workflow and CPLX placement policy.
+  \item \cref{chap:orca} presents ORCA and its observability/control design.
+  \item \cref{chap:timeline} outlines remaining milestones and completion plan.
+\end{itemize}

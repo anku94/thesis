@@ -46,6 +46,9 @@
     singlelinecheck=on
 ]{caption}
 \usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, arrows.meta, shapes, calc, backgrounds}
+\graphicspath{{data/figs/}{data/tikz/}}
 
 % For math symbols
 \usepackage{amsmath}
@@ -58,7 +61,7 @@
 \usepackage{minitoc} % mini table of contents per chapter
 \usepackage{xcolor} % for colored text
 \definecolor{linkblue}{RGB}{0, 51, 153} % rich saturated dark blue
-\usepackage{titlesec} % for para fmting
+\usepackage{titlesec} % for para fmting (conflicts with minitoc)
 \usepackage{enumitem} % to customize enumerate
 \usepackage{setspace} % for line spacing (replaces memoir's \OnehalfSpacing)
 \usepackage[capitalize]{cleveref} % for terse references
@@ -145,6 +148,10 @@
 \titleformat{\paragraph}[runin]{\normalfont\normalsize\bfseries}{}{0pt}{}[.]
 \titlespacing{\paragraph}{0pt}{1ex plus 0.5ex minus 0.2ex}{1ex}
 
+% Alternative without titlesec (commented out):
+% \let\oldparagraph\paragraph
+% \renewcommand{\paragraph}[1]{\oldparagraph{#1.}}
+
 %% -- Enumerate styling --
 \setlist{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
 
@@ -163,7 +170,7 @@
 \input{tex/99-figs-orca}
 
 % Temporary: Test only the timeline chapter
-\includeonly{tex/1-intro}
+\includeonly{tex/1-intro,tex/6-concl}
 
 %%% --- Document Begins ---
 \begin{document}
@@ -173,6 +180,7 @@
 % %% --- Main Matter Begins ---
 \mainmatter{}
 \input{tex/0-abstract}
+\input{tex/1-intro-gpt}
 \include{tex/1-intro}
 \include{tex/2-background}
 \include{tex/3-carp}
@@ -185,7 +193,10 @@
 \include{tex/95-orca-paper}
 
 %%% --- Timeline: to remove ---
-\include{tex/6-timeline} 
+\include{tex/6-timeline}
+
+%%% --- Conclusions ---
+\include{tex/6-concl} 
 
 %%% --- Appendix (Optional) --- 
 % \appendix \chapter{Supplementary Material} Add raw data, code

@@ -3,13 +3,80 @@
 \chapter{Introduction}
 \minitoc
 
-\section{Motivation: Efficiency Bottlenecks in BSP}
+% -- Rewrite sketch --
+% BSP is big and important. Hero runs running large homogenous workloads. Massive costs.
+
+% Two problems emerge from its tightly synchronized nature: data path and compute path
+
+% Data path: checkpoint, fault tolerance or analysis
+
+% Compute path: performance and correctness issues.
+
+% First studies CARP as a data management problem: adaptive mechanism for range partitoining. Then placement in AMR codes as a
+% compute path efficiency problem. CARP is a narrow success story: an adaptive mechanism
+% built off a global repartitioning primitive worked. AMR experience highlights a broader class
+% of unknowables.
+
+% 1. How much telemetry you need from what source
+% 2. When to intervene, what shape should the intervention take, did it work?
+% 3. Tunables: no right answer
+
+% Worse, no takeaway is portable. Every site has its own unique problems. You can't collect all telemetry and ship it somewhere else.
+
+% There is a feedback loop here. You run, collect telemetry, analyze it, intervene. It is currently super slow.
+% Fragmented tools. Need to run workload again and again. ETL bottleneck. Bad formats. No structure (rank-major vs timestep-major).
+% Nature of unknowables + cost and fragility demands faster adaptive loops. Present ORCA is a general
+% substrate for steerable observability and control.
+
+% 2. Thesis Statement
+% Efficiency in bulk-synchronous parallel systems depends on adapting to conditions that are unknowable before runtime. This thesis identifies runtime state reconstruction as the general primitive underlying such adaptation, traces the insight through two point solutions that reveal its necessity and feasibility, and presents ORCA as general-purpose infrastructure for closing adaptive loops at scale.
+% 3. Summary of Work
+% TODO
+% 4. List of Contributions
+% TODO
+
+% -------------
+
+% BSP is big and important
+% Two problems emerge from its tightly synchronized nature: data path and compute path
+% Data path: checkpoint, fault tolerance or analysis
+% Compute path: performance and correctness issues.
+% This thesis shows: 
+% 1. The fundamental bottleneck for both paths is unknowable conditions
+% 2. Unknowables can be addressed using adaptive mechanims
+% 3. Adaptive mechanisms require distributed state reconstruction. This is a fundamental and recurring primitive.
+%    Also currently broken because fo ad-hoc mechanisms and observability bottleneck
+% 4. Generalizes using ORCA
+%
+% -- fundamental narrative catch --
+% - Trace/telemetry stuff can't be "state of the world" pre-this thesis
+%   That was a part of the findings of the AMR experience
+% - The need for adaptivity can't be "sotw"
+%   That was a part of the findings of the CARP experimence
+% - "OLAP fits": also part of the findings of the AMR experience
+
+% Efficiency in bulk-synchronous parallel systems depends on adapting to conditions that are
+% unknowable before runtime.
+% This thesis identifies runtime state reconstruction as the general primitive underlying such
+% adaptation, traces the insight through two point solutions that reveal its necessity and
+% feasibility, and presents ORCA as general-purpose infrastructure for closing adaptive loops at
+% scale.
+
+% A large class of efficiency bottlenecks in BSP systems arise from conditions that are unknowable
+% before runtime.
+% Through two studies spanning the data and compute paths, this thesis demonstrates that such
+% conditions are systematically addressable through adaptive mechanisms if the requisite feedback
+% loops exist, and perpetuate if they do not.
+% We present ORCA as general-purpose infrastructure for closing these loops at scale.
+
+
+% \section{Motivation: Efficiency Bottlenecks in BSP}
 
 The Bulk Synchronous Parallel (BSP) paradigm powers some of our most critical computational tools,
 from large-scale scientific simulations in astrophysics and climate science to distributed training
 of foundation models in machine learning.
-These workloads ---- consisting of large parallel computations interspersed with I/O and global
-synchronization ---- currently operate at the scale of tens of thousands of accelerator
+These workloads --- consisting of large parallel computations interspersed with I/O and global
+synchronization --- currently operate at the scale of tens of thousands of accelerator
 nodes~\cite{Das2023:LargeScale,Stock2024:LargeScale,Gratt2024:Llama3Scale,:LlamaScale} and continue
 to grow with time~\cite{Rahma2024:MLScale}.
 As these applications scale, their efficiency has datacenter-level impacts on both cost and
@@ -48,7 +115,8 @@ general-purpose data organization.
 Critically, support for efficient range queries ---- essential for analyzing continuous scientific
 variables ---- is still missing.
 As a result, users are often forced to perform expensive post-processing
-sorts~\cite{Dong2016,Sunda2013:HykSort,Rasmu2011:TritonSort}, reintroducing the I / O bottlenecks that in situ techniques aim to eliminate.
+sorts~\cite{Dong2016,Sunda2013:HykSort,Rasmu2011:TritonSort}, reintroducing the I / O bottlenecks
+that in situ techniques aim to eliminate.
 % The explosive growth in scientific data volumes has made in-situ analytics an essential strategy
 % for reducing I/O overhead and accelerating time-to-insight. While widely used for visualization
 % and occasionally adopted for data transformation or staging, current in-situ systems are
@@ -82,6 +150,142 @@ noise—factors that can only be disentangled through in-situ observation.
 Traditional reliance on fine-grained tracing~\cite{Wylie2025:15Years,Eschw2012:OTF2} complicates
 diagnosis: traces are large, opaque, and difficult to query, while profiling tools lack the
 granularity to expose short-lived slowdowns that affect global synchronization.
+
+\section{The Problem of Runtime Unknowables}
+
+A broad class of BSP efficiency bottlenecks is driven by conditions that are unknowable before
+runtime.
+Across both the data and compute paths, we found that the limiting factor was often not the
+existence of an adaptive mechanism, but the ability to obtain timely, actionable feedback to drive
+that mechanism.
+
+\begin{itemize}[leftmargin=*]
+  \item \parahead{CARP}
+        On the data path, we built CARP: an adaptive in-situ partitioner to accelerate range queries on
+        checkpointed data with dynamic key distributions.
+        CARP implemented a policy-driven closed loop to track attribute distribution drift and use it to
+        drive partitioning decisions.
+
+  \item \parahead{AMR}
+        On the compute path, we studied placement and load balancing in adaptive mesh codes.
+        We found genuine placement effects confounded by other artifacts---fail-slow hardware, fabric bugs,
+        and tuning artifacts.
+        Attributing performance to these attributes and then to root causes took us months, while
+        mitigations would typically take days.
+\end{itemize}
+
+\paragraph{Lessons} The two studies demonstrate two different feedback loops.
+When feedback is rapid --- CARP implemented a policy-driven online mechanism --- unknowable
+conditions like simulation-driven effects can be adapted to.
+
+Feedback is enabled by views—summaries of distributed state that make problems obvious.
+The view that explains a problem varies by problem.
+For CARP, the view was narrow and well-defined: key distributions.
+A fixed policy could consume this view and act automatically.
+For AMR, the view was "whatever explains this artifact"—and we didn't know what that was until we
+found it.
+We were the consumers, iterating slowly through possible explanations.
+Mitigations are ephemeral.
+Prune a failing node, tune a parameter, adjust a policy—conditions shift and the problem recurs or
+a new one emerges.
+Fast feedback isn't about solving one problem quickly.
+It's about keeping up with a system that keeps moving.
+The faster you can materialize arbitrary views of cluster state, the faster you can adapt to
+runtime unknowns.
+The consumer of those views varies—sometimes a fixed policy, sometimes a human operator.
+But all are bounded by the same constraint: intervention latency cannot be faster than feedback
+latency.
+
+\paragraph{Status Quo and Limitations}
+Current tooling makes view materialization slow.
+Run TAU in profiling mode and you get per-function summaries averaged across the run—enough to know
+something is slow, not enough to know why.
+Switch to tracing and you get timestamped event logs for every rank, gigabytes per minute,
+requiring offline ETL through tools like Hatchet or HTA before you can query anything.
+Neither provides targeted, real-time views.
+We resorted to exporting CSVs, loading them into ClickHouse and pandas, writing ad-hoc queries—a
+brittle pipeline rebuilt for each investigation.
+And the workflow forces slow iteration: guess what telemetry you need, configure collection, rerun
+the job, wait, analyze post-hoc, realize you needed different instrumentation, repeat.
+Each iteration costs a full run.
+In BSP, this delay is catastrophic.
+Stragglers propagate through synchronization.
+Corrupted state—NaNs, for instance—propagates through collectives.
+By the time you have the view that explains the failure, the job has already failed.
+Recovery means restart from checkpoint, all intervening progress lost.
+
+\paragraph{The Missing Substrate}
+
+
+% On the data path, CARP addressed streaming range partitioning under unknown and evolving key
+% distributions.
+% Its decision space was narrow: reconstruct global distribution state, renegotiate boundaries, and
+% continue ingestion.
+% A simple closed loop over this primitive was sufficient to eliminate expensive post-hoc sorting
+% while preserving query performance.
+
+% On the compute path, our AMR placement study exposed a qualitatively different regime.
+% Once a tunable placement mechanism existed, the hard problem became deciding how to drive it under
+% runtime uncertainty:
+% \begin{enumerate}
+%   \item How much telemetry to collect, and from which sources.
+%   \item When to intervene, what intervention shape to use, and whether it improved outcomes.
+%   \item How to tune parameters that encode competing objectives (for example locality versus load
+%         balance) as workload behavior evolves.
+% \end{enumerate}
+% No single answer transferred cleanly across clusters, workloads, or software stacks.
+% Where CARP tracked one unknown with one primary control loop, compute-path adaptation required
+% iterative, context-dependent reasoning over a much larger decision space.
+
+% \paragraph{Feedback as the Bottleneck}
+% Adaptive actions can mitigate runtime unknowns: remove failing hardware from placement, retune
+% policy parameters, or adjust data organization.
+% But these mitigations are transient because system and workload conditions continue to move.
+% In practice, diagnosis takes months while applying a fix may take days.
+% The central bottleneck is therefore feedback latency, not the absence of mechanisms.
+
+% Multiple agents can drive adaptive loops, including automated policies, human operators, and LLMs.
+% Their definitions of ``useful feedback'' and ``useful intervention'' differ, but all are bounded by
+% the same constraint: loop latency cannot be lower than feedback latency.
+% Current observability workflows, dominated by fragmented tooling and trace-heavy postprocessing,
+% make that latency prohibitive.
+
+% \paragraph{Why BSP Cannot Wait}
+% In tightly coupled BSP workloads, slow feedback is not just inefficient; it is structurally risky.
+% Stragglers delay global progress at synchronization points.
+% Corrupted values (for example NaNs) can propagate through collectives and contaminate downstream
+% state.
+% Recovery typically requires terminating and restarting from a checkpoint, discarding intervening
+% progress.
+% This motivates a substrate for observability and control that is programmable, agent-agnostic, and
+% fast enough to operate within BSP timescales.
+
+
+\section{Thesis Statement}
+
+% All cluster efficiency problems are distributed state reconstruction problems. \begin{quote} This
+% thesis argues that a broad and critical class of cluster efficiency problems, from data
+% organization to performance variability, can be unified and solved by reframing them as problems
+% of distributed state reconstruction.
+\begin{tcolorbox}[thesisbox]
+  % This thesis argues that persistent efficiency bottlenecks in \emph{Bulk Synchronous Parallel}
+  % (BSP) systems—across both the compute and data paths—stem from a missing abstraction: the ability
+  % to reconstruct distributed application state in real time. It proposes ORCA, a programmable
+  % observability and control plane, as a unifying solution that fills this gap using declarative,
+  % query-driven dataflows.
+  % This thesis argues that persistent efficiency bottlenecks in \emph{Bulk Synchronous Parallel} (BSP)
+  % systems are fundamentally visibility problems, stemming from an inability to reconstruct global
+  % views from distributed local state in real time, and proposes a programmable, query-driven
+  % observability and control plane to fill this gap.
+
+  A large class of efficiency bottlenecks in BSP systems arise from conditions that are unknowable
+  before runtime.
+  Through two studies spanning the data and compute paths, this thesis demonstrates that such
+  conditions are systematically addressable through adaptive mechanisms if the requisite feedback
+  loops exist, and perpetuate if they do not.
+  We present ORCA as general-purpose infrastructure for closing these loops at scale.
+\end{tcolorbox}
+% \end{quote}
 
 \section{Our Work: A Comprehensive Study of BSP Efficiency}
 
@@ -261,24 +465,6 @@ timestep-consistent semantics for an asynchronous human operator.
 % with multiple interacting components while meeting strict performance requirements to avoid
 % impacting application critical paths.
 
-\section{Thesis Statement}
-
-% All cluster efficiency problems are distributed state reconstruction problems. \begin{quote} This
-% thesis argues that a broad and critical class of cluster efficiency problems, from data
-% organization to performance variability, can be unified and solved by reframing them as problems
-% of distributed state reconstruction.
-\begin{tcolorbox}[thesisbox]
-  % This thesis argues that persistent efficiency bottlenecks in \emph{Bulk Synchronous Parallel}
-  % (BSP) systems—across both the compute and data paths—stem from a missing abstraction: the ability
-  % to reconstruct distributed application state in real time. It proposes ORCA, a programmable
-  % observability and control plane, as a unifying solution that fills this gap using declarative,
-  % query-driven dataflows.
-  This thesis argues that persistent efficiency bottlenecks in \emph{Bulk Synchronous Parallel}
-  (BSP) systems are fundamentally visibility problems, stemming from an inability to reconstruct global
-  views from distributed local state in real time, and proposes a programmable, query-driven
-  observability and control plane to fill this gap.
-\end{tcolorbox}
-% \end{quote}
 
 \subsection{Potential Impact}
 
@@ -308,3 +494,20 @@ The rest of this document is organized as follows.
   \item \cref{chap:orca} describes ORCA, a general-purpose observability and control framework.
   \item \cref{chap:timeline} outlines the remaining work required to complete the thesis.
 \end{itemize}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth,height=0.25\textheight,keepaspectratio]{feedback-loop.pdf}
+  \caption{Feedback loop diagram.}
+  \label{fig:intro:feedback-loop}
+\end{figure}
+
+% Random demo figure
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \node[draw, rounded corners, fill=blue!20, minimum width=2cm, minimum height=1cm] (app) {Application};
+  \end{tikzpicture}
+  \caption{Demo}
+  \label{fig:intro:tikz-demo}
+\end{figure}
