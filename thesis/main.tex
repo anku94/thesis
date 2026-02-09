@@ -2,7 +2,8 @@
 
 \newcommand{\thesisTitle}{
     % Unifying Bulk-Synchronous Parallel Observability Paradigms Using Relational Dataflows
-    A Unified Approach to Bulk-Synchronous Parallel Observability Using Relational Dataflows
+    % A Unified Approach to Bulk-Synchronous Parallel Observability Using Relational Dataflows
+    Steerable Observability for Bulk-Synchronous Parallel Systems
 }
 \newcommand{\thesisAuthor}{Ankush Jain}
 
@@ -59,6 +60,15 @@
 \usepackage{microtype} % subtle typographic improvements
 \usepackage{fancyhdr} % running headers
 \usepackage{minitoc} % mini table of contents per chapter
+% -- Minitoc styling options --
+\tightmtctrue
+\setlength{\mtcindent}{36pt}        % reduce left indent (default 24pt)
+\renewcommand{\mtcfont}{\small\sffamily}           % sans-serif entries
+\renewcommand{\mtcSfont}{\small\sffamily\bfseries} % sans-serif sections (bold)
+\renewcommand{\mtcSSfont}{\small\sffamily}         % sans-serif subsections
+% \mtcsettitle{minitoc}{}            % remove "Contents" title
+\mtcsetfeature{minitoc}{open}{\vspace{-0.5ex}}   % reduce space after top rule
+\mtcsetfeature{minitoc}{close}{\vspace{0.5ex}} % reduce space before bottom rule
 \usepackage{xcolor} % for colored text
 \definecolor{linkblue}{RGB}{0, 51, 153} % rich saturated dark blue
 \usepackage{titlesec} % for para fmting (conflicts with minitoc)

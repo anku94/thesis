@@ -190,8 +190,8 @@ An asynchronous control plane provides atomic and timestep-consistent control se
 A key contribution is the \emph{timestep dataframe} abstraction, comprising all ranks' telemetry
 for a single timestep.
 Because global synchronization already divides BSP execution into causally independent windows,
-this is the natural unit of in-situ analysis, and maps directly to \emph{(timestep, rank)}-partitioned
-Parquet for offline access.
+this is the natural unit of in-situ analysis, and maps directly to \emph{(timestep,
+  rank)}-partitioned Parquet for offline access.
 Queries are compiled and plan operators pushed down the TBON tiers to minimize data movement.
 On a real AMR code at 4096 ranks, ORCA collects detailed traces at 1–2\% overhead versus 56–81\%
 for existing tracers, executes queries orders of magnitude faster, and reduces data volume by
@@ -199,18 +199,44 @@ multiple orders of magnitude through in-situ analytics.
 In an agentic evaluation of the closed-loop workflow, a performance anomaly that took months to
 diagnose manually is localized in 27 minutes.
 
-\section{List of Contributions}
+\subsection{List of Contributions}
 
-\begin{enumerate}
-  \item A synthesis of BSP efficiency bottlenecks as runtime-unknowable conditions whose impact is
-        governed by feedback-loop latency.
-  \item CARP, an adaptive in-situ range partitioning mechanism that replaces costly post-hoc sorting
-        with a runtime repartitioning loop driven by reconstructed global state.
-  \item A telemetry-driven diagnostic workflow for AMR performance analysis, and CPLX, a tunable
-        placement policy that manages locality/load trade-offs under runtime variability.
-  \item ORCA, an agent-agnostic, declarative observability and control substrate for closing adaptive
-        loops in tightly coupled parallel systems.
-\end{enumerate}
+\paragraph{CARP}
+\begin{itemize}
+  \item An adaptive range partitioner for unknown and highly skewed key distributions.
+        CARP ingests data in a single streaming pass and is $2.8$--$4.9\times$ faster than post-processing
+        approaches.
+
+  \item Query performance comparable to fully sorted layouts and up to two orders of magnitude faster than auxiliary bitmap indices.
+
+  \item Shows that partially ordered layouts can be generated without reorganization, achieving perfect write amplification while enabling query performance comparable to fully sorted layouts.
+
+  \item Together with DeltaFS's hash partitioning, completes the set of in-situ partitioning strategies for scientific data.
+\end{itemize}
+
+\paragraph{AMR Placement}
+\begin{itemize}
+  \item An end-to-end empirical study integrating collection, tuning, and placement, showing how artifacts such as overheating, fabric bugs, and operation ordering obscure placement effects.
+
+  \item CPLX, a hybrid placement policy providing tunable control over the tradeoff between compute load balance and communication locality, achieving up to 21.6\% runtime reduction over tuned baselines on real AMR codes across 512--4096 ranks.
+
+  \item Broader lessons on telemetry-driven performance analysis and the empirical, context-specific nature of performance in large-scale parallel systems, including a critical path framework for reasoning about stragglers in AMR codes.
+\end{itemize}
+
+\paragraph{ORCA}
+\begin{itemize}
+  \item The timestep dataframe abstraction, building on the insight that global synchronization divides BSP telemetry into causally independent windows.
+        Timestep dataframes are persisted as \emph{(timestep, rank)}-partitioned Parquet, enabling up to
+        $44.3\times$ smaller traces and up to $6{,}800\times$ faster post-mortem analysis.
+
+  \item An incast-optimized RDMA transport for tree topologies, enabling detailed trace collection with under 2\% overhead versus 56--81\% for conventional tracers.
+
+  \item A SQL-based programming interface with operator pushdowns, enabling 98.5--99.999\% data reduction at source for needle-in-the-haystack queries.
+
+  \item A timestep-consistent control plane via a protocol called TS2PC (\emph{timestep-linked two-phase commit}).
+        In an evaluation of closed-loop capabilities using an agentic debugging workflow, an LLM diagnosed
+        a performance anomaly in 26 minutes that took months to isolate manually.
+\end{itemize}
 
 \section{Document Structure}
 
