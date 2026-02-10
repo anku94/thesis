@@ -147,6 +147,17 @@
 \newcommand{\ga}[1]{\textcolor{red!70!black}{@GA: #1}}
 \newcommand{\aj}[1]{\textcolor{blue!70!black}{@AJ: #1}}
 
+% Lighter heading for front matter sections (Acknowledgments, Abstract)
+\newcommand{\frontchapter}[1]{%
+  \clearpage
+  \thispagestyle{plain}% no header, just page number
+  \begin{center}
+    {\Large\bfseries #1}
+  \end{center}
+  \addcontentsline{toc}{chapter}{#1}
+  \vspace{2em}
+}
+
 %%% --- Spacing and Counters ---
 \onehalfspacing % line spacing
 \setcounter{secnumdepth}{3} % number subsubsections
@@ -188,11 +199,11 @@
 %%% --- Document Begins ---
 \begin{document}
 \frontmatter{}
-\input{frontmatter}
+\input{frontmatter} % Template pages (XXXAJ: some pages disabled for author convenience)
 
-% %% --- Main Matter Begins ---
+%%% --- Main Matter Begins ---
 \mainmatter{}
-\input{tex/0-abstract}
+% \input{tex/0-abstract}
 \include{tex/1-intro-gpt}
 \include{tex/1-intro}
 \include{tex/2-background}

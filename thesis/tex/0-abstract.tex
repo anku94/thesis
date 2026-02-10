@@ -1,43 +1,44 @@
 % !TEX root = ../main.tex
-\begin{abstract}
-  The Bulk Synchronous Parallel (BSP) paradigm powers our most critical computational tools, from
-  large-scale scientific simulations to distributed machine learning.
-  As these applications scale, their efficiency has datacenter-level impact on both costs and
-  time-to-discovery.
-  Yet the tightly synchronized nature of BSP creates two distinct challenges: on the data path,
-  bursts of checkpointed state strain storage and analytics infrastructure, while on the compute
-  path, global synchronization amplifies sensitivity to execution variability.
-  While traditionally addressed by separate tools, this thesis demonstrates that both problems can be
-  unified by treating them as challenges of organizing and processing streaming data for insight.
 
-  % To address these challenges, this thesis presents two foundational systems.
-  We first address these data and compute path challenges through two separate efforts.
-  On the data path, we built CARP to enable efficient, streaming ingestion of data from large
-  scientific applications for range queries without expensive post-processing.
-  CARP uses reconstructed histograms to adapt to dynamic and skewed key distributions, achieving
-  query performance comparable to a full sort with $5\times$ faster ingestion.
-  On the compute path, we tackled low cluster efficiency in adaptive mesh codes, typically attributed
-  to load imbalance.
-  Our work revealed that apparent load imbalance is often confounded by environmental noise and other
-  execution artifacts, necessitating a custom query-driven diagnostic workflow to isolate root
-  causes.
-  This process enabled us to establish a predictable baseline and design a tunable placement policy
-  (CPLX) that improves runtime by up to 21.6\% over this baseline.
+\frontchapter{Abstract}
 
-  Both our efforts revealed that efficiency gains are predicated on a common input: summarized views
-  of distributed application state.
-  These views are not only necessary to surface bottlenecks, but also inform the selection, execution,
-  and tuning of interventions.
-  Existing observability tools force a choice between limited metrics that obscure underlying issues
-  and comprehensive traces, which are expensive to collect and postprocess and unviable at scale.
-  We propose a fundamental shift: instead of proactive collection of all event logs, treat them as
-  fragments of the global view, and use declarative dataflows for programmable, on-demand collection
-  and real-time aggregation of these fragments.
-  ORCA enables these capabilities through an aggregation and control plane optimized for BSP
-  telemetry structure, leveraging a tree-based overlay with SQL semantics and distributed query
-  planning to minimize data movement.
-  This replaces a fractured ecosystem of bespoke tools with a unified, query-driven framework for
-  real-time observability across all layers and phases of distributed execution.
+The Bulk Synchronous Parallel (BSP) paradigm powers our most critical computational tools, from
+large-scale scientific simulations to distributed machine learning.
+As these applications scale, their efficiency has datacenter-level impact on both costs and
+time-to-discovery.
+Yet the tightly synchronized nature of BSP creates two distinct challenges: on the data path,
+bursts of checkpointed state strain storage and analytics infrastructure, while on the compute
+path, global synchronization amplifies sensitivity to execution variability.
+While traditionally addressed by separate tools, this thesis demonstrates that both problems can be
+unified by treating them as challenges of organizing and processing streaming data for insight.
 
-\end{abstract}
-\newpage
+% To address these challenges, this thesis presents two foundational systems.
+We first address these data and compute path challenges through two separate efforts.
+On the data path, we built CARP to enable efficient, streaming ingestion of data from large
+scientific applications for range queries without expensive post-processing.
+CARP uses reconstructed histograms to adapt to dynamic and skewed key distributions, achieving
+query performance comparable to a full sort with $5\times$ faster ingestion.
+On the compute path, we tackled low cluster efficiency in adaptive mesh codes, typically attributed
+to load imbalance.
+Our work revealed that apparent load imbalance is often confounded by environmental noise and other
+execution artifacts, necessitating a custom query-driven diagnostic workflow to isolate root
+causes.
+This process enabled us to establish a predictable baseline and design a tunable placement policy
+(CPLX) that improves runtime by up to 21.6\% over this baseline.
+
+Both our efforts revealed that efficiency gains are predicated on a common input: summarized views
+of distributed application state.
+These views are not only necessary to surface bottlenecks, but also inform the selection,
+execution,
+and tuning of interventions.
+Existing observability tools force a choice between limited metrics that obscure underlying issues
+and comprehensive traces, which are expensive to collect and postprocess and unviable at scale.
+We propose a fundamental shift: instead of proactive collection of all event logs, treat them as
+fragments of the global view, and use declarative dataflows for programmable, on-demand collection
+and real-time aggregation of these fragments.
+ORCA enables these capabilities through an aggregation and control plane optimized for BSP
+telemetry structure, leveraging a tree-based overlay with SQL semantics and distributed query
+planning to minimize data movement.
+This replaces a fractured ecosystem of bespoke tools with a unified, query-driven framework for
+real-time observability across all layers and phases of distributed execution.
+
