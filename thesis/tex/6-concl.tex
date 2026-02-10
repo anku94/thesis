@@ -1,99 +1,302 @@
 \chapter{Conclusions}
 \label{chap:concl}
-% \minitoc
 
-TODO
 
-1.
-Unifying overlay topologies (CARP + intra-tier shuffling) 2.
-Open table formats as a natural fit for BSP data 3.
-Convergence between algebras 4.
-ML-specific differences 5.
-DAQs as a parallel?
-6.
-DeltaFS vs ORCA: filesystems vs databases/analytics.
-Open Table Formats are at the heart.
-7.
-View-driven Observability
 
-\section{Galaxy Brain Stuff}
 
-\subsection{Maxwell's Demon}
+This thesis argued that a large class of efficiency bottlenecks in BSP systems arise from
+conditions unknowable before runtime, and that such conditions are systematically addressable
+through adaptive mechanisms if the requisite feedback loops exist.% \minitoc% TODO% 1.% Unifying overlay topologies (CARP + intra-tier shuffling) 2.% Open table formats as a natural fit for BSP data 3.% Convergence between algebras 4.% ML-specific differences 5.% DAQs as a parallel?% 6.% DeltaFS vs ORCA: filesystems vs databases/analytics.% Open Table Formats are at the heart.% 7.% View-driven Observability% 6.0 chapter intro: thesis claim, evidence recap, OLAP × BSP discussion, chapter roadmap
 
-It’s relevant as an analogy about “information →
-usable work via feedback,” not as a literal technical framework you should import.
-
-How it maps cleanly: •  Maxwell’s Demon: by measuring microstate and acting on it, the demon seems
-to extract work from thermal fluctuations.
-The resolution is that information has a cost (measurement, memory, erasure; Landauer), so you
-can’t get “free work.
-”
-•	ORCA/CARP: by measuring distributed execution/application state and acting on it (placement, throttling, repartition, etc.), you extract performance/efficiency from variability/nonstationarity.
-The “demon tax” is observability overhead + coordination cost + perturbation, which has to be paid
-somewhere.
-
-So the useful “science” point is:
-
-Feedback can turn uncertainty/variance into
-advantage only insofar as the cost of acquiring/processing information is less than the benefit of
-better decisions.
-
-That’s exactly the tradeoff ORCA formalizes as “query-driven / pay proportional to the question,”
-and what CARP informally exploits with its renegotiation epochs.
-
-Where the analogy breaks / becomes unhelpful: • Thermodynamics is about entropy/energy with a tight
-formalism; your setting is distributed control with resource tradeoffs (bandwidth, latency, CPU,
-coordination).
-You can steal the intuition (no free lunch; info isn’t free), but don’t pretend there’s a conserved
-quantity you can compute.
-
-If you use it at all, it should be a 1–2 sentence motivating metaphor: “ORCA is an information
-engine; measurement + control can harvest slack, but only if measurement costs are bounded.
-”
-
-\subsection{Ashby's Law of Requisite Variety}
-
-% remove all unicode characters
-Ashby's Law of Requisite Variety (cybernetics/control) says, roughly: a regulator can only suppress
-disturbances to the extent that the regulator has comparable "variety" (i.e., a sufficient
-repertoire of distinguishable responses / states).
-Ashby's aphorism is commonly rendered as 'only variety can destroy variety'.
-
-More formally (one common statement): the variety/uncertainty left in the outcomes can't be reduced
-below what remains after accounting for the regulator's variety; in information-theoretic form
-you'll see inequalities like $V_O \ge V_D - V_R$ or $H(E) \ge H(D) - H(R)$ under standard
-assumptions.
-
-Is it relevant to ORCA/CARP?
-
-Yes, as a useful lens—but you have to map “variety” correctly.
-•	In Ashby, "variety" is about the regulator's ability to select among alternatives.
-That selection capacity can come from:
 \begin{itemize}
-    \item Action variety (many possible interventions),
-    \item Information/measurement that lets you choose the right intervention conditional on the
-    \item Ashby explicitly links regulation limits to communication/channel capacity.
+  \item In \cref{chap:carp}, we presented CARP, an adaptive range partitioner that uses
+        reconstructed key distributions to drive single-pass ingestion, matching the query performance
+        of a full sort while being up to $4.9\times$ faster than post-processing approaches.
+
+  \item In \cref{chap:amr}, we presented an empirical study of placement in AMR codes, showing that
+        months of diagnostic effort were driven by the inability to construct the right runtime views,
+        and CPLX, a placement policy achieving up to $21.6\%$ runtime improvement once the feedback
+        gap was closed by hand.
+
+  \item In \cref{chap:orca}, we presented ORCA, a tree-based overlay network that attaches dedicated
+        aggregators to a parallel application and executes SQL-based in-situ analytics over columnar
+        telemetry streams, with an asynchronous control plane providing timestep-consistent semantics.
 \end{itemize}
-and/or Information/measurement that lets you choose the right intervention conditional on the disturbance (selection requires discrimination).
 
-CARP: the disturbance is (time-varying) key-distribution skew; the regulator's variety is
-essentially "many possible repartitionings + the mechanism to choose among them," based on observed
-distributions.
-It's a specialized regulator with a narrow disturbance class but a strong, domain-specific action
-set.
+ORCA brings OLAP machinery---columnar formats, SQL planning, embeddable query
+engines---into a declarative and programmable in-situ analytics framework for HPC.
+Traditional in-situ techniques are fixed-function and force a choice between embedded processing
+(co-located with application ranks) and offloaded processing (a separate MPI application, as in
+ADIOS~\cite{Eisen2024:ADIOS}).
+ORCA's execution model is a hybrid: the most valuable operators are automatically placed at source,
+while heavier analytics run on a dedicated asynchronous tier.
+Unlike ADIOS-style offloading, ORCA's aggregators and controller are closer to asynchronous
+services than to a coupled MPI job, while still preserving timestep-consistent execution through
+TS2PC.
+This intersection of OLAP analytics and BSP execution turns out to be remarkably productive: the
+OLAP stack provides the data model, interchange format, and query semantics, while BSP's phase
+structure provides the causal boundaries that make distributed planning tractable.
 
-ORCA: the disturbance class is broader (performance pathologies, imbalance modes, phase changes,
-cross-stack variability).
-ORCA's claim-to-power is that it expands the regulator's effective variety by: •        making the
-measurement space programmable and composable (you can form the discriminants you need), and •
- aligning sensing/actuation to a semantic clock (logical time) so the "selection" is coherent at
-BSP boundaries (i.e., you're choosing based on a well-defined slice of the world, not an arbitrary
-asynchronous smear).
+The rest of this chapter reflects on this design point (\S\ref{sec:concl:retrospective}), describes
+extensions within immediate reach (\S\ref{sec:concl:extensions}), and outlines longer-term
+directions (\S\ref{sec:concl:future}).
 
-Under Ashby's lens: ORCA is an attempt to raise $V_R$ (effective regulatory capacity) not just by
-adding knobs, but by increasing the ability to pick the right knob setting in-context—i.e.,
-improving discrimination/selection under uncertainty.
-That's conceptually aligned with Ashby even though you're not importing thermodynamic-style
-conservation laws.
+\section{Steerable Observability: Retrospective and Synthesis}\label{sec:concl:retrospective}
 
-(W.Ross Ashby is the original source; his Introduction to Cybernetics is the canonical reference.)
+\paragraph{Observability as view materialization}
+Observability is the problem of materializing the right view of a system.
+Most efficiency and correctness problems in large-scale systems are not hidden---they are obvious
+once the right view exists.
+A straggler is immediately visible in a per-rank breakdown of synchronization time.
+A corrupted gradient is immediately visible in a distribution of weight updates.
+The challenge is not analysis but construction: assembling the view from distributed fragments, at
+the right granularity, fast enough to act on.
+In BSP systems, views are routinely missing not because of physical limits but because of bad
+abstractions: unnecessary serialization cycles, format-dictated ETL, layouts that force full scans,
+tools that require re-execution to change what is collected.
+
+\paragraph{Steerability and limits}
+Steerability is what distinguishes a general observability substrate from a fixed-function monitor.
+It means control over what is collected, where it is processed, how much is retained, and what is
+acted on---all adjustable at runtime under explicit overhead and jitter budgets.
+Steerability extends beyond observation: views inform interventions, and interventions must be
+assessed through further views, closing the loop.
+
+The concept is only viable insofar as the feedback loop latency permits.
+Constructing a global view has an intrinsic cost---collection, reduction, and transport take
+time---and the view is only useful if it arrives soon enough to inform a decision.
+Many systems operate in regimes where this cost exceeds the decision timescale: network congestion
+control algorithms, for instance, are explicitly designed around partial observability because a
+complete view of path state cannot be assembled within a round-trip.
+Steerable observability is productive in regimes where the feedback latency is shorter than the
+timescale of the conditions it targets.
+BSP workloads, with timesteps on the order of milliseconds to seconds and runs lasting weeks, sit
+squarely in this regime.
+
+\paragraph{Why BSP demands a different design}
+BSP forces a specific shape on observability infrastructure that differs from cloud-native
+approaches.
+The distributed systems community has become microservice-brained: observability is designed around
+many independent services generating loosely correlated event streams, where eventual consistency
+is
+acceptable and metrics can be sampled.
+BSP is one workload running as a single hero run, with the fabric providing the illusion of a
+single computer.
+Global synchronization means every rank's behavior affects every other rank's progress.
+Tail sensitivity means a single slow rank dominates an entire timestep.
+Phase structure---alternating compute and I/O---imposes non-uniform overhead budgets: during
+compute, any jitter from telemetry collection amplifies into synchronization cost, while during
+I/O the constraints relax.
+This demands reduction-first, phase-aware design: reduce at source during compute, with the option
+to move more data when jitter is not the binding constraint.
+
+\paragraph{ORCA's design point}
+ORCA's design follows from these constraints.
+Telemetry originates as schema-first Arrow columnar streams, avoiding the serialization overhead of
+log-based formats.
+Queries are SQL---a restricted but plannable operator vocabulary that enables pushdown across TBON
+tiers so only the data needed for the requested view moves over RDMA.
+The result is close to optimal for a given view: columnar data, reduced in-situ, no avoidable
+serialization or data cycles.
+The physics DAQ pipeline is the right mental model: discard and reduce at source, keep only what
+the downstream question requires---but unlike a hardware trigger, ORCA's filters are steerable.
+This philosophy has precedent in software: Fay pushes LINQ operators into tracepoints, and Snicket
+compiles queries into WebAssembly filters inside microservice proxies.
+Both validate the core move but neither operates in a BSP context with phase-aware semantics,
+columnar interchange, or a timestep-consistent control plane.
+
+\section{Immediate Extensions}\label{sec:concl:extensions}
+
+
+ORCA's architecture is modular by construction: new sources produce Arrow RecordBatches, new
+operators plug into DataFusion's execution framework, and new sinks attach to the overlay.
+Several extensions require no architectural changes and are largely a matter of implementation
+effort.
+
+\paragraph{Instrumentation sources}
+Any interface that can emit structured events into Arrow is within scope.
+ORCA's \texttt{SchemaCollector} abstraction---a hot-path \texttt{AddEvent} into a typed struct,
+drained to produce a RecordBatch---makes new sources mechanical to integrate, whether NVTX/CUPTI
+GPU hooks, MPI runtime probes, or kernel events.
+eBPF is particularly natural: dynamic probes can be attached at runtime and emit fixed-schema
+events into the same pipeline.
+This is immediate---eBPF as a source.
+The harder problem of compiling query operators down into eBPF bytecode is a longer-term direction.
+
+\paragraph{Approximation and sketches}
+Collecting all telemetry is rarely the right default.
+Most diagnostic questions are aggregate---distributions, quantiles, heavy hitters,
+correlations---and exact answers over complete data are more expensive than necessary.
+Mergeable sketches align naturally with ORCA's reduction topology: compute a sketch at each leaf,
+merge hierarchically up the tree, emit a compact summary at the root.
+This makes observability cost-proportional to the question rather than the raw event rate.
+The remaining design questions are semantic: which views may be approximate, what error bounds are
+acceptable, and how approximation interacts with completeness guarantees and phase alignment.
+
+\paragraph{Streaming analytics unification}
+ORCA's data plane and CARP's shuffle pipeline serve different purposes but share the same
+structural pattern: planned movement of columnar data across a topology.
+CARP/DeltaFS-style all-to-all shuffles fit naturally as intra-tier operators within ORCA's planner.
+Extending ORCA's sink scope to include MPI-tier endpoints would allow a single plan to span
+compute-time observability reduction and checkpoint-time data reorganization---different operators
+activated in different phases, composed in one framework.
+This collapses the current separation between observability infrastructure and data management
+infrastructure.
+
+\paragraph{Open table formats for HPC}
+ORCA already writes timestep/rank-partitioned Parquet, but downstream tools see files rather than a
+dataset.
+Adding a metadata catalog---Iceberg-style snapshots, partition pruning, schema evolution---makes
+traces and telemetry into first-class tables queryable by any engine that speaks the format.
+This is a broader claim than ORCA: HPC outputs in general---simulation checkpoints, analysis
+artifacts, telemetry---would benefit from open table formats that make partition structure, schema,
+and versioning explicit.
+ORCA's Parquet output is a natural on-ramp, but the value extends to any workflow that currently
+manages collections of files by convention.
+
+\paragraph{Control interface regularization}
+ORCA's control plane currently supports timestep-consistent state transitions via TS2PC, but the
+set of controllable actions is defined ad hoc per integration.
+A natural step is to regularize this into typed control-plane providers that publish capabilities,
+accept structured commands, and return typed acknowledgments.
+This makes planned actuation composable in the same way that planned queries are
+composable---the planner can reason about what control actions are available, what their
+consistency
+semantics are, and how they interact with active queries.
+
+\section{Future Directions}\label{sec:concl:future}
+
+\paragraph{Beyond relational algebra}
+Relational operators are a natural fit for event-style telemetry---filtering, projection,
+aggregation, joins---but they are a poor fit for the structured data that dominates scientific
+computing and ML.
+Arrays, meshes, and tensors have dimensionality, adjacency, and layout that determine both
+semantics and efficient access patterns.
+Forcing them into relational form destroys this structure.
+A natural extension is a multi-algebra planner: retain relational operators for event streams, add
+array and mesh operators for structured data, and compose them in one plan.
+Format interop is becoming practical through Arrow bridges---Arrow Zarr for array data,
+Arrow DLPack for tensors---which provide a path to querying device- and array-resident data
+without premature tabularization.
+Prior work on MeshSQL, SciQL, and array databases provides clear precedent for extending SQL to
+cover these data types.
+A motivating example: compute a histogram of ML weight values when weights live in GPU memory.
+The right execution is a GPU-side reduction that emits only the compact histogram back into the
+pipeline---not a transfer of the full tensor to the host for relational processing.
+
+\paragraph{Visualization as planned dataflows}
+HPC visualization workflows are typically bespoke extract-transform-render pipelines that reinvent
+data movement and reduction logic for each code and toolchain.
+These can be subsumed by treating visualization products---tiles, isosurfaces, decimated particles,
+derived fields---as another class of sinks within the same planning framework.
+The operators differ (level-of-detail construction, GPU-friendly reductions, domain-specific
+kernels) but the planning and placement machinery is shared.
+This unifies observability and visualization under one infrastructure, eliminating the current
+duplication of data movement and reduction logic across separate systems.
+
+\paragraph{Multi-tier compilation}
+Once eBPF probes, host collectors, SmartNICs, and TBON aggregators are all potential execution
+targets, a SQL query becomes a multi-target compilation and placement problem.
+Each tier admits a restricted operator subset: eBPF allows bounded per-event filtering and small
+sketches, DPUs support streaming transforms with limited state, higher tiers handle heavier
+operators like joins and windowed aggregations.
+Full SQL semantics do not port cleanly across the pipeline.
+The core challenge is lowering a high-level query into tier-appropriate kernels with explicit
+materialization boundaries, while preserving BSP phase semantics and meeting jitter and overhead
+budgets.
+This is a compiler problem as much as a systems problem.
+
+\paragraph{Cost-aware reactive placement}
+ORCA's current operator placement is largely topology-informed---per-rank data gets pushed down,
+aggregation rises up the tree.
+This works well in practice but is not cost-aware: it does not observe realized pipeline costs
+(ingestion rates, queueing depths, CPU and NIC pressure, jitter impact) or treat placement as a
+controlled variable.
+A natural evolution is to add explicit cost signals and guardrails, then allow the planner to
+revise placement decisions online---moving operators and sinks across tiers in response to observed
+conditions rather than relying on accurate up-front prediction.
+This closes a feedback loop over ORCA itself: the same infrastructure that provides steerable
+observability for applications could provide steerable observability for its own execution.
+
+
+% \section{Galaxy Brain Stuff}
+
+% \subsection{Maxwell's Demon}
+
+% It’s relevant as an analogy about “information →
+% usable work via feedback,” not as a literal technical framework you should import.
+
+% How it maps cleanly: •  Maxwell’s Demon: by measuring microstate and acting on it, the demon seems
+% to extract work from thermal fluctuations.
+% The resolution is that information has a cost (measurement, memory, erasure; Landauer), so you
+% can’t get “free work.
+% ”
+% •	ORCA/CARP: by measuring distributed execution/application state and acting on it (placement, throttling, repartition, etc.), you extract performance/efficiency from variability/nonstationarity.
+% The “demon tax” is observability overhead + coordination cost + perturbation, which has to be paid
+% somewhere.
+
+% So the useful “science” point is:
+
+% Feedback can turn uncertainty/variance into
+% advantage only insofar as the cost of acquiring/processing information is less than the benefit of
+% better decisions.
+
+% That’s exactly the tradeoff ORCA formalizes as “query-driven / pay proportional to the question,”
+% and what CARP informally exploits with its renegotiation epochs.
+
+% Where the analogy breaks / becomes unhelpful: • Thermodynamics is about entropy/energy with a tight
+% formalism; your setting is distributed control with resource tradeoffs (bandwidth, latency, CPU,
+% coordination).
+% You can steal the intuition (no free lunch; info isn’t free), but don’t pretend there’s a conserved
+% quantity you can compute.
+
+% If you use it at all, it should be a 1–2 sentence motivating metaphor: “ORCA is an information
+% engine; measurement + control can harvest slack, but only if measurement costs are bounded.
+% ”
+
+% \subsection{Ashby's Law of Requisite Variety}
+
+% % remove all unicode characters
+% Ashby's Law of Requisite Variety (cybernetics/control) says, roughly: a regulator can only suppress
+% disturbances to the extent that the regulator has comparable "variety" (i.e., a sufficient
+% repertoire of distinguishable responses / states).
+% Ashby's aphorism is commonly rendered as 'only variety can destroy variety'.
+
+% More formally (one common statement): the variety/uncertainty left in the outcomes can't be reduced
+% below what remains after accounting for the regulator's variety; in information-theoretic form
+% you'll see inequalities like $V_O \ge V_D - V_R$ or $H(E) \ge H(D) - H(R)$ under standard
+% assumptions.
+
+% Is it relevant to ORCA/CARP?
+
+% Yes, as a useful lens—but you have to map “variety” correctly.
+% •	In Ashby, "variety" is about the regulator's ability to select among alternatives.
+% That selection capacity can come from:
+% \begin{itemize}
+%     \item Action variety (many possible interventions),
+%     \item Information/measurement that lets you choose the right intervention conditional on the
+%     \item Ashby explicitly links regulation limits to communication/channel capacity.
+% \end{itemize}
+% and/or Information/measurement that lets you choose the right intervention conditional on the disturbance (selection requires discrimination).
+
+% CARP: the disturbance is (time-varying) key-distribution skew; the regulator's variety is
+% essentially "many possible repartitionings + the mechanism to choose among them," based on observed
+% distributions.
+% It's a specialized regulator with a narrow disturbance class but a strong, domain-specific action
+% set.
+
+% ORCA: the disturbance class is broader (performance pathologies, imbalance modes, phase changes,
+% cross-stack variability).
+% ORCA's claim-to-power is that it expands the regulator's effective variety by: •        making the
+% measurement space programmable and composable (you can form the discriminants you need), and •
+%  aligning sensing/actuation to a semantic clock (logical time) so the "selection" is coherent at
+% BSP boundaries (i.e., you're choosing based on a well-defined slice of the world, not an arbitrary
+% asynchronous smear).
+
+% Under Ashby's lens: ORCA is an attempt to raise $V_R$ (effective regulatory capacity) not just by
+% adding knobs, but by increasing the ability to pick the right knob setting in-context—i.e.,
+% improving discrimination/selection under uncertainty.
+% That's conceptually aligned with Ashby even though you're not importing thermodynamic-style
+% conservation laws.
+
+% (W.Ross Ashby is the original source; his Introduction to Cybernetics is the canonical reference.)
