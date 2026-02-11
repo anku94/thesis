@@ -60,6 +60,26 @@
 \usepackage{microtype} % subtle typographic improvements
 \usepackage{fancyhdr} % running headers
 \usepackage{minitoc} % mini table of contents per chapter
+\usepackage{xcolor} % for colored text
+\usepackage{titlesec} % for para fmting (conflicts with minitoc)
+\usepackage{enumitem} % to customize enumerate
+\usepackage{setspace} % for line spacing (replaces memoir's \OnehalfSpacing)
+\usepackage[capitalize]{cleveref} % for terse references
+% For tables
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{threeparttable}
+% For algorithms (AMR paper)
+\usepackage{algorithm}
+\usepackage{algpseudocodex}
+% For propositions and proofs (AMR paper)
+\usepackage{amsthm}
+\newtheorem{proposition}{Proposition}
+\usepackage{soul} % for \hl{} highlighting
+% For TODOs - use [disable] option to hide all TODOs
+\usepackage[disable,colorinlistoftodos,textsize=small]{todonotes}
+% \usepackage[disable]{todonotes} % uncomment to hide all TODOs
+
 % -- Minitoc styling options --
 \tightmtctrue
 \setlength{\mtcindent}{36pt}        % reduce left indent (default 24pt)
@@ -69,12 +89,9 @@
 % \mtcsettitle{minitoc}{}            % remove "Contents" title
 \mtcsetfeature{minitoc}{open}{\vspace{-0.5ex}}   % reduce space after top rule
 \mtcsetfeature{minitoc}{close}{\vspace{0.5ex}} % reduce space before bottom rule
-\usepackage{xcolor} % for colored text
+
+% -- Colors --
 \definecolor{linkblue}{RGB}{0, 51, 153} % rich saturated dark blue
-\usepackage{titlesec} % for para fmting (conflicts with minitoc)
-\usepackage{enumitem} % to customize enumerate
-\usepackage{setspace} % for line spacing (replaces memoir's \OnehalfSpacing)
-\usepackage[capitalize]{cleveref} % for terse references
 
 % For thesis statement box
 \usepackage[most]{tcolorbox}
@@ -128,21 +145,7 @@
 \renewbibmacro*{url+urldate}{\printfield{url}}
 \renewbibmacro*{publisher+location+date}{\printdate}
 
-% For tables
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{threeparttable}
-
-% For algorithms (AMR paper)
-\usepackage{algorithm}
-\usepackage{algpseudocodex}
-
-% For propositions and proofs (AMR paper)
-\usepackage{amsthm}
-\newtheorem{proposition}{Proposition}
-
 %%% --- Commands ---
-\usepackage{soul}
 \newcommand{\fix}[1]{\hl{#1}}
 \newcommand{\ga}[1]{\textcolor{red!70!black}{@GA: #1}}
 \newcommand{\aj}[1]{\textcolor{blue!70!black}{@AJ: #1}}

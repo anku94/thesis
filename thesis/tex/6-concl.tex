@@ -1,5 +1,10 @@
 \chapter{Conclusions}\label{chap:concl}
 
+\todo{Example margin note - default style}
+\todo[inline]{Example inline TODO - spans full width, good for longer notes}
+\todo[color=green!
+  40]{Green margin note - use color for categories}
+
 
 
 This thesis argues that a large class of efficiency bottlenecks in BSP systems arise from
@@ -78,50 +83,57 @@ the overhead of residual data movement.
 All processing happens in-memory over a highly efficient columnar representation.
 The closest analogs are \emph{Data Acquisition} (DAQ) pipelines in particle accelerators, where
 FPGAs discard the bulk of sensor data at source, retaining only high-signal telemetry.
-Fay and Snicket implement query-driven tracing for microservices.
+Fay~~\cite{Erlin2011:Fay} and Snicket~\cite{Berg2021:Snicket} implement query-driven tracing for
+microservices.
 ORCA extends this to BSP workloads, adding a
 control plane for steerability.
 
-\paragraph{Steerability Limits
-}
-Steerability is bounded by loop latency.
-ORCA lowers this latency by eliminating unnecessary data movement, serialization, and ETL costs,
-but fundamental bounds remain.
-In some regimes, global views cannot be assembled on the decision timescale --- network congestion
-control is designed explicitly around partial observability.
-Even where views are timely, interventions are only viable if conditions persist long enough to act
-on.
-When they do not, the same analytics layer still enables offline characterization to inform
-predictive mechanisms.
+\paragraph{Steerability Limits}
+Feedback-driven mechanisms have an inherent latency floor: collection, reduction, and transport
+take physical time.
+ORCA eliminates the artificial costs that dominate today---ETL and unnecessary data
+movement---but cannot circumvent this floor.
+Some regimes demand action faster than any global view can be assembled.
+Network congestion control algorithms, for instance, are designed explicitly around partial
+observability~\cite{Jacob1988:CCAPartial}.
+When conditions are too transient for online intervention, ORCA's in-situ reductions still capture
+their structure more efficiently than any post-hoc approach, providing the empirical basis for
+developing predictive strategies that anticipate rather than react~\cite{Smith1957:Predict}.
+
+
+\todo[inline]{Improve language around predictive etc}
 
 \section{Immediate Extensions}\label{sec:concl:extensions}
 
 \paragraph{Instrumentation Sources}
-Tools like Kineto aggregate telemetry from multiple sources into a unified trace.
+Tools like Kineto~\cite{2025:PytorchKineto} aggregate telemetry from multiple sources into a
+unified trace.
 ORCA supports the same but as real-time aggregations over any interface that emits structured
 events---NVTX/CUPTI GPU hooks, MPI runtime probes, hardware counters.
-eBPF and DynInst are especially appealing as they enable dynamic instrumentation without
+eBPF~\cite{:eBPF} and DynInst~\cite{Berna2011:DynInst} are especially appealing as they enable dynamic instrumentation without
 recompilation, extending visibility into arbitrary functions at runtime.
 
 \paragraph{Approximate Summaries}
 Mergeable sketches can summarize streams in-flight at far lower cost and fit naturally into ORCA’s
 reduction topology.
-For example, KLL or t-digest can estimate latency percentiles, and Count-Min or SpaceSaving can
+For example, KLL~\cite{Karni2016:KLLSketch} can estimate latency percentiles, and Count-Min~\cite{Cormo2005:CountMin} can
 identify heavy hitters such as straggler ranks or hottest callsites, all with bounded error and
-without aggregating raw events.
+without retaining raw events.
 
 \paragraph{Shuffling-Based Streaming Analytics}
-Shuffling-based in-situ indexing systems like DeltaFS and CARP show that hash and range
+Shuffling-based in-situ indexing systems like DeltaFS~\cite{Zheng2018:DeltaFS} and
+CARP~\cite{Jain2024:CARP} show that hash and range
 partitioning can reorganize scientific data effectively at scale.
 ORCA can treat these shuffles as intra-tier operators within its topology, so they compose cleanly
 with inter-tier reductions in a single plan.
 Because the MPI tier has substantial egress bandwidth during checkpointing, the planner can be
-phase-aware, scheduling shuffle sinks at the MPI tier in checkpoint phases while avoiding that
+phase-aware, scheduling sinks at the MPI tier in checkpoint phases while avoiding that
 interference during compute phases.
 
 \paragraph{Open Table Formats for HPC}
 While ORCA writes telemetry as partitioned Parquet, it does not currently emit a metadata catalog.
-Open table formats such as Iceberg maintain a lightweight index over partitioned Parquet
+Open table formats such as Iceberg~\cite{:Iceberg} maintain a lightweight index over partitioned
+Parquet
 files---partition boundaries, column statistics, file locations---enabling engines to prune
 irrelevant data without scanning.
 Any HPC pipeline that already writes Parquet would benefit from the same treatment, replacing ad
@@ -131,131 +143,47 @@ hoc file-management conventions with self-describing, immediately queryable data
 The set of controllable actions is currently defined ad hoc per integration.
 Regularizing this into typed providers that advertise capabilities, accept structured commands, and
 return typed acknowledgments makes control capabilities discoverable and composable, analogous to a
-southbound
-API in SDN.
+southbound API in SDN.
 
-% \section{Immediate Extensions}\label{sec:concl:extensions}
-
-% \paragraph{Instrumentation sources}
-% Tools like Kineto aggregate telemetry from multiple sources into a unified trace.
-% ORCA supports the same but as real-time aggregations over any interface that emits structured
-% events---NVTX/CUPTI GPU hooks, MPI runtime probes, kernel counters.
-% eBPF and DynInst are especially appealing as they enable dynamic instrumentation without
-% recompilation, extending visibility into arbitrary functions at runtime.
-
-% \paragraph{Approximation and sketches}
-% Mergeable sketches can generate compact approximate representations at substantially lower cost
-% and align naturally with ORCA's reduction topology.
-% Job-wide latency percentiles, distribution summaries, and heavy-hitter detection can all be
-% computed with bounded error at a fraction of the cost of exact aggregation over raw events.
-
-% \paragraph{Streaming analytics unification}
-% ORCA's data plane and CARP's shuffle pipeline serve different purposes but share the same
-% structural pattern: planned movement of columnar data across a topology.
-% CARP/DeltaFS-style all-to-all shuffles fit as intra-tier operators within the planner, allowing a
-% single plan to span compute-time observability reduction and checkpoint-time data
-% reorganization---different operators activated in different phases, composed in one framework.
-
-% \paragraph{Open table formats for HPC}
-% While ORCA writes telemetry as partitioned Parquet, it does not currently emit a metadata catalog.
-% Open table formats such as Iceberg maintain a lightweight index over partitioned Parquet
-% files---partition boundaries, column statistics, file locations---enabling engines to prune
-% irrelevant data without scanning.
-% Any HPC pipeline that already writes Parquet would benefit from the same treatment, replacing ad
-% hoc file-management conventions with self-describing, immediately queryable datasets.
-
-% \paragraph{Control interface regularization}
-% The set of controllable actions is currently defined ad hoc per integration.
-% Regularizing this into typed providers that publish capabilities, accept structured commands, and
-% return typed acknowledgments makes planned actuation composable in the same way that planned
-% queries are.
-
-% \section{Immediate Extensions}\label{sec:concl:extensions}
-
-
-% ORCA's architecture is modular by construction: new sources produce Arrow RecordBatches, new
-% operators plug into DataFusion's execution framework, and new sinks attach to the overlay.
-% Several extensions require no architectural changes and are largely a matter of implementation
-% effort.
-
-% \paragraph{Instrumentation sources}
-% Any interface that can emit structured events into Arrow is within scope.
-% ORCA's \texttt{SchemaCollector} abstraction---a hot-path \texttt{AddEvent} into a typed struct,
-% drained to produce a RecordBatch---makes new sources mechanical to integrate, whether NVTX/CUPTI
-% GPU hooks, MPI runtime probes, or kernel events.
-% eBPF is particularly natural: dynamic probes can be attached at runtime and emit fixed-schema
-% events into the same pipeline.
-% This is immediate---eBPF as a source.
-% The harder problem of compiling query operators down into eBPF bytecode is a longer-term direction.
-
-% \paragraph{Approximation and sketches}
-% Collecting all telemetry is rarely the right default.
-% Most diagnostic questions are aggregate---distributions, quantiles, heavy hitters,
-% correlations---and exact answers over complete data are more expensive than necessary.
-% Mergeable sketches align naturally with ORCA's reduction topology: compute a sketch at each leaf,
-% merge hierarchically up the tree, emit a compact summary at the root.
-% This makes observability cost-proportional to the question rather than the raw event rate.
-% The remaining design questions are semantic: which views may be approximate, what error bounds are
-% acceptable, and how approximation interacts with completeness guarantees and phase alignment.
-
-% \paragraph{Streaming analytics unification}
-% ORCA's data plane and CARP's shuffle pipeline serve different purposes but share the same
-% structural pattern: planned movement of columnar data across a topology.
-% CARP/DeltaFS-style all-to-all shuffles fit naturally as intra-tier operators within ORCA's planner.
-% Extending ORCA's sink scope to include MPI-tier endpoints would allow a single plan to span
-% compute-time observability reduction and checkpoint-time data reorganization---different operators
-% activated in different phases, composed in one framework.
-% This collapses the current separation between observability infrastructure and data management
-% infrastructure.
-
-% \paragraph{Open table formats for HPC}
-% ORCA already writes timestep/rank-partitioned Parquet, but downstream tools see files rather than a
-% dataset.
-% Adding a metadata catalog---Iceberg-style snapshots, partition pruning, schema evolution---makes
-% traces and telemetry into first-class tables queryable by any engine that speaks the format.
-% This is a broader claim than ORCA: HPC outputs in general---simulation checkpoints, analysis
-% artifacts, telemetry---would benefit from open table formats that make partition structure, schema,
-% and versioning explicit.
-% ORCA's Parquet output is a natural on-ramp, but the value extends to any workflow that currently
-% manages collections of files by convention.
-
-% \paragraph{Control interface regularization}
-% ORCA's control plane currently supports timestep-consistent state transitions via TS2PC, but the
-% set of controllable actions is defined ad hoc per integration.
-% A natural step is to regularize this into typed control-plane providers that publish capabilities,
-% accept structured commands, and return typed acknowledgments.
-% This makes planned actuation composable in the same way that planned queries are
-% composable---the planner can reason about what control actions are available, what their
-% consistency
-% semantics are, and how they interact with active queries.
+\todo[inline]{Maybe something like: broader ML integration, parallelisms etc, pipelines and
+  implications}
+\todo[inline]{Implifications of rdma-estats and things like that?
+}
 
 \section{Future Directions}\label{sec:concl:future}
 
-\paragraph{Beyond Relational Algebra}
-Relational operators fit event telemetry, but they are a poor match for the structured objects that
-dominate scientific computing and ML.
-Arrays and meshes have dimensionality, adjacency, and layout that determine both meaning and
-efficient access, and flattening them into tables discards that structure.
-A natural extension is a multi-algebra planner that keeps relational operators for event streams
-but adds array and mesh operators for structured data, composed in one plan.
-Interop is becoming practical via Arrow bridges such as Arrow Zarr for arrays and Arrow DLPack for
-tensors.
-With operators over structured scientific data, visualization workflows also become expressible via the
-same dataflow, rather than as a separate analytics pipeline.
-Another motivating example is observability over GPU-resident tensors, such as computing a histogram of
-weight values.
-Supporting device-side reductions that emit only compact summaries is an interesting extension
-beyond relational processing.
+ORCA's current query model is relational: SQL over event streams, planned and placed across the
+overlay.
+The power of an algebraic approach is that complex pipelines reduce to compositions of well-defined
+operators, each independently placeable and optimizable.
+The directions below extend this principle to richer data types, deeper execution tiers, and
+adaptive placement.
 
+\paragraph{Beyond Relational Algebra}
+Scientific computing and ML operate primarily on arrays,
+meshes, and tensors—data types where dimensionality and adjacency carry semantic meaning that
+flattening into rows destroys.
+Prior work on SciQL~\cite{Kerst2011:SciQL} and MeshSQL~\cite{Lee2004:MeshSQL} has explored
+declarative interfaces for these types, and practical
+convergence is underway through bridges like arrow-zarr~\cite{2026:arrow-zarr} and
+Arrow$\leftrightarrow$DLPack~\cite{:DLPackProtocolApache}.
+DataFusion's extensibility makes it possible to host array and mesh operators
+alongside relational ones in the same query plan.
+This also opens a path to expressing HPC visualization
+workflows~\cite{Ayach2015:Catalyst,Larse2022:Ascent} as dataflows rather than separate
+pipelines.
+A related direction is observability over GPU-resident state such as model weights, where
+device-side reductions would
+emit compact summaries without transferring full tensors to the host.
 
 \paragraph{Multi-Tier Compilation}
-ORCA’s topology can be extended with extra execution tiers, such as sandboxes and SmartNIC
-aggregation points, turning query execution into a multi-target compilation and placement problem.
-eBPF and DPUs then become execution tiers: eBPF runs bounded per-event logic at capture such as filtering,
-while DPUs run limited-state streaming transforms, and higher tiers handle heavier operators such as joins and windowed aggregation.
-The interesting direction is lowering a high-level query into tier-appropriate kernels with
-explicit materialization points while preserving BSP phase semantics and staying within jitter and
-overhead budgets.
+ORCA's overlay currently executes all operators on host-side aggregators.
+Additional execution tiers are becoming viable: SmartNICs can run Arrow-native reductions on the
+fabric itself~\cite{Ulmer2023:ExtendingComposableDatab,Liu2022:ProcessingParticleData}, and eBPF
+can push filter and sketch logic into kernel-space probes.
+Each tier admits a restricted operator subset under different resource and state constraints.
+The compilation problem is decomposing a high-level query across these tiers---deciding which
+operators run where and how intermediate results flow between them.
 
 \paragraph{Cost-Aware Reactive Placement}
 ORCA’s placement today follows tree the topology: per-partition work is pushed down, while

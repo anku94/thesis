@@ -2656,6 +2656,24 @@
   isbn = {978-1-931971-96-6}
 }
 
+@article{Cormo2005:CountMin,
+  title = {An Improved Data Stream Summary: The Count-Min Sketch and Its Applications},
+  shorttitle = {{{CountMin}}},
+  author = {Cormode, Graham and Muthukrishnan, S.},
+  date = {2005-04-01},
+  journaltitle = {Journal of Algorithms},
+  shortjournal = {Journal of Algorithms},
+  volume = {55},
+  number = {1},
+  pages = {58--75},
+  issn = {0196-6774},
+  doi = {10.1016/j.jalgor.2003.12.001},
+  url = {https://www.sciencedirect.com/science/article/pii/S0196677403001913},
+  urldate = {2026-02-11},
+  abstract = {We introduce a new sublinear space data structure—the count-min sketch—for summarizing data streams. Our sketch allows fundamental queries in data stream summarization such as point, range, and inner product queries to be approximately answered very quickly; in addition, it can be applied to solve several important problems in data streams such as finding quantiles, frequent items, etc. The time and space bounds we show for using the CM sketch to solve these problems significantly improve those previously known—typically from 1/ε2 to 1/ε in factor.},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/misc/2005_cormode_muthukrishnan_an_improved_data_str.pdf;/Users/schwifty/Zotero/storage/JCVESATN/S0196677403001913.html}
+}
+
 @misc{Cranor2022:InfinibandPSMExplained,
   title = {Infiniband with {{PSM Explained}}!},
   author = {Cranor, Charles D.},
@@ -4796,6 +4814,23 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2015_isaacs_et_al_recovering_logical_s.pdf;/Users/schwifty/Zotero/storage/EFD7Q76X/2015_isaacs_et_al_recovering_logical_s.pdf}
 }
 
+@article{Jacob1988:CCAPartial,
+  title = {Congestion Avoidance and Control},
+  shorttitle = {{{CCAPartial}}},
+  author = {Jacobson, V.},
+  date = {1988-08-01},
+  journaltitle = {SIGCOMM Comput. Commun. Rev.},
+  volume = {18},
+  number = {4},
+  pages = {314--329},
+  issn = {0146-4833},
+  doi = {10.1145/52325.52356},
+  url = {https://dl.acm.org/doi/10.1145/52325.52356},
+  urldate = {2026-02-11},
+  abstract = {In October of '86, the Internet had the first of what became a series of 'congestion collapses'. During this period, the data throughput from LBL to UC Berkeley (sites separated by 400 yards and three IMP hops) dropped from 32 Kbps to 40 bps. Mike Karels1 and I were fascinated by this sudden factor-of-thousand drop in bandwidth and embarked on an investigation of why things had gotten so bad. We wondered, in particular, if the 4.3BSD (Berkeley UNIX) TCP was mis-behaving or if it could be tuned to work better under abysmal network conditions. The answer to both of these questions was “yes”.Since that time, we have put seven new algorithms into the 4BSD TCP: round-trip-time variance estimationexponential retransmit timer backoffslow-startmore aggressive receiver ack policydynamic window sizing on congestionKarn's clamped retransmit backofffast retransmit Our measurements and the reports of beta testers suggest that the final product is fairly good at dealing with congested conditions on the Internet.This paper is a brief description of (i) - (v) and the rationale behind them. (vi) is an algorithm recently developed by Phil Karn of Bell Communications Research, described in [KP87]. (viii) is described in a soon-to-be-published RFC.Algorithms (i) - (v) spring from one observation: The flow on a TCP connection (or ISO TP-4 or Xerox NS SPP connection) should obey a 'conservation of packets' principle. And, if this principle were obeyed, congestion collapse would become the exception rather than the rule. Thus congestion control involves finding places that violate conservation and fixing them.By 'conservation of packets' I mean that for a connection 'in equilibrium', i.e., running stably with a full window of data in transit, the packet flow is what a physicist would call 'conservative': A new packet isn't put into the network until an old packet leaves. The physics of flow predicts that systems with this property should be robust in the face of congestion. Observation of the Internet suggests that it was not particularly robust. Why the discrepancy?There are only three ways for packet conservation to fail: The connection doesn't get to equilibrium, orA sender injects a new packet before an old packet has exited, orThe equilibrium can't be reached because of resource limits along the path. In the following sections, we treat each of these in turn.},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/misc/1988_jacobson_congestion_avoidance.pdf}
+}
+
 @thesis{Jain2016:OptimizationCommunicationIntensive,
   type = {text},
   title = {Optimization of Communication Intensive Applications on {{HPC}} Networks},
@@ -5106,6 +5141,23 @@
   doi = {10.1016/j.jnca.2017.03.021},
   abstract = {One of the key issues in large-scale distributed systems such as P2P and grids is the capability of efficient multidimensional range query processing. Although several methods have recently been proposed for solving this problem on distributed systems, these methods have not been able to meet the fundamental necessity of a typical method on large-scale distributed systems, i.e., scalability. This paper presents Fractal, a fully decentralized and highly scalable multidimensional range query lookup protocol for distributed systems. In this work, to organize the available nodes in the system, an n-dimensional space called Key Space is utilized. The available nodes on the nested Fractal rings maintain information about only O(logN) other nodes, and the Fractal lookup protocol discovers the destination node through these nested rings with a logarithmic cost. Because of its flexibility, Fractal allows the system to create a concept called Layering, which minimizes the probability of the wide-area message transfers (WAMTs) during the lookup process. Using several criteria, Fractal is compared with several successful methods that have recently been presented. Simulation results show the efficiency and performance of Fractal in networks of different sizes.},
   keywords = {Distributed systems,Lookup protocol,Multidimensional range query,The nested Fractal rings,WAMTs}
+}
+
+@online{Karni2016:KLLSketch,
+  title = {Optimal {{Quantile Approximation}} in {{Streams}}},
+  shorttitle = {{{KLLSketch}}},
+  author = {Karnin, Zohar and Lang, Kevin and Liberty, Edo},
+  date = {2016-04-05},
+  eprint = {1603.05346},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.1603.05346},
+  url = {http://arxiv.org/abs/1603.05346},
+  urldate = {2026-02-11},
+  abstract = {This paper resolves one of the longest standing basic problems in the streaming computational model. Namely, optimal construction of quantile sketches. An \$\textbackslash varepsilon\$ approximate quantile sketch receives a stream of items \$x\_1,\textbackslash ldots,x\_n\$ and allows one to approximate the rank of any query up to additive error \$\textbackslash varepsilon n\$ with probability at least \$1-δ\$. The rank of a query \$x\$ is the number of stream items such that \$x\_i \textbackslash le x\$. The minimal sketch size required for this task is trivially at least \$1/\textbackslash varepsilon\$. Felber and Ostrovsky obtain a \$O((1/\textbackslash varepsilon)\textbackslash log(1/\textbackslash varepsilon))\$ space sketch for a fixed \$δ\$. To date, no better upper or lower bounds were known even for randomly permuted streams or for approximating a specific quantile, e.g.,\textbackslash{} the median. This paper obtains an \$O((1/\textbackslash varepsilon)\textbackslash log \textbackslash log (1/δ))\$ space sketch and a matching lower bound. This resolves the open problem and proves a qualitative gap between randomized and deterministic quantile sketching. One of our contributions is a novel representation and modification of the widely used merge-and-reduce construction. This subtle modification allows for an analysis which is both tight and extremely simple. Similar techniques should be useful for improving other sketching objectives and geometric coreset constructions.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Data Structures and Algorithms},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/misc/2016_karnin_et_al_optimal_quantile_app.pdf;/Users/schwifty/Zotero/storage/M6Y93VDM/1603.html}
 }
 
 @inproceedings{Kashy2025:DPU-KV,
@@ -8625,6 +8677,20 @@
   isbn = {978-1-5386-3914-6},
   langid = {english},
   file = {/Users/schwifty/Zotero/storage/Q3LJLVRJ/Slota et al. - 2017 - Partitioning Trillion-Edge Graphs in Minutes.pdf}
+}
+
+@article{Smith1957:Predict,
+  title = {Closer Control of Loops with Dead Time},
+  shorttitle = {Predict},
+  author = {Smith, Otto JM},
+  date = {1957},
+  journaltitle = {Chemical Engineering Progress},
+  volume = {53},
+  pages = {217--219},
+  url = {https://cir.nii.ac.jp/crid/1574231875295965056},
+  urldate = {2026-02-11},
+  annotation = {Predict don't react},
+  file = {/Users/schwifty/Zotero/storage/WGY9E8KE/1574231875295965056.html}
 }
 
 @online{Smith2024:WhyAmericaFell,
