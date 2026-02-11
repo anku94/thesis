@@ -2,43 +2,42 @@
 
 \frontchapter{Abstract}
 
-The Bulk Synchronous Parallel (BSP) paradigm powers our most critical computational tools, from
-large-scale scientific simulations to distributed machine learning.
-As these applications scale, their efficiency has datacenter-level impact on both costs and
-time-to-discovery.
-Yet the tightly synchronized nature of BSP creates two distinct challenges: on the data path,
-bursts of checkpointed state strain storage and analytics infrastructure, while on the compute
-path, global synchronization amplifies sensitivity to execution variability.
-While traditionally addressed by separate tools, this thesis demonstrates that both problems can be
-unified by treating them as challenges of organizing and processing streaming data for insight.
 
-% To address these challenges, this thesis presents two foundational systems.
-We first address these data and compute path challenges through two separate efforts.
-On the data path, we built CARP to enable efficient, streaming ingestion of data from large
-scientific applications for range queries without expensive post-processing.
-CARP uses reconstructed histograms to adapt to dynamic and skewed key distributions, achieving
-query performance comparable to a full sort with $5\times$ faster ingestion.
-On the compute path, we tackled low cluster efficiency in adaptive mesh codes, typically attributed
-to load imbalance.
-Our work revealed that apparent load imbalance is often confounded by environmental noise and other
-execution artifacts, necessitating a custom query-driven diagnostic workflow to isolate root
-causes.
-This process enabled us to establish a predictable baseline and design a tunable placement policy
-(CPLX) that improves runtime by up to 21.6\% over this baseline.
+% The Bulk Synchronous Parallel (BSP) paradigm powers our most critical computational tools, from% large-scale scientific simulations to distributed machine learning.% As these applications scale, their efficiency has datacenter-level impact on both costs and% time-to-discovery.% Yet the tightly synchronized nature of BSP creates two distinct challenges: on the data path,% bursts of checkpointed state strain storage and analytics infrastructure, while on the compute% path, global synchronization amplifies sensitivity to execution variability.% While traditionally addressed by separate tools, this thesis demonstrates that both problems can be% unified by treating them as challenges of organizing and processing streaming data for insight.% % To address these challenges, this thesis presents two foundational systems.% We first address these data and compute path challenges through two separate efforts.% On the data path, we built CARP to enable efficient, streaming ingestion of data from large% scientific applications for range queries without expensive post-processing.% CARP uses reconstructed histograms to adapt to dynamic and skewed key distributions, achieving% query performance comparable to a full sort with $5\times$ faster ingestion.% On the compute path, we tackled low cluster efficiency in adaptive mesh codes, typically attributed% to load imbalance.% Our work revealed that apparent load imbalance is often confounded by environmental noise and other% execution artifacts, necessitating a custom query-driven diagnostic workflow to isolate root% causes.% This process enabled us to establish a predictable baseline and design a tunable placement policy% (CPLX) that improves runtime by up to 21.6\% over this baseline.% Both our efforts revealed that efficiency gains are predicated on a common input: summarized views% of distributed application state.% These views are not only necessary to surface bottlenecks, but also inform the selection,% execution,% and tuning of interventions.% Existing observability tools force a choice between limited metrics that obscure underlying issues% and comprehensive traces, which are expensive to collect and postprocess and unviable at scale.% We propose a fundamental shift: instead of proactive collection of all event logs, treat them as% fragments of the global view, and use declarative dataflows for programmable, on-demand collection% and real-time aggregation of these fragments.% ORCA enables these capabilities through an aggregation and control plane optimized for BSP% telemetry structure, leveraging a tree-based overlay with SQL semantics and distributed query% planning to minimize data movement.% This replaces a fractured ecosystem of bespoke tools with a unified, query-driven framework for% real-time observability across all layers and phases of distributed execution.
 
-Both our efforts revealed that efficiency gains are predicated on a common input: summarized views
-of distributed application state.
-These views are not only necessary to surface bottlenecks, but also inform the selection,
-execution,
-and tuning of interventions.
-Existing observability tools force a choice between limited metrics that obscure underlying issues
-and comprehensive traces, which are expensive to collect and postprocess and unviable at scale.
-We propose a fundamental shift: instead of proactive collection of all event logs, treat them as
-fragments of the global view, and use declarative dataflows for programmable, on-demand collection
-and real-time aggregation of these fragments.
-ORCA enables these capabilities through an aggregation and control plane optimized for BSP
-telemetry structure, leveraging a tree-based overlay with SQL semantics and distributed query
-planning to minimize data movement.
-This replaces a fractured ecosystem of bespoke tools with a unified, query-driven framework for
-real-time observability across all layers and phases of distributed execution.
 
+Bulk Synchronous Parallel (BSP) workloads power large-scale scientific simulations and distributed
+machine learning, running for long durations at massive scale where small inefficiencies translate
+into major cost and time-to-discovery impacts.
+Many of the most consequential inefficiencies arise from conditions unknowable before runtime,
+including evolving data distributions, performance variability, and environment-dependent
+pathologies.
+This thesis argues that systematically addressing these bottlenecks requires feedback loops that
+can reconstruct and act on summarized global views of distributed state while the job is running.
+
+We develop this claim through two studies.
+On the data path, CARP is a streaming ingestion and indexing system for checkpoint data that
+enables efficient range queries without expensive post-processing.
+CARP periodically reconstructs a view of global key distributions and uses it to adapt range
+partitions as distributions evolve, matching the query performance of a full sort with up to
+$4.9\times$ faster ingestion.
+On the compute path, we study placement in adaptive mesh refinement codes, where apparent load
+imbalance is confounded by fail-slow hardware, fabric pathologies, and tuning artifacts.
+Isolating true placement effects required progressively eliminating each confounder---a process
+that consumed months even though individual mitigations typically took days.
+With reliable telemetry established, we design CPLX, a tunable placement policy that achieves up
+to 21.6\% runtime improvement.
+Across both studies, the decisive factor was access to the right view at the right time.
+
+Because these conditions recur unpredictably, production BSP systems need an always-on, programmable
+observability loop: coarse views surface deviations, and the loop can be steered on demand into
+narrower views to localize and act on them.
+We call this steerable observability.
+ORCA realizes this via a tree-based overlay for programmable feedback and control in BSP systems,
+materializing runtime views through in-situ reduction and providing a timestep-consistent control
+plane for coordinated interventions.
+On a real AMR code at 4096 ranks, ORCA collects detailed traces at 1--2\% overhead versus
+conventional HPC tracers at 56--81\% and eliminates 98.5--99.999\% of telemetry at source for
+evaluated queries.
+In an evaluation of its closed-loop capabilities using an LLM agent, a performance anomaly that
+took months to diagnose manually is localized in 27 minutes.
