@@ -14,10 +14,11 @@ modifyLineBreaks:
   condenseMultipleBlankLinesInto: 0
   textWrapOptions:
     columns: 100
+    removeBlockLineBreaks: 0
     comments:
-      wrap: 0
+      wrap: 1
   oneSentencePerLine:
-    manipulateSentences: 1 
+    manipulateSentences: 1
     removeSentenceLineBreaks: 0
     # simultaneously wrap and break sentences
     textWrapSentences: 1
@@ -27,3 +28,6 @@ modifyLineBreaks:
       # see 6.2.3 in the latexindent documentation
       # This is necessary to get \item to wrap properly (the \\ bit)
       other: \\|\$|[0-9]
+    # skip lines that are pure comments
+    sentencesDoNOTcontain:
+      - ^%

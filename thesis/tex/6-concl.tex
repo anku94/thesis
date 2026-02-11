@@ -1,16 +1,20 @@
 \chapter{Conclusions}\label{chap:concl}
 
-\todo{Example margin note - default style}
-\todo[inline]{Example inline TODO - spans full width, good for longer notes}
-\todo[color=green!
-  40]{Green margin note - use color for categories}
+% \todo{Example margin note - default style}
+% \todo[inline]{Example inline TODO - spans full width, good for longer notes}
+% \todo[color=green!
+%   40]{Green margin note - use color for categories}
 
 
 
 This thesis argues that a large class of efficiency bottlenecks in BSP systems arise from
 conditions unknowable before runtime, and that such conditions are systematically addressable
 through adaptive mechanisms if the requisite feedback loops exist.
-% \minitoc% TODO% 1.% Unifying overlay topologies (CARP + intra-tier shuffling) 2.% Open table formats as a natural fit for BSP data 3.% Convergence between algebras 4.% ML-specific differences 5.% DAQs as a parallel?% 6.% DeltaFS vs ORCA: filesystems vs databases/analytics.% Open Table Formats are at the heart.% 7.% View-driven Observability% 6.0 chapter intro: thesis claim, evidence recap, OLAP × BSP discussion, chapter roadmap
+% \minitoc% TODO% 1.% Unifying overlay topologies (CARP + intra-tier shuffling) 2.% Open table
+% formats as a natural fit for BSP data 3.% Convergence between algebras 4.% ML-specific differences
+% 5.% DAQs as a parallel?% 6.% DeltaFS vs ORCA: filesystems vs databases/analytics.% Open Table
+% Formats are at the heart.% 7.% View-driven Observability% 6.0 chapter intro: thesis claim,
+% evidence recap, OLAP × BSP discussion, chapter roadmap
 
 \begin{itemize}
   \item In CARP (\cref{chap:carp}), the loop is policy-driven: a static renegotiation policy
@@ -47,9 +51,9 @@ either tier at runtime.
 Second, unlike ADIOS-style offload as a peer MPI job~\cite{Eisen2024:ADIOS}, ORCA’s analytics tier
 is completely asynchronous while still preserving timestep-consistent analytics semantics.
 
-% The rest of this chapter reflects on this design point (\S\ref{sec:concl:retrospective}), describes
-% extensions within immediate reach (\S\ref{sec:concl:extensions}), and outlines longer-term
-% directions (\S\ref{sec:concl:future}).
+% The rest of this chapter reflects on this design point (\S\ref{sec:concl:retrospective}),
+% describes extensions within immediate reach (\S\ref{sec:concl:extensions}), and outlines
+% longer-term directions (\S\ref{sec:concl:future}).
 
 We conclude this thesis by recapping the steerable observability paradigm and its limits
 (\S\ref{sec:concl:retrospective}), describing extensions within immediate reach
@@ -116,7 +120,8 @@ recompilation, extending visibility into arbitrary functions at runtime.
 \paragraph{Approximate Summaries}
 Mergeable sketches can summarize streams in-flight at far lower cost and fit naturally into ORCA’s
 reduction topology.
-For example, KLL~\cite{Karni2016:KLLSketch} can estimate latency percentiles, and Count-Min~\cite{Cormo2005:CountMin} can
+For example, KLL~\cite{Karni2016:KLLSketch} can estimate latency percentiles, and
+Count-Min~\cite{Cormo2005:CountMin} can
 identify heavy hitters such as straggler ranks or hottest callsites, all with bounded error and
 without retaining raw events.
 
@@ -199,80 +204,70 @@ applications.
 
 % \subsection{Maxwell's Demon}
 
-% It’s relevant as an analogy about “information →
-% usable work via feedback,” not as a literal technical framework you should import.
+% It’s relevant as an analogy about “information → usable work via feedback,” not as a literal
+% technical framework you should import.
 
-% How it maps cleanly: •  Maxwell’s Demon: by measuring microstate and acting on it, the demon seems
-% to extract work from thermal fluctuations.
-% The resolution is that information has a cost (measurement, memory, erasure; Landauer), so you
-% can’t get “free work.
-% ”
-% •	ORCA/CARP: by measuring distributed execution/application state and acting on it (placement, throttling, repartition, etc.), you extract performance/efficiency from variability/nonstationarity.
-% The “demon tax” is observability overhead + coordination cost + perturbation, which has to be paid
+% How it maps cleanly: • Maxwell’s Demon: by measuring microstate and acting on it, the demon seems
+% to extract work from thermal fluctuations. The resolution is that information has a cost
+% (measurement, memory, erasure; Landauer), so you can’t get “free work. ” • ORCA/CARP: by
+% measuring distributed execution/application state and acting on it (placement, throttling,
+% repartition, etc.), you extract performance/efficiency from variability/nonstationarity. The
+% “demon tax” is observability overhead + coordination cost + perturbation, which has to be paid
 % somewhere.
 
 % So the useful “science” point is:
 
-% Feedback can turn uncertainty/variance into
-% advantage only insofar as the cost of acquiring/processing information is less than the benefit of
-% better decisions.
+% Feedback can turn uncertainty/variance into advantage only insofar as the cost of
+% acquiring/processing information is less than the benefit of better decisions.
 
 % That’s exactly the tradeoff ORCA formalizes as “query-driven / pay proportional to the question,”
 % and what CARP informally exploits with its renegotiation epochs.
 
-% Where the analogy breaks / becomes unhelpful: • Thermodynamics is about entropy/energy with a tight
-% formalism; your setting is distributed control with resource tradeoffs (bandwidth, latency, CPU,
-% coordination).
-% You can steal the intuition (no free lunch; info isn’t free), but don’t pretend there’s a conserved
-% quantity you can compute.
+% Where the analogy breaks / becomes unhelpful: • Thermodynamics is about entropy/energy with a
+% tight formalism; your setting is distributed control with resource tradeoffs (bandwidth, latency,
+% CPU, coordination). You can steal the intuition (no free lunch; info isn’t free), but don’t
+% pretend there’s a conserved quantity you can compute.
 
 % If you use it at all, it should be a 1–2 sentence motivating metaphor: “ORCA is an information
-% engine; measurement + control can harvest slack, but only if measurement costs are bounded.
-% ”
+% engine; measurement + control can harvest slack, but only if measurement costs are bounded. ”
 
 % \subsection{Ashby's Law of Requisite Variety}
 
-% % remove all unicode characters
-% Ashby's Law of Requisite Variety (cybernetics/control) says, roughly: a regulator can only suppress
-% disturbances to the extent that the regulator has comparable "variety" (i.e., a sufficient
-% repertoire of distinguishable responses / states).
+% % remove all unicode characters Ashby's Law of Requisite Variety (cybernetics/control) says,
+% roughly: a regulator can only suppress disturbances to the extent that the regulator has
+% comparable "variety" (i.e., a sufficient repertoire of distinguishable responses / states).
 % Ashby's aphorism is commonly rendered as 'only variety can destroy variety'.
 
-% More formally (one common statement): the variety/uncertainty left in the outcomes can't be reduced
-% below what remains after accounting for the regulator's variety; in information-theoretic form
-% you'll see inequalities like $V_O \ge V_D - V_R$ or $H(E) \ge H(D) - H(R)$ under standard
+% More formally (one common statement): the variety/uncertainty left in the outcomes can't be
+% reduced below what remains after accounting for the regulator's variety; in information-theoretic
+% form you'll see inequalities like $V_O \ge V_D - V_R$ or $H(E) \ge H(D) - H(R)$ under standard
 % assumptions.
 
 % Is it relevant to ORCA/CARP?
 
-% Yes, as a useful lens—but you have to map “variety” correctly.
-% •	In Ashby, "variety" is about the regulator's ability to select among alternatives.
-% That selection capacity can come from:
-% \begin{itemize}
-%     \item Action variety (many possible interventions),
-%     \item Information/measurement that lets you choose the right intervention conditional on the
-%     \item Ashby explicitly links regulation limits to communication/channel capacity.
-% \end{itemize}
-% and/or Information/measurement that lets you choose the right intervention conditional on the disturbance (selection requires discrimination).
+% Yes, as a useful lens—but you have to map “variety” correctly. • In Ashby, "variety" is
+% about the regulator's ability to select among alternatives. That selection capacity can come from:
+% \begin{itemize} \item Action variety (many possible interventions), \item Information/measurement
+% that lets you choose the right intervention conditional on the \item Ashby explicitly links
+% regulation limits to communication/channel capacity. \end{itemize} and/or Information/measurement
+% that lets you choose the right intervention conditional on the disturbance (selection requires
+% discrimination).
 
 % CARP: the disturbance is (time-varying) key-distribution skew; the regulator's variety is
-% essentially "many possible repartitionings + the mechanism to choose among them," based on observed
-% distributions.
-% It's a specialized regulator with a narrow disturbance class but a strong, domain-specific action
-% set.
+% essentially "many possible repartitionings + the mechanism to choose among them," based on
+% observed distributions. It's a specialized regulator with a narrow disturbance class but a strong,
+% domain-specific action set.
 
 % ORCA: the disturbance class is broader (performance pathologies, imbalance modes, phase changes,
-% cross-stack variability).
-% ORCA's claim-to-power is that it expands the regulator's effective variety by: •        making the
-% measurement space programmable and composable (you can form the discriminants you need), and •
-%  aligning sensing/actuation to a semantic clock (logical time) so the "selection" is coherent at
-% BSP boundaries (i.e., you're choosing based on a well-defined slice of the world, not an arbitrary
-% asynchronous smear).
+% cross-stack variability). ORCA's claim-to-power is that it expands the regulator's effective
+% variety by: • making the measurement space programmable and composable (you can form the
+% discriminants you need), and • aligning sensing/actuation to a semantic clock (logical time) so
+% the "selection" is coherent at BSP boundaries (i.e., you're choosing based on a well-defined slice
+% of the world, not an arbitrary asynchronous smear).
 
 % Under Ashby's lens: ORCA is an attempt to raise $V_R$ (effective regulatory capacity) not just by
 % adding knobs, but by increasing the ability to pick the right knob setting in-context—i.e.,
-% improving discrimination/selection under uncertainty.
-% That's conceptually aligned with Ashby even though you're not importing thermodynamic-style
-% conservation laws.
+% improving discrimination/selection under uncertainty. That's conceptually aligned with Ashby even
+% though you're not importing thermodynamic-style conservation laws.
 
 % (W.Ross Ashby is the original source; his Introduction to Cybernetics is the canonical reference.)
