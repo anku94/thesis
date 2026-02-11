@@ -76,6 +76,7 @@
 \usepackage{amsthm}
 \newtheorem{proposition}{Proposition}
 \usepackage{soul} % for \hl{} highlighting
+\usepackage{etoolbox} % for \forcsvlist
 % For TODOs - use [disable] option to hide all TODOs
 \usepackage[disable,colorinlistoftodos,textsize=small]{todonotes}
 % \usepackage[disable]{todonotes} % uncomment to hide all TODOs
@@ -195,8 +196,16 @@
 \input{tex/99-figs-amr}
 \input{tex/99-figs-orca}
 
-% Temporary: Test only the timeline chapter
-% \includeonly{tex/1-intro-gpt,tex/6-concl}
+%%% --- Section lists for \includeonly and \includesections ---
+\def\carpsections{tex/01-carp/01-intro,tex/01-carp/02-background,tex/01-carp/03-challenges,tex/01-carp/04-principles,tex/01-carp/05-design,tex/01-carp/06-impl,tex/01-carp/07-eval,tex/01-carp/08-disc,tex/01-carp/09-relwork}
+\def\amrsections{tex/02-amr/algos,tex/02-amr/01-intro,tex/02-amr/02-background,tex/02-amr/03-challenges,tex/02-amr/04-telemetry,tex/02-amr/05-design,tex/02-amr/06-eval,tex/02-amr/07-lessons,tex/02-amr/08-relwork,tex/02-amr/09-concl}
+\def\orcasections{tex/03-orca/01-intro,tex/03-orca/02-bg,tex/03-orca/03-chal,tex/03-orca/04-design,tex/03-orca/05-impl,tex/03-orca/06-eval,tex/03-orca/07-related,tex/03-orca/08-concl}
+
+%%% --- Allows including a list of sections ---
+\newcommand{\includesections}[1]{\expandafter\forcsvlist\expandafter\include\expandafter{#1}}
+
+% \includeonly{\carpsections}
+% \includeonly{tex/1-intro,tex/6-concl}
 
 %%% --- Document Begins ---
 \begin{document}
@@ -214,45 +223,21 @@
 \chapter{CARP: Adaptive In-Situ Range Partitioning}
 \label{chap:carp-paper}
 \minitoc
-\include{tex/01-carp/01-intro}
-\include{tex/01-carp/02-background}
-\include{tex/01-carp/03-challenges}
-\include{tex/01-carp/04-principles}
-\include{tex/01-carp/05-design}
-\include{tex/01-carp/06-impl}
-\include{tex/01-carp/07-eval}
-\include{tex/01-carp/08-disc}
-\include{tex/01-carp/09-relwork}
+\includesections{\carpsections}
 
 \include{tex/4-amr} % AMR (Summary)
 
-\chapter{Lessons from Optimizing Adaptive Mesh Codes}
+\chapter{Lessons from Optimizing Placement in Adaptive Mesh Codes}
 \label{chap:amr-paper}
 \minitoc
-\include{tex/02-amr/algos}
-\include{tex/02-amr/01-intro}
-\include{tex/02-amr/02-background}
-\include{tex/02-amr/03-challenges}
-\include{tex/02-amr/04-telemetry}
-\include{tex/02-amr/05-design}
-\include{tex/02-amr/06-eval}
-\include{tex/02-amr/07-lessons}
-\include{tex/02-amr/08-relwork}
-\include{tex/02-amr/09-concl}
+\includesections{\amrsections}
 
 \include{tex/5-orca} % ORCA (Summary)
 
 \chapter{ORCA: A Unified Framework for Declarative Observability}
 \label{chap:orca-paper}
 \minitoc
-\include{tex/03-orca/01-intro}
-\include{tex/03-orca/02-bg}
-\include{tex/03-orca/03-chal}
-\include{tex/03-orca/04-design}
-\include{tex/03-orca/05-impl}
-\include{tex/03-orca/06-eval}
-\include{tex/03-orca/07-related}
-\include{tex/03-orca/08-concl}
+\includesections{\orcasections}
 
 %%% --- Conclusions ---
 \include{tex/6-concl} 
