@@ -39,6 +39,8 @@
     singlelinecheck=on
 ]{caption}
 \usepackage{subcaption}
+\usepackage[rightcaption]{sidecap} % side captions for selected figures
+\sidecaptionvpos{figure}{t} % align side captions to the top of SCfigure bodies
 \usepackage{tikz}
 \usetikzlibrary{positioning, fit, arrows.meta, shapes, calc, backgrounds}
 \graphicspath{{data/figs/}{data/tikz/}}
@@ -142,6 +144,7 @@
   \begin{center}
     {\Large\bfseries #1}
   \end{center}
+  \mtcaddchapter{} % make sure minitoc knows
   \addcontentsline{toc}{chapter}{#1}
   \vspace{2em}
 }

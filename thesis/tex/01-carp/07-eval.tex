@@ -3,86 +3,264 @@
 \label{sec:carp:eval}
 
 \noindent
-\textbf{Baselines.}
-We use DeltaFS~\cite{Zheng2018:DeltaFS}, FastQuery~\cite{Chou2011:FastQuery}, and TritonSort~\cite{Rasmu2011:TritonSort} as baselines representing the state of the art from different research communities. DeltaFS represents the state of the art for write-efficient online hash-partitioning, FastQuery employs auxiliary indices, and TritonSort performs data reordering.
+\textbf{Baselines.
+}
+We use DeltaFS~\cite{Zheng2018:DeltaFS}, FastQuery~\cite{Chou2011:FastQuery}, and
+TritonSort~\cite{Rasmu2011:TritonSort} as baselines representing the state of the art from
+different research communities.
+DeltaFS represents the state of the art for write-efficient online hash-partitioning, FastQuery
+employs auxiliary indices, and TritonSort performs data reordering.
 \vspace{5pt}
 
 \noindent
-\textbf{Benchmark workloads.}
-We evaluate the performance of CARP using traces collected from a 512-rank VPIC simulation \cite{Byna2012}, a popular particle simulation code described in \S\ref{sec:carp:distrib}, and YCSB \cite{Coope2010:BenchmarkingCloudServing}, a standard benchmark suite with varying key-value workloads. To eliminate variability across simulation runs and ensure reproducibility, we replay traces captured from VPIC rather than using it as a streaming workload. We use the computational plasma trace described in \autoref{sec:carp:distrib} for all our experiments. We index VPIC traces using energy as the key.  This results in a 4 byte floating-point key and a 56 byte record for the rest of the particle data.
+\textbf{Benchmark workloads.
+}
+We evaluate the performance of CARP using traces collected from a 512-rank VPIC simulation
+\cite{Byna2012}, a popular particle simulation code described in \S\ref{sec:carp:distrib}, and YCSB
+\cite{Coope2010:BenchmarkingCloudServing}, a standard benchmark suite with varying key-value
+workloads.
+To eliminate variability across simulation runs and ensure reproducibility, we replay traces
+captured from VPIC rather than using it as a streaming workload.
+We use the computational plasma trace described in \autoref{sec:carp:distrib} for all our
+experiments.
+We index VPIC traces using energy as the key.
+This results in a 4 byte floating-point key and a 56 byte record for the rest of the particle data.
 \vspace{5pt}
 
 \noindent
-\textbf{Experimental setup.} We use a 32-node compute cluster with each node having two 8-core Intel Xeon E5-2670 CPUs and 64GB DRAM. The nodes are connected via 40Gbps Infiniband QDR. Simulation output is written to a shared Lustre storage cluster consisting of 20 nodes identical to those in the compute cluster, each having a 240GiB SSD. DeltaFS, FastQuery, and CARP experiments use the compute cluster, while TritonSort runs directly on the Lustre nodes. TritonSort has identical storage resources as other approaches and is able to achieve higher throughput out of storage by not incurring the overhead of Lustre's coordination. While TritonSort appears to have lower compute resources, all applications are bottlenecked by the storage bandwidth and their runtime is dictated by their write amplification.
-FastQuery provides a number of tunable parameters, and we report the numbers from the best performing parameters on our cluster.
+\textbf{Experimental setup.
+}
+We use a 32-node compute cluster with each node having two 8-core Intel Xeon E5-2670 CPUs and 64GB
+DRAM.
+The nodes are connected via 40Gbps Infiniband QDR.
+Simulation output is written to a shared Lustre storage cluster consisting of 20 nodes identical to
+those in the compute cluster, each having a 240GiB SSD.
+DeltaFS, FastQuery, and CARP experiments use the compute cluster, while TritonSort runs directly on
+the Lustre nodes.
+TritonSort has identical storage resources as other approaches and is able to achieve higher
+throughput out of storage by not incurring the overhead of Lustre's coordination.
+While TritonSort appears to have lower compute resources, all applications are bottlenecked by the
+storage bandwidth and their runtime is dictated by their write amplification.
+FastQuery provides a number of tunable parameters, and we report the numbers from the best
+performing parameters on our cluster.
 \vspace{5pt}
 
-The rest of this section is organized as follows: In \S\ref{sec:carp:eval_read} we evaluate CARP's query performance. We evaluate CARP's runtime overhead and compare it with existing approaches in \S\ref{sec:carp:eval_write}. Finally, in \S\ref{sec:carp:eval_mb}, we show selected results of a sensitivity analysis aimed at understanding the impact of tunable parameters and optimizations on CARP's runtime overhead, load balancing effectiveness, and index quality.
+The rest of this section is organized as follows: In \S\ref{sec:carp:eval_read} we evaluate CARP's
+query performance.
+We evaluate CARP's runtime overhead and compare it with existing approaches in
+\S\ref{sec:carp:eval_write}.
+Finally, in \S\ref{sec:carp:eval_mb}, we show selected results of a sensitivity analysis aimed at
+understanding the impact of tunable parameters and optimizations on CARP's runtime overhead, load
+balancing effectiveness, and index quality.
 
 \subsection{Query Performance}
 \label{sec:carp:eval_read}
 
-In this subsection we evaluate CARP's partitioned output using two aspects: query latency and read amplification. Query latency is a function of how much data the index needs to read and how efficient the storage layout is in serving that data. For CARP, minimum effective query selectivity is capped by the size of one CARP partition --- 0.18\% (or $\frac{1}{512}$) for 512 ranks. This percentage decreases with scale as the number of partitions increases and when subpartitioning is enabled. We now discuss CARP's query performance over two query suites: one constructed by us, and a YCSB query suite.
+In this subsection we evaluate CARP's partitioned output using two aspects: query latency and read
+amplification.
+Query latency is a function of how much data the index needs to read and how efficient the storage
+layout is in serving that data.
+For CARP, minimum effective query selectivity is capped by the size of one CARP partition ---
+0.18\% (or $\frac{1}{512}$) for 512 ranks.
+This percentage decreases with scale as the number of partitions increases and when subpartitioning
+is enabled.
+We now discuss CARP's query performance over two query suites: one constructed by us, and a YCSB
+query suite.
 
 \vspace{5pt}
-\observation{\textit{CARP can serve most queries as efficiently as a fully sorted layout and 1-2 orders of magnitude faster than state of the art auxiliary indexing approaches.}}
+\observation{\textit{CARP can serve most queries as efficiently as a fully sorted layout and 1-2
+    orders of magnitude faster than state of the art auxiliary indexing approaches.
+  }}
 \vspace{5pt}
 
-\textbf{Query Suite.}
-For query latency experiments we index 12 timesteps from the simulation. Each timestep is 188GB of data, and the total simulation data is 2.2TB.
-Query latencies for eight queries with different selectivity are shown in \cref{fig:carp:kt-qlat} (each query is repeated 3 times and averaged).
-We compare the query latency for CARP's partitioned ordered output with that of FastQuery and a sorted, clustered index. We also provide numbers for a \emph{full scan} over unindexed data for reference. The sorted output uses 12MB SSTs and a manifest with one entry per SST, a format similar to KoiDB. We refer to the sorted, clustered index as TritonSort for convenience, but all sorts generate identical outputs. Queries for both CARP and TritonSort are processed by the same query client. The manifest is read first to find corresponding SSTs and then key blocks of corresponding SSTs are read in parallel. CARP SSTs overlap and must be merge-sorted for ordered range query semantics. The latency numbers for CARP include this sorting cost. The query client for CARP and TritonSort is run on a single compute node with access to the Lustre filesystem. FastQuery numbers are measured using its own query client reading from its natively supported HDF5 format. All query latency numbers include the time taken to fetch keys matching a query from a storage cluster to a query client and the compute time to subsequently process/filter the data fetched.
+\textbf{Query Suite.
+}
+For query latency experiments we index 12 timesteps from the simulation.
+Each timestep is 188GB of data, and the total simulation data is 2.2TB.
+Query latencies for eight queries with different selectivity are shown in \cref{fig:carp:kt-qlat}
+(each query is repeated 3 times and averaged).
+We compare the query latency for CARP's partitioned ordered output with that of FastQuery and a
+sorted, clustered index.
+We also provide numbers for a \emph{full scan} over unindexed data for reference.
+The sorted output uses 12MB SSTs and a manifest with one entry per SST, a format similar to KoiDB.
+We refer to the sorted, clustered index as TritonSort for convenience, but all sorts generate
+identical outputs.
+Queries for both CARP and TritonSort are processed by the same query client.
+The manifest is read first to find corresponding SSTs and then key blocks of corresponding SSTs are
+read in parallel.
+CARP SSTs overlap and must be merge-sorted for ordered range query semantics.
+The latency numbers for CARP include this sorting cost.
+The query client for CARP and TritonSort is run on a single compute node with access to the Lustre
+filesystem.
+FastQuery numbers are measured using its own query client reading from its natively supported HDF5
+format.
+All query latency numbers include the time taken to fetch keys matching a query from a storage
+cluster to a query client and the compute time to subsequently process/filter the data fetched.
 
-For both CARP and TritonSort, query latency appears to be linearly proportional to the amount of data read. Despite incurring an additional sorting cost, CARP's total query latency is similar to TritonSort. CARP is slower for highly selective queries (177ms vs 22ms for a query with 0.01\% selectivity) because it is forced to read full partitions, but it is able to match (and even outperform) TritonSort for larger query ranges with selectivity $> 0.05\%$. FastQuery is much slower than either of the two approaches. This is partially due to it needing to read large bitmap indices, but largely due to it being an auxiliary index, requiring small, random reads.
+For both CARP and TritonSort, query latency appears to be linearly proportional to the amount of
+data read.
+Despite incurring an additional sorting cost, CARP's total query latency is similar to TritonSort.
+CARP is slower for highly selective queries (177ms vs 22ms for a query with 0.01\% selectivity)
+because it is forced to read full partitions, but it is able to match (and even outperform)
+TritonSort for larger query ranges with selectivity $> 0.05\%$.
+FastQuery is much slower than either of the two approaches.
+This is partially due to it needing to read large bitmap indices, but largely due to it being an
+auxiliary index, requiring small, random reads.
 
 
 \vspace{5pt}
-\observation{\textit{Despite incurring extra sorting overhead, CARP matches TritonSort's query latency performance for all except extremely selective queries ($<0.05\%$ selectivity).}}
+\observation{\textit{Despite incurring extra sorting overhead, CARP matches TritonSort's query
+    latency performance for all except extremely selective queries ($<0.05\%$ selectivity).
+  }}
 \vspace{5pt}
 
-\textbf{YCSB Benchmark Suite.}
-To thoroughly evaluate the query performance of CARP's approximate partitioning we use Workload E from YCSB (\cref{fig:carp:eval-ycsb}). Workload E consists of short range queries and inserts in a 19:1 ratio. The range queries consist of up to 100 keys generated from a Zipfian distribution and are reordered by a random hash function.  We drop inserts from our benchmark suite as CARP and TritonSort are not online stores but are instead transient services with different insert and query pathways.  We define the workload's ranges in terms of fully ordered SSTs. We interpret YCSB query ranges as SST numbers in TritonSort's output and translate them into equivalent key ranges that we use for both CARP and TritonSort. The range SST\# $(251, 350)$ would therefore query the key range stored in TritonSort SSTs numbered 251 to 350. Since KoiDB SSTs are smaller and more fragmented, the same query with CARP would result in more SSTs read.
+\textbf{YCSB Benchmark Suite.
+}
+To thoroughly evaluate the query performance of CARP's approximate partitioning we use Workload E
+from YCSB (\cref{fig:carp:eval-ycsb}).
+Workload E consists of short range queries and inserts in a 19:1 ratio.
+The range queries consist of up to 100 keys generated from a Zipfian distribution and are reordered
+by a random hash function.
+We drop inserts from our benchmark suite as CARP and TritonSort are not online stores but are
+instead transient services with different insert and query pathways.
+We define the workload's ranges in terms of fully ordered SSTs.
+We interpret YCSB query ranges as SST numbers in TritonSort's output and translate them into
+equivalent key ranges that we use for both CARP and TritonSort.
+The range SST\# $(251, 350)$ would therefore query the key range stored in TritonSort SSTs numbered
+251 to 350.
+Since KoiDB SSTs are smaller and more fragmented, the same query with CARP would result in more
+SSTs read.
 
 \begin{figure}[t]
-\figevalycsb
+  \figevalycsb
 \end{figure}
 
-We construct 4 query batches of different fixed widths (5, 20, 50, and 100 SSTs) corresponding to query selectivity of 0.03\%--0.6\%. The starting index is drawn from YCSB's Zipfian distribution in the range SST\# (0, 18266), where 18266 is the number of SSTs in each timestep. We use 16 I/O threads to fetch SSTs for each query in parallel. For each width, we construct a batch of 1000 queries per timestep with the order randomized by YCSB's hash function (\texttt{fnvhash}). \cref{fig:carp:eval-ycsb} compares the total time taken by a batch of queries for two different timesteps and 4 query widths for each timestep, and it reaffirms the trends from \cref{fig:carp:kt-qlat}. CARP's median selectivity of $~0.07\%$ (with 4-way KoiDB subpartitioning enabled) enables us to be competitive for queries with a width of 20 SSTs and greater. For larger queries, the cost of sorting starts to become a greater proportion of CARP's query latency, but the aggregate latency is still close.
+We construct 4 query batches of different fixed widths (5, 20, 50, and 100 SSTs) corresponding to
+query selectivity of 0.03\%--0.6\%.
+The starting index is drawn from YCSB's Zipfian distribution in the range SST\# (0, 18266), where
+18266 is the number of SSTs in each timestep.
+We use 16 I/O threads to fetch SSTs for each query in parallel.
+For each width, we construct a batch of 1000 queries per timestep with the order randomized by
+YCSB's hash function (\texttt{fnvhash}).
+\cref{fig:carp:eval-ycsb} compares the total time taken by a batch of queries for two different
+timesteps and 4 query widths for each timestep, and it reaffirms the trends from
+\cref{fig:carp:kt-qlat}.
+CARP's median selectivity of $~0.07\%$ (with 4-way KoiDB subpartitioning enabled) enables us to be
+competitive for queries with a width of 20 SSTs and greater.
+For larger queries, the cost of sorting starts to become a greater proportion of CARP's query
+latency, but the aggregate latency is still close.
 
-A surprising takeaway from these latency experiments is that CARP's partial ordering seems to result in the most efficient storage layout. CARP reads are faster than the fully sorted layout, and query performance is similar despite us incurring the extra overhead of merging SSTs. We attribute this to our layout being amenable to parallel reads from different storage nodes of a parallel filesystem --- it has enough contiguity to be read efficiently vs small random I/Os, but is distributed enough to allow for parallel processing of a query.
+A surprising takeaway from these latency experiments is that CARP's partial ordering seems to
+result in the most efficient storage layout.
+CARP reads are faster than the fully sorted layout, and query performance is similar despite us
+incurring the extra overhead of merging SSTs.
+We attribute this to our layout being amenable to parallel reads from different storage nodes of a
+parallel filesystem --- it has enough contiguity to be read efficiently vs small random I/Os, but
+is distributed enough to allow for parallel processing of a query.
 
 \subsection{Write Path}
 \label{sec:carp:eval_write}
-\observation{\textit{CARP is 2.8--4.9$\times$ faster than post-processing approaches with no overhead on application performance.}}
+\observation{\textit{CARP is 2.8--4.9$\times$ faster than post-processing approaches with no
+    overhead on application performance.
+  }}
 \vspace{5pt}
 
-\cref{fig:carp:kt-rt} measures the effective I/O throughput of four different index building approaches ingesting 188 GB of VPIC data (corresponding to 3.5B particles or one timestep at 512 ranks). The effective I/O throughput is computed by dividing the application data volume by the total runtime. For in-situ approaches, their runtime overhead is included in the application runtime, while for post-processing approaches, it is obtained by adding the post-processing time. Each run is repeated 9 times and averaged.
+\cref{fig:carp:kt-rt} measures the effective I/O throughput of four different index building
+approaches ingesting 188 GB of VPIC data (corresponding to 3.5B particles or one timestep at 512
+ranks).
+The effective I/O throughput is computed by dividing the application data volume by the total
+runtime.
+For in-situ approaches, their runtime overhead is included in the application runtime, while for
+post-processing approaches, it is obtained by adding the post-processing time.
+Each run is repeated 9 times and averaged.
 
-To measure I/O throughput, we keep the total amount of data generated constant across different scales as the write performance of SSDs decreases as they fill up.
-Allowing the amount of data written to scale up with the number of ranks results in higher scales unfairly getting a lower storage throughput. The achievable storage bandwidth from our cluster (\emph{Storage Bound} in \cref{fig:carp:kt-rt}) increases with the number of application ranks: from 1.6 GB/s at 32 ranks to saturating the storage with 3 GB/s at 512 ranks. At 1024 ranks, the increased contention from a large number of parallel writers causes a small dip in achievable throughput. For 1024 ranks, we divide the 512-rank trace into two halves to keep the total data constant.
+To measure I/O throughput, we keep the total amount of data generated constant across different
+scales as the write performance of SSDs decreases as they fill up.
+Allowing the amount of data written to scale up with the number of ranks results in higher scales
+unfairly getting a lower storage throughput.
+The achievable storage bandwidth from our cluster (\emph{Storage Bound} in \cref{fig:carp:kt-rt})
+increases with the number of application ranks: from 1.6 GB/s at 32 ranks to saturating the storage
+with 3 GB/s at 512 ranks.
+At 1024 ranks, the increased contention from a large number of parallel writers causes a small dip
+in achievable throughput.
+For 1024 ranks, we divide the 512-rank trace into two halves to keep the total data constant.
 
-We compare CARP with DeltaFS, FastQuery, and TritonSort. CARP and DeltaFS are embedded within the application and hence are evaluated at different scales.  FastQuery and TritonSort are post-processing approaches and are run after VPIC completes.
- For the post-processing approaches, effective throughput is obtained by dividing the total data written by the total time taken (VPIC time and post-processing time). For the in-situ approaches VPIC time includes the online index building time.
+We compare CARP with DeltaFS, FastQuery, and TritonSort.
+CARP and DeltaFS are embedded within the application and hence are evaluated at different scales.
+FastQuery and TritonSort are post-processing approaches and are run after VPIC completes.
+For the post-processing approaches, effective throughput is obtained by dividing the total data
+written by the total time taken (VPIC time and post-processing time).
+For the in-situ approaches VPIC time includes the online index building time.
 
-\textbf{FastQuery and TritonSort.} As shown in \cref{fig:carp:kt-rt}, the additional time taken by post-processing approaches (FastQuery and TritonSort) significantly reduces the effective application bandwidth from 3GB/s to {\mytexttilde}1 GB/s and {\mytexttilde}0.6 GB/s respectively. This represents a slowdown of 2.8$\times$ for FastQuery, and 4.9$\times$ for TritonSort. TritonSort incurs a much larger slowdown as it creates a clustered index, which requires four passes over all data for out-of-core sorts. FastQuery scans the data once, creates index structures, and writes them to storage, but takes an additional 24\% space to store indexes for a single attribute.
+\textbf{FastQuery and TritonSort.
+}
+As shown in \cref{fig:carp:kt-rt}, the additional time taken by post-processing approaches
+(FastQuery and TritonSort) significantly reduces the effective application bandwidth from 3GB/s to
+  {\mytexttilde}1 GB/s and {\mytexttilde}0.6 GB/s respectively.
+This represents a slowdown of 2.8$\times$ for FastQuery, and 4.9$\times$ for TritonSort.
+TritonSort incurs a much larger slowdown as it creates a clustered index, which requires four
+passes over all data for out-of-core sorts.
+FastQuery scans the data once, creates index structures, and writes them to storage, but takes an
+additional 24\% space to store indexes for a single attribute.
 
-\textbf{DeltaFS. } As discussed in \S\ref{sec:carp:bg}, DeltaFS embeds with VPIC and reorganizes data via an all-to-all shuffle while it is in transit from the application to storage. DeltaFS uses the same 3-hop shuffle used by CARP (\S\ref{sec:carp:des_comm}). DeltaFS uses a hash of the particle ID to partition incoming data.
-At smaller scales, DeltaFS is bound by the available shuffle throughput (\emph{Network Bound} in \cref{fig:carp:kt-rt}). As the aggregate shuffle throughput increases with scale, DeltaFS is able to fully saturate the storage layer, incurring no overhead over raw VPIC throughput.
+\textbf{DeltaFS.
+}
+As discussed in \S\ref{sec:carp:bg}, DeltaFS embeds with VPIC and reorganizes data via an
+all-to-all shuffle while it is in transit from the application to storage.
+DeltaFS uses the same 3-hop shuffle used by CARP (\S\ref{sec:carp:des_comm}).
+DeltaFS uses a hash of the particle ID to partition incoming data.
+At smaller scales, DeltaFS is bound by the available shuffle throughput (\emph{Network Bound} in
+\cref{fig:carp:kt-rt}).
+As the aggregate shuffle throughput increases with scale, DeltaFS is able to fully saturate the
+storage layer, incurring no overhead over raw VPIC throughput.
 
-\textbf{CARP. } We measure CARP network overhead (\emph{CARP/ShuffleOnly}) and end-to-end performance (\emph{CARP}) separately in \cref{fig:carp:kt-rt}. For CARP/ShuffleOnly, we drop data once it is received at a shuffle receiver so as to not be bound by storage performance. We see that CARP/ShuffleOnly scales with the available shuffle bandwidth, incurring a small overhead for renegotiation rounds and the residual load imbalance. However, this overhead does not matter for the end-to-end performance as CARP quickly becomes bound by the available storage bandwidth. When the network bandwidth exceeds storage bandwidth, CARP has no impact on end-to-end performance. By avoiding post-processing, CARP enables indexes to be built 2.8--4.9$\times$ faster.
+\textbf{CARP.
+}
+We measure CARP network overhead (\emph{CARP/ShuffleOnly}) and end-to-end performance (\emph{CARP})
+separately in \cref{fig:carp:kt-rt}.
+For CARP/ShuffleOnly, we drop data once it is received at a shuffle receiver so as to not be bound
+by storage performance.
+We see that CARP/ShuffleOnly scales with the available shuffle bandwidth, incurring a small
+overhead for renegotiation rounds and the residual load imbalance.
+However, this overhead does not matter for the end-to-end performance as CARP quickly becomes bound
+by the available storage bandwidth.
+When the network bandwidth exceeds storage bandwidth, CARP has no impact on end-to-end performance.
+By avoiding post-processing, CARP enables indexes to be built 2.8--4.9$\times$ faster.
 
 \vspace{5pt}
-\observation{\textit{Static partitioning can quickly devolve to reading orders of magnitude more data than CARP by not adapting to key distribution drift.}}
+\observation{\textit{Static partitioning can quickly devolve to reading orders of magnitude more
+    data than CARP by not adapting to key distribution drift.
+  }}
 \vspace{5pt}
 
 
 \begin{figure}
-\figevaldyn
+  \figevaldyn
 \end{figure}
 
-\cref{fig:carp:eval-dyn} is a study of how frequently partition tables need to be recomputed for our VPIC trace to generate balanced partitions. We construct partitions from a perfect knowledge of different simulation timesteps and measure how well they fit subsequent timesteps. The green line simulates a static partitioning approach where partitions are computed from a perfect knowledge of the first timestep but are not changed afterwards. The load balance of a static partition scheme worsens as the key distribution drifts over time. Next, we measure how well a partition table from the previous timesteps fits the current timestep. This works better but still demonstrates a significant load imbalance around timestep 3800 when simulation entropy is high. As the simulation  converges and the entropy between adjacent timesteps reduces, reusing older partition tables fares better. Finally, we see that partition tables obtained from the current timestep fit that timestep very well. This is true by definition, and the minor load imbalance arises from the lossiness of the histogram approach to capture distributions.
+\cref{fig:carp:eval-dyn} is a study of how frequently partition tables need to be recomputed for
+our VPIC trace to generate balanced partitions.
+We construct partitions from a perfect knowledge of different simulation timesteps and measure how
+well they fit subsequent timesteps.
+The green line simulates a static partitioning approach where partitions are computed from a
+perfect knowledge of the first timestep but are not changed afterwards.
+The load balance of a static partition scheme worsens as the key distribution drifts over time.
+Next, we measure how well a partition table from the previous timesteps fits the current timestep.
+This works better but still demonstrates a significant load imbalance around timestep 3800 when
+simulation entropy is high.
+As the simulation converges and the entropy between adjacent timesteps reduces, reusing older
+partition tables fares better.
+Finally, we see that partition tables obtained from the current timestep fit that timestep very
+well.
+This is true by definition, and the minor load imbalance arises from the lossiness of the histogram
+approach to capture distributions.
 
-We conclude that any partitioning approach should recompute its tables at least once every timestep, more if there is intra-timestep entropy. We emphasize that the purple line in \cref{fig:carp:eval-dyn} represents an upper bound on CARP's load balance, as the partitions used for this benchmark are \emph{oracle partitions}. Since CARP partitions data as it arrives, it does not have the required information to compute these.
+We conclude that any partitioning approach should recompute its tables at least once every
+timestep, more if there is intra-timestep entropy.
+We emphasize that the purple line in \cref{fig:carp:eval-dyn} represents an upper bound on CARP's
+load balance, as the partitions used for this benchmark are \emph{oracle partitions}.
+Since CARP partitions data as it arrives, it does not have the required information to compute
+these.
 
 \subsection{Sensitivity Analyses and Microbenchmarks}
 \label{sec:carp:eval_mb}
@@ -92,31 +270,98 @@ We conclude that any partitioning approach should recompute its tables at least 
 \subsubsection{Renegotiation Protocol Scalability}
 \label{sec:carp:eval_rtpscal}
 
-\cref{fig:carp:eval-rtplat} shows the time taken by a single renegotiation round across different scales and pivot counts. As described in \S\ref{sec:carp:impl}, we implement renegotiation using a reduction tree and hence expect it to scale logarithmically. \cref{fig:carp:eval-rtplat} shows the logarithmic scalability of our implementation from 16 to 2048 ranks for 6 different values of the pivot count parameter. Increasing the number of pivots computed increases the size of the messages exchanged. This results in proportionally higher round latency. 512 pivots are sufficient for CARP to accurately track distributions (discussed below), and the latency of a single round is only 150ms even at 2048 ranks.
+\cref{fig:carp:eval-rtplat} shows the time taken by a single renegotiation round across different
+scales and pivot counts.
+As described in \S\ref{sec:carp:impl}, we implement renegotiation using a reduction tree and hence
+expect it to scale logarithmically.
+\cref{fig:carp:eval-rtplat} shows the logarithmic scalability of our implementation from 16 to 2048
+ranks for 6 different values of the pivot count parameter.
+Increasing the number of pivots computed increases the size of the messages exchanged.
+This results in proportionally higher round latency.
+512 pivots are sufficient for CARP to accurately track distributions (discussed below), and the
+latency of a single round is only 150ms even at 2048 ranks.
 
-The absolute values of renegotiation latency are handicapped by us using an emulated network stack (IPoIB) for a fair comparison with baseline approaches that use sockets. We expect these numbers to be much lower if run natively on a modern interconnect.
+The absolute values of renegotiation latency are handicapped by us using an emulated network stack
+(IPoIB) for a fair comparison with baseline approaches that use sockets.
+We expect these numbers to be much lower if run natively on a modern interconnect.
 
 \subsubsection{Impact of Pivot Count}
 \label{sec:carp:eval_pvtcnt}
 
-\cref{fig:carp:eval-pvtcnt} shows the results from a micro-benchmark that tests the lossiness of our pivot calculation scheme. Pivots are an approximate representation of a distribution. The higher the pivot count, the better the approximation. We compute oracle pivots from a full key distribution of each of the 12 different timesteps for different pivot counts and check how well the partition table calculated from those pivots fits that timestep's keys. We use standard deviation in partition load (\texttt{std-dev}) as a proxy for the lossiness of the pivot calculation. A lossless scheme would result in perfect partitions, resulting in zero \texttt{std-dev}. Higher \texttt{std-dev} implies more lossiness.
+\cref{fig:carp:eval-pvtcnt} shows the results from a micro-benchmark that tests the lossiness of
+our pivot calculation scheme.
+Pivots are an approximate representation of a distribution.
+The higher the pivot count, the better the approximation.
+We compute oracle pivots from a full key distribution of each of the 12 different timesteps for
+different pivot counts and check how well the partition table calculated from those pivots fits
+that timestep's keys.
+We use standard deviation in partition load (\texttt{std-dev}) as a proxy for the lossiness of the
+pivot calculation.
+A lossless scheme would result in perfect partitions, resulting in zero \texttt{std-dev}.
+Higher \texttt{std-dev} implies more lossiness.
 
-In \cref{fig:carp:eval-pvtcnt} we see that higher pivot counts lead to lower load imbalance with diminishing returns beyond 256 pivots. We also see that the last two timesteps are harder to reconstruct than the others. This is because of the extremely skewed nature of those timesteps' distributions (\cref{fig:carp:distrib}). All VPIC timesteps have long tails, but when they become extremely long (towards the end of the simulation) more pivots are required to accurately capture those distributions.
+In \cref{fig:carp:eval-pvtcnt} we see that higher pivot counts lead to lower load imbalance with
+diminishing returns beyond 256 pivots.
+We also see that the last two timesteps are harder to reconstruct than the others.
+This is because of the extremely skewed nature of those timesteps' distributions
+(\cref{fig:carp:distrib}).
+All VPIC timesteps have long tails, but when they become extremely long (towards the end of the
+simulation) more pivots are required to accurately capture those distributions.
 
 \subsubsection{Impact of KoiDB}
 \label{sec:carp:eval_carpdb}
 
-We now summarize how KoiDB (\S\ref{sec:carp:des_store}) improves partition quality. We introduce a measure called \emph{Read Amplification (RA)} to measure CARP partition quality. We define read amplification as the ratio of the size of actual CARP partitions vs (hypothetical) perfectly balanced partitions. An RA  of 1$\times$ for all partitions is ideal, as balanced partitions are better on both the write and the query paths. It is also unachievable as CARP tries to predict future key distributions and partition in a single pass, which is inevitably an imperfect operation.
+We now summarize how KoiDB (\S\ref{sec:carp:des_store}) improves partition quality.
+We introduce a measure called \emph{Read Amplification (RA)} to measure CARP partition quality.
+We define read amplification as the ratio of the size of actual CARP partitions vs (hypothetical)
+perfectly balanced partitions.
+An RA of 1$\times$ for all partitions is ideal, as balanced partitions are better on both the write
+and the query paths.
+It is also unachievable as CARP tries to predict future key distributions and partition in a single
+pass, which is inevitably an imperfect operation.
 
-We find that repartitioning, by separating out stray keys, reduces the average RA by up to 48$\times$ (\cref{fig:carp:eval-carpdb}). For \emph{subpartitioning}, we find that 2-way and 4-way subpartitioning improve average latencies for highly selective queries by 28\% and 43\% respectively with no observable runtime overhead. We omit detailed results for subpartitioning as we have observed its impact to be largely predictable, as described in \S\ref{sec:carp:des_store}.
+We find that repartitioning, by separating out stray keys, reduces the average RA by up to
+48$\times$ (\cref{fig:carp:eval-carpdb}).
+For \emph{subpartitioning}, we find that 2-way and 4-way subpartitioning improve average latencies
+for highly selective queries by 28\% and 43\% respectively with no observable runtime overhead.
+We omit detailed results for subpartitioning as we have observed its impact to be largely
+predictable, as described in \S\ref{sec:carp:des_store}.
 
 \subsubsection{Tuning CARP}
 \label{sec:carp:eval_tune}
 
-\figevaltune
+We now summarize key takeaways on the performance impact of CARP's two main tunable parameters:
+renegotiation frequency and pivot counts.
+We vary renegotiation frequencies between 2$\times$/epoch to 26$\times$/epoch and pivot count from
+64 to 2048.
+We then measure CARP's partition load balance and application runtime performance.
+Note that it is important to optimize partition imbalance even if it does not affect runtime to
+provide more predictable and uniform query performance.
 
-We now summarize key takeaways on the performance impact of CARP's two main tunable parameters: renegotiation frequency and pivot counts (\cref{fig:carp:eval-tune}).  We vary renegotiation frequencies between 2$\times$/epoch to 26$\times$/epoch and pivot count from 64 to 2048.  We then measure CARP's partition load balance and application runtime performance.  Note that it is important to optimize partition imbalance even if it does not affect runtime to provide more predictable and uniform query performance.
+\figCarpEvalTuneLoad
 
-We find that these parameters have a noticeable impact on partition load balance but not on CARP's shuffling runtime. At the lowest values of these parameters (64 pivots and 2$\times$ renegotiations per epoch), CARP partitions have a normalized standard deviation of 14\%. At the highest values (2048 epochs and 26$\times$/epoch) this drops down to 2\%. More pivots provide noticeable load balance improvement up to 512 pivots and then returns diminish. It is beneficial to increase the renegotiation intervals from 2$\times$/epoch to 6$\times$/epoch, but we get minimal gains beyond that interval. Surprisingly, none of these parameters seem to impact runtime in any measurable way. We attribute this to CARP's imbalance-tolerant implementation (idle ranks can cede CPU time to straggling ranks, \S\ref{sec:carp:impl}).
+We find that these parameters have a noticeable impact on partition load balance but not on CARP's
+shuffling runtime (\cref{fig:carp:eval-rtpload}).
+At the lowest values of these parameters (64 pivots and 2$\times$ renegotiations per epoch), CARP
+partitions have a normalized standard deviation of 14\%.
+At the highest values (2048 epochs and 26$\times$/epoch) this drops down to 2\%.
+More pivots provide noticeable load balance improvement up to 512 pivots and then returns diminish.
+It is beneficial to increase the renegotiation intervals from 2$\times$/epoch to 6$\times$/epoch,
+but we get minimal gains beyond that interval.
 
-\textbf{Tuning Conclusion. } While CARP can be tuned for incremental performance benefits, it provides stable performance across a wide range of parameters. Even with the worst performing parameters, CARP partitions only deviate by 14\% on average. CARP will still provide excellent query performance for queries not reading from larger partitions. A moderate number of pivots (\mytexttilde512) can represent even extremely skewed distributions with long tails, and renegotiation frequency has marginal impact on partition quality as it only addresses intra-epoch drift.
+\figCarpEvalTuneXput
+
+Surprisingly, none of these parameters seem to impact runtime in any measurable way
+(\cref{fig:carp:eval-rtprt}).
+We attribute this to CARP's imbalance-tolerant implementation (idle ranks can cede CPU time to
+straggling ranks, \S\ref{sec:carp:impl}).
+
+\textbf{Tuning Conclusion.
+}
+While CARP can be tuned for incremental performance benefits, it provides stable performance across
+a wide range of parameters.
+Even with the worst performing parameters, CARP partitions only deviate by 14\% on average.
+CARP will still provide excellent query performance for queries not reading from larger partitions.
+A moderate number of pivots (\mytexttilde512) can represent even extremely skewed distributions
+with long tails, and renegotiation frequency has marginal impact on partition quality as it only
+addresses intra-epoch drift.

@@ -173,25 +173,28 @@
   \end{figure}
 }
 
-% Figure 3.11
-\newcommand{\figevaltune}{
-  \begin{figure}[t]
+% Figure 3.11a (split side-caption variant)
+\newcommand{\figCarpEvalTuneLoad}{
+  \begin{SCfigure}[0.9][h]
     \centering
-    \begin{subfigure}[b]{\textwidth}
-      \centering
-      \includegraphics[trim=0.6cm 2.5cm 0.6cm 3.6cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_load.vs.params.pdf}
-      \caption{Impact of CARP parameters on partition load balance}
-      \label{fig:carp:eval-rtpload}
-    \end{subfigure}
+    \includegraphics[trim=0.6cm 2.5cm 0.6cm 3.6cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_load.vs.params.pdf}
+    \captionsetup{format=plain}
+    \caption{Impact of CARP parameters on partition load balance.
+      Renegotiating multiple times within a timestep is necessary for load-balance, but provides marginal benefit beyond a point.
+      More pivot counts produce a better load balance, with diminishing returns.}
+    \label{fig:carp:eval-rtpload}
+  \end{SCfigure}
+}
 
-    \begin{subfigure}[b]{\textwidth}
-      \centering
-      \includegraphics[trim=0.6cm 2.5cm 0.6cm 3.6cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_runtime.vs.params.pdf}
-      \caption{Impact of CARP parameters on write performance}
-      \label{fig:carp:eval-rtprt}
-    \end{subfigure}
-    \caption{
-      (Top) Renegotiating multiple times within a timestep is necessary for load-balance, but provides marginal benefit beyond a point. More pivot counts produce a better load balance, with diminishing returns. (Bottom) Up to 1024 pivots, increasing the pivot count leads marginal improvement in runtime. Renegotiating frequently does not penalize runtime --- the cost of frequent renegotiations is made up by the gains in load balance.}
-    \label{fig:carp:eval-tune}
-  \end{figure}
+% Figure 3.11b (split side-caption variant)
+\newcommand{\figCarpEvalTuneXput}{
+  \begin{SCfigure}[0.9][h]
+    \centering
+    \includegraphics[trim=0.6cm 2.5cm 0.6cm 3.6cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_runtime.vs.params.pdf}
+    \captionsetup{format=plain}
+    \caption{Impact of CARP parameters on write performance.
+      Up to 1024 pivots, increasing the pivot count leads marginal improvement in runtime.
+      Renegotiating frequently does not penalize runtime --- the cost of frequent renegotiations is made up by the gains in load balance.}
+    \label{fig:carp:eval-rtprt}
+  \end{SCfigure}
 }
