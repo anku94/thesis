@@ -3,9 +3,7 @@
 
 In this section we provide an overview of CARP's architecture. We describe the scalable way data is routed to ranks by key (\S\ref{sec:carp:des_comm}), the triggers that allow CARP to determine that data needs to be repartitioned (\S\ref{sec:carp:des_detect}), the protocol that allows ranks to determine a new partitioning for the data (\S\ref{sec:carp:des_reneg}), and a reference storage backend design for logging partition data efficiently to storage (\S\ref{sec:carp:des_store}).
 
-\begin{figure}
-  \figdesarch
-\end{figure}
+\figdesarch
 
 \subsection{Communication: Scalable data flow}
 \label{sec:carp:des_comm}
@@ -14,9 +12,7 @@ In this section we provide an overview of CARP's architecture. We describe the s
 
 Due to the transmission delay introduced by shuffling, data written through CARP is only available to query at the end of a checkpointing \emph{epoch}.  At the end of each epoch, CARP flushes all data to the disk. By doing so, it aligns its fault-tolerance semantics with those of typical scientific applications.
 
-\begin{figure}
-  \figdessend
-\end{figure}
+\figdessend
 
 \subsection{Detection: Triggering repartitioning}
 \label{sec:carp:des_detect}
@@ -30,9 +26,7 @@ A distribution of keys transmitted by each rank is stored locally and used when 
 
 \textbf{Rebalancing Required.} This trigger is only needed to adapt to distribution changes \emph{within} an epoch --- for new epochs CARP bootstraps partitions from scratch. To resolve intra-epoch drift, a renegotiation should be triggered to compute a new and more relevant partition table. Instead of using background communication mechanisms to robustly detect load outliers, we have found it simpler to assume that a rebalancing is required at periodic intervals within an epoch. Some applications such as AMR (Adaptive Mesh Refinement) codes are aware of when they refine and can signal CARP for more precise control over renegotiation. We explore the impact of a fixed interval further in our evaluation.
 
-\begin{figure}
-  \figdeshist
-\end{figure}
+\figdeshist
 
 \subsection{Renegotiation: Determining new partitions}
 \label{sec:carp:des_reneg}
@@ -73,9 +67,7 @@ The \textbf{Rebalancing trigger} is used to account for key distribution drift o
 \subsection{Storage: Logging for efficiency}
 \label{sec:carp:des_store}
 
-\begin{figure}
-  \figdeskoidb
-\end{figure}
+\figdeskoidb
 
 
 KoiDB is our reference implementation of CARP's storage backend. Its output is written to a parallel file system and can be directly queried by a query client on a single node. As query clients access files in read-only mode, multiple concurrent query clients are automatically supported. KoiDB collects data from the shuffle receiver and writes it to an append-only log on shared storage.  KoiDB instances are local to each rank and operate independently of each other. We discuss using CARP with other storage backends in \S\ref{sec:carp:disc}.

@@ -131,9 +131,7 @@ The range SST\# $(251, 350)$ would therefore query the key range stored in Trito
 Since KoiDB SSTs are smaller and more fragmented, the same query with CARP would result in more
 SSTs read.
 
-\begin{figure}[t]
-  \figevalycsb
-\end{figure}
+\figevalycsb
 
 We construct 4 query batches of different fixed widths (5, 20, 50, and 100 SSTs) corresponding to
 query selectivity of 0.03\%--0.6\%.
@@ -234,9 +232,7 @@ By avoiding post-processing, CARP enables indexes to be built 2.8--4.9$\times$ f
 \vspace{5pt}
 
 
-\begin{figure}
-  \figevaldyn
-\end{figure}
+\figevaldyn
 
 \cref{fig:carp:eval-dyn} is a study of how frequently partition tables need to be recomputed for
 our VPIC trace to generate balanced partitions.

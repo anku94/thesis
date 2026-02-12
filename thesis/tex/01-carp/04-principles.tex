@@ -2,9 +2,7 @@
 
 We have designed a streaming in-situ partitioner for large parallel applications, CARP, which intercepts writes from applications, transforms them, and persists them in a range query-friendly layout. A logical view of CARP's partitioning process is shown in \cref{fig:carp:des-layout}. CARP has no impact on application runtime, as it uses spare CPU and network capacity to transform data at a rate necessary to saturate storage. This partitioned output requires no post-processing and can be queried directly once the application terminates.
 
-\begin{figure}
-  \figdeslayout
-\end{figure}
+\figdeslayout
 
 CARP augments conventional range partitioning with novel techniques to achieve its write and query performance goals. We build upon a simple insight --- data does not need to be fully sorted to achieve the performance benefits of a sorted, clustered index. It is sufficient to partially order data in a way that allows queries to be processed via a small number of large reads. CARP exploits this relaxation to achieve its write performance and adaptivity goals.
 
