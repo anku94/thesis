@@ -1,7 +1,5 @@
 % ! TeX root = ../main-ieee.tex
 
-\section{Introduction}\label{sec:amr:intro}
-
 Block-structured Adaptive Mesh Refinement (AMR) codes are critical to modern scientific computing,
 enabling large-scale simulations in astrophysics, cosmology, climate science, and fluid
 dynamics~\cite{Dubey2014:Survey, Burst2011:p4est}.
@@ -47,7 +45,8 @@ tracing and profiling tools to a custom analytical pipeline over structured data
 Tuning the system stack resulted in predictable runtime response as placement aspects such as load
 balance and locality were varied.
 Recognizing that these two properties represented competing optimization objectives, we developed
-CPLX (\S\ref{sec:amr:design}), a hybrid placement policy balancing these two objectives via a tunable
+CPLX (\S\ref{sec:amr:design}), a hybrid placement policy balancing these two objectives via a
+tunable
 parameter to minimize overall runtime.
 Because AMR codes refine frequently, placement must meet strict timing constraints ($<$ 50ms in our
 target codes).
@@ -59,7 +58,8 @@ tunable control over the load-locality tradeoff, validating our process-driven m
 However, our experience suggests that performance optimization in large-scale systems is inherently
 context-dependent.
 While algorithmic approaches are necessary, their application must be embedded in a broader
-empirical process---one that interprets telemetry in the context of the runtime stack and prioritizes
+empirical process---one that interprets telemetry in the context of the runtime stack and
+prioritizes
 objectives only insofar as they measurably impact end-to-end performance.
 Accordingly, we focus not just on CPLX itself, but on the end-to-end process that led to it, and
 distill methodological lessons applicable to other large-scale tuning efforts.
@@ -76,7 +76,8 @@ This paper makes three key contributions:
 \end{itemize}
 
 We provide background on block-structured AMR codes and current placement approaches
-(\S\ref{sec:amr:bg}), then outline the challenges of incorporating telemetry into placement decisions
+(\S\ref{sec:amr:bg}), then outline the challenges of incorporating telemetry into placement
+decisions
 (\S\ref{sec:amr:chal}).
 We present our methodology for obtaining reliable performance measurements (\S\ref{sec:amr:tele}),
 followed by the design of our placement policies (\S\ref{sec:amr:design}) and their evaluation
