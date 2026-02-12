@@ -7,208 +7,29 @@
 }
 \newcommand{\thesisAuthor}{Ankush Jain}
 
-%%% --- PDF Metadata ---
-\usepackage[pdftex,
-    pdfauthor={\thesisAuthor},
-    pdftitle={\thesisTitle},
-    pdfsubject={PhD Dissertation, ECE, CMU},
-    pdfkeywords={PhD, Dissertation, CMU, Electrical and Computer Engineering},
-    colorlinks=true,
-    linkcolor=linkblue,
-    citecolor=linkblue,
-    urlcolor=linkblue
-]{hyperref}
-
-%%% --- Packages ---
-
-%%% --- Font Options (uncomment one) ---
-% \usepackage{XCharter}           % Charter - clean, modern (italics less distinct)
-% \usepackage{mathpazo}           % Palatino - classic academic (italics compressed)
-% \usepackage{newpxtext,newpxmath} % Palatino (newer) - better math than mathpazo
-% This font seems to have a good balance of readability, distinct italics, and readable italics
-\usepackage{libertinus}           % Libertinus - professional, distinct italics, good math
-% \usepackage{cochineal}          % Cochineal - elegant, very distinct italics
-% \usepackage{tgpagella}          % TeX Gyre Pagella - Palatino-like, better proportions
-% \usepackage{ebgaramond}         % EB Garamond - classic, beautiful italics
-% \usepackage{stix2}              % STIX Two - scientific publishing
-% \usepackage{newtxtext,newtxmath} % Times-like - compact, familiar
-% \usepackage{lmodern}            % Latin Modern - default CM-like
-
-\usepackage[inner=1.25in, outer=1in, top=1in, bottom=1in]{geometry}
-
-% captions and subfigures, must be loaded before minitoc
-\usepackage[
-    font=small,
-    labelfont={bf,it},
-    textfont=it,
-    singlelinecheck=false,
-    format=hang,
-    justification=justified,
-    singlelinecheck=on
-]{caption}
-\usepackage{subcaption}
-\usepackage{tikz}
-\usetikzlibrary{positioning, fit, arrows.meta, shapes, calc, backgrounds}
-\graphicspath{{data/figs/}{data/tikz/}}
-
-% For math symbols
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{tocbibind} % ensures TOC entries for references?
-
-
-\usepackage{lipsum} % for dummy text
-\usepackage{markdown} % for outlines, temporary
-\usepackage{microtype} % subtle typographic improvements
-\usepackage{fancyhdr} % running headers
-\usepackage{minitoc} % mini table of contents per chapter
-\usepackage{xcolor} % for colored text
-\usepackage{titlesec} % for para fmting (conflicts with minitoc)
-\usepackage{enumitem} % to customize enumerate
-\usepackage{setspace} % for line spacing (replaces memoir's \OnehalfSpacing)
-% capitalize: capitalize first letter, nameinlink: include name in link
-\usepackage[capitalize,nameinlink]{cleveref} % for terse references
-% For tables
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{threeparttable}
-% For algorithms (AMR paper)
-\usepackage{algorithm}
-\usepackage{algpseudocodex}
-% For propositions and proofs (AMR paper)
-\usepackage{amsthm}
-\newtheorem{proposition}{Proposition}
-\usepackage{soul} % for \hl{} highlighting
-\usepackage{etoolbox} % for \forcsvlist
-% For TODOs - use [disable] option to hide all TODOs
-\usepackage[disable,colorinlistoftodos,textsize=small]{todonotes}
-
-% -- Minitoc styling options --
-\tightmtctrue
-\setlength{\mtcindent}{36pt}        % reduce left indent (default 24pt)
-\renewcommand{\mtcfont}{\small\sffamily}           % sans-serif entries
-\renewcommand{\mtcSfont}{\small\sffamily\bfseries} % sans-serif sections (bold)
-\renewcommand{\mtcSSfont}{\small\sffamily}         % sans-serif subsections
-% \mtcsettitle{minitoc}{}            % remove "Contents" title
-\mtcsetfeature{minitoc}{open}{\vspace{-0.5ex}}   % reduce space after top rule
-\mtcsetfeature{minitoc}{close}{\vspace{0.5ex}} % reduce space before bottom rule
+%%% --- Settings, macros, figures ---
+\input{settings} % all packages + config is here
+\input{tex/99-macros}
+\input{tex/99-figs-carp}
+\input{tex/99-figs-amr}
+\input{tex/99-figs-orca}
 
 % -- Colors --
 \definecolor{linkblue}{RGB}{0, 51, 153} % rich saturated dark blue
 
-% For thesis statement box
-\usepackage[most]{tcolorbox}
-\tcbset{
-  thesisbox/.style={
-    colback=gray!2,
-    colframe=black,
-    boxrule=0.4pt,
-    arc=2pt,
-    left=6pt,
-    right=6pt,
-    top=4pt,
-    bottom=4pt,
-    boxsep=4pt,
-    fonttitle=\bfseries,
-    width=\textwidth-2.5em,
-    enlarge left by=1.25em,
-  }
-}
-
-
-%%% --- Bibliography ---
-\usepackage[
-    style=numeric,
-    backend=biber,
-    sorting=none,
-    citestyle=numeric-comp,
-]{biblatex}
-
 \addbibresource{bib/zotero.bib}
-
-% remove some metadata
-\AtEveryBibitem{%
-  \clearfield{day}%
-  \clearfield{month}%
-  \clearfield{note}%
-  \clearfield{language}%
-  \clearfield{urldate}%
-  \clearfield{eventtitle}%
-  % \clearfield{booktitle}%
-  \clearfield{issn}%
-  \clearfield{isbn}%
-  \clearfield{location}%
-  \clearfield{address}%
-  \clearfield{doi}%
-  \clearfield{pages}%
-  % \clearfield{series}%
-}
-
-% clear both url and urldate in biblatex
-\renewbibmacro*{url+urldate}{\printfield{url}}
-\renewbibmacro*{publisher+location+date}{\printdate}
 
 %%% --- Commands ---
 \newcommand{\fix}[1]{\hl{#1}}
 \newcommand{\ga}[1]{\textcolor{red!70!black}{@GA: #1}}
 \newcommand{\aj}[1]{\textcolor{blue!70!black}{@AJ: #1}}
 
-% Lighter heading for front matter sections (Acknowledgments, Abstract)
-\newcommand{\frontchapter}[1]{%
-  \clearpage
-  \thispagestyle{plain}% no header, just page number
-  \begin{center}
-    {\Large\bfseries #1}
-  \end{center}
-  \addcontentsline{toc}{chapter}{#1}
-  \vspace{2em}
-}
-
-%%% --- Spacing and Counters ---
-\onehalfspacing % line spacing
-\setcounter{secnumdepth}{3} % number subsubsections
-
-% report class doesn't have these, define minimal versions
-\newcommand{\frontmatter}{\pagenumbering{roman}}
-\newcommand{\mainmatter}{\pagenumbering{arabic}\setcounter{page}{1}}
-\newenvironment{titlingpage}{\titlepage}{\endtitlepage}
-
-%% -- Paragraph styling --
-\titleformat{\paragraph}[runin]{\normalfont\normalsize\bfseries}{}{0pt}{}[.]
-\titlespacing{\paragraph}{0pt}{1ex plus 0.5ex minus 0.2ex}{1ex}
-
-% Alternative without titlesec (commented out):
-% \let\oldparagraph\paragraph
-% \renewcommand{\paragraph}[1]{\oldparagraph{#1.}}
-
-%% -- Enumerate styling --
-\setlist{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
-
-%% -- Running headers (twoside) --
-\pagestyle{fancy}
-\fancyhf{} % clear defaults
-\fancyhead[LE,RO]{\small\thepage} % page number on outer edge
-\fancyhead[RE,LO]{\small\itshape\leftmark} % chapter name on inner edge
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
-
-%%% --- Macros and Figures ---
-\input{tex/99-macros}
-\input{tex/99-figs-carp}
-\input{tex/99-figs-amr}
-\input{tex/99-figs-orca}
-
 %%% --- Section lists for \includeonly and \includesections ---
 \def\carpsections{tex/01-carp/01-intro,tex/01-carp/02-background,tex/01-carp/03-challenges,tex/01-carp/04-principles,tex/01-carp/05-design,tex/01-carp/06-impl,tex/01-carp/07-eval,tex/01-carp/08-disc,tex/01-carp/09-relwork}
 \def\amrsections{tex/02-amr/algos,tex/02-amr/01-intro,tex/02-amr/02-background,tex/02-amr/03-challenges,tex/02-amr/04-telemetry,tex/02-amr/05-design,tex/02-amr/06-eval,tex/02-amr/07-lessons,tex/02-amr/08-relwork,tex/02-amr/09-concl}
 \def\orcasections{tex/03-orca/01-intro,tex/03-orca/02-bg,tex/03-orca/03-chal,tex/03-orca/04-design,tex/03-orca/05-impl,tex/03-orca/06-eval,tex/03-orca/07-related,tex/03-orca/08-concl}
 
-%%% --- Allows including a list of sections ---
-\newcommand{\includesections}[1]{\expandafter\forcsvlist\expandafter\include\expandafter{#1}}
-
 % \includeonly{\carpsections}
-% note to self: rebuild with REBUILD=1 (recipe=rebuild) to refresh bbl
-% by default, recipe=incremental to keep full bbl with include-only
 \includeonly{tex/1-intro,tex/6-concl}
 
 %%% --- Document Begins ---
