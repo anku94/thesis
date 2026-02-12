@@ -87,23 +87,7 @@ We conclude that any partitioning approach should recompute its tables at least 
 \subsection{Sensitivity Analyses and Microbenchmarks}
 \label{sec:carp:eval_mb}
 
-\begin{figure}
-  \centering
-  \begin{subfigure}[b]{0.4\textwidth}
-  \figevalrtplat
-  \end{subfigure}
-  \begin{subfigure}[b]{0.4\textwidth}
-  \figevalpvtcnt
-  \end{subfigure}
-  \begin{subfigure}[b]{0.48\textwidth}
-  \figevalcarpdb
-  \end{subfigure}
-  \caption{
-    (Top) Renegotiation scales logarithmically with the number of ranks and takes longer if more pivots are exchanged.
-    (Center) 512 pivots enable reasonably accurate reconstruction for even highly skewed distributions, with diminishing returns after.
-    (Bottom) Both median and tail RAFs are significantly lowered by KoiDB partitioning, from 16-64$\times$ to 1-2$\times$, across all timesteps.
-  }
-\end{figure}
+\figevalmicro
 
 \subsubsection{Renegotiation Protocol Scalability}
 \label{sec:carp:eval_rtpscal}
@@ -129,18 +113,7 @@ We find that repartitioning, by separating out stray keys, reduces the average R
 \subsubsection{Tuning CARP}
 \label{sec:carp:eval_tune}
 
-\begin{figure}
-  \centering
-  \begin{subfigure}[b]{0.4\textwidth}
-  \figevalrtpload
-  \end{subfigure}
-  \begin{subfigure}[b]{0.4\textwidth}
-  \figevalrtprt
-  \end{subfigure}
-  \caption{
-  (Top) Renegotiating multiple times within a timestep is necessary for load-balance, but provides marginal benefit beyond a point. More pivot counts produce a better load balance, with diminishing returns. (Bottom) Up to 1024 pivots, increasing the pivot count leads marginal improvement in runtime. Renegotiating frequently does not penalize runtime --- the cost of frequent renegotiations is made up by the gains in load balance.}
-\label{fig:carp:eval-tune}
-\end{figure}
+\figevaltune
 
 We now summarize key takeaways on the performance impact of CARP's two main tunable parameters: renegotiation frequency and pivot counts (\cref{fig:carp:eval-tune}).  We vary renegotiation frequencies between 2$\times$/epoch to 26$\times$/epoch and pivot count from 64 to 2048.  We then measure CARP's partition load balance and application runtime performance.  Note that it is important to optimize partition imbalance even if it does not affect runtime to provide more predictable and uniform query performance.
 

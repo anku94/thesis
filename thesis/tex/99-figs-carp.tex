@@ -1,27 +1,28 @@
-\newcommand{\figdistribvpic}{
-  \centering
-  \includegraphics[trim=0cm 0cm 0cm
-    1.6cm,clip,width=\columnwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_distrib.vpic.pdf}
-  \caption{VPIC Energy Distribution}
-  \label{fig:carp:distrib-vpic}
+% Figure 3.1
+\newcommand{\figdistrib}{
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.5\textwidth}
+      \centering
+      \includegraphics[trim=0cm 0cm 0cm 1.6cm,clip,width=\columnwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_distrib.vpic.pdf}
+      \caption{VPIC Energy Distribution}
+      \label{fig:carp:distrib-vpic}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\textwidth}
+      \centering
+      \includegraphics[trim=0cm 0cm 0cm 0cm,clip,width=\columnwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_distrib.amr.pdf}
+      \caption{Adaptive Mesh Refinement Energy Distribution}
+      \label{fig:carp:distrib-amr}
+    \end{subfigure}
+    \caption{Energy distributions across 7 timesteps of VPIC (top) and AMR (bottom) simulations.
+      Distributions are shows as histograms overlaid with line plots for interesting bands.
+      Both VPIC and AMR distributions are highly skewed and shift significantly over time.
+    }
+    \label{fig:carp:distrib}
+  \end{figure}
 }
 
-\newcommand{\figdistribamr}{
-  \centering
-  \includegraphics[trim=0cm 0cm 0cm
-    0cm,clip,width=\columnwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_distrib.amr.pdf}
-  \caption{Adaptive Mesh Refinement Energy Distribution}
-  \label{fig:carp:distrib-amr}
-}
-
-\newcommand{\capfigdistrib} {
-  \caption{Energy distributions across 7 timesteps of VPIC (top) and AMR (bottom) simulations.
-    Distributions are shows as histograms overlaid with line plots for interesting bands.
-    Both VPIC and AMR distributions are highly skewed and shift significantly over time.
-  }
-  \label{fig:carp:distrib}
-}
-
+% Figure 3.2
 \newcommand{\figdeslayout}{
   \centering
   \includegraphics[trim=3.5cm 4.0cm 3.5cm
@@ -34,6 +35,7 @@
   \label{fig:carp:des-layout}
 }
 
+% Figure 3.3
 \newcommand{\figdesarch}{
   \centering
   \includegraphics[trim=8cm 7.8cm 8cm
@@ -46,6 +48,7 @@
   \label{fig:carp:des-arch}
 }
 
+% Figure 3.4
 \newcommand{\figdessend}{
   \centering
   \includegraphics[trim=7.9cm 6.5cm 7.7cm
@@ -60,6 +63,7 @@
   \label{fig:carp:des-send}
 }
 
+% Figure 3.5
 \newcommand{\figdeshist}{
   \centering
   \includegraphics[trim=7.4cm 3.2cm 5.7cm
@@ -72,6 +76,7 @@
   \label{fig:carp:des-hist}
 }
 
+% Figure 3.6
 \newcommand{\figdeskoidb}{
   \centering
   \includegraphics[trim=6cm 4cm 4cm
@@ -83,28 +88,31 @@
   \label{fig:carp:des-carpdb}
 }
 
-\newcommand{\figktqlat} {
-  \centering
-  \includegraphics[trim=0.7cm 0.84cm 0.5cm
-    0.70cm,clip,width=\textwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_qlatvssel.v6.pdf}
-  \caption{Query Latency}
-  \label{fig:carp:kt-qlat}
+% Figure 3.7
+\newcommand{\figkt}{
+  \begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+      \centering
+      \includegraphics[trim=0.7cm 0.84cm 0.5cm 0.70cm,clip,height=0.25\textheight,keepaspectratio]{data/figs/carp_qlatvssel.v6.pdf}
+      \caption{Query Latency}
+      \label{fig:carp:kt-qlat}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{\textwidth}
+      \centering
+      \includegraphics[trim=0.6cm 0.90cm 0.6cm 0.80cm,clip,height=0.25\textheight,keepaspectratio]{data/figs/carp_runtime.v4.werr.pdf}
+      \caption{I/O Throughput}
+      \label{fig:carp:kt-rt}
+    \end{subfigure}
+    \caption{(Top) CARP matches the query latency of TritonSort's fully-sorted data layout and
+      outperforms both FastQuery by 100$\times$.
+      (Bottom) CARP incurs no overhead over unpartitioned I/O and is 3-5$\times$ faster than post-processing.}
+    \label{fig:carp:kt}
+  \end{figure}
 }
 
-\newcommand{\figktrt}{
-  \centering
-  \includegraphics[trim=0.6cm 0.90cm 0.6cm
-    0.80cm,clip,width=\linewidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_runtime.v4.werr.pdf}
-  \caption{I/O Throughput}
-  \label{fig:carp:kt-rt}
-}
-
-\newcommand{\capfigkt} {
-  \caption{(Left) CARP matches the query latency of TritonSort's fully-sorted data layout and
-    outperforms both FastQuery by 100$\times$.
-    (Right) CARP incurs no overhead over unpartitioned I/O and is 3-5$\times$ faster than post-processing.}
-}
-
+% Figure 3.8
 \newcommand{\figevalycsb}{
   \centering
   \includegraphics[trim=0.5cm 0.2cm 0.7cm
@@ -116,6 +124,7 @@
   \label{fig:carp:eval-ycsb}
 }
 
+% Figure 3.9
 \newcommand{\figevaldyn}{
   \centering
   \includegraphics[trim=0.6cm 1.7cm 0.9cm
@@ -131,37 +140,58 @@
   \label{fig:carp:eval-dyn}
 }
 
-\newcommand{\figevalrtplat}{
-  \centering
-  \includegraphics[trim=0.6cm 2.6cm 0.6cm 3.6cm,clip,height=0.2\textheight,keepaspectratio]{data/figs/carp_rtp.latvspvtcnt.pdf}
-  \caption{Renegotiation scalability at different pivot counts}
-  \label{fig:carp:eval-rtplat}
+% Figure 3.10
+\newcommand{\figevalmicro}{
+  \begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+      \centering
+      \includegraphics[trim=0.6cm 2.6cm 0.6cm 3.6cm,clip,height=0.16\textheight,keepaspectratio]{data/figs/carp_rtp.latvspvtcnt.pdf}
+      \caption{Renegotiation scalability at different pivot counts}
+      \label{fig:carp:eval-rtplat}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{\textwidth}
+      \centering
+      \includegraphics[trim=0.6cm 1.7cm 0.7cm 3.7cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_pvtbench.epxpp.pdf}
+      \caption{Pivot Count vs Histogram Fidelity}
+      \label{fig:carp:eval-pvtcnt}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{\textwidth}
+      \centering
+      \includegraphics[trim=0.4cm 6.1cm 0.3cm 0cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_carpdb.impact.alt4.pdf}
+      \caption{Impact of repartitioning on 50\textsuperscript{th} and 99\textsuperscript{th} percentile RAF}
+      \label{fig:carp:eval-carpdb}
+    \end{subfigure}
+    \caption{
+      (Top) Renegotiation scales logarithmically with the number of ranks and takes longer if more pivots are exchanged.
+      (Center) 512 pivots enable reasonably accurate reconstruction for even highly skewed distributions, with diminishing returns after.
+      (Bottom) Both median and tail RAFs are significantly lowered by KoiDB partitioning, from 16-64$\times$ to 1-2$\times$, across all timesteps.
+    }
+    \label{fig:carp:eval-micro}
+  \end{figure}
 }
 
-\newcommand{\figevalpvtcnt}{
-  \centering
-  \includegraphics[trim=0.6cm 1.7cm 0.7cm 3.7cm,clip,height=0.2\textheight,keepaspectratio]{data/figs/carp_pvtbench.epxpp.pdf}
-  \caption{Pivot Count vs Histogram Fidelity}
-  \label{fig:carp:eval-pvtcnt}
-}
+% Figure 3.11
+\newcommand{\figevaltune}{
+  \begin{figure}[t]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+      \centering
+      \includegraphics[trim=0.6cm 2.5cm 0.6cm 3.6cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_load.vs.params.pdf}
+      \caption{Impact of CARP parameters on partition load balance}
+      \label{fig:carp:eval-rtpload}
+    \end{subfigure}
 
-\newcommand{\figevalcarpdb}{
-  \centering
-  \includegraphics[trim=0.4cm 6.1cm 0.3cm 0cm,clip,width=\columnwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_carpdb.impact.alt4.pdf}
-  \caption{Impact of repartitioning on 50\textsuperscript{th} and 99\textsuperscript{th} percentile RAF}
-  \label{fig:carp:eval-carpdb}
-}
-
-\newcommand{\figevalrtpload}{
-  \centering
-  \includegraphics[trim=0.6cm 2.5cm 0.6cm 3.6cm,clip,width=\columnwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_load.vs.params.pdf}
-  \caption{Impact of CARP parameters on partition load balance}
-  \label{fig:carp:eval-rtpload}
-}
-
-\newcommand{\figevalrtprt}{
-  \centering
-  \includegraphics[trim=0.6cm 2.5cm 0.6cm 3.6cm,clip,width=\columnwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_runtime.vs.params.pdf}
-  \caption{Impact of CARP parameters on write performance}
-  \label{fig:carp:eval-rtprt}
+    \begin{subfigure}[b]{\textwidth}
+      \centering
+      \includegraphics[trim=0.6cm 2.5cm 0.6cm 3.6cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_runtime.vs.params.pdf}
+      \caption{Impact of CARP parameters on write performance}
+      \label{fig:carp:eval-rtprt}
+    \end{subfigure}
+    \caption{
+      (Top) Renegotiating multiple times within a timestep is necessary for load-balance, but provides marginal benefit beyond a point. More pivot counts produce a better load balance, with diminishing returns. (Bottom) Up to 1024 pivots, increasing the pivot count leads marginal improvement in runtime. Renegotiating frequently does not penalize runtime --- the cost of frequent renegotiations is made up by the gains in load balance.}
+    \label{fig:carp:eval-tune}
+  \end{figure}
 }
