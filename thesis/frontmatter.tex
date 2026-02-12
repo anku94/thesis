@@ -1,3 +1,5 @@
+% !TEX root = ../main.tex
+
 %%% --- Title Page ---
 \newgeometry{vmargin=2in,hmargin=1in}
 \begin{titlingpage}
@@ -53,6 +55,10 @@ March 2026
 \input{tex/0-abstract} % abstract page
 \dominitoc
 \adjustmtc
-\tableofcontents
-% \listoftables % TMP: disabled
-% \listoffigures % TMP: disabled
+
+% Tighten spacing a bit
+{\setstretch{1.00}\hypersetup{linkcolor=black}\tableofcontents}
+% \tableofcontents
+%%% -- TMP: disabled --
+% \listoftables
+% \listoffigures

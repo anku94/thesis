@@ -55,6 +55,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{tocbibind} % ensures TOC entries for references?
+
+
 \usepackage{lipsum} % for dummy text
 \usepackage{markdown} % for outlines, temporary
 \usepackage{microtype} % subtle typographic improvements
@@ -64,7 +66,8 @@
 \usepackage{titlesec} % for para fmting (conflicts with minitoc)
 \usepackage{enumitem} % to customize enumerate
 \usepackage{setspace} % for line spacing (replaces memoir's \OnehalfSpacing)
-\usepackage[capitalize]{cleveref} % for terse references
+% capitalize: capitalize first letter, nameinlink: include name in link
+\usepackage[capitalize,nameinlink]{cleveref} % for terse references
 % For tables
 \usepackage{booktabs}
 \usepackage{array}
@@ -79,7 +82,6 @@
 \usepackage{etoolbox} % for \forcsvlist
 % For TODOs - use [disable] option to hide all TODOs
 \usepackage[disable,colorinlistoftodos,textsize=small]{todonotes}
-% \usepackage[disable]{todonotes} % uncomment to hide all TODOs
 
 % -- Minitoc styling options --
 \tightmtctrue
@@ -205,7 +207,9 @@
 \newcommand{\includesections}[1]{\expandafter\forcsvlist\expandafter\include\expandafter{#1}}
 
 % \includeonly{\carpsections}
-% \includeonly{tex/1-intro,tex/6-concl}
+% note to self: rebuild with REBUILD=1 (recipe=rebuild) to refresh bbl
+% by default, recipe=incremental to keep full bbl with include-only
+\includeonly{tex/1-intro,tex/6-concl}
 
 %%% --- Document Begins ---
 \begin{document}
@@ -214,7 +218,6 @@
 
 %%% --- Main Matter Begins ---
 \mainmatter{}
-% \input{tex/0-abstract}
 \include{tex/1-intro}
 \include{tex/2-background}
 
@@ -253,7 +256,8 @@
 \renewcommand*{\bibfont}{\small}  % or \footnotesize or custom \fontsize
 \renewcommand{\baselinestretch}{0.9}
 \setlength{\bibitemsep}{4pt plus 0.3ex}
-\printbibliography{}
+% heading=bibintoc adds bibliography to table of contents
+\printbibliography[heading=bibintoc]
 \endgroup
 
 \end{document}
