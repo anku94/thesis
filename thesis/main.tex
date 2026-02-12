@@ -21,12 +21,8 @@
 \newcommand{\ga}[1]{\textcolor{red!70!black}{@GA: #1}}
 \newcommand{\aj}[1]{\textcolor{blue!70!black}{@AJ: #1}}
 
-%%% --- Section lists for \includeonly and \includesections ---
-\def\carpsections{tex/01-carp/01-intro,tex/01-carp/02-background,tex/01-carp/03-challenges,tex/01-carp/04-principles,tex/01-carp/05-design,tex/01-carp/06-impl,tex/01-carp/07-eval,tex/01-carp/08-disc,tex/01-carp/09-relwork}
-\def\amrsections{tex/02-amr/algos,tex/02-amr/01-intro,tex/02-amr/02-background,tex/02-amr/03-challenges,tex/02-amr/04-telemetry,tex/02-amr/05-design,tex/02-amr/06-eval,tex/02-amr/07-lessons,tex/02-amr/08-relwork}
-\def\orcasections{tex/03-orca/01-intro,tex/03-orca/02-bg,tex/03-orca/03-chal,tex/03-orca/04-design,tex/03-orca/05-impl,tex/03-orca/06-eval,tex/03-orca/07-related}
 
-\includeonly{\carpsections}
+\includeonly{tex/93-carp-paper}
 % \includeonly{tex/1-intro,tex/6-concl}
 
 %%% --- Document Begins ---
@@ -38,29 +34,12 @@
 \mainmatter{}
 \include{tex/1-intro}
 \include{tex/2-background}
-
 \include{tex/3-carp} % CARP (Summary)
-
-\chapter{CARP: Adaptive In-Situ Range Partitioning}
-\label{chap:carp-paper}
-\minitoc
-\includesections{\carpsections}
-
+\include{tex/93-carp-paper}
 \include{tex/4-amr} % AMR (Summary)
-
-\chapter{Lessons from Optimizing Placement in Adaptive Mesh Codes}
-\label{chap:amr-paper}
-\minitoc
-\includesections{\amrsections}
-
+\include{tex/94-amr-paper}
 \include{tex/5-orca} % ORCA (Summary)
-
-\chapter{ORCA: A Unified Framework for Declarative Observability}
-\label{chap:orca-paper}
-\minitoc
-\includesections{\orcasections}
-
-%%% --- Conclusions ---
+\include{tex/95-orca-paper}
 \include{tex/6-concl} 
 
 %%% --- Appendix (Optional) --- 
