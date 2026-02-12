@@ -1,142 +1,152 @@
 % Figure 3.1
-\newcommand{\figdistrib}{
-  \begin{figure}
+\newcommand{\figCarpDistribVpic}{
+  \begin{SCfigure}[0.9][h]
     \centering
-    \begin{subfigure}[b]{0.5\textwidth}
-      \centering
-      \includegraphics[trim=0cm 0cm 0cm 1.6cm,clip,width=\columnwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_distrib.vpic.pdf}
-      \caption{VPIC Energy Distribution}
-      \label{fig:carp:distrib-vpic}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.5\textwidth}
-      \centering
-      \includegraphics[trim=0cm 0cm 0cm 0cm,clip,width=\columnwidth,height=0.2\textheight,keepaspectratio]{data/figs/carp_distrib.amr.pdf}
-      \caption{Adaptive Mesh Refinement Energy Distribution}
-      \label{fig:carp:distrib-amr}
-    \end{subfigure}
-    \caption{Energy distributions across 7 timesteps of VPIC (top) and AMR (bottom) simulations.
-      Distributions are shows as histograms overlaid with line plots for interesting bands.
-      Both VPIC and AMR distributions are highly skewed and shift significantly over time.
-    }
-    \label{fig:carp:distrib}
-  \end{figure}
+    \includegraphics[trim=0cm 0cm 0cm 1.6cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_distrib.vpic.pdf}
+    \captionsetup{format=plain}
+    \caption{VPIC Energy Distribution.
+      Distributions are shown as histograms overlaid with line plots for interesting bands.
+      VPIC distributions are highly skewed and shift significantly over time.}
+    \label{fig:carp:distrib-vpic}
+  \end{SCfigure}
 }
 
 % Figure 3.2
-\newcommand{\figdeslayout}{
-  \begin{figure}[t]
+\newcommand{\figCarpDistribAmr}{
+  \begin{SCfigure}[0.9][h]
     \centering
-    \includegraphics[trim=3.5cm 4.0cm 3.5cm
-      4.3cm,clip,width=\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_layout_v2.pdf}
-    \caption{A logical view of CARP's data layout and querying.
-      Incoming data is partitioned and stored as SSTables, and partition boundaries shift with key
-      distribution changes.
-      Queries retrieve relevant SSTables and merge them.
-    }
-    \label{fig:carp:des-layout}
-  \end{figure}
+    \includegraphics[trim=0cm 0cm 0cm 0cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_distrib.amr.pdf}
+    \captionsetup{format=plain}
+    \caption{Adaptive Mesh Refinement Energy Distribution.
+      AMR distributions are also highly skewed and shift significantly over time.}
+    \label{fig:carp:distrib-amr}
+  \end{SCfigure}
 }
 
 % Figure 3.3
-\newcommand{\figdesarch}{
-  \begin{figure}[t]
+\newcommand{\figdeslayout}{
+  \begin{SCfigure}[0.9][h]
     \centering
-    \includegraphics[trim=8cm 7.8cm 8cm
-      6.5cm,clip,width=0.9\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_arch_v12mini.pdf}
-    \caption{Example of an N-rank application using CARP.
-      Writes are intercepted and partitioned via an all-to-all shuffler.
-      Each rank is both a sender and receiver.
-      Partitioned data collected by receivers is stored by a local storage backend (KoiDB).
-    }
-    \label{fig:carp:des-arch}
-  \end{figure}
+    \includegraphics[trim=3.5cm 4.0cm 3.5cm
+      4.3cm,clip,width=\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_layout_v2.pdf}
+    \captionsetup{format=plain}
+    \caption{A logical view of CARP's data layout and querying.
+      Incoming data is partitioned and stored as SSTables, and partition boundaries shift with key
+      distribution changes.
+      Queries retrieve relevant SSTables and merge them.}
+    \label{fig:carp:des-layout}
+  \end{SCfigure}
 }
 
 % Figure 3.4
+\newcommand{\figdesarch}{
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][h]
+    \centering
+    \includegraphics[trim=8cm 7.8cm 8cm
+      6.5cm,clip,width=0.9\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_arch_v12mini.pdf}
+    \captionsetup{format=plain}
+    \caption{Example of an N-rank application using CARP.
+      Writes are intercepted and partitioned via an all-to-all shuffler.
+      Each rank is both a sender and receiver.
+      Partitioned data collected by receivers is stored by a local storage backend (KoiDB).}
+    \label{fig:carp:des-arch}
+  \end{SCfigure}}
+}
+
+% Figure 3.5
 \newcommand{\figdessend}{
-  \begin{figure}[t]
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][h]
     \centering
     \includegraphics[trim=7.9cm 6.5cm 7.7cm
       4.8cm,clip,width=0.85\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_sender_wobg_v6.pdf}
+    \captionsetup{format=plain}
     \caption{CARP data and control flow.
       Application data is routed by the shuffle sender to its partition.
       But, if its key is outside all partition bounds, then data is added to an Out-Of-Bounds (OOB)
       buffer.
       When the OOB buffer fills up or partitions become imbalanced, CARP renegotiates the partition
-      table.
-    }
+      table.}
     \label{fig:carp:des-send}
-  \end{figure}
-}
-
-% Figure 3.5
-\newcommand{\figdeshist}{
-  \begin{figure}[t]
-    \centering
-    \includegraphics[trim=7.4cm 3.2cm 5.7cm
-      3.3cm,clip,width=0.9\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_reneg_hists_v4.pdf}
-    \caption{Partition table renegotiation relies on pivots computed from histograms of keys tracked on
-      each rank.
-      Pivots are merged, and the new global histogram is divided into equal-mass bins before being
-      broadcasted.
-    }
-    \label{fig:carp:des-hist}
-  \end{figure}
+  \end{SCfigure}}
 }
 
 % Figure 3.6
-\newcommand{\figdeskoidb}{
-  \begin{figure}[t]
+\newcommand{\figdeshist}{
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][h]
     \centering
-    \includegraphics[trim=6cm 4cm 4cm
-      4.7cm,clip,height=0.25\textheight,keepaspectratio]{data/figs/carp_carpdb_log_v3.pdf}
-    \caption{KoiDB on-disk log format.
-      Each log consists of SSTables organized into contiguous key and value blocks.
-      Each SST has an entry in the manifest along with metadata.
-    }
-    \label{fig:carp:des-carpdb}
-  \end{figure}
+    \includegraphics[trim=7.4cm 3.2cm 5.7cm
+      3.3cm,clip,height=0.35\textheight,keepaspectratio]{data/figs/carp_reneg_hists_v4.pdf}
+    \captionsetup{format=plain}
+    \caption{Partition table renegotiation relies on pivots computed from histograms of keys tracked on
+      each rank.
+      Pivots are merged, and the new global histogram is divided into equal-mass bins before being
+      broadcasted.}
+    \label{fig:carp:des-hist}
+  \end{SCfigure}}
 }
 
 % Figure 3.7
-\newcommand{\figkt}{
-  \begin{figure}[t]
+\newcommand{\figdeskoidb}{
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][h]
     \centering
-    \begin{subfigure}[b]{\textwidth}
-      \centering
-      \includegraphics[trim=0.7cm 0.84cm 0.5cm 0.70cm,clip,height=0.25\textheight,keepaspectratio]{data/figs/carp_qlatvssel.v6.pdf}
-      \caption{Query Latency}
-      \label{fig:carp:kt-qlat}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{\textwidth}
-      \centering
-      \includegraphics[trim=0.6cm 0.90cm 0.6cm 0.80cm,clip,height=0.25\textheight,keepaspectratio]{data/figs/carp_runtime.v4.werr.pdf}
-      \caption{I/O Throughput}
-      \label{fig:carp:kt-rt}
-    \end{subfigure}
-    \caption{(Top) CARP matches the query latency of TritonSort's fully-sorted data layout and
-      outperforms both FastQuery by 100$\times$.
-      (Bottom) CARP incurs no overhead over unpartitioned I/O and is 3-5$\times$ faster than post-processing.}
-    \label{fig:carp:kt}
-  \end{figure}
+    \includegraphics[trim=6cm 4cm 4cm
+      4.7cm,clip,height=0.25\textheight,keepaspectratio]{data/figs/carp_carpdb_log_v3.pdf}
+    \captionsetup{format=plain}
+    \caption{KoiDB on-disk log format.
+      Each log consists of SSTables organized into contiguous key and value blocks.
+      Each SST has an entry in the manifest along with metadata.}
+    \label{fig:carp:des-carpdb}
+  \end{SCfigure}}
 }
 
 % Figure 3.8
-\newcommand{\figevalycsb}{
-  \begin{figure}[t]
+\newcommand{\figCarpKtQlat}{
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][h]
     \centering
-    \includegraphics[trim=0.5cm 0.2cm 0.7cm
-      0.7cm,clip,width=0.9\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_query.ycsb.v3.pdf}
-    \caption{Time taken for a YCSB query suite, demonstrating similar trends to the left-hand figure.
-      CARP is slower for highly selective queries but comparable/better for larger queries despite the
-      sorting overhead.
-    }
-    \label{fig:carp:eval-ycsb}
-  \end{figure}
+    \includegraphics[trim=0.7cm 0.84cm 0.5cm 0.70cm,clip,height=0.25\textheight,keepaspectratio]{data/figs/carp_qlatvssel.v6.pdf}
+    \captionsetup{format=plain}
+    \caption{Query Latency.
+      CARP matches the query latency of TritonSort's fully-sorted data layout and
+      outperforms both FastQuery by 100$\times$.}
+    \label{fig:carp:kt-qlat}
+  \end{SCfigure}}
 }
 
 % Figure 3.9
+\newcommand{\figevalycsb}{
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][h]
+    \centering
+    \includegraphics[trim=0.4cm 0.2cm 0.7cm
+      0.7cm,clip,height=0.23\textheight,keepaspectratio]{data/figs/carp_query.ycsb.v3.pdf}
+    \captionsetup{format=plain}
+    \caption{Time taken for a YCSB query suite, demonstrating similar trends to the left-hand figure.
+      CARP is slower for highly selective queries but comparable/better for larger queries despite the
+      sorting overhead.}
+    \label{fig:carp:eval-ycsb}
+  \end{SCfigure}}
+}
+
+% Figure 3.10
+\newcommand{\figCarpKtRt}{
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][h]
+    \centering
+    \includegraphics[trim=0.6cm 0.90cm 0.6cm 0.80cm,clip,height=0.25\textheight,keepaspectratio]{data/figs/carp_runtime.v4.werr.pdf}
+    \captionsetup{format=plain}
+    \caption{I/O Throughput.
+      CARP incurs no overhead over unpartitioned I/O and is 3-5$\times$ faster than post-processing.}
+    \label{fig:carp:kt-rt}
+  \end{SCfigure}}
+}
+
+
+% Figure 3.11
 \newcommand{\figevaldyn}{
   \begin{figure}[t]
     \centering
@@ -154,40 +164,43 @@
   \end{figure}
 }
 
-% Figure 3.10
-\newcommand{\figevalmicro}{
-  \begin{figure}[t]
+% Figure 3.12
+\newcommand{\figCarpEvalRtpLat}{
+  \begin{SCfigure}[0.9][h]
     \centering
-    \begin{subfigure}[b]{\textwidth}
-      \centering
-      \includegraphics[trim=0.6cm 2.6cm 0.6cm 3.6cm,clip,height=0.16\textheight,keepaspectratio]{data/figs/carp_rtp.latvspvtcnt.pdf}
-      \caption{Renegotiation scalability at different pivot counts}
-      \label{fig:carp:eval-rtplat}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{\textwidth}
-      \centering
-      \includegraphics[trim=0.6cm 1.7cm 0.7cm 3.7cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_pvtbench.epxpp.pdf}
-      \caption{Pivot Count vs Histogram Fidelity}
-      \label{fig:carp:eval-pvtcnt}
-    \end{subfigure}
-
-    \begin{subfigure}[b]{\textwidth}
-      \centering
-      \includegraphics[trim=0.4cm 6.1cm 0.3cm 0cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_carpdb.impact.alt4.pdf}
-      \caption{Impact of repartitioning on 50\textsuperscript{th} and 99\textsuperscript{th} percentile RAF}
-      \label{fig:carp:eval-carpdb}
-    \end{subfigure}
-    \caption{
-      (Top) Renegotiation scales logarithmically with the number of ranks and takes longer if more pivots are exchanged.
-      (Center) 512 pivots enable reasonably accurate reconstruction for even highly skewed distributions, with diminishing returns after.
-      (Bottom) Both median and tail RAFs are significantly lowered by KoiDB partitioning, from 16-64$\times$ to 1-2$\times$, across all timesteps.
-    }
-    \label{fig:carp:eval-micro}
-  \end{figure}
+    \includegraphics[trim=0.6cm 2.6cm 0.6cm 3.6cm,clip,height=0.16\textheight,keepaspectratio]{data/figs/carp_rtp.latvspvtcnt.pdf}
+    \captionsetup{format=plain}
+    \caption{Renegotiation scalability at different pivot counts.
+      Renegotiation scales logarithmically with the number of ranks and takes longer if more pivots are exchanged.}
+    \label{fig:carp:eval-rtplat}
+  \end{SCfigure}
 }
 
-% Figure 3.11a (split side-caption variant)
+% Figure 3.13
+\newcommand{\figCarpEvalPvtCnt}{
+  \begin{SCfigure}[0.9][h]
+    \centering
+    \includegraphics[trim=0.6cm 1.7cm 0.7cm 3.7cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_pvtbench.epxpp.pdf}
+    \captionsetup{format=plain}
+    \caption{Pivot Count vs Histogram Fidelity.
+      512 pivots enable reasonably accurate reconstruction for even highly skewed distributions, with diminishing returns after.}
+    \label{fig:carp:eval-pvtcnt}
+  \end{SCfigure}
+}
+
+% Figure 3.14
+\newcommand{\figCarpEvalCarpdb}{
+  \begin{SCfigure}[0.9][h]
+    \centering
+    \includegraphics[trim=0.4cm 6.1cm 0.3cm 0cm,clip,height=0.18\textheight,keepaspectratio]{data/figs/carp_carpdb.impact.alt4.pdf}
+    \captionsetup{format=plain}
+    \caption{Impact of repartitioning on 50\textsuperscript{th} and 99\textsuperscript{th} percentile RAF.
+      Both median and tail RAFs are significantly lowered by KoiDB partitioning, from 16-64$\times$ to 1-2$\times$, across all timesteps.}
+    \label{fig:carp:eval-carpdb}
+  \end{SCfigure}
+}
+
+% Figure 3.15
 \newcommand{\figCarpEvalTuneLoad}{
   \begin{SCfigure}[0.9][h]
     \centering
@@ -200,7 +213,7 @@
   \end{SCfigure}
 }
 
-% Figure 3.11b (split side-caption variant)
+% Figure 3.16
 \newcommand{\figCarpEvalTuneXput}{
   \begin{SCfigure}[0.9][h]
     \centering

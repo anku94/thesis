@@ -56,12 +56,17 @@ Phoebus is a mesh-based hydrodynamics code that we run with a Sedov blast wave s
 \cite{Barke2024:Phoebus}.
 We ran both codes at 512 ranks and studied the energy distributions in the output data.
 
-\cref{fig:carp:distrib} shows the energy distributions of both the codes over time.
+\figCarpDistribVpic
+
+\cref{fig:carp:distrib-vpic,fig:carp:distrib-amr} show the energy distributions of both the codes over time.
 For VPIC (\cref{fig:carp:distrib-vpic}), we find that the energy distributions are highly skewed
 with most particles falling between 0 and 1 with long tails that get longer and heavier as the
 simulation progresses.
 Towards the second half of the simulation, 20-30\% of the data is contained within the tail
 generating a bimodal distribution with a second mode between 16 and 64.
+
+\figCarpDistribAmr
+
 For Phoebus (\cref{fig:carp:distrib-amr}), we also see a highly skewed distribution with a tail.
 Initially, there is a high energy explosion but most of the mesh has no energy.
 Over time, the energy from the explosion dissipates into a bigger area and moves the distribution
@@ -76,5 +81,3 @@ A distributed database would only be able to balance its partitions after a seri
 rewriting, and merging operations, incurring prohibitive index construction costs.
 An ideal range query index would discover and adapt to workload characteristics and reorder data
 without consuming excess storage bandwidth.
-
-\figdistrib

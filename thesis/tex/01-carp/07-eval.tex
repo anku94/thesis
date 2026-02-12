@@ -30,11 +30,11 @@ This results in a 4 byte floating-point key and a 56 byte record for the rest of
 \noindent
 \textbf{Experimental setup.
 }
-We use a 32-node compute cluster with each node having two 8-core Intel Xeon E5-2670 CPUs and 64GB
+We use a 32-node compute cluster with each node having two 8-core Intel Xeon E5-2670 CPUs and 64\,GB
 DRAM.
-The nodes are connected via 40Gbps Infiniband QDR.
+The nodes are connected via 40\,Gbps Infiniband QDR.
 Simulation output is written to a shared Lustre storage cluster consisting of 20 nodes identical to
-those in the compute cluster, each having a 240GiB SSD.
+those in the compute cluster, each having a 240\,GiB SSD.
 DeltaFS, FastQuery, and CARP experiments use the compute cluster, while TritonSort runs directly on
 the Lustre nodes.
 TritonSort has identical storage resources as other approaches and is able to achieve higher
@@ -73,16 +73,18 @@ query suite.
   }}
 \vspace{5pt}
 
+\figCarpKtQlat
+
 \textbf{Query Suite.
 }
 For query latency experiments we index 12 timesteps from the simulation.
-Each timestep is 188GB of data, and the total simulation data is 2.2TB.
+Each timestep is 188\,GB of data, and the total simulation data is 2.2\,TB.
 Query latencies for eight queries with different selectivity are shown in \cref{fig:carp:kt-qlat}
 (each query is repeated 3 times and averaged).
 We compare the query latency for CARP's partitioned ordered output with that of FastQuery and a
 sorted, clustered index.
 We also provide numbers for a \emph{full scan} over unindexed data for reference.
-The sorted output uses 12MB SSTs and a manifest with one entry per SST, a format similar to KoiDB.
+The sorted output uses 12\,MB SSTs and a manifest with one entry per SST, a format similar to KoiDB.
 We refer to the sorted, clustered index as TritonSort for convenience, but all sorts generate
 identical outputs.
 Queries for both CARP and TritonSort are processed by the same query client.
@@ -100,7 +102,7 @@ cluster to a query client and the compute time to subsequently process/filter th
 For both CARP and TritonSort, query latency appears to be linearly proportional to the amount of
 data read.
 Despite incurring an additional sorting cost, CARP's total query latency is similar to TritonSort.
-CARP is slower for highly selective queries (177ms vs 22ms for a query with 0.01\% selectivity)
+CARP is slower for highly selective queries (177\,ms vs 22\,ms for a query with 0.01\% selectivity)
 because it is forced to read full partitions, but it is able to match (and even outperform)
 TritonSort for larger query ranges with selectivity $> 0.05\%$.
 FastQuery is much slower than either of the two approaches.
@@ -158,13 +160,16 @@ is distributed enough to allow for parallel processing of a query.
 
 \subsection{Write Path}
 \label{sec:carp:eval_write}
+
+\figCarpKtRt
+
 \observation{\textit{CARP is 2.8--4.9$\times$ faster than post-processing approaches with no
     overhead on application performance.
   }}
 \vspace{5pt}
 
 \cref{fig:carp:kt-rt} measures the effective I/O throughput of four different index building
-approaches ingesting 188 GB of VPIC data (corresponding to 3.5B particles or one timestep at 512
+approaches ingesting 188\,GB of VPIC data (corresponding to 3.5B particles or one timestep at 512
 ranks).
 The effective I/O throughput is computed by dividing the application data volume by the total
 runtime.
@@ -177,8 +182,8 @@ scales as the write performance of SSDs decreases as they fill up.
 Allowing the amount of data written to scale up with the number of ranks results in higher scales
 unfairly getting a lower storage throughput.
 The achievable storage bandwidth from our cluster (\emph{Storage Bound} in \cref{fig:carp:kt-rt})
-increases with the number of application ranks: from 1.6 GB/s at 32 ranks to saturating the storage
-with 3 GB/s at 512 ranks.
+increases with the number of application ranks: from 1.6\,GB/s at 32 ranks to saturating the storage
+with 3\,GB/s at 512 ranks.
 At 1024 ranks, the increased contention from a large number of parallel writers causes a small dip
 in achievable throughput.
 For 1024 ranks, we divide the 512-rank trace into two halves to keep the total data constant.
@@ -193,8 +198,8 @@ For the in-situ approaches VPIC time includes the online index building time.
 \textbf{FastQuery and TritonSort.
 }
 As shown in \cref{fig:carp:kt-rt}, the additional time taken by post-processing approaches
-(FastQuery and TritonSort) significantly reduces the effective application bandwidth from 3GB/s to
-  {\mytexttilde}1 GB/s and {\mytexttilde}0.6 GB/s respectively.
+(FastQuery and TritonSort) significantly reduces the effective application bandwidth from 3\,GB/s to
+  {\mytexttilde}1\,GB/s and {\mytexttilde}0.6\,GB/s respectively.
 This represents a slowdown of 2.8$\times$ for FastQuery, and 4.9$\times$ for TritonSort.
 TritonSort incurs a much larger slowdown as it creates a clustered index, which requires four
 passes over all data for out-of-core sorts.
@@ -261,10 +266,10 @@ these.
 \subsection{Sensitivity Analyses and Microbenchmarks}
 \label{sec:carp:eval_mb}
 
-\figevalmicro
-
 \subsubsection{Renegotiation Protocol Scalability}
 \label{sec:carp:eval_rtpscal}
+
+\figCarpEvalRtpLat
 
 \cref{fig:carp:eval-rtplat} shows the time taken by a single renegotiation round across different
 scales and pivot counts.
@@ -275,7 +280,7 @@ ranks for 6 different values of the pivot count parameter.
 Increasing the number of pivots computed increases the size of the messages exchanged.
 This results in proportionally higher round latency.
 512 pivots are sufficient for CARP to accurately track distributions (discussed below), and the
-latency of a single round is only 150ms even at 2048 ranks.
+latency of a single round is only 150\,ms even at 2048 ranks.
 
 The absolute values of renegotiation latency are handicapped by us using an emulated network stack
 (IPoIB) for a fair comparison with baseline approaches that use sockets.
@@ -283,6 +288,8 @@ We expect these numbers to be much lower if run natively on a modern interconnec
 
 \subsubsection{Impact of Pivot Count}
 \label{sec:carp:eval_pvtcnt}
+
+\figCarpEvalPvtCnt
 
 \cref{fig:carp:eval-pvtcnt} shows the results from a micro-benchmark that tests the lossiness of
 our pivot calculation scheme.
@@ -306,6 +313,8 @@ simulation) more pivots are required to accurately capture those distributions.
 
 \subsubsection{Impact of KoiDB}
 \label{sec:carp:eval_carpdb}
+
+\figCarpEvalCarpdb
 
 We now summarize how KoiDB (\S\ref{sec:carp:des_store}) improves partition quality.
 We introduce a measure called \emph{Read Amplification (RA)} to measure CARP partition quality.
