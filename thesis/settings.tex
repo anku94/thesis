@@ -9,7 +9,7 @@
     pdfkeywords={PhD, Dissertation, CMU, Electrical and Computer Engineering},
     colorlinks=true,
     linkcolor=linkblue,
-    citecolor=linkblue,
+    citecolor=prune,
     urlcolor=linkblue
 ]{hyperref}
 
@@ -47,8 +47,6 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{tocbibind} % ensures TOC entries for references?
-
-
 \usepackage{lipsum} % for dummy text
 \usepackage{markdown} % for outlines, temporary
 \usepackage{microtype} % subtle typographic improvements
@@ -106,7 +104,6 @@
     enlarge left by=1.25em,
   }
 }
-
 
 %%% --- Bibliography ---
 \usepackage[
@@ -178,4 +175,7 @@
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 
 %%% --- Allows including a list of sections, needs etoolbox package ---
-\newcommand{\includesections}[1]{\expandafter\forcsvlist\expandafter\include\expandafter{#1}}
+\newcommand{\includesections}[1]{\expandafter\forcsvlist\expandafter\include\expandafter{#1}}% -- Colors --
+
+\definecolor{linkblue}{RGB}{0, 51, 153} % rich saturated dark blue
+\definecolor{prune}{RGB}{89,30,43} % muted red, used for cites
