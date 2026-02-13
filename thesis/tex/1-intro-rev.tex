@@ -51,16 +51,28 @@ which BSP workloads largely lack today.
 
 BSP's tight coupling is both the source of these bottlenecks and what makes them structurally
 addressable.
-Closing a runtime feedback loop requires two capabilities: observation to materialize a view of
-distributed execution, and action to respond.
-The same synchronization boundaries that amplify every rank's slowdown into a system-wide stall
-also define natural points where both are meaningful.
+In BSP, synchronization boundaries are the moments when distributed execution becomes globally
+interpretable and when coordinated change is well-defined.
+Closing a runtime feedback loop therefore requires two capabilities at those boundaries:
+observation to materialize a view of execution, and action to apply a coordinated response.
+Together, these enable always-on visibility into runtime behavior: lightweight workload-level
+metrics in the common case, and higher-fidelity views and coordinated interventions
+in response to observed anomalies.
 We call the resulting paradigm steerable observability: the ability to navigate across views at
 multiple fidelities during the run and to intervene on the application guided by those views.
-We propose ORCA (\emph{Observability with Real-time Control and Aggregation}), a programmable
-substrate for feedback and control aligned to BSP synchronization,
-so the loop operates on well-defined boundary snapshots rather than devolving into reruns and
-post-hoc pipelines.
+We propose ORCA (\emph{Observability with Real-time Control and Aggregation}), which instantiates
+steerable observability with synchronization-aligned views and control semantics.
+
+% BSP's tight coupling is both the source of these bottlenecks and what makes them structurally
+% addressable. Closing a runtime feedback loop requires two capabilities: observation to materialize
+% a view of distributed execution, and action to respond. The same synchronization boundaries that
+% amplify every rank's slowdown into a system-wide stall also define natural points where both are
+% meaningful. We call the resulting paradigm steerable observability: the ability to navigate across
+% views at multiple fidelities during the run and to intervene on the application guided by those
+% views. We propose ORCA (\emph{Observability with Real-time Control and Aggregation}), a
+% programmable substrate for feedback and control aligned to BSP synchronization, so the loop
+% operates on well-defined boundary snapshots rather than devolving into reruns and post-hoc
+% pipelines.
 
 \begin{tcolorbox}[thesisbox]
   \textbf{Thesis Statement:} A large class of efficiency bottlenecks in BSP systems arise from
@@ -71,12 +83,10 @@ post-hoc pipelines.
   We present ORCA as general-purpose infrastructure for closing these loops at scale.
 \end{tcolorbox}
 
-The rest of this chapter makes the case for programmable feedback loops through two studies
+The rest of this chapter motivates programmable feedback loops through two studies
 spanning the data and compute paths (\S\ref{sec:intro:case}), presents steerable observability and
-its
-realization in ORCA (\S\ref{sec:intro:orca}), lists contributions (\S\ref{sec:intro:contribs}), and
-outlines the rest of the
-thesis (\S\ref{sec:intro:org}).
+its realization in ORCA (\S\ref{sec:intro:orca}), lists contributions (\S\ref{sec:intro:contribs}),
+and outlines the rest of the thesis (\S\ref{sec:intro:org}).
 
 \section{The Case for Programmable Feedback Loops in BSP}
 \label{sec:intro:case}
@@ -96,31 +106,38 @@ conclude by characterizing the infrastructure gap that separates the two
 \subsection{Anatomy of a BSP Feedback Loop}
 \label{sec:intro:case:anatomy}
 
-BSP execution is computation punctuated by synchronization.
-Ranks compute independently, then coordinate at barriers and collectives.
-These boundaries define when distributed execution is globally interpretable and when coordinated
-change is well-defined.
-A feedback loop over BSP execution operates on this cadence.
+BSP execution proceeds in \emph{timesteps}, with work partitioned across parallel processes called
+\emph{ranks}.
+Ranks compute independently during a timestep, then synchronize via global collectives before
+the next timestep begins.
+Periodically, \emph{checkpoint epochs} flush distributed state to storage for fault tolerance and
+offline analysis.
+A coherent global view of execution is only defined at synchronization boundaries.
+Local state between boundaries explains how individual ranks contribute to the next boundary
+outcome, but the boundary view is the entry point for diagnosing both correctness and performance.
+A feedback loop over BSP execution operates on this cadence: operators consume views of system
+state and drive
+actions in response.
 
-\paragraph{View} A view is a reduction over per-rank observations at a synchronization boundary
-that answers a specific question---what is the load distribution across ranks, where is the
-synchronization bottleneck, what is the I/O throughput at this checkpoint.
-The point is to materialize the view that makes the condition legible, not to export raw telemetry.
+\begin{itemize}[leftmargin=*]
+  \item \textbf{View.
+        }
+        A view answers a specific question about execution, such as load distribution or straggler
+        identification via transforms over system state.
+        Views can either reduce global state to expose system-wide conditions, or rank-local state to
+        attribute them to individual ranks.
 
-\paragraph{Action}
-An action is a coordinated update applied at a synchronization boundary so all ranks remain
-consistent.
-One class of actions steers observability itself, changing what is observed, at what fidelity, and
-where, so subsequent views answer the next question.
-A second class steers the running application or runtime, applying boundary-consistent updates such
-as hyperparameter changes, repartitioning, or placement adjustments.
+  \item \textbf{Action.
+        }
+        An action is a coordinated update applied at all ranks in a timestep-consistent manner.
+        Actions may steer observability itself,
+        or steer the application via interventions such as hyperparameter updates.
 
-\paragraph{Operator}
-The operator requests views and chooses actions.
-It may be a fixed policy, a human workflow, or an automated agent.
-It is external to the substrate.
-The substrate provides boundary-consistent observation and action.
-The operator supplies the policy that closes the loop.
+  \item \textbf{Operator.
+        }
+        Operators consume views and drive actions --- they may be human or automated agents, or fixed
+        policies.
+\end{itemize}
 
 
 \subsection{CARP: Adaptive Online Range Partitioning}
@@ -133,17 +150,27 @@ While in-situ hash partitioning for point lookups has been demonstrated viable f
 range partitioning is harder --- key distributions are unknown, highly skewed, and evolve over
 time.
 
-CARP addresses this with adaptive online range partitioning driven by periodic reconstruction of
+CARP addresses this with adaptive online range partitioning guided by a reconstructed view of
 the global key distribution.
-A \emph{renegotiation} protocol materializes the global key
-distribution via in-situ reductions over per-rank state when triggered.
-A policy triggers this protocol at a preconfigured intervals to obtain the current
-global distribution, which is then used to compute new load-balanced partition boundaries and drive
-shuffling en-route to storage.
+A \emph{renegotiation} protocol materializes this view via in-situ reductions over per-rank state.
+A policy triggers renegotiation at fixed intervals to obtain the current distribution, which is
+used to compute new load-balanced partition boundaries and reshuffle data en-route to storage.
 By range-partitioning data in a single streaming pass,
 CARP avoids the write amplification of post-hoc sorting while
 enabling comparable query performance, achieving up to $4.9\times$ faster ingestion in our
 evaluation.
+
+% CARP addresses this with adaptive online range partitioning driven by periodic reconstruction of
+% the global key distribution.
+% A \emph{renegotiation} protocol materializes the global key
+% distribution via in-situ reductions over per-rank state when triggered.
+% A policy triggers this protocol at a preconfigured intervals to obtain the current
+% global distribution, which is then used to compute new load-balanced partition boundaries and drive
+% shuffling en-route to storage.
+% By range-partitioning data in a single streaming pass,
+% CARP avoids the write amplification of post-hoc sorting while
+% enabling comparable query performance, achieving up to $4.9\times$ faster ingestion in our
+% evaluation.
 
 \subsection{AMR Placement: A Manual Loop for Compute Pathologies}
 \label{sec:intro:case:amr}
@@ -187,17 +214,11 @@ Offline loops are expensive in three compounding ways:
         }
         Raw telemetry is captured at full volume and written
         to storage before any reduction occurs.
-        Because the right subset is not knowable in advance,
+        Because the right subset is not knowable without feedback,
         the paradigm intrinsically tends to overcollect.
         The resulting dataset is supercomputer-scale,
-        so a reduction that could run in situ over the fabric is instead forced through a
+        so a reduction that could run in situ over an HPC fabric is instead forced through a
         write--read--parse cycle on the slowest tier in the hierarchy: storage.
-
-        % \item \textbf{Deferred Materialization Costs.} Raw telemetry is captured at full volume,
-        % serialized, and written to storage before any reduction occurs. Because the right subset is not
-        % knowable in advance, the paradigm intrinsically tends to overcollect. The resulting datasets are
-        % cluster-scale, and analyzing them demands the same computational resources that in-situ processing
-        % would leverage---but mediated by the slowest tier in the hierarchy (storage).
 
   \item \textbf{ETL Costs.
         }
@@ -216,19 +237,10 @@ Offline loops are expensive in three compounding ways:
 
 
 
-The real cost is foregone analysis: when turnaround is dominated by trace volume, ETL, and reruns,
-systematic investigation gives way to ad-hoc mitigations.
-% The real cost is not just wasted cycles, but foregone analysis. When turnaround is dominated by
-% trace volume, ETL, and reruns, many questions are never investigated systematically, and teams
-% fall back to ad-hoc mitigations that treat symptoms rather than causes. CARP shows that online
-% closure is feasible, but only as a fixed-function mechanism built for one view and one action, not
-% as general-purpose infrastructure that lets operators specify new views and interventions. These
-% are not pathologies unique to our studies. They recur across BSP systems and are extensively
-% documented, yet persist because BSP workloads largely lack general-purpose infrastructure for
-% closing such loops online.
-CARP shows that online closure is feasible, but only as a fixed-function mechanism built for one
-view and one action, not as general-purpose infrastructure that lets operators specify new views
-and interventions.
+The real cost is foregone analysis: feedback bottlenecks incentivize ad-hoc mitigations
+over systematic investigation.
+CARP shows that online closure is feasible, but implements a fixed-function loop built for one
+adaptive mechanism, not as general-purpose programmable infrastructure.
 These pathologies recur across BSP systems and are well-documented, yet persist because no
 general-purpose substrate for closed-loop observability workflows exists.
 
@@ -238,7 +250,7 @@ general-purpose substrate for closed-loop observability workflows exists.
 The preceding analysis points to a missing piece: a programmable substrate for closing feedback
 loops over BSP execution online, supporting operator-specified views and coordinated interventions
 without bespoke pipelines.
-We call the resulting paradigm steerable observability.
+We call the resulting paradigm \emph{steerable observability}.
 The system materializes views of distributed state on demand, operators navigate across fidelities
 at runtime, and interventions are applied consistently at synchronization boundaries guided by
 those views.
@@ -253,7 +265,7 @@ enabled only when needed.
         Views must be reduced in-situ during the run, not
         deferred to post-hoc reconstruction through the storage tier.
         Overhead should scale with fidelity:
-        always-on lightweight aggregates in the common case, with detailed collection enabled on demand.
+        always-on lightweight aggregates in the common case, with details available on demand.
 
   \item \textbf{Programmable views.
         }
@@ -287,11 +299,72 @@ months of manual iteration.
 
 \paragraph{Scope}
 ORCA provides two capabilities: in-situ view materialization and timestep-consistent control.
-ORCA is agnostic to how telemetry is produced and to who closes the loop---it may be steered by a
-fixed heuristic, a human workflow, or an automated agent.
+ORCA is agnostic to how telemetry is produced and to who drives the loop---
+operators may be human or automated agents, or fixed policies.
 Telemetry can originate from probes, counters, or application annotations, as long as it can be
 represented as structured columnar data.
 Where SQL is insufficient, ORCA supports user-defined operators within the overlay.
+
+
+% \subsection{Status Quo and Limitations}
+% \label{sec:intro:orca:statusquo}
+
+% \paragraph{Tracing and post-hoc analytics}
+% In HPC, tools such as TAU~\cite{Shend2006:TAU} and Score-P~\cite{Knupf2012:Score-P} can collect
+% detailed traces,
+% with interpretation deferred to post-processing.
+% In large-scale ML training, a similar pattern is emerging around Kineto~\cite{2025:PytorchKineto}
+% for per-node trace capture,
+% Dynolog~\cite{2025:MetaDynolog} as a lightweight control plane, and HTA~\cite{:HTA} for post-hoc
+% analytics.
+% % The key limitation is structural: these stacks are still log-first and post-hoc, and they do not
+% % make BSP-synchronized, workload-wide views a first-class output.
+% Traces are voluminous and emitted as per-rank logs in plaintext formats such as
+% JSON~\cite{:ChromeJsonTEF},
+% requiring expensive ETL before analysis~\cite{Yildi2023:IOMax,Jain2025:AMR}.
+% % and do not directly encode synchronized BSP windows, so answering even basic cross-rank questions
+% % requires substantial ETL and expensive global joins.
+% On-disk trace layouts rarely support selective access, so analyses require working sets that grow
+% with \emph{ranks $\times$ timesteps},
+% rendering them increasingly impractical with scale.
+
+% \paragraph{Cloud observability}
+% Cloud observability stacks are built around metrics~\cite{:Prometheus}, logs, and event-based
+% pipelines~\cite{Kreps2011:Kafka,Carbo2015:ApacheFlink}.
+% While deployable and used in large-scale ML training~\cite{Deng2025:Mycroft}, these tools have
+% fundamental limitations for
+% tightly coupled parallel applications.
+% First, BSP synchronization boundaries are not a first-class unit of analysis, so questions like
+% straggler attribution at a collective require bespoke coordination to determine when a consistent
+% job-wide window exists and then to join telemetry across ranks within that window.
+% Second, once raw telemetry is exported, the cost of moving and ingesting it is already paid and
+% cannot be recovered by downstream reduction.
+% Finally, they do not enable steerability, as they provide no control semantics with meaningful
+% consistency guarantees.
+
+% \subsection{Why Now}
+% \label{sec:intro:orca:whynow}
+
+\paragraph{Why Now} Two trends make steerable observability both practical and urgent:
+
+\begin{itemize}[leftmargin=*]
+  \item Trace analytics have converged on dataframe-style
+        queries~\cite{Devar2024:DFTracer,Bhate2019:Hatchet,Boehm2016:Caliper,Yildi2023:IOMax}, but
+        telemetry is still
+        collected as per-rank logs whose formats and layouts force expensive ETL.
+        Columnar formats such as Arrow~\cite{:ApacheArrow} and Parquet~\cite{:ApacheParquet}, along with
+        DataFusion~\cite{Lamb2024:DataFusion} --- an extensible Arrow-based
+        query engine --- provide effective building blocks for efficient in-situ pipelines.
+
+  \item Operational demand in large-scale ML training is driving observability for issues such as
+        straggler
+        localization~\cite{Yao2025:Holmes,Wu2025:GREYHOUND,Cui2025:XPUTimer,Guan2025:PerfTracker,Chen2025:Reveal},
+        fault diagnosis~\cite{Deng2025:Minder,Dong2025:Aegis},
+        and training correctness~\cite{Jiang2025:TrainCheck}.
+        These are typically implemented as bespoke pipelines, but can be generalized by a
+        programmable BSP-aware substrate.
+\end{itemize}
+
 
 
 \section{List of Contributions}
@@ -359,10 +432,8 @@ Where SQL is insufficient, ORCA supports user-defined operators within the overl
 The remainder of this thesis is organized as follows.
 \begin{itemize}
   \item \cref{chap:bg} provides background on BSP environments and efficiency bottlenecks.
-  \item \cref{chap:carp} presents CARP and its evaluation on ingestion/query performance.
-  \item \cref{chap:amr} presents the AMR diagnostic workflow and CPLX placement policy.
-  \item \cref{chap:orca} presents ORCA and its observability/control design.
-  \item \cref{chap:timeline} outlines remaining milestones and completion plan.
+  \item \cref{chap:carp-paper,chap:amr-paper,chap:orca-paper} present CARP, the AMR study, and ORCA respectively.
+\item \cref{chap:concl} concludes the thesis and outlines future directions.
 \end{itemize}
 
 % P3: We studied this and found a common shape: "runtime unknowns" + "adaptive feedback loops".
