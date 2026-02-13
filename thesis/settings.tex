@@ -16,17 +16,27 @@
 %%% --- Font Options (uncomment one) ---
 % Use T1 encoding for better glyph metrics/hyphenation in pdfLaTeX, including cleaner inline \texttt{MPI_...}.
 \usepackage[T1]{fontenc}
-% \usepackage{XCharter}           % Charter - clean, modern (italics less distinct)
-% \usepackage{mathpazo}           % Palatino - classic academic (italics compressed)
-% \usepackage{newpxtext,newpxmath} % Palatino (newer) - better math than mathpazo
 % This font seems to have a good balance of readability, distinct italics, and readable italics
-\usepackage{libertinus}           % Libertinus - professional, distinct italics, good math
-% \usepackage{cochineal}          % Cochineal - elegant, very distinct italics
-% \usepackage{tgpagella}          % TeX Gyre Pagella - Palatino-like, better proportions
-% \usepackage{ebgaramond}         % EB Garamond - classic, beautiful italics
-% \usepackage{stix2}              % STIX Two - scientific publishing
+% 20260213:  libertinus is an OTF font, fallback not well supported, breaks on George's Notability
+% Requires xelatex/lualatex to work properly, but these may slow down compilation, so switching at least temporarily
+% \usepackage{libertinus}           % Libertinus - professional, distinct italics, good math
+
+% === TeX-native (born as TeX fonts, no conversion issues) ===
+% \usepackage{lmodern}             % Latin Modern - default CM-like
+% \usepackage{mlmodern}            % mlmodern - heavier Latin Modern, better in print
 % \usepackage{newtxtext,newtxmath} % Times-like - compact, familiar
-% \usepackage{lmodern}            % Latin Modern - default CM-like
+% \usepackage{newpxtext,newpxmath} % Palatino (newer) - better math than mathpazo
+% \usepackage{mathpazo}            % Palatino - classic academic (italics compressed)
+% \usepackage{kpfonts}             % kpfonts - Kepler-inspired, full math support built in
+\usepackage{XCharter}            % Charter - clean, modern (italics less distinct)
+% \usepackage{stix2}               % STIX Two - scientific publishing
+% \usepackage{tgpagella}           % TeX Gyre Pagella - Palatino-like, better proportions
+
+% === Converted to Type 1 for pdflatex (OTF-native, may have encoding quirks) ===
+% \usepackage{libertinus}          % Libertinus - humanist, distinct italics, good math
+% \usepackage{cochineal}           % Cochineal - elegant, very distinct italics
+% \usepackage{ebgaramond}          % EB Garamond - classic, beautiful italics (AJ: too cursive-y for captions)
+% \usepackage{Alegreya}            % Alegreya - warm humanist, very distinct italics, has math
 
 \usepackage[inner=1.25in, outer=1in, top=1in, bottom=1in]{geometry}
 
