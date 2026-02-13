@@ -120,7 +120,7 @@ We explore the broader implications of this model in~\S\ref{sec:amr:lessons}.
 
 \subsection{A Critical Path Model of Execution}
 \label{sec:amr:tele:critp}
-\figcritp
+\figAmrCritPath
 
 Before turning to placement, we introduce a critical path analysis framework to identify optimal
 task ordering strategies under a fixed placement.
@@ -153,6 +153,8 @@ time.
 More interesting are two-rank paths, where one rank is stalled waiting on a message from another.
 These cases are illustrated in \cref{fig:amr:model:2rcp}.
 This model reveals two strategies to shorten such paths:
+
+\figAmrSendOrder
 
 \noindent\emph{Operation ordering to reduce wait stalls.
 }

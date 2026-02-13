@@ -4,25 +4,25 @@
 \newcommand{\figchal}{
   \begin{figure}[t]
     \centering
-    \begin{subfigure}{\columnwidth}
+    \begin{subfigure}{0.48\textwidth}
       \centering
-      \includegraphics[width=\columnwidth, height=0.18\textheight, keepaspectratio]{data/figs/amr_msgcnt_regr.pdf}
+      \includegraphics[width=\linewidth,keepaspectratio]{data/figs/amr_msgcnt_regr_hor.pdf}
       \caption{Correlation between message counts and timing}
       \label{fig:amr:chal:regr}
     \end{subfigure}
-    \begin{subfigure}{0.9\columnwidth}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
       \centering
-      \includegraphics[width=\columnwidth, height=0.18\textheight, keepaspectratio]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
+      \includegraphics[height=0.22\textheight,keepaspectratio]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
       \caption{Coarse vs fine-grained telemetry from an AMR code}
       \label{fig:amr:chal:vol}
     \end{subfigure}
     \caption{Telemetry challenges in AMR codes.
-      (Top) Initial telemetry shows poor correlation between work (message counts) and
+      (Left) Initial telemetry shows poor correlation between work (message counts) and
       communication time.
       Tuning for system-level issues improves correlation and telemetry reliability.
-      (Bottom) Fine-grained telemetry reveals subtle
-      performance anomalies affecting average collective time by $3\times$.
-    }
+      (Right) Fine-grained telemetry reveals subtle
+      performance anomalies affecting average collective time by $3\times$.}
     \label{fig:amr:chal}
   \end{figure}
 }
@@ -52,37 +52,39 @@
 }
 
 % Figure 4.4
-\newcommand{\figcritp}{
-  \begin{figure}[t]
-    \centering
-    \begin{subfigure}{0.5\textwidth}
+\newcommand{\figAmrCritPath}{
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][h]
+    \begin{minipage}{0.55\textwidth}
       \centering
       \includegraphics[width=0.99\linewidth, height=0.1\textheight, keepaspectratio]{data/figs/amr_criticalpath2.pdf}
+      \vspace{0.3em}
       \includegraphics[width=0.99\linewidth, height=0.1\textheight, keepaspectratio]{data/figs/amr_criticalpath.pdf}
-      \caption{Critical path examples in single and multi-rank scenarios}
-      \label{fig:amr:model:2rcp}
-    \end{subfigure}
-    \vspace{5pt}
-    \begin{subfigure}{0.4\textwidth}
-      \centering
-      \includegraphics[width=0.99\linewidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_sendorder_v2.pdf}
-      \caption{Impact of send ordering on task scheduling}
-      \label{fig:amr:model:so}
-    \end{subfigure}
-    \caption{Critical paths within a synchronization window.
-      (Top) Single- vs two-rank critical paths,
-      demonstrating how delay chains can be purely local or involve exactly two ranks
-      with one P2P communication round.
-      (Bottom) A task schedule for two blocks,
-      demonstrating the impact of ordering.
-      Prioritizing $Send_0$ reduces its dispatch time without affecting $Send_1$, minimizing its
-      potential to create a critical path.
-    }
-    \label{fig:amr:model}
-  \end{figure}
+    \end{minipage}
+    \captionsetup{format=plain}
+    \caption{Critical path examples.
+      Single- vs two-rank critical paths, demonstrating how delay chains can be purely local or
+      involve exactly two ranks with one P2P communication round.}
+    \label{fig:amr:model:2rcp}
+  \end{SCfigure}}
 }
 
 % Figure 4.5
+\newcommand{\figAmrSendOrder}{
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][h]
+    \centering
+    \includegraphics[width=0.55\linewidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_sendorder_v2.pdf}
+    \captionsetup{format=plain}
+    \caption{Impact of send ordering on task scheduling.
+      A task schedule for two blocks demonstrating the impact of ordering.
+      Prioritizing $Send_0$ reduces its dispatch time without affecting $Send_1$, minimizing its
+      potential to create a critical path.}
+    \label{fig:amr:model:so}
+  \end{SCfigure}}
+}
+
+% Figure 4.6
 \newcommand{\figoctree}{
   \begin{figure}[t]
     \centering
@@ -134,7 +136,7 @@
   \end{table}
 }
 
-% Figure 4.6
+% Figure 4.7
 \newcommand{\figevalbwwidemini}{
   \begin{figure}[t]
     \begin{subfigure}{\textwidth}
@@ -169,7 +171,7 @@
   \end{figure}
 }
 
-% Figure 4.7
+% Figure 4.8
 \newcommand{\figmicro}{
   \begin{figure}[t]
     \begin{subfigure}{0.5\textwidth}

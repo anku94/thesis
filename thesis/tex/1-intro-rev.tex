@@ -1,0 +1,442 @@
+% !TEX root = ../main.tex Preamble %%% ------------------------------------------------
+
+% ## 1.0: Preamble
+
+% P1: BSP Is Important
+
+% P2: Data + Compute challenges
+
+\chapter{Introduction}
+\minitoc
+
+The Bulk Synchronous Parallel (BSP) paradigm powers some of our most critical computational tools,
+from large-scale scientific simulations in astrophysics and climate science to distributed training
+of foundation models in machine learning.
+These workloads---consisting of large parallel computations interspersed with I/O and global
+synchronization---currently operate at the scale of tens of thousands of accelerator
+nodes~\cite{Das2023:LargeScale,Stock2024:LargeScale,Gratt2024:Llama3Scale,:LlamaScale} and
+continue to grow with time~\cite{Rahma2024:MLScale}.
+As these applications scale, their efficiency has datacenter-level impacts on both cost and
+time-to-discovery.
+
+The tightly synchronized nature of BSP creates distinct challenges along the data and compute
+paths.
+On the data path, bursts of checkpointed state create massive I/O demands on the storage and
+analytics
+infrastructure~\cite{Jones2012:Checkpointing,Eisen2022:Checkpoint,Lian2025:UniversalCheckpointing}.
+On the compute path, frequent global synchronization amplifies the system's sensitivity to
+execution
+variability~\cite{Hoefl2010:Noise,Petri2003:Missing,Yildi2016:IONoise,Kocol2018:Varbench,Acun2016:Variation},
+and also amplifies correctness risks when failures or corrupted state propagate across ranks.
+Runtime artifacts that would be manageable in loosely coupled systems, such as minor OS-level
+interruptions or thermal throttling, become critical scaling barriers when every worker must wait
+for the slowest participant.
+
+Across two studies spanning the data and compute paths, we find that many of these efficiency
+bottlenecks are driven by \emph{runtime unknowns}: conditions that cannot be predicted reliably
+before execution.
+In this regime, the decisive factor is how quickly these conditions can be observed, characterized,
+and mitigated.
+On the data path, CARP tackles range-query performance under skewed and evolving key distributions
+by reconstructing global distributions in situ and adapting partitioning as the run evolves.
+On the compute path, our placement study in \emph{adaptive mesh refinement} (AMR) codes shows
+the failure modes of slow turnaround:
+placement effects were repeatedly confounded by fail-slow hardware, fabric
+pathologies, and tuning artifacts, forcing months of reruns and offline telemetry analysis.
+We view these as two instances of the same primitive---a runtime feedback loop over distributed
+state---online and closed in one case, manual and slow in the other.
+Because the governing conditions are fundamentally unknowable in advance, addressing them in
+production requires general-purpose infrastructure for closing these loops,
+which BSP workloads largely lack today.
+
+BSP's tight coupling is both the source of these bottlenecks and what makes them structurally
+addressable.
+Closing a runtime feedback loop requires two capabilities: observation to materialize a view of
+distributed execution, and action to respond.
+The same synchronization boundaries that amplify every rank's slowdown into a system-wide stall
+also define natural points where both are meaningful.
+We call the resulting paradigm steerable observability: the ability to navigate across views at
+multiple fidelities during the run and to intervene on the application guided by those views.
+We propose ORCA (\emph{Observability with Real-time Control and Aggregation}), a programmable
+substrate for feedback and control aligned to BSP synchronization,
+so the loop operates on well-defined boundary snapshots rather than devolving into reruns and
+post-hoc pipelines.
+
+\begin{tcolorbox}[thesisbox]
+  \textbf{Thesis Statement:} A large class of efficiency bottlenecks in BSP systems arise from
+  conditions that are unknowable before runtime.
+  Through two studies spanning the data and compute paths, this thesis demonstrates that such
+  conditions are systematically addressable through adaptive mechanisms if the requisite feedback
+  loops exist, and perpetuate if they do not.
+  We present ORCA as general-purpose infrastructure for closing these loops at scale.
+\end{tcolorbox}
+
+The rest of this chapter makes the case for programmable feedback loops through two studies
+spanning the data and compute paths (\S\ref{sec:intro:case}), presents steerable observability and
+its
+realization in ORCA (\S\ref{sec:intro:orca}), lists contributions (\S\ref{sec:intro:contribs}), and
+outlines the rest of the
+thesis (\S\ref{sec:intro:org}).
+
+\section{The Case for Programmable Feedback Loops in BSP}
+\label{sec:intro:case}
+
+We begin by defining the anatomy of a feedback loop over BSP execution
+(\S\ref{sec:intro:case:anatomy}), then examine
+two studies that instantiate the pattern with different outcomes.
+CARP demonstrates a fixed-function
+online loop for adaptive range partitioning on the data path (\S\ref{sec:intro:case:carp}).
+Our AMR placement study
+demonstrates the cost when the loop is manual and offline on the compute path
+(\S\ref{sec:intro:case:amr}).
+We
+conclude by characterizing the infrastructure gap that separates the two
+(\S\ref{sec:intro:case:gap}).
+
+\subsection{Anatomy of a BSP Feedback Loop}
+\label{sec:intro:case:anatomy}
+
+BSP execution is computation punctuated by synchronization.
+Ranks compute independently, then coordinate at barriers and collectives.
+These boundaries define when distributed execution is globally interpretable and when coordinated
+change is well-defined.
+A feedback loop over BSP execution operates on this cadence.
+
+\paragraph{View} A view is a reduction over per-rank observations at a synchronization boundary
+that answers a specific question---what is the load distribution across ranks, where is the
+synchronization bottleneck, what is the I/O throughput at this checkpoint.
+The point is to materialize the view that makes the condition legible, not to export raw telemetry.
+
+\paragraph{Action}
+An action is a coordinated update applied at a synchronization boundary so all ranks remain
+consistent.
+One class of actions steers observability itself, changing what is observed, at what fidelity, and
+where, so subsequent views answer the next question.
+A second class steers the running application or runtime, applying boundary-consistent updates such
+as hyperparameter changes, repartitioning, or placement adjustments.
+
+\paragraph{Operator}
+The operator requests views and chooses actions.
+It may be a fixed policy, a human workflow, or an automated agent.
+It is external to the substrate.
+The substrate provides boundary-consistent observation and action.
+The operator supplies the policy that closes the loop.
+
+
+\subsection{CARP: Adaptive Online Range Partitioning}
+\label{sec:intro:case:carp}
+
+Range queries over scientific data are fundamental to analysis, but expensive to support at scale.
+Post-processing approaches like out-of-core sorts require multiple additional passes over data,
+incurring write amplification and reducing the effective application bandwidth.
+While in-situ hash partitioning for point lookups has been demonstrated viable for scientific data,
+range partitioning is harder --- key distributions are unknown, highly skewed, and evolve over
+time.
+
+CARP addresses this with adaptive online range partitioning driven by periodic reconstruction of
+the global key distribution.
+A \emph{renegotiation} protocol materializes the global key
+distribution via in-situ reductions over per-rank state when triggered.
+A policy triggers this protocol at a preconfigured intervals to obtain the current
+global distribution, which is then used to compute new load-balanced partition boundaries and drive
+shuffling en-route to storage.
+By range-partitioning data in a single streaming pass,
+CARP avoids the write amplification of post-hoc sorting while
+enabling comparable query performance, achieving up to $4.9\times$ faster ingestion in our
+evaluation.
+
+\subsection{AMR Placement: A Manual Loop for Compute Pathologies}
+\label{sec:intro:case:amr}
+
+\emph{Adaptive Mesh Refinement} (AMR)
+codes are widely considered challenging to load-balance.
+The mesh evolves dynamically to track changing physics, requiring frequent rebalancing, but
+load characteristics and placement effects have not been well studied in practice.
+We initially set out to build telemetry-driven placement policies that could adapt to these
+characteristics at runtime.
+In practice, we found that we could not even evaluate placement cleanly: placement effects were
+repeatedly confounded by unrelated artifacts—fail-slow hardware, fabric pathologies, and tuning
+issues—that had to be identified and eliminated before placement could be isolated.
+
+The resulting loop---collect traces, analyze offline, refine hypothesis, reconfigure and
+rerun---was entirely manual and slow.
+Conventional HPC tracers emit large per-rank logs in formats
+that required expensive \emph{extract-transform-load} (ETL) before any analysis could begin.
+% New hypotheses would require repeating the loop with a reconfigured setup.
+Eliminating confounders consumed months of iteration even when individual mitigations typically
+took days once identified.
+With a stable measurement baseline finally established, we found a
+fundamental tradeoff between compute load balance and communication locality, and designed a
+placement policy called CPLX to provide tunable control over this tradeoff.
+In evaluation, CPLX reduced runtime by up to 21.6\% in real AMR workloads over tuned baselines, but
+like
+CARP's renegotiation interval, exposed another context-dependent tunable knob.
+
+\subsection{The Infrastructure Gap}
+\label{sec:intro:case:gap}
+
+Both studies instantiate the same primitive---a feedback loop over distributed execution---but
+with starkly different costs.
+In CARP, the loop is online: it materializes the specific view it
+needs during the run and uses it to drive reconfiguration with low turnaround.
+The AMR loop was expensive, as telemetry was collected as bulk traces and analyzed offline.
+Offline loops are expensive in three compounding ways:
+
+\begin{itemize}
+  \item \textbf{Deferred Materialization Costs.
+        }
+        Raw telemetry is captured at full volume and written
+        to storage before any reduction occurs.
+        Because the right subset is not knowable in advance,
+        the paradigm intrinsically tends to overcollect.
+        The resulting dataset is supercomputer-scale,
+        so a reduction that could run in situ over the fabric is instead forced through a
+        write--read--parse cycle on the slowest tier in the hierarchy: storage.
+
+        % \item \textbf{Deferred Materialization Costs.} Raw telemetry is captured at full volume,
+        % serialized, and written to storage before any reduction occurs. Because the right subset is not
+        % knowable in advance, the paradigm intrinsically tends to overcollect. The resulting datasets are
+        % cluster-scale, and analyzing them demands the same computational resources that in-situ processing
+        % would leverage---but mediated by the slowest tier in the hierarchy (storage).
+
+  \item \textbf{ETL Costs.
+        }
+        Conventional tracers write per-rank logs in flat layouts
+        with little awareness of BSP structure.
+        Causal relationships created by synchronization are not reflected in the on-disk organization,
+        so even simple questions require expensive ETL before queries can run.
+
+  \item \textbf{Rerun Costs.
+        }
+        Refining a hypothesis, changing what is observed, or
+        testing a mitigation typically requires reconfiguration and re-execution.
+        Turnaround is bounded by
+        reruns and offline pipelines rather than by the running job.
+\end{itemize}
+
+
+
+The real cost is foregone analysis: when turnaround is dominated by trace volume, ETL, and reruns,
+systematic investigation gives way to ad-hoc mitigations.
+% The real cost is not just wasted cycles, but foregone analysis. When turnaround is dominated by
+% trace volume, ETL, and reruns, many questions are never investigated systematically, and teams
+% fall back to ad-hoc mitigations that treat symptoms rather than causes. CARP shows that online
+% closure is feasible, but only as a fixed-function mechanism built for one view and one action, not
+% as general-purpose infrastructure that lets operators specify new views and interventions. These
+% are not pathologies unique to our studies. They recur across BSP systems and are extensively
+% documented, yet persist because BSP workloads largely lack general-purpose infrastructure for
+% closing such loops online.
+CARP shows that online closure is feasible, but only as a fixed-function mechanism built for one
+view and one action, not as general-purpose infrastructure that lets operators specify new views
+and interventions.
+These pathologies recur across BSP systems and are well-documented, yet persist because no
+general-purpose substrate for closed-loop observability workflows exists.
+
+\section{ORCA: A Substrate for Closed-Loop Observability}
+\label{sec:intro:orca}
+
+The preceding analysis points to a missing piece: a programmable substrate for closing feedback
+loops over BSP execution online, supporting operator-specified views and coordinated interventions
+without bespoke pipelines.
+We call the resulting paradigm steerable observability.
+The system materializes views of distributed state on demand, operators navigate across fidelities
+at runtime, and interventions are applied consistently at synchronization boundaries guided by
+those views.
+This makes always-on collection viable: a lightweight summary can run continuously, with detail
+enabled only when needed.
+
+\paragraph{Requirements} We identify three requirements for steerable observability:
+
+\begin{itemize}
+  \item \textbf{In-situ view materialization.
+        }
+        Views must be reduced in-situ during the run, not
+        deferred to post-hoc reconstruction through the storage tier.
+        Overhead should scale with fidelity:
+        always-on lightweight aggregates in the common case, with detailed collection enabled on demand.
+
+  \item \textbf{Programmable views.
+        }
+        Operators must be able to specify and evolve views as queries
+        over per-rank observations, without recompilation, restarts, or bespoke pipelines---not
+        write-optimized per-rank logs in flat formats that require expensive reshaping before any question
+        can be asked.
+        A fixed catalog of views cannot anticipate every pathology.
+
+  \item \textbf{Control semantics.
+        }
+        A well-defined mechanism for applying coordinated interventions
+        at synchronization boundaries, so that refining a hypothesis or changing what is observed does not
+        require reconfiguration and re-execution.
+\end{itemize}
+
+\paragraph{ORCA} We propose a \emph{tree-based overlay network} (TBON) called ORCA
+(\emph{Observability with
+  Real-time Control and Aggregation}) as a programmable substrate for steerable observability in BSP
+workloads.
+ORCA attaches a tier of dedicated aggregators to a running application and executes SQL
+queries over columnar telemetry in the overlay, materializing boundary-aligned views through
+in-situ reduction.
+A timestep-consistent control plane (TS2PC) applies coordinated interventions,
+including changes to what is observed, atomically at barriers.
+On a real AMR code at 4096 ranks,
+ORCA collects detailed traces at 1--2\% overhead versus 56--81\% for conventional tracers,
+eliminates 98.5--99.999\% of telemetry at source for evaluated queries, and in a closed-loop
+evaluation with an LLM agent localizes a performance anomaly in 27 minutes that previously took
+months of manual iteration.
+
+\paragraph{Scope}
+ORCA provides two capabilities: in-situ view materialization and timestep-consistent control.
+ORCA is agnostic to how telemetry is produced and to who closes the loop---it may be steered by a
+fixed heuristic, a human workflow, or an automated agent.
+Telemetry can originate from probes, counters, or application annotations, as long as it can be
+represented as structured columnar data.
+Where SQL is insufficient, ORCA supports user-defined operators within the overlay.
+
+
+\section{List of Contributions}
+\label{sec:intro:contribs}
+
+\paragraph{CARP}
+\begin{itemize}
+  \item An adaptive in-situ range partitioner for streaming scientific data, designed to accelerate
+        range queries under unknown and evolving key distributions.
+
+  \item Partitions data in a single streaming pass with $1\times$ write amplification during
+        ingestion,
+        and is $2.8$--$4.9\times$ faster than post-processing approaches.
+
+  \item Shows that partially ordered layouts can deliver range-query performance comparable to fully
+        sorted layouts, while being up to two orders of magnitude faster than auxiliary bitmap indices
+        on the evaluated workloads.
+
+  \item Complements DeltaFS's in-situ hash partitioning~\cite{Zheng2018:DeltaFS} by providing the
+        in-situ range-partitioning
+        counterpart needed for range queries.
+\end{itemize}
+
+\paragraph{AMR placement}
+\begin{itemize}
+  \item An end-to-end empirical study integrating collection, tuning, and placement, showing how
+        artifacts such as overheating, fabric bugs, and operation ordering obscure placement effects.
+
+  \item CPLX, a tunable placement policy that exposes the tradeoff between compute load balance and
+        communication locality, achieving up to $21.6\%$ runtime reduction over tuned baselines across
+        $512$--$4096$ ranks.
+\end{itemize}
+
+\paragraph{ORCA}
+\begin{itemize}
+  \item A BSP-aware observability and control substrate that aligns both analysis and coordinated
+        interventions to synchronization boundaries.
+
+  \item The \emph{timestep dataframe} abstraction, partitioning BSP telemetry into causally
+        independent windows,
+        and a \emph{(timestep, rank)}-partitioned
+        Parquet layout, yielding up to $44\times$
+        smaller traces and up to $6{,}800\times$ faster post-mortem analysis.
+        % grounded in the fact that global synchronization% partitions execution into causally independent
+        % windows, 
+
+  \item An incast-optimized RDMA transport for tree topologies that enables detailed trace collection
+        at under $2\%$ runtime overhead with real AMR codes, versus $56$--$81\%$ for conventional tracers.
+
+  \item A SQL-based in-situ programming interface over timestep dataframes with operator pushdown,
+        eliminating $98.5\%$--$99.999\%$ of telemetry
+        at source in evaluated queries.
+
+  \item A timestep-consistent control plane via TS2PC (\emph{timestep-linked two-phase commit}) that
+        enables coordinated runtime changes aligned to BSP synchronization.
+
+  \item In a closed-loop evaluation using an LLM agent, an anomaly that took months to isolate
+        manually is localized in 27 minutes.
+\end{itemize}
+
+
+\section{Thesis Organization}
+\label{sec:intro:org}
+
+The remainder of this thesis is organized as follows.
+\begin{itemize}
+  \item \cref{chap:bg} provides background on BSP environments and efficiency bottlenecks.
+  \item \cref{chap:carp} presents CARP and its evaluation on ingestion/query performance.
+  \item \cref{chap:amr} presents the AMR diagnostic workflow and CPLX placement policy.
+  \item \cref{chap:orca} presents ORCA and its observability/control design.
+  \item \cref{chap:timeline} outlines remaining milestones and completion plan.
+\end{itemize}
+
+% P3: We studied this and found a common shape: "runtime unknowns" + "adaptive feedback loops".
+% Efficiency challenges of the "runtime unknown" form become hard to address in prod because the
+% general shape in a necessary form is not supported.
+
+% P4: BSP is unique, this shape needs to be solved in a unique way. ORCA does it.
+
+% P5: Thesis Statement
+
+% P6: Intro Outline
+
+% ## 1.1: Feedback Loops + Gaps
+
+% Takeaway: When addressing runtime unknowns, BSP loops keep showing up. Yet no general mechanism
+% exists to build these loops.
+
+% ### 1.1.1: Loops and BSP
+
+% BSP execution is work punctuated by sync. This sync is both the primary causality and consistency
+% mechanism
+
+% State: System State. Global state only makes sense at sync points. Local state/internal mutations
+% are a second-order explanation. - This holds true for both correctness and performance
+
+% View: Aggregates from that state. The right aggregate makes problems obvious. Reductions. (Not
+% necessarily in-situ)
+
+% Action: application-wide actions only defined at these synchronization points.
+
+% Operator: holds the policy. Decoupled from the substrate. Can be algorithm or human.
+
+% ### 1.1.2: CARP: Functional, Fixed-Function, Data Path Loop, Driven By Policy
+
+% ### 1.1.3: AMR: Broken, Generic, Driven By Human
+
+% ### 1.1.4: The Gap
+
+% 1. Delaying materialization makes it costly and derails interventions - You overcollect,
+% serialize, exit a HPC fabric, write to storage. - Because this is the state from a supercomputer,
+% reversing this needs supercomputer-sized resources. And you have added the slowest tier on the
+% path (storage). - You overcollect because you don't know how much to collect - Or because you're
+% collecting raw data. Out-of-core sorts first collect raw data, look at histograms, then move it
+% around. Couldn't you look at histograms and organize it properly in the first place?
+
+% 2. Given a certain collection volume, we do a terrible job organizing it - Write JSON, with no
+% understanding of these causal boundaries. Per-rank logs are write-optimized they're not
+% structure-optimized. - There's an RDMA fabric but we don't use it
+
+% 3. Interventions require trial and error. "What's the right value of this hyperparameter"? "How
+% many probes to toggle? There's infinite." Each trial and error becomes a full run.
+
+% %%% - In-situ reductions. Views are simple aggregates. Collecting data needlessly adds overhead.
+% If you can reduce in-situ you can act in-situ.
+
+
+% ## 1.2: Steerable Observability and ORCA
+
+% Paradigm: Steerable and view-driven observability. System materializes what you specify on demand,
+% and enables you to act in real time. This forms a complete feedback and control loop. Makes
+% always-on possible as there's always a meaningful summary you're acting on. Details on demand.
+
+% ### Steerability Needs: - Fast views materialized in-situ. - Programmability: views vary - Online
+% intervention: reduce the cost of a trial
+
+% ### How ORCA Saves The Day - TBON and all
+
+% ### What Is And Not In Scope - In-scope: a SQL-based substrate + timestep-consistent control - Not
+% in scope: instrumentation, or policies - These are context-dependent. Decoupling is the right
+% thing to do - Our goal: make it easy to add these things. Anything that materializes Arrow is in
+% scope - Likewise for policies. Prior work does autotuning. For us that is out of scope. -
+% Operators. Many things SQL doesn't enable easily. Specific kernels may be needed. We acknowledge
+% that and provide an escape hatch.
+
+% 1.3: List of Contributions
+
+% 1.4: Thesis Outline

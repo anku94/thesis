@@ -16,7 +16,10 @@
       "Bash(biber:*)",
       "Bash(latexindent:*)",
       "Bash(/usr/bin/diff:*)",
-      "Bash(pdftk:*)"
+      "Bash(pdftk:*)",
+      "Bash(python msgcnt_regr.py:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)"
     ]
   }
 }
