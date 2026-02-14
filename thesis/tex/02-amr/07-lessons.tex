@@ -10,7 +10,7 @@ We distill our takeaways from this exercise into the following five lessons.
 
 \lesson{1}{AMR Performance Is Straggler Mitigation}
 
-High synchronization costs in AMR codes are often attributed to load imbalance.
+\noindent High synchronization costs in AMR codes are often attributed to load imbalance.
 Our experience suggests that this attribution may be premature: stragglers can also arise from
 tuning artifacts, execution strategy interactions, or hardware-level variability.
 Placement strategies cannot compensate for unstable system behavior---such instability must be
@@ -18,7 +18,7 @@ identified and resolved independently before placement can be meaningfully evalu
 
 \lesson{2}{Effective Tuning is Empirical and Idiosyncratic}
 
-Performance tuning is not about correctness, but about aligning system behavior with the workload.
+\noindent Performance tuning is not about correctness, but about aligning system behavior with the workload.
 Default configurations reflect common-case assumptions that may vary across codes.
 Tuning, therefore, is both empirical and
 workload-specific~\cite{Kruse2023:StatisticalAnalysisHPC,Mijak2016:PERISCOPE,Pelle2012:TuningMPI}.
@@ -29,7 +29,7 @@ and exposed deeper residual issues that would otherwise be misattributed.
 
 \lesson{3}{P2P Communication Is A Key Variability Source}
 
-Our tuning efforts primarily focused on point-to-point (P2P) communication patterns used in ghost
+\noindent Our tuning efforts primarily focused on point-to-point (P2P) communication patterns used in ghost
 cell and halo exchanges.
 Unlike collectives, which are structured and easy to benchmark in isolation, P2P exchanges are
 fine-grained, latency-sensitive, and highly variable.
@@ -42,7 +42,7 @@ attention during tuning.
 
 \lesson{4}{Diagnosis Needs Structured, Queryable Telemetry}
 
-Understanding why performance deviated required analytics over fine-grained telemetry to surface
+\noindent Understanding why performance deviated required analytics over fine-grained telemetry to surface
 anomalous low-level behavior.
 % citation for JSON (chrome trace)
 While tracing tools capture such detail, they rely on unstructured formats like
@@ -63,7 +63,7 @@ enabling low-overhead parsing and efficient querying via embedded statistics ove
 % Designing placement policies in AMR codes is a systems engineering problem, not a theoretical
 % exercise. AMR placement is a systems engineering problem grounded in empirical constraints rather
 % than algorithmic considerations.
-AMR placement policy design is a systems engineering problem, guided primarily by empirical
+\noindent AMR placement policy design is a systems engineering problem, guided primarily by empirical
 constraints rather than solely by theoretical optimality.
 Tradeoffs between compute balance, communication locality, and placement overhead must be evaluated
 based on observed performance impact, not static preferences.

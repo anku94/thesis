@@ -1,33 +1,31 @@
 % AMR Paper Figure Macros
 
 % Figure 4.1
-\newcommand{\figchal}{
+\newcommand{\figAmrChalRegr}{
   \begin{figure}[t]
     \centering
-    \begin{subfigure}{0.48\textwidth}
-      \centering
-      \includegraphics[width=\linewidth,keepaspectratio]{data/figs/amr_msgcnt_regr_hor.pdf}
-      \caption{Correlation between message counts and timing}
-      \label{fig:amr:chal:regr}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.48\textwidth}
-      \centering
-      \includegraphics[height=0.22\textheight,keepaspectratio]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
-      \caption{Coarse vs fine-grained telemetry from an AMR code}
-      \label{fig:amr:chal:vol}
-    \end{subfigure}
-    \caption{Telemetry challenges in AMR codes.
-      (Left) Initial telemetry shows poor correlation between work (message counts) and
+    \includegraphics[width=\linewidth,keepaspectratio]{data/figs/amr_msgcnt_regr_hor.pdf}
+    \caption{Telemetry challenges in AMR codes: correlation between message counts and timing.
+      Initial telemetry shows poor correlation between work (message counts) and
       communication time.
-      Tuning for system-level issues improves correlation and telemetry reliability.
-      (Right) Fine-grained telemetry reveals subtle
-      performance anomalies affecting average collective time by $3\times$.}
-    \label{fig:amr:chal}
+      Tuning for system-level issues improves correlation and telemetry reliability.}
+    \label{fig:amr:chal:regr}
   \end{figure}
 }
 
 % Figure 4.2
+\newcommand{\figAmrChalVol}{
+  \begin{figure}[t]
+    \centering
+    \includegraphics[height=0.32\textheight,keepaspectratio]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
+    \caption{Telemetry challenges in AMR codes: coarse vs fine-grained telemetry.
+      Fine-grained telemetry reveals subtle
+      performance anomalies affecting average collective time by $3\times$.}
+    \label{fig:amr:chal:vol}
+  \end{figure}
+}
+
+% Figure 4.3
 \newcommand{\figtunehw}{
   \begin{figure}[t]
     \centering
@@ -39,7 +37,7 @@
   \end{figure}
 }
 
-% Figure 4.3
+% Figure 4.4
 \newcommand{\figtunesw}{
   \begin{figure}[t]
     \centering
@@ -51,30 +49,35 @@
   \end{figure}
 }
 
-% Figure 4.4
+% Figure 4.5
 \newcommand{\figAmrCritPath}{
-  {\sidecaptionvpos{figure}{c}
-  \begin{SCfigure}[0.9][h]
-    \begin{minipage}{0.55\textwidth}
+  \begin{figure}[t]
+    \centering
+    \begin{subfigure}{0.35\columnwidth}
       \centering
-      \includegraphics[width=0.99\linewidth, height=0.1\textheight, keepaspectratio]{data/figs/amr_criticalpath2.pdf}
-      \vspace{0.3em}
-      \includegraphics[width=0.99\linewidth, height=0.1\textheight, keepaspectratio]{data/figs/amr_criticalpath.pdf}
-    \end{minipage}
-    \captionsetup{format=plain}
+      \includegraphics[height=0.2\textheight, keepaspectratio]{data/figs/amr_criticalpath2.pdf}
+      \caption{Single-rank critical path}
+      \label{fig:amr:model:1rcp}
+    \end{subfigure}
+    % \vspace{0.5em}
+    \begin{subfigure}{0.63\columnwidth}
+      \centering
+      \includegraphics[height=0.2\textheight, keepaspectratio]{data/figs/amr_criticalpath.pdf}
+      \caption{Two-rank critical path}
+      \label{fig:amr:model:2rcp}
+    \end{subfigure}
     \caption{Critical path examples.
-      Single- vs two-rank critical paths, demonstrating how delay chains can be purely local or
-      involve exactly two ranks with one P2P communication round.}
-    \label{fig:amr:model:2rcp}
-  \end{SCfigure}}
+      Delay chains can be purely local (a) or involve exactly two ranks with one P2P communication round (b).}
+    \label{fig:amr:model:cp}
+  \end{figure}
 }
 
-% Figure 4.5
+% Figure 4.6
 \newcommand{\figAmrSendOrder}{
   {\sidecaptionvpos{figure}{c}
-  \begin{SCfigure}[0.9][h]
+  \begin{SCfigure}[2.2][h]
     \centering
-    \includegraphics[width=0.55\linewidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_sendorder_v2.pdf}
+    \includegraphics[height=0.17\textheight, keepaspectratio]{data/figs/amr_sendorder_v2.pdf}
     \captionsetup{format=plain}
     \caption{Impact of send ordering on task scheduling.
       A task schedule for two blocks demonstrating the impact of ordering.
@@ -84,11 +87,11 @@
   \end{SCfigure}}
 }
 
-% Figure 4.6
+% Figure 4.7
 \newcommand{\figoctree}{
   \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth, height=0.25\textheight, keepaspectratio]{data/figs/amr_octree.pdf}
+    \includegraphics[height=0.45\textheight, keepaspectratio]{data/figs/amr_octree.pdf}
     \caption{Example of an adaptively refined mesh, octrees, and Z-order
       Space-Filling Curves (SFCs) in two dimensions.
       Mesh blocks correspond to octree nodes with refinement creating child nodes.
@@ -104,8 +107,9 @@
 % Table 4.1
 \newcommand{\tableruns}{
   \begin{table}[t]
+    \centering
     \begin{threeparttable}
-      \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}} cccccc @{}}
+      \begin{tabular}{cccccc}
         \toprule
         \textbf{\textsc{ranks}}
         & \textbf{\textsc{mesh size}}
@@ -119,93 +123,99 @@
         2048 & $128 \times 256^2$ & 43,042 & 4,699 & 2,048 & 4,848 \\
         4096 & $256^3$            & 53,459 & 9,392 & 4,096 & 8,968 \\
         \bottomrule
-      \end{tabular*}
+      \end{tabular}
       \begin{tablenotes}[flushleft]
         \small
         \item $t_{total}$: total timesteps, $t_{lb}$: timesteps invoking load-balancing
         \item $n_{init}$: initial block count, $n_{final}$: final block count
       \end{tablenotes}
     \end{threeparttable}
-    \label{tab:amr:results}
     \caption{Problem configurations for Sedov Blast Wave 3D experiments.
       All configurations use $16^3$ block size, initializing with one block per rank to ensure meaningful
       placement impact at all scales.
       The number of blocks increases through refinement as the shock wave propagates, with final block
       counts shown in the rightmost column.
     }
+    \label{tab:amr:results}
   \end{table}
 }
 
-% Figure 4.7
-\newcommand{\figevalbwwidemini}{
+% Figure 4.8
+\newcommand{\figAmrEvalRuntime}{
   \begin{figure}[t]
-    \begin{subfigure}{\textwidth}
-      \centering
-      \includegraphics[trim=0cm 0.2cm 0cm 0.2cm, clip, width=\textwidth, height=0.15\textheight, keepaspectratio]{data/figs/amr_blastwave_runtime_wide.pdf}
-      \caption{Performance breakdown by execution phase and policy}
-      \label{fig:amr:eval:runtime:wide}
-    \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-      \centering
-      \includegraphics[trim=0cm 0.2cm 0cm 0.2cm, clip, width=\textwidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_blastwave_tradeoff_wide_mini.pdf}
-      \caption{Communication and synchronization time tradeoffs}
-      \label{fig:amr:eval:tradeoff:wide}
-    \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-      \centering
-      \includegraphics[trim=0cm 0.2cm 0cm 0.2cm, clip, width=\textwidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_blastwave_comm_wide_mini.pdf}
-      \caption{Locality analysis by message volume}
-      \label{fig:amr:eval:comm:wide}
-    \end{subfigure}
-    \caption{Runtime statistics comparing different load-balancing policies across multiple scales (512--4096 ranks). \\
-      (Top) Total runtime, classified into phases.
-      CPL50 performs best, with up to 21.6\% runtime reduction over baseline.
-      (Bottom, left) Clear tradeoff emerges between communication time (increasing with X) and
-      synchronization time (decreasing with X), demonstrating how CPLX enables controlled balance
-      between these competing factors.
-      (Bottom, right) Message patterns
-      show that increasing X reduces local in favor of remote communication,
-      providing evidence for the locality-performance tradeoff.
-    }
-    \label{fig:amr:eval:main:wide}
+    \centering
+    \includegraphics[trim=0cm 0.2cm 0cm 0.2cm, clip, width=\columnwidth, keepaspectratio]{data/figs/amr_blastwave_runtime.pdf}
+    \caption{Sedov evaluation: performance breakdown by execution phase and policy.
+      Total runtime across scales (512--4096 ranks), classified into phases.
+      CPL50 performs best, with up to 21.6\% runtime reduction over baseline.}
+    \label{fig:amr:eval:runtime:wide}
   \end{figure}
 }
 
-% Figure 4.8
-\newcommand{\figmicro}{
+% Figure 4.9
+\newcommand{\figAmrEvalTradeoff}{
   \begin{figure}[t]
-    \begin{subfigure}{0.5\textwidth}
-      \centering
-      \includegraphics[width=\columnwidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_meshdriver_locbench.pdf}
-      \caption{Boundary communication latency vs. policies (\commbench)}
-      \label{fig:amr:eval:loc}
-    \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-      \centering
-      \includegraphics[trim=.1cm 7.6cm .1cm .1cm, clip, width=\columnwidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_scaling.pdf}
-      \caption{Load balance quality vs. polices (\scalebench)}
-      \label{fig:amr:eval:scal_a}
-    \end{subfigure}
-    \begin{subfigure}{0.5\textwidth}
-      \includegraphics[trim=.1cm .4cm .1cm 7.6cm, clip, width=\columnwidth, height=0.12\textheight, keepaspectratio]{data/figs/amr_scaling.pdf}
-      \caption{Policy compute cost vs. simulated rank count (\scalebench)}
-      \label{fig:amr:eval:scal_b}
-    \end{subfigure}
-    \caption{
-      (Top) Boundary communication round latency vs. locality at different scales, measured using \commbench.
+    \centering
+    \includegraphics[trim=0cm 0.2cm 0cm 0.2cm, clip, width=\columnwidth, keepaspectratio]{data/figs/amr_blastwave_tradeoff_wide_mini.pdf}
+    \caption{Sedov evaluation: communication and synchronization time tradeoffs.
+      Clear tradeoff emerges between communication time (increasing with X) and
+      synchronization time (decreasing with X), demonstrating how CPLX enables controlled balance
+      between these competing factors.}
+    \label{fig:amr:eval:tradeoff:wide}
+  \end{figure}
+}
+
+% Figure 4.10
+\newcommand{\figAmrEvalComm}{
+  \begin{figure}[t]
+    \centering
+    \includegraphics[trim=0cm 0.2cm 0cm 0.2cm, clip, width=\columnwidth, keepaspectratio]{data/figs/amr_blastwave_comm_wide_mini.pdf}
+    \caption{Sedov evaluation: locality analysis by message volume.
+      Message patterns show that increasing X reduces local in favor of remote communication,
+      providing evidence for the locality-performance tradeoff.}
+    \label{fig:amr:eval:comm:wide}
+  \end{figure}
+}
+
+% Figure 4.11
+\newcommand{\figAmrMicroLoc}{
+  {\sidecaptionvpos{figure}{c}
+  \begin{SCfigure}[0.9][t]
+    \centering
+    \includegraphics[height=0.2\textheight, keepaspectratio]{data/figs/amr_meshdriver_locbench.pdf}
+    \captionsetup{format=plain}
+    \caption{Microbenchmarks: boundary communication latency vs. policies (\commbench).
+      Boundary communication round latency vs. locality at different scales.
       Locality modestly affects round latency ($\pm0.5ms$).
       At larger scales, strict locality preservation surprisingly becomes counterproductive, as it
-      results in communication hotspots relative to hybrid placements.
-      \\
-      (Middle) Average makespans from CPLX placements with three synthetic distributions.
+      results in communication hotspots relative to hybrid placements.}
+    \label{fig:amr:eval:loc}
+  \end{SCfigure}}
+}
+
+% Figure 4.12
+\newcommand{\figAmrMicroScalA}{
+  \begin{figure}[t]
+    \centering
+    \includegraphics[trim=.1cm 7.6cm .1cm .1cm, clip, width=0.85\columnwidth, keepaspectratio]{data/figs/amr_scaling.pdf}
+    \caption{Microbenchmarks: load balance quality vs. policies (\scalebench).
+      Average makespans from CPLX placements with three synthetic distributions.
       While LPT performs best across all distributions, the bulk of the benefits are realized with
-      $X=25$.
-      \\
-      (Bottom) Compute time for CPLX as a function of scale, averaged across three
+      $X=25$.}
+    \label{fig:amr:eval:scal_a}
+  \end{figure}
+}
+
+% Figure 4.13
+\newcommand{\figAmrMicroScalB}{
+  \begin{figure}[t]
+    \centering
+    \includegraphics[trim=.1cm .4cm .1cm 7.6cm, clip, width=0.85\columnwidth, keepaspectratio]{data/figs/amr_scaling.pdf}
+    \caption{Microbenchmarks: policy compute cost vs. simulated rank count (\scalebench).
+      Compute time for CPLX as a function of scale, averaged across three
       synthetic distributions.
       Compute time stays below 10ms until 16K ranks, and can be reduced beyond that scale using smaller
-      parallel instances.
-    }
-    \label{fig:amr:eval:micro}
+      parallel instances.}
+    \label{fig:amr:eval:scal_b}
   \end{figure}
 }

@@ -6,7 +6,6 @@
 \newcommand{\cpld}{\texttt{CPL75}} \newcommand{\cple}{\texttt{CPL100}}
 
 \tableruns
-\figevalbwwidemini
 
 In this section, we evaluate CPLX under real AMR workloads and synthetic microbenchmarks.
 While {\cple} (pure LPT) and the baseline policy represent known quantities, our key question is
@@ -67,6 +66,8 @@ execution.
 All experiments used MVAPICH2~v2.3.7~\cite{Panda2021:MVAPICH}, compiled against a tuned version of
 PSM~\cite{2020:IntelPerformanceScaled}, the userspace library for our QLogic fabric.
 
+\figAmrEvalRuntime
+
 \subsection{Sedov Blast Wave Results}\label{sec:amr:eval:sedov}
 
 We evaluate five placement policies on the Sedov Blast Wave problem across four scales (512--4096
@@ -80,7 +81,7 @@ patterns (\cref{fig:amr:eval:comm:wide}).
 
 \finding{1}{Baseline: synchronization reaches 50\% of total runtime at scale}
 
-\Cref{fig:amr:eval:runtime:wide} shows total runtime across all policies,
+\noindent\Cref{fig:amr:eval:runtime:wide} shows total runtime across all policies,
 decomposed into computation, communication, synchronization, and rebalancing
 phases.
 With baseline placement, computation and synchronization dominate the profile, jointly accounting
@@ -96,7 +97,7 @@ scale.
 
 \finding{2}{CPLX achieves up to 21.6\% overall runtime reduction, with impact increasing with scale}
 
-\Cref{fig:amr:eval:runtime:wide} also shows that all CPLX configurations outperform
+\noindent\Cref{fig:amr:eval:runtime:wide} also shows that all CPLX configurations outperform
 the baseline, with runtime improvements that grow more pronounced at larger scales.
 At 4096 ranks, the best-performing variant (\cple) reduces total runtime by up to \textbf{21.6\%}
 relative to baseline.
@@ -119,9 +120,11 @@ dominate non-compute runtime in the baseline configuration.
 Measured as reduction in non-compute time, the impact of CPLX becomes even more pronounced---up to
 36\% reduction at 4096 ranks.
 
+\figAmrEvalTradeoff
+
 \finding{3}{CPLX enables consistent control over the load-locality tradeoff, and tradeoff impact increases with scale}
 
-\Cref{fig:amr:eval:tradeoff:wide} isolates the core tradeoff by showing P2P communication
+\noindent\Cref{fig:amr:eval:tradeoff:wide} isolates the core tradeoff by showing P2P communication
 and synchronization times, normalized against the baseline, for all policy configurations at 512 and 4096 ranks.
 Intermediate scales are omitted for compactness, but we find them to demonstrate similar trends.
 Increasing $X$ reduces synchronization time, as expected from better load balance, while increasing
@@ -143,9 +146,11 @@ and improving load-balance has a positive downstream impact that overrides the l
 This is an illustration of higher-order placement effects that we discard for computational
 tractability.
 
+\figAmrEvalComm
+
 \finding{4}{P2P message volume statistics confirm locality degradation with increasing $X$}
 
-\cref{fig:amr:eval:comm:wide} shows the breakdown of local (intra-node shared memory) and
+\noindent\cref{fig:amr:eval:comm:wide} shows the breakdown of local (intra-node shared memory) and
 remote (inter-node MPI) P2P messages, normalized to the total baseline message volume,
 for \cplx{} variants at 512 and 4096 ranks.
 As $X$ increases, remote message counts rise while local messages fall, reflecting the fact that
@@ -173,12 +178,12 @@ only partial spatial locality.
 
 \subsection{Microbenchmarks}\label{sec:amr:eval:micro}
 
-\figmicro
-
 To complement the application-level Sedov results (\S\ref{sec:amr:eval:sedov}) and enable controlled
 evaluation across a broader range of conditions, we developed two microbenchmarks.
 \commbench{} isolates P2P communication under varying placements, while \scalebench{} evaluates the effectiveness and
 computational cost of placement policies under synthetic compute imbalance.
+
+\figAmrMicroLoc
 
 \parahead{Commbench: Simulating Boundary Communication Patterns}
 
@@ -226,6 +231,9 @@ to more uniform traffic patterns.
 Though the latency differences are modest ($\pm$0.5\,ms), the reversal of expected trends
 underscores how observed system behavior can defy theoretical intuitions.
 \commbench{} provides a practical mechanism for empirically selecting $X$ in different environments.
+
+\figAmrMicroScalA
+\figAmrMicroScalB
 
 \parahead{Scalebench: Evaluating Imbalance and Placement Overhead}
 \scalebench{} evaluates different policies at scales from 512 to 128K ranks, with 1--2 blocks per rank to enable flexible load-balancing.
