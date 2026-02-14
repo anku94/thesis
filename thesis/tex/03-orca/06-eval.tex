@@ -215,29 +215,7 @@ lack the columnar, causally-partitioned data path that enables ORCA's analytical
 \subsection{ORCA-Native In-Situ Workflows}
 \label{sec:orca:eval-insitu}
 
-\begin{table}[t]
-  \centering
-  \small
-  \begin{tabular}
-    {@{}p{1.2cm}p{5.8cm}@{}}
-    \toprule
-    \textbf{Flow}    & \textbf{Query}                                                                                                \\
-    \midrule
-    Slow Wait Counts &
-    \texttt{SELECT COUNT(*) FROM mpi\_wait WHERE duration > 1ms} \textcolor{gray}{$\rightarrow$ DuckDB}                              \\
-    \addlinespace
-    Slow Wait Traces &
-    \texttt{SELECT * FROM mpi\_wait WHERE duration > 1ms} \textcolor{gray}{$\rightarrow$ Parquet}                                    \\
-    \addlinespace
-    Load Imbalance   &
-    \texttt{SELECT rank, SUM(duration) FROM kokkos WHERE name IN \textcolor{gray}{<compute kernels>}}                                \\
-                     & \texttt{GROUP BY rank} \textcolor{gray}{$\rightarrow$ \texttt{\textcolor[HTML]{B48EAD}{stats}}} \textcolor{gray}{$\rightarrow$ Parquet} \\
-                     & \texttt{PERCENTILES(\textcolor[HTML]{B48EAD}{stats}, [50,90,99])} \textcolor{gray}{$\rightarrow$ DuckDB}                                \\
-    \bottomrule
-  \end{tabular}
-  %   \caption{In-situ analytics workflows evaluated.}\label{tab:orca:ontv-flows}
-  \caption{In-situ workflows evaluated in \Cref{sec:orca:eval-insitu}, ranging from lightweight metrics and selective tracing on the communication path to aggregates over compute kernels.}\label{tab:orca:ontv-flows}
-\end{table}
+\tabEvalFlows{}
 
 \figEvalOrcaNative{}
 

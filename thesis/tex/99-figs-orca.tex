@@ -1,6 +1,6 @@
 % ORCA Paper Figure Macros
 
-% Background: Volatile function tail latency example
+% Fig 5.1: Background: Volatile function tail latency example
 \newcommand{\figBgVolatile}{%
   \begin{figure}[t]
     \centering
@@ -13,11 +13,11 @@
   \end{figure}%
 }
 
-% Design: ORCA Architecture
+% Fig 5.2: Design: ORCA Architecture
 \newcommand{\figDesignArch}{%
   \begin{figure}[t]
     \centering
-    \includegraphics[width=0.48\textwidth, trim=0.2cm 0cm 0.2cm 0cm, clip]{data/figs/orca_arch.pdf}
+    \includegraphics[width=0.8\textwidth, trim=0.2cm 0cm 0.2cm 0cm, clip]{data/figs/orca_arch.pdf}
     \caption{ORCA architecture.
       A three-tier TBON with application ranks (\tiermpi{}) at the leaves, intermediate aggregators
       (\tieragg{}), and a controller (\tierctl{}) at the root.
@@ -29,12 +29,12 @@
   \end{figure}%
 }
 
-% Design: ORCA Flow Plan
+% Fig 5.3: Design: ORCA Flow Plan
 \newcommand{\figDesignPlan}{%
   \begin{figure}[t]
     \centering
-    \includegraphics[width=0.24\textwidth, trim=0.35cm 0cm 0.2cm 0.4cm, clip]{data/figs/orca_plan.pdf}%
-    \includegraphics[width=0.24\textwidth, trim=0.3cm 0cm 0.3cm 0.4cm, clip]{data/figs/orca_plan2.pdf}
+    \includegraphics[width=0.4\textwidth, trim=0.35cm 0cm 0.2cm 0.4cm, clip]{data/figs/orca_plan.pdf}%
+    \includegraphics[width=0.4\textwidth, trim=0.3cm 0cm 0.3cm 0.4cm, clip]{data/figs/orca_plan2.pdf}
     \caption{OrcaFlow compilation showing flows and their compiled tier plans.
       Flows chain SQL transforms over telemetry streams en route to configurable sinks.
       Both operators and sinks are placed automatically.
@@ -45,11 +45,11 @@
   \end{figure}%
 }
 
-% Design: TS2PC Protocol
+% Fig 5.4: Design: TS2PC Protocol
 \newcommand{\figDesignTwopc}{%
   \begin{figure}[t]
     \centering
-    \includegraphics[width=0.48\textwidth, trim=0.2cm 0cm 0.2cm 0cm, clip]{data/figs/orca_ts2pc.pdf}
+    \includegraphics[width=0.8\textwidth, trim=0.2cm 0cm 0.2cm 0cm, clip]{data/figs/orca_ts2pc.pdf}
     \caption{Timestep-linked two-phase commit (TS2PC).
       Commands are proposed for a future timestep $T_{cmd} = T_{mpi} + \Delta$.
       (A) Normal case: ranks agree and apply the command before executing $T_{cmd}$.
@@ -61,11 +61,11 @@
   \end{figure}%
 }
 
-% Eval: Runtime overhead, two-column
+% Fig 5.5: Eval: Runtime overhead, 2x2
 \newcommand{\figEvalOverhead}{%
   \begin{figure}[t]
     \centering
-    \includegraphics[width=\textwidth]{data/figs/orca_amr_tracer_runtimes.pdf}
+    \includegraphics[width=\textwidth]{data/figs/orca_amr_tracer_runtimes_2x2.pdf}
     \caption{Runtime overhead for a detailed tracing profile on an AMR code at 512--4096 ranks.
       An additional minimal profile (collective-only) for ORCA shows always-on overhead.
       ORCA maintains 0.8--2\% overhead across both profiles, while TAU and \dftracer{} degrade from
@@ -76,11 +76,11 @@
   \end{figure}%
 }
 
-% Eval: Trace size only, one-column
+% Fig 5.6: Eval: Trace size only, one-column
 \newcommand{\figEvalSizeOnly}{%
   \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{data/figs/orca_amr_tracesizes_line.pdf}
+    \includegraphics[width=0.8\columnwidth]{data/figs/orca_amr_tracesizes_line.pdf}
     \caption{Trace size (left) and per-record size (right) comparison for detailed profile.
       ORCA traces are 3.6--44$\times$ smaller than other formats.
       Per-record size isolates format efficiency from record amplification --- other tracers emit
@@ -90,11 +90,11 @@
   \end{figure}%
 }
 
-% Eval: Query suite only, one-column
+% Fig 5.7: Eval: Query suite only, one-column
 \newcommand{\figEvalQueryOnly}{%
   \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{data/figs/orca_query_suite.pdf}
+    \includegraphics[width=0.8\columnwidth]{data/figs/orca_query_suite.pdf}
     \caption{Post-mortem query performance.
       ORCA completes queries in hundreds of milliseconds, 3--4 orders of magnitude faster than
       \dftracer{} and Caliper.
@@ -105,19 +105,19 @@
   \end{figure}%
 }
 
-% Eval: Architecture comparison (OFI/TCP + DFTracer compression)
+% Fig 5.8: Eval: Architecture comparison (OFI/TCP + DFTracer compression)
 \newcommand{\figEvalArch}{%
   \begin{figure}[t]
     \centering
-    \begin{subfigure}[t]{0.65\columnwidth}
+    \begin{subfigure}[t]{0.64\textwidth}
       \centering
-      \includegraphics{data/figs/orca_dftracer_comp.pdf}
+      \includegraphics[height=0.22\textheight]{data/figs/orca_dftracer_comp.pdf}
       \caption{Compression impact.}\label{fig:orca:eval-arch-dft}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[t]{0.34\columnwidth}
+    \begin{subfigure}[t]{0.32\textwidth}
       \centering
-      \includegraphics{data/figs/orca_ofi_tcp_tracer_runtimes.pdf}
+      \includegraphics[height=0.22\textheight]{data/figs/orca_ofi_tcp_tracer_runtimes.pdf}
       \caption{Transport impact.}\label{fig:orca:eval-arch-tcp}
     \end{subfigure}
     \caption{(Left) Compression reduces trace size but induces severe jitter on simulation ranks.
@@ -129,11 +129,11 @@
   \end{figure}%
 }
 
-% Eval: Online vs offline
+% Fig 5.9: Eval: Online vs offline
 \newcommand{\figEvalOrcaNative}{%
   \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{data/figs/orca_ontv_combined.pdf}
+    \includegraphics[width=0.8\columnwidth]{data/figs/orca_ontv_combined.pdf}
     \caption{Runtime overhead (top) and MPI tier data reduction (bottom) for in-situ analytics with operator pushdown.
       Flows range from monitoring communication outliers to compute load balance.
       Pushdown discards 98.5--99.999\% of data at sub-2\% overhead, despite operators executing on MPI
@@ -143,11 +143,11 @@
   \end{figure}%
 }
 
-% Eval: Agentic debugging timeline
+% Fig 5.10: Eval: Agentic debugging timeline
 \newcommand{\figEvalAgentic}{%
   \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth]{data/figs/orca_agentic_timeline.pdf}
+    \includegraphics[width=0.8\columnwidth]{data/figs/orca_agentic_timeline.pdf}
     \caption{Visual transcript of an agentic debugging session demonstrating closed-loop capabilities.
       An LLM agent is tasked with localizing the anomaly from \cref{fig:orca:bg-volatile} using high-level
       metrics, progressively collecting targeted telemetry to identify the source.
@@ -156,4 +156,31 @@
     }
     \label{fig:orca:eval-agentic}
   \end{figure}%
+}
+
+% Table 5.1: Eval: In-situ workflows
+\newcommand{\tabEvalFlows}{%
+  \begin{table}[t]
+    \centering
+    \small
+    \begin{tabular}
+      {@{}p{3cm}p{7.5cm}@{}}
+      \toprule
+      \textbf{Flow}    & \textbf{Query}                                                                                                \\
+      \midrule
+      Slow Wait Counts &
+      \texttt{SELECT COUNT(*) FROM mpi\_wait WHERE~duration > 1ms} \textcolor{gray}{$\rightarrow$ DuckDB}                              \\
+      \addlinespace
+      Slow Wait Traces &
+      \texttt{SELECT * FROM mpi\_wait WHERE~duration~>~1ms}~\textcolor{gray}{$\rightarrow$ Parquet}                                    \\
+      \addlinespace
+      Load Imbalance   &
+      \texttt{SELECT rank, SUM(duration) FROM kokkos WHERE name IN \textcolor{gray}{<compute kernels>}}                                \\
+                       & \texttt{GROUP BY rank} \textcolor{gray}{$\rightarrow$ \texttt{\textcolor[HTML]{B48EAD}{stats}}} \textcolor{gray}{$\rightarrow$ Parquet} \\
+                       & \texttt{PERCENTILES(\textcolor[HTML]{B48EAD}{stats}, [50,90,99])} \textcolor{gray}{$\rightarrow$ DuckDB}                                \\
+      \bottomrule
+    \end{tabular}
+    \caption{In-situ workflows evaluated in \Cref{sec:orca:eval-insitu}, ranging from lightweight metrics and selective tracing on the communication path to aggregates over compute kernels.}
+    \label{tab:orca:ontv-flows}
+  \end{table}%
 }
