@@ -1,4 +1,5 @@
-% !TEX root = ../main.tex Preamble %%% ------------------------------------------------
+% !TEX root = ../main.tex 
+%%% Preamble %%% ------------------------------------------------
 
 % ## 1.0: Preamble
 
@@ -74,14 +75,14 @@ steerable observability with synchronization-aligned views and control semantics
 % operates on well-defined boundary snapshots rather than devolving into reruns and post-hoc
 % pipelines.
 
-\begin{tcolorbox}[thesisbox]
-  \textbf{Thesis Statement:} A large class of efficiency bottlenecks in BSP systems arise from
+% \begin{tcolorbox}[thesisbox]
+  \tstatement{\textbf{Thesis Statement:} \emph{A large class of efficiency bottlenecks in BSP systems arise from
   conditions that are unknowable before runtime.
   Through two studies spanning the data and compute paths, this thesis demonstrates that such
-  conditions are systematically addressable through adaptive mechanisms if the requisite feedback
-  loops exist, and perpetuate if they do not.
-  We present ORCA as general-purpose infrastructure for closing these loops at scale.
-\end{tcolorbox}
+    conditions are systematically addressable through adaptive mechanisms if the requisite feedback
+    loops exist, and perpetuate if they do not.
+    We present ORCA as general-purpose infrastructure for closing these loops at scale.}}
+% \end{tcolorbox}
 
 The rest of this chapter motivates programmable feedback loops through two studies
 spanning the data and compute paths (\S\ref{sec:intro:case}), presents steerable observability and
@@ -144,13 +145,16 @@ actions in response.
 \label{sec:intro:case:carp}
 
 Range queries over scientific data are fundamental to analysis, but expensive to support at scale.
-Post-processing approaches like out-of-core sorts require multiple additional passes over data,
+Post-processing approaches like out-of-core sorts~\cite{Rasmu2011:TritonSort} require multiple
+additional passes over data,
 incurring write amplification and reducing the effective application bandwidth.
-While in-situ hash partitioning for point lookups has been demonstrated viable for scientific data,
+While in-situ hash partitioning for point lookups has been demonstrated viable for scientific
+data~\cite{Zheng2018:DeltaFS},
 range partitioning is harder --- key distributions are unknown, highly skewed, and evolve over
 time.
 
-CARP addresses this with adaptive online range partitioning guided by a reconstructed view of
+CARP~\cite{Jain2024:CARP} addresses this with adaptive online range partitioning guided by a
+reconstructed view of
 the global key distribution.
 A \emph{renegotiation} protocol materializes this view via in-situ reductions over per-rank state.
 A policy triggers renegotiation at fixed intervals to obtain the current distribution, which is
@@ -161,40 +165,39 @@ enabling comparable query performance, achieving up to $4.9\times$ faster ingest
 evaluation.
 
 % CARP addresses this with adaptive online range partitioning driven by periodic reconstruction of
-% the global key distribution.
-% A \emph{renegotiation} protocol materializes the global key
-% distribution via in-situ reductions over per-rank state when triggered.
-% A policy triggers this protocol at a preconfigured intervals to obtain the current
-% global distribution, which is then used to compute new load-balanced partition boundaries and drive
-% shuffling en-route to storage.
-% By range-partitioning data in a single streaming pass,
-% CARP avoids the write amplification of post-hoc sorting while
-% enabling comparable query performance, achieving up to $4.9\times$ faster ingestion in our
-% evaluation.
+% the global key distribution. A \emph{renegotiation} protocol materializes the global key
+% distribution via in-situ reductions over per-rank state when triggered. A policy triggers this
+% protocol at a preconfigured intervals to obtain the current global distribution, which is then
+% used to compute new load-balanced partition boundaries and drive shuffling en-route to storage. By
+% range-partitioning data in a single streaming pass, CARP avoids the write amplification of
+% post-hoc sorting while enabling comparable query performance, achieving up to $4.9\times$ faster
+% ingestion in our evaluation.
 
 \subsection{AMR Placement: A Manual Loop for Compute Pathologies}
 \label{sec:intro:case:amr}
 
 \emph{Adaptive Mesh Refinement} (AMR)
-codes are widely considered challenging to load-balance.
+codes are a simulation paradigm widely considered challenging to
+load-balance~\cite{Dubey2014:Survey,Burst2008:ALPS}.
 The mesh evolves dynamically to track changing physics, requiring frequent rebalancing, but
 load characteristics and placement effects have not been well studied in practice.
 We initially set out to build telemetry-driven placement policies that could adapt to these
 characteristics at runtime.
-In practice, we found that we could not even evaluate placement cleanly: placement effects were
-repeatedly confounded by unrelated artifacts—fail-slow hardware, fabric pathologies, and tuning
+In practice, we found placement effects
+repeatedly confounded by unrelated artifacts---fail-slow hardware, fabric pathologies, and tuning
 issues—that had to be identified and eliminated before placement could be isolated.
 
 The resulting loop---collect traces, analyze offline, refine hypothesis, reconfigure and
 rerun---was entirely manual and slow.
-Conventional HPC tracers emit large per-rank logs in formats
+Conventional HPC tracers~\cite{Shend2006:TAU,Knupf2012:Score-P} emit large per-rank logs in
+formats~\cite{:ChromeJsonTEF,Eschw2012:OTF2}
 that required expensive \emph{extract-transform-load} (ETL) before any analysis could begin.
 % New hypotheses would require repeating the loop with a reconfigured setup.
 Eliminating confounders consumed months of iteration even when individual mitigations typically
 took days once identified.
 With a stable measurement baseline finally established, we found a
 fundamental tradeoff between compute load balance and communication locality, and designed a
-placement policy called CPLX to provide tunable control over this tradeoff.
+placement policy called CPLX~\cite{Jain2025:AMR} to provide tunable control over this tradeoff.
 In evaluation, CPLX reduced runtime by up to 21.6\% in real AMR workloads over tuned baselines, but
 like
 CARP's renegotiation interval, exposed another context-dependent tunable knob.
@@ -222,10 +225,13 @@ Offline loops are expensive in three compounding ways:
 
   \item \textbf{ETL Costs.
         }
-        Conventional tracers write per-rank logs in flat layouts
+        Conventional
+        tracers~\cite{Shend2006:TAU,Knupf2012:Score-P,2025:PytorchKineto,Devar2024:DFTracer,Boehm2016:Caliper}
+        write per-rank logs~\cite{:ChromeJsonTEF,Eschw2012:OTF2} in flat layouts
         with little awareness of BSP structure.
         Causal relationships created by synchronization are not reflected in the on-disk organization,
-        so even simple questions require expensive ETL before queries can run.
+        so even simple questions require expensive ETL~\cite{Yildi2023:IOMax,Jain2025:AMR} before queries
+        can run.
 
   \item \textbf{Rerun Costs.
         }
@@ -306,44 +312,34 @@ represented as structured columnar data.
 Where SQL is insufficient, ORCA supports user-defined operators within the overlay.
 
 
-% \subsection{Status Quo and Limitations}
-% \label{sec:intro:orca:statusquo}
+% \subsection{Status Quo and Limitations} \label{sec:intro:orca:statusquo}
 
-% \paragraph{Tracing and post-hoc analytics}
-% In HPC, tools such as TAU~\cite{Shend2006:TAU} and Score-P~\cite{Knupf2012:Score-P} can collect
-% detailed traces,
-% with interpretation deferred to post-processing.
-% In large-scale ML training, a similar pattern is emerging around Kineto~\cite{2025:PytorchKineto}
-% for per-node trace capture,
-% Dynolog~\cite{2025:MetaDynolog} as a lightweight control plane, and HTA~\cite{:HTA} for post-hoc
-% analytics.
-% % The key limitation is structural: these stacks are still log-first and post-hoc, and they do not
-% % make BSP-synchronized, workload-wide views a first-class output.
-% Traces are voluminous and emitted as per-rank logs in plaintext formats such as
-% JSON~\cite{:ChromeJsonTEF},
-% requiring expensive ETL before analysis~\cite{Yildi2023:IOMax,Jain2025:AMR}.
-% % and do not directly encode synchronized BSP windows, so answering even basic cross-rank questions
-% % requires substantial ETL and expensive global joins.
-% On-disk trace layouts rarely support selective access, so analyses require working sets that grow
-% with \emph{ranks $\times$ timesteps},
-% rendering them increasingly impractical with scale.
+% \paragraph{Tracing and post-hoc analytics} In HPC, tools such as TAU~\cite{Shend2006:TAU} and
+% Score-P~\cite{Knupf2012:Score-P} can collect detailed traces, with interpretation deferred to
+% post-processing. In large-scale ML training, a similar pattern is emerging around
+% Kineto~\cite{2025:PytorchKineto} for per-node trace capture, Dynolog~\cite{2025:MetaDynolog} as a
+% lightweight control plane, and HTA~\cite{:HTA} for post-hoc analytics. % The key limitation is
+% structural: these stacks are still log-first and post-hoc, and they do not % make
+% BSP-synchronized, workload-wide views a first-class output. Traces are voluminous and emitted as
+% per-rank logs in plaintext formats such as JSON~\cite{:ChromeJsonTEF}, requiring expensive ETL
+% before analysis~\cite{Yildi2023:IOMax,Jain2025:AMR}. % and do not directly encode synchronized BSP
+% windows, so answering even basic cross-rank questions % requires substantial ETL and expensive
+% global joins. On-disk trace layouts rarely support selective access, so analyses require working
+% sets that grow with \emph{ranks $\times$ timesteps}, rendering them increasingly impractical with
+% scale.
 
-% \paragraph{Cloud observability}
-% Cloud observability stacks are built around metrics~\cite{:Prometheus}, logs, and event-based
-% pipelines~\cite{Kreps2011:Kafka,Carbo2015:ApacheFlink}.
-% While deployable and used in large-scale ML training~\cite{Deng2025:Mycroft}, these tools have
-% fundamental limitations for
-% tightly coupled parallel applications.
-% First, BSP synchronization boundaries are not a first-class unit of analysis, so questions like
-% straggler attribution at a collective require bespoke coordination to determine when a consistent
-% job-wide window exists and then to join telemetry across ranks within that window.
-% Second, once raw telemetry is exported, the cost of moving and ingesting it is already paid and
-% cannot be recovered by downstream reduction.
-% Finally, they do not enable steerability, as they provide no control semantics with meaningful
-% consistency guarantees.
+% \paragraph{Cloud observability} Cloud observability stacks are built around
+% metrics~\cite{:Prometheus}, logs, and event-based
+% pipelines~\cite{Kreps2011:Kafka,Carbo2015:ApacheFlink}. While deployable and used in large-scale
+% ML training~\cite{Deng2025:Mycroft}, these tools have fundamental limitations for tightly coupled
+% parallel applications. First, BSP synchronization boundaries are not a first-class unit of
+% analysis, so questions like straggler attribution at a collective require bespoke coordination to
+% determine when a consistent job-wide window exists and then to join telemetry across ranks within
+% that window. Second, once raw telemetry is exported, the cost of moving and ingesting it is
+% already paid and cannot be recovered by downstream reduction. Finally, they do not enable
+% steerability, as they provide no control semantics with meaningful consistency guarantees.
 
-% \subsection{Why Now}
-% \label{sec:intro:orca:whynow}
+% \subsection{Why Now} \label{sec:intro:orca:whynow}
 
 \paragraph{Why Now} Two trends make steerable observability both practical and urgent:
 
@@ -432,8 +428,9 @@ Where SQL is insufficient, ORCA supports user-defined operators within the overl
 The remainder of this thesis is organized as follows.
 \begin{itemize}
   \item \cref{chap:bg} provides background on BSP environments and efficiency bottlenecks.
-  \item \cref{chap:carp-paper,chap:amr-paper,chap:orca-paper} present CARP, the AMR study, and ORCA respectively.
-\item \cref{chap:concl} concludes the thesis and outlines future directions.
+  \item \cref{chap:carp-paper,chap:amr-paper,chap:orca-paper} present CARP, the AMR study, and ORCA
+        respectively.
+  \item \cref{chap:concl} concludes the thesis and outlines future directions.
 \end{itemize}
 
 % P3: We studied this and found a common shape: "runtime unknowns" + "adaptive feedback loops".

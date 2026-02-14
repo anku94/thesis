@@ -2,16 +2,14 @@
 \chapter{Conclusions}\label{chap:concl}
 \minitoc
 
-% \todo{Example margin note - default style}
-% \todo[inline]{Example inline TODO - spans full width, good for longer notes}
-% \todo[color=green!
-%   40]{Green margin note - use color for categories}
 
 
 
 This thesis argues that a large class of efficiency bottlenecks in BSP systems arise from
 conditions unknowable before runtime, and that such conditions are systematically addressable
 through adaptive mechanisms if the requisite feedback loops exist.
+% \todo{Example margin note - default style} \todo[inline]{Example inline TODO - spans full width,
+% good for longer notes} \todo[color=green! 40]{Green margin note - use color for categories}
 % \minitoc% TODO% 1.% Unifying overlay topologies (CARP + intra-tier shuffling) 2.% Open table
 % formats as a natural fit for BSP data 3.% Convergence between algebras 4.% ML-specific differences
 % 5.% DAQs as a parallel?% 6.% DeltaFS vs ORCA: filesystems vs databases/analytics.% Open Table
@@ -39,19 +37,25 @@ through adaptive mechanisms if the requisite feedback loops exist.
         The loop driver is programmable and can range from human operators to automated agents.
 \end{itemize}
 
-
-
-ORCA realizes a programmable tree-based overlay for in-situ analytics using OLAP primitives such as
-columnar formats, SQL planning, and embeddable query engines.
-Compared with prior in-situ HPC systems, ORCA differs in two ways.
-First, it enables a hybrid execution model.
-Instead of monolithic analytics placed entirely on application
-ranks~\cite{Zheng2018:DeltaFS,Jain2024:CARP} or entirely offloaded to a
-dedicated tier~\cite{Eisen2024:ADIOS}, ORCA uses a planner to decompose analytics into operators
-that can be placed on
+Beyond observability, ORCA's design reflects a broader convergence between OLAP and HPC:
+columnar formats~\cite{:ApacheArrow, :ApacheParquet}, SQL planning, and embeddable query
+engines~\cite{Lamb2024:DataFusion} applied to in-situ HPC analytics.
+Compared with prior in-situ systems, ORCA differs in two ways.
+First, instead of placing analytics entirely on application
+ranks~\cite{Zheng2018:DeltaFS,Jain2024:CARP} or entirely on a dedicated
+tier~\cite{Eisen2024:ADIOS}, ORCA's planner decomposes them into operators that can be placed on
 either tier at runtime.
-Second, unlike ADIOS-style offload as a peer MPI job~\cite{Eisen2024:ADIOS}, ORCA’s analytics tier
-is completely asynchronous while still preserving timestep-consistent analytics semantics.
+Second, unlike ADIOS-style offload as a peer MPI job~\cite{Eisen2024:ADIOS}, ORCA's analytics tier
+is fully asynchronous while still preserving timestep-consistent semantics.
+
+% ORCA realizes a programmable tree-based overlay for in-situ analytics using OLAP primitives such
+% as columnar formats, SQL planning, and embeddable query engines. Compared with prior in-situ HPC
+% systems, ORCA differs in two ways. First, it enables a hybrid execution model. Instead of
+% monolithic analytics placed entirely on application ranks~\cite{Zheng2018:DeltaFS,Jain2024:CARP}
+% or entirely offloaded to a dedicated tier~\cite{Eisen2024:ADIOS}, ORCA uses a planner to decompose
+% analytics into operators that can be placed on either tier at runtime. Second, unlike ADIOS-style
+% offload as a peer MPI job~\cite{Eisen2024:ADIOS}, ORCA’s analytics tier is completely asynchronous
+% while still preserving timestep-consistent analytics semantics.
 
 % The rest of this chapter reflects on this design point (\S\ref{sec:concl:retrospective}),
 % describes extensions within immediate reach (\S\ref{sec:concl:extensions}), and outlines
@@ -63,13 +67,25 @@ We conclude this thesis by recapping the steerable observability paradigm and it
 
 \section{Steerable Observability: Retrospective and Synthesis}\label{sec:concl:retrospective}
 
-We define steerable observability as the ability to request runtime views of application state,
-reconstructed in real time, with the ability to change requested views on demand.
-This makes always-on collection viable for production BSP systems: high-level signals
-flag anomalies in real time, and narrower views can then surface their root causes.
-The same paradigm enables online intervention, as views are both necessary to guide interventions
-and
-assess their effectiveness.
+
+Steerable observability is the ability to request runtime views of application state, reconstructed
+in real time, and to change those views on demand as diagnosis progresses.
+% We define steerable observability as the ability to request runtime views of application state,
+% reconstructed in real time, with the ability to change requested views on demand. This makes
+% always-on collection viable for production BSP systems: high-level signals flag anomalies in real
+% time, and narrower views can then surface their root causes. The same paradigm enables online
+% intervention, as views are both necessary to guide interventions and assess their effectiveness.
+Its core contribution is economic.
+Conventional tracing is locked to a preselected fidelity that both overcollects and undercollects:
+despite paying for comprehensive collection at one layer, it can still lack the
+visibility into lower layers necessary
+for root-cause identification.
+Steerable observability shifts the cost model by evaluating predicates and reductions before
+export, so only matches and summaries pay serialization, transport, and storage.
+This makes needle-in-haystack questions viable as continuous queries, and supports drill-down
+across arbitrary fidelities as needed, insofar as instrumentation permits.
+
+
 
 \paragraph{BSP Is Different}
 BSP workloads run as a single coordinated job, not a web of loosely coupled microservices.
@@ -87,7 +103,8 @@ that approaches the minimum necessary work --- data movement is minimized via pu
 leverage the application's scale, and RDMA minimizes
 the overhead of residual data movement.
 All processing happens in-memory over a highly efficient columnar representation.
-The closest analogs are \emph{Data Acquisition} (DAQ) pipelines in particle accelerators, where
+The closest analogs are \emph{Data Acquisition} (DAQ) pipelines in particle
+accelerators~\cite{Aboli2016:DAQ-ATLAS,Bauer2012:DAQ-CMS}, where
 FPGAs discard the bulk of sensor data at source, retaining only high-signal telemetry.
 Fay~~\cite{Erlin2011:Fay} and Snicket~\cite{Berg2021:Snicket} implement query-driven tracing for
 microservices.
@@ -106,8 +123,6 @@ When conditions are too transient for online intervention, ORCA's in-situ reduct
 their structure more efficiently than any post-hoc approach, providing the empirical basis for
 developing predictive strategies that anticipate rather than react~\cite{Smith1957:Predict}.
 
-
-\todo[inline]{Improve language around predictive etc}
 
 \section{Immediate Extensions}\label{sec:concl:extensions}
 
@@ -133,7 +148,7 @@ CARP~\cite{Jain2024:CARP} show that hash and range
 partitioning can reorganize scientific data effectively at scale.
 ORCA can treat these shuffles as intra-tier operators within its topology, so they compose cleanly
 with inter-tier reductions in a single plan.
-Because the MPI tier has substantial egress bandwidth during checkpointing, the planner can be
+Because the MPI tier has substantial egress bandwidth, the planner can be
 phase-aware, scheduling sinks at the MPI tier in checkpoint phases while avoiding that
 interference during compute phases.
 
@@ -168,8 +183,7 @@ adaptive placement.
 
 \paragraph{Beyond Relational Algebra}
 Scientific computing and ML operate primarily on arrays,
-meshes, and tensors—data types where dimensionality and adjacency carry semantic meaning that
-flattening into rows destroys.
+meshes, and tensors using domain-specific analytics that go beyond the relational model.
 Prior work on SciQL~\cite{Kerst2011:SciQL} and MeshSQL~\cite{Lee2004:MeshSQL} has explored
 declarative interfaces for these types, and practical
 convergence is underway through bridges like arrow-zarr~\cite{2026:arrow-zarr} and
@@ -211,11 +225,10 @@ applications.
 
 % How it maps cleanly: • Maxwell’s Demon: by measuring microstate and acting on it, the demon seems
 % to extract work from thermal fluctuations. The resolution is that information has a cost
-% (measurement, memory, erasure; Landauer), so you can’t get “free work. ” • ORCA/CARP: by
-% measuring distributed execution/application state and acting on it (placement, throttling,
-% repartition, etc.), you extract performance/efficiency from variability/nonstationarity. The
-% “demon tax” is observability overhead + coordination cost + perturbation, which has to be paid
-% somewhere.
+% (measurement, memory, erasure; Landauer), so you can’t get “free work. ” • ORCA/CARP: by measuring
+% distributed execution/application state and acting on it (placement, throttling, repartition,
+% etc.), you extract performance/efficiency from variability/nonstationarity. The “demon tax” is
+% observability overhead + coordination cost + perturbation, which has to be paid somewhere.
 
 % So the useful “science” point is:
 
@@ -247,8 +260,8 @@ applications.
 
 % Is it relevant to ORCA/CARP?
 
-% Yes, as a useful lens—but you have to map “variety” correctly. • In Ashby, "variety" is
-% about the regulator's ability to select among alternatives. That selection capacity can come from:
+% Yes, as a useful lens—but you have to map “variety” correctly. • In Ashby, "variety" is about the
+% regulator's ability to select among alternatives. That selection capacity can come from:
 % \begin{itemize} \item Action variety (many possible interventions), \item Information/measurement
 % that lets you choose the right intervention conditional on the \item Ashby explicitly links
 % regulation limits to communication/channel capacity. \end{itemize} and/or Information/measurement

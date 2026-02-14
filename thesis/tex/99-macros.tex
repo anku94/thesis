@@ -1,3 +1,19 @@
+% !TEX root = ../main.tex
+%%% Thesis statement block (horizontal rules, narrower than linewidth)
+\newcommand{\tstatement}[1]{%
+  \begin{center}
+  \hrule height 0.5pt
+  \begin{minipage}{0.95\textwidth}
+  % \vspace{0.2em}
+  \vspace{0.5em}
+  #1
+  \vspace{0.5em}
+  % \vspace{0.2em}
+  \end{minipage}
+  \hrule height 0.5pt
+  \end{center}
+}
+
 \newcounter{obscount}
 \setcounter{obscount}{0}
 
