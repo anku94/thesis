@@ -1,0 +1,32 @@
+% ASSET: rank (CPU / chip)
+\tikzset{
+  pics/rank/.style args={#1}{
+    code={
+      % Package body
+      \draw[thick, fill=gray!8, rounded corners=1pt]
+        (-0.5,-0.5) rectangle (0.5,0.5);
+      % Die
+      \draw[semithick, fill=gray!20]
+        (-0.22,-0.22) rectangle (0.22,0.22);
+      % Label
+      \node[anchor=center, font=\sffamily\scriptsize, inner sep=0pt] at (0,0) {#1};
+      % Pins -- top & bottom
+      \foreach \x in {-0.3, -0.1, 0.1, 0.3} {
+        \draw[thin] (\x, 0.5) -- (\x, 0.62);
+        \draw[thin] (\x,-0.5) -- (\x,-0.62);
+      }
+      % Pins -- left & right
+      \foreach \y in {-0.3, -0.1, 0.1, 0.3} {
+        \draw[thin] (-0.5,\y) -- (-0.62,\y);
+        \draw[thin] ( 0.5,\y) -- ( 0.62,\y);
+      }
+      % Anchors
+      \coordinate (-north)  at (0, 0.62);
+      \coordinate (-south)  at (0,-0.62);
+      \coordinate (-east)   at ( 0.62, 0);
+      \coordinate (-west)   at (-0.62, 0);
+      \coordinate (-center) at (0, 0);
+    }
+  },
+  pics/rank/.default={}
+}

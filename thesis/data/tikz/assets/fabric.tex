@@ -1,0 +1,23 @@
+% ASSET: fabric (network interconnect)
+\tikzset{
+  pics/fabric/.style={
+    code={
+      % Band
+      \draw[thick, draw=orange!50, fill=orange!15]
+        (-1.8,-0.18) rectangle (1.8, 0.18);
+      % Horizontal traces
+      \draw[thin, orange!50] (-1.8, 0.06) -- (1.8, 0.06);
+      \draw[thin, orange!50] (-1.8,-0.06) -- (1.8,-0.06);
+      % Vertical ticks (switch crosspoints)
+      \foreach \x in {-1.4,-1.0,-0.6,-0.2,0.2,0.6,1.0,1.4} {
+        \draw[thin, orange!50] (\x,-0.18) -- (\x,0.18);
+      }
+      % Anchors
+      \coordinate (-west)   at (-1.8, 0);
+      \coordinate (-east)   at ( 1.8, 0);
+      \coordinate (-north)  at ( 0, 0.18);
+      \coordinate (-south)  at ( 0,-0.18);
+      \coordinate (-center) at ( 0, 0);
+    }
+  }
+}

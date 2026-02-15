@@ -1,0 +1,22 @@
+% ASSET: rankgroup (just ranks in a box, no fabric)
+% Requires pics/rank
+\tikzset{
+  pics/rankgroup/.style={
+    code={
+      % -- Ranks in a row --
+      \pic (-r0) at (-2.1, 0) {rank={0}};
+      \pic (-r1) at (-0.7, 0) {rank={1}};
+      \pic (-r2) at ( 0.7, 0) {rank={2}};
+      \pic (-r3) at ( 2.1, 0) {rank={$\cdots$}};
+      % -- Bounding box --
+      \draw[thick, rounded corners=3pt, gray!40]
+        (-2.85,-0.85) rectangle (2.85, 0.85);
+      % -- Anchors --
+      \coordinate (-north)  at ( 0,    0.85);
+      \coordinate (-south)  at ( 0,   -0.85);
+      \coordinate (-east)   at ( 2.85,  0);
+      \coordinate (-west)   at (-2.85,  0);
+      \coordinate (-center) at ( 0,     0);
+    }
+  }
+}

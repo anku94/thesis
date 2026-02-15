@@ -1,0 +1,27 @@
+% ASSET: pivottablemini (compact partition table)
+\tikzset{
+  pics/pivottablemini/.style={
+    code={
+      \def\cw{0.45}  % cell width
+      \def\ch{0.35} % cell height
+      % Header row
+      \foreach \i/\lbl in {0/R0, 1/R1, 2/R2, 3/{\dots}} {
+        \draw[thick, -, draw=black, fill=gray!15]
+          ({\i*\cw - 2*\cw}, \ch) rectangle ({(\i+1)*\cw - 2*\cw}, {2*\ch});
+        \node[anchor=center, font=\sffamily\scriptsize, text=black] at ({(\i+0.5)*\cw - 2*\cw}, {1.5*\ch}) {\lbl};
+      }
+      % Value row (ellipses)
+      \foreach \i in {0,1,2,3} {
+        \draw[thick, -, draw=black, fill=white]
+          ({\i*\cw - 2*\cw}, 0) rectangle ({(\i+1)*\cw - 2*\cw}, \ch);
+        \node[anchor=center, font=\sffamily\scriptsize, text=black] at ({(\i+0.5)*\cw - 2*\cw}, {0.5*\ch}) {\dots};
+      }
+      % Anchors
+      \coordinate (-north)  at (0, {2*\ch});
+      \coordinate (-south)  at (0, 0);
+      \coordinate (-east)   at ({2*\cw}, {\ch});
+      \coordinate (-west)   at ({-2*\cw}, {\ch});
+      \coordinate (-center) at (0, {\ch});
+    }
+  }
+}

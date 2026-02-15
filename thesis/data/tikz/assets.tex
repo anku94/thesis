@@ -1,0 +1,34 @@
+%!TEX root = ./motif-staging.tex
+
+% assets.tex -- reusable TikZ pic definitions
+% \input this in any standalone or document preamble.
+% Requires: tikz, arrows.meta, positioning, calc
+
+% === Common Colors ===
+\definecolor{ctlcolor}{HTML}{5E81AC}   % Steel blue
+\definecolor{aggcolor}{HTML}{8FBCBB}   % Teal
+\definecolor{mpicolor}{HTML}{D08770}   % Coral/salmon
+
+% === Shared Definitions ===
+% Shared curve path (used by distrib and distribpart)
+\newcommand{\distribcurve}{
+  (-0.8,0)
+  .. controls (-0.65,0.05) and (-0.55,0.45) .. (-0.4,0.55)
+  .. controls (-0.3,0.6) and (-0.2,0.4) .. (-0.1,0.3)
+  .. controls (0.0,0.22) and (0.1,0.3) .. (0.2,0.4)
+  .. controls (0.3,0.48) and (0.35,0.38) .. (0.45,0.22)
+  .. controls (0.55,0.1) and (0.65,0.05) .. (0.8,0.02)
+}
+
+% === Individual Assets ===
+\input{assets/rank}
+\input{assets/fabric}
+\input{assets/storage}
+\input{assets/distrib}
+\input{assets/distribpart}
+\input{assets/orcatree}
+\input{assets/pivottable}
+\input{assets/pivottablemini}
+\input{assets/rankgroup}
+\input{assets/pfs}
+\input{assets/application}

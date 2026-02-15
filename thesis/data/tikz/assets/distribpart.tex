@@ -1,0 +1,25 @@
+% ASSET: distribpart (distribution with partition lines)
+% Requires \distribcurve from assets.tex
+\tikzset{
+  pics/distribpart/.style={
+    code={
+      % Fill under curve
+      \fill[teal!12] \distribcurve -- (0.8,0) -- cycle;
+      % Curve stroke
+      \draw[thick, -, teal!70!black] \distribcurve;
+      % Axes (single path, arrow tips on both ends)
+      \draw[thick, {Stealth[length=4pt]}-{Stealth[length=4pt]}]
+        (-0.8,0.75) -- (-0.8,0) -- (0.95,0);
+      % % Partition lines (4 dashed verticals -- adjust x/y coords for balance)
+      \foreach \px/\py in {-0.42/0.53, -0.15/0.36, 0.2/0.4} {
+        \draw[densely dashed, thick, red!60!black] (\px, 0) -- (\px, \py);
+      }
+      % Anchors
+      \coordinate (-north)  at (0, 0.75);
+      \coordinate (-south)  at (0, 0);
+      \coordinate (-east)   at (0.85, 0.35);
+      \coordinate (-west)   at (-0.8, 0.35);
+      \coordinate (-center) at (0, 0.35);
+    }
+  }
+}

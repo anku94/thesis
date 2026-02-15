@@ -1,0 +1,29 @@
+% ASSET: storage (single disk / storage target)
+\tikzset{
+  pics/storage/.style args={#1}{
+    code={
+      % Body fill
+      \fill[blue!6]
+        (-0.4,0.25) -- (-0.4,-0.25)
+        arc (180:360:0.4 and 0.12)
+        -- (0.4,0.25)
+        arc (360:180:0.4 and 0.12) -- cycle;
+      % Body sides
+      \draw[thick] (-0.4,0.25) -- (-0.4,-0.25);
+      \draw[thick] ( 0.4,0.25) -- ( 0.4,-0.25);
+      % Bottom ellipse (front half)
+      \draw[thick] (-0.4,-0.25) arc (180:360:0.4 and 0.12);
+      % Top ellipse (full, filled)
+      \draw[thick, fill=blue!12] (0,0.25) ellipse (0.4 and 0.12);
+      % Label
+      \node[anchor=center, font=\sffamily\scriptsize, inner sep=0pt] at (0,0) {#1};
+      % Anchors
+      \coordinate (-north)  at (0, 0.37);
+      \coordinate (-south)  at (0,-0.37);
+      \coordinate (-east)   at ( 0.4, 0);
+      \coordinate (-west)   at (-0.4, 0);
+      \coordinate (-center) at (0, 0);
+    }
+  },
+  pics/storage/.default={}
+}
