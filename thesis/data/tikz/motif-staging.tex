@@ -2,6 +2,7 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, fit, positioning, calc}
+\usepackage{twemojis}
 
 % \input{motifs}
 \input{assets}
@@ -46,6 +47,37 @@
 
   \pic (pfs) at (0,-9.5) {pfs};
   \node[below=0.3cm of pfs-south, font=\sffamily\small] {pfs};
+
+  % --- Staging ---
+  \pic (op) at (12.5,-3) {operator};
+  \node[below=0.3cm of op-south, font=\sffamily\small] {operator};
+
+  \pic (det) at (14.5,-3) {detective};
+  \node[below=0.3cm of det-south, font=\sffamily\small] {detective};
+
+  \pic (cool) at (16.5,-3) {coolguy};
+  \node[below=0.3cm of cool-south, font=\sffamily\small] {coolguy};
+
+  \pic (mpi) at (10.5,-3) {mpinodes};
+  \node[below=0.3cm of mpi-south, font=\sffamily\small] {mpinodes};
+
+  \pic (ovl) at (5,-3) {overlaytree};
+  \node[below=0.3cm of ovl-south, font=\sffamily\small] {overlaytree};
+
+  \pic (mdfcol) at (5,-6) {minidfcol};
+  \node[below=0.3cm of mdfcol-b, font=\sffamily\small] {minidfcol};
+
+  \pic (mdf) at (7,-6) {minidf={}};
+  \node[below=0.3cm of mdf-bounds.south, font=\sffamily\small] {minidf};
+
+  \pic (part) at (10,-6) {partitioned};
+  \node[below=0.3cm of part-box.south, font=\sffamily\small] {partitioned};
+
+  \pic (pqf) at (13,-6) {pqfile};
+  \node[below=0.3cm of pqf-bounds.south, font=\sffamily\small] {pqfile};
+
+  \pic (jf) at (14.5,-6) {jsonfile};
+  \node[below=0.3cm of jf-bounds.south, font=\sffamily\small] {jsonfile};
 \end{tikzpicture}
 
 \end{document}

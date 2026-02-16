@@ -1,0 +1,89 @@
+\documentclass[tikz,border=11pt]{standalone}
+\usetikzlibrary{arrows.meta, positioning, calc, fit}
+
+\usepackage[dvipsnames,table,svgnames]{xcolor}
+
+% Colors
+\definecolor{barriercolor}{HTML}{84b578}  % green for BSP barriers
+\definecolor{timestepcolor}{HTML}{A63D40}  % muted dark red
+\definecolor{comcolor}{HTML}{ce635a}   % red for compute kernels
+\colorlet{computecolor}{comcolor!80}
+\definecolor{c0}{HTML}{59943b}
+\definecolor{c1}{HTML}{845ac4}
+\definecolor{c2}{HTML}{9f7832}
+\definecolor{c3}{HTML}{b94b84}
+\definecolor{c4}{HTML}{399283}
+\definecolor{c5}{HTML}{c74f3b}
+
+\begin{document}
+\begin{tikzpicture}[font=\Large]
+
+  \foreach \x in {0, 1, 2, 3, 4} {
+      \pgfmathsetmacro{\xx}{\x + 1}
+      \node at (\xx, 0.5) {$R\x$};
+      \draw[dotted] (\xx, 0) -- (\xx, -7);
+    }
+
+  \foreach \y in {1, 2, 3, 4, 5, 6} {
+      \draw[densely dashed, line width=1.5pt, barriercolor] (-0.5, -\y) -- (6, -\y);
+      \node[anchor=south east, text=black!% === Grid: ranks on x-axis, time on y-axis === Rank labels Time
+        % labels
+        40] at (-1, -\y) {T\y};
+    }
+
+  % Time axis
+  \draw[->,thick,-stealth] (0, 0) -- (0, -7)
+  node[midway, sloped, above, rotate=180, fill=white, fill opacity=0.9] {Timesteps};
+
+  % Work boxes for each timestep
+  % T1 (between y=0 and y=-1)
+  \foreach \rank/\h in {1/0.6, 2/0.45, 3/0.7, 4/0.5, 5/0.8} {
+    \fill[computecolor] (\rank-0.15, -0.05) rectangle (\rank+0.15, -0.05-\h);
+  }
+
+  % T2 (between y=-1 and y=-2)
+  \foreach \rank/\h in {1/0.5, 2/0.6, 3/0.4, 4/0.9, 5/0.55} {
+    \fill[computecolor] (\rank-0.15, -1.05) rectangle (\rank+0.15, -1.05-\h);
+  }
+
+  % T3 (between y=-2 and y=-3)
+  \foreach \rank/\h in {1/0.7, 2/0.5, 3/0.85, 4/0.45, 5/0.6} {
+    \fill[computecolor] (\rank-0.15, -2.05) rectangle (\rank+0.15, -2.05-\h);
+  }
+
+  % T4 (between y=-3 and y=-4)
+  \foreach \rank/\h in {1/0.55, 2/0.8, 3/0.5, 4/0.65, 5/0.4} {
+    \fill[computecolor] (\rank-0.15, -3.05) rectangle (\rank+0.15, -3.05-\h);
+  }
+
+  % T5 (between y=-4 and y=-5)
+  \foreach \rank/\h in {1/0.65, 2/0.4, 3/0.75, 4/0.5, 5/0.8} {
+    \fill[computecolor] (\rank-0.15, -4.1) rectangle (\rank+0.15, -4.1-\h);
+  }
+
+  % T6 (between y=-5 and y=-6)
+  \foreach \rank/\h in {1/0.5, 2/0.7, 3/0.55, 4/0.8, 5/0.45} {
+    \fill[computecolor] (\rank-0.15, -5.05) rectangle (\rank+0.15, -5.05-\h);
+  }
+
+  % Annotation pointing to T1 barrier
+  \node[anchor=north west, font=\sffamily\Large, align=left, text width=5cm] (t1note) at (6.0, -1.4) {%
+    Global Synchronization\\
+    \textbullet\ Observe state\\
+    \textbullet\ Apply commands
+  };
+  \draw[-stealth, thick] (t1note.north west) -- (5.5, -1);
+
+  % Highlight one superstep (between T4 and T5)
+  \draw[timestepcolor, line width=2pt, rounded corners=5pt] (0.1, -4.1) rectangle (5.9, -4.9);
+  \node[anchor=north west, font=\sffamily\Large, timestepcolor, align=center, text width=5cm] at (5.9, -4.0) {\textbf{Timestep Dataframe} \\ \emph{Causally independent unit of analysis}};
+
+  % Legend
+  % \begin{scope}[local bounding box=legend]
+  %   \draw[densely dashed, line width=1.5pt, barriercolor] (0, -8) -- (1, -8);
+  %   \node[anchor=west, font=\sffamily\Large] at (1.2, -8) {Global Synchronization};
+  % \end{scope}
+  % \node[draw, rounded corners=3pt, inner sep=5pt, fit=(legend)] {};
+
+\end{tikzpicture}
+\end{document}

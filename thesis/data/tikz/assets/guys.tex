@@ -1,0 +1,71 @@
+% ASSET: guys (operator, detective, coolguy)
+% Requires: twemojis package
+
+% Colors for guys
+\definecolor{skincolor}{HTML}{F5D0C5}   % peachy skin tone
+\definecolor{shirtcolor}{HTML}{B07070}  % dull red
+
+% === operator (human figure) ===
+\tikzset{
+  pics/operator/.style={
+    code={
+      % Body (D-shape: flat bottom, curved top for shoulders)
+      \fill[shirtcolor]
+        (-0.35, -0.2) -- (-0.35, 0)
+        .. controls (-0.35, 0.15) and (-0.2, 0.25) .. (0, 0.25)
+        .. controls (0.2, 0.25) and (0.35, 0.15) .. (0.35, 0)
+        -- (0.35, -0.2) -- cycle;
+      \draw[thick]
+        (-0.35, -0.2) -- (-0.35, 0)
+        .. controls (-0.35, 0.15) and (-0.2, 0.25) .. (0, 0.25)
+        .. controls (0.2, 0.25) and (0.35, 0.15) .. (0.35, 0)
+        -- (0.35, -0.2) -- (-0.35, -0.2);
+      % Head (circle, overlapping body)
+      \draw[thick, fill=skincolor] (0, 0.38) circle (0.22);
+      % Anchors
+      \coordinate (-north)  at (0, 0.6);
+      \coordinate (-south)  at (0, -0.2);
+      \coordinate (-east)   at (0.35, 0.1);
+      \coordinate (-west)   at (-0.35, 0.1);
+      \coordinate (-center) at (0, 0.1);
+    }
+  }
+}
+
+% === detective (operator + hat + magnifier) ===
+\tikzset{
+  pics/detective/.style={
+    code={
+      % Base operator
+      \pic (-op) at (0,0) {operator};
+      % Hat (twemoji)
+      \node at (0, 0.7) {\twemoji[height=14pt]{tophat}};
+      % Magnifier (twemoji)
+      \node[rotate=-10] at (0.29, 0.2) {\twemoji[height=12pt]{magnifying glass tilted left}};
+      % Anchors
+      \coordinate (-north)  at (0, 0.9);
+      \coordinate (-south)  at (0, -0.2);
+      \coordinate (-east)   at (0.35, 0.1);
+      \coordinate (-west)   at (-0.35, 0.1);
+      \coordinate (-center) at (0, 0.1);
+    }
+  }
+}
+
+% === coolguy (operator + baseball cap) ===
+\tikzset{
+  pics/coolguy/.style={
+    code={
+      % Base operator
+      \pic (-op) at (0,0) {operator};
+      % Baseball cap (twemoji)
+      \node at (-0.05, 0.59) {\twemoji[height=17pt]{billed cap}};
+      % Anchors
+      \coordinate (-north)  at (0, 0.85);
+      \coordinate (-south)  at (0, -0.2);
+      \coordinate (-east)   at (0.35, 0.1);
+      \coordinate (-west)   at (-0.35, 0.1);
+      \coordinate (-center) at (0, 0.1);
+    }
+  }
+}

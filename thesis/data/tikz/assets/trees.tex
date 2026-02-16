@@ -1,0 +1,47 @@
+% ASSET: trees (mpinodes, overlaytree)
+% Requires: orcatreenode style, ctlcolor, aggcolor, mpicolor from assets.tex
+
+% === mpinodes (4 MPI leaf nodes in a row) ===
+\tikzset{
+  pics/mpinodes/.style={
+    code={
+      % Four MPI nodes in a row
+      \node[orcatreenode, fill=mpicolor] (-n0) at (-0.7, 0) {};
+      \node[orcatreenode, fill=mpicolor] (-n1) at (-0.23, 0) {};
+      \node[orcatreenode, fill=mpicolor] (-n2) at (0.23, 0) {};
+      \node[orcatreenode, fill=mpicolor] (-n3) at (0.7, 0) {};
+      % Anchors
+      \coordinate (-north)  at (0, 0.2);
+      \coordinate (-south)  at (0, -0.2);
+      \coordinate (-east)   at (0.9, 0);
+      \coordinate (-west)   at (-0.9, 0);
+      \coordinate (-center) at (0, 0);
+    }
+  }
+}
+
+% === overlaytree (controller + 2 aggregators) ===
+\tikzset{
+  pics/overlaytree/.style={
+    code={
+      \begin{scope}[
+        grow=up,
+        level distance=0.55cm,
+        sibling distance=0.9cm,
+        every node/.style={orcatreenode, fill=ctlcolor},
+        level 1/.style={nodes={fill=aggcolor}},
+        edge from parent/.style={draw, thick}
+      ]
+        \node[orcatreenode] (root) {}
+          child { node[orcatreenode] (c1) {} }
+          child { node[orcatreenode] (c2) {} };
+      \end{scope}
+      % Anchors
+      \path (current bounding box.north)  coordinate (-north);
+      \path (current bounding box.south)  coordinate (-south);
+      \path (current bounding box.east)   coordinate (-east);
+      \path (current bounding box.west)   coordinate (-west);
+      \path (current bounding box.center) coordinate (-center);
+    }
+  }
+}

@@ -1,0 +1,91 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usetikzlibrary{arrows.meta, positioning, calc, fit}
+\usepackage{twemojis}
+
+\input{assets}
+
+\begin{document}
+
+\begin{tikzpicture}
+  [
+  arrow/.style={-{Stealth}, thick},
+  label/.style={font=\sffamily\small, align=center},
+  cornerblock/.style={inner sep=3pt},
+  pics/appblock/.style={
+      code={
+          \begin{scope}[local bounding box=-bbox]
+            \begin{scope}[rotate=90]
+              \pic (-mpi) at (0,0) {mpinodes};
+            \end{scope}
+            \node[font=\sffamily\small, anchor=north] at (0, -0.2) {HPC/ML App};
+          \end{scope}
+        }
+    },
+  pics/jsonblock/.style={
+      code={
+          \begin{scope}[local bounding box=-bbox]
+            \pic at (0, 0) {jsonfile};
+            \pic at (0.6, 0) {jsonfile};
+            \pic at (1.2, 0) {jsonfile};
+            \pic at (1.8, 0) {jsonfile};
+            \node[font=\sffamily\small, anchor=north] at (1.1, -0.0) {JSON Traces};
+          \end{scope}
+        }
+    },
+  pics/dfblock/.style={
+      code={
+          \begin{scope}[local bounding box=-bbox]
+            \pic (-df) at (0, 0) {minidf={}};
+            \node[font=\sffamily\small, anchor=north] at (0.2, -0.45) {DataFrame};
+          \end{scope}
+        }
+    },
+  pics/opblock/.style={
+      code={
+          \begin{scope}[local bounding box=-bbox]
+            \pic (-op) at (0, 0) {operator};
+            \node[font=\sffamily\small, anchor=north] at (0, -0.2) {Operator};
+          \end{scope}
+        }
+    },
+  ]
+
+  \node[cornerblock] (app) {\tikz{\pic {appblock};}};
+
+  \node[cornerblock, right=3cm of app] (json) {\tikz{\pic {jsonblock};}};
+
+  \node[cornerblock, below=1cm of app] (op) {\tikz{\pic {opblock};}};
+
+  \node[cornerblock] (df) at (json |- op) {\tikz{\pic {dfblock};}};
+
+  \draw[arrow, red!70! black] (app.east) -- (json.west)
+  node[midway, above, label] {Traces}
+  node[midway, below, label] {\emph{(TAU/Pytorch Kineto)}};
+
+  \draw[arrow, red!% === Corner pics with bounding boxes === === Place corner blocks using nested
+    % nodes + positioning === NW: app NE: json (right of app) SW: operator (below app) SE: dataframe (at
+    % intersection of json's x and op's y) === Arrows === NW -> NE: trace NE -> SE: ETL bottleneck
+    70!
+    black] (json.south) -- (df.north)
+  node[midway, sloped, above, label, text=red!70! black] {ETL}
+  node[midway, sloped, below, label, text=red!70! black] {\emph{(pandas)}};
+
+  % SE -> SW: view
+  \draw[arrow] (df.west) -- (op.east)
+  node[midway, above, label] {view};
+  \node[inner sep=0pt] at ($(df.west)!% Matplotlib plot
+  0.5!
+  (op.east)$) {
+    \includegraphics[width=1cm, trim=4.5cm 1.28cm 1.5cm 0.57cm, clip]{/Users/schwifty/Repos/mon-paper/data/figs/lesson_volfunc_single.pdf}
+  };
+
+  % SW -> NW: reconfig with gear
+  \draw[arrow] (op.north) -- (app.south)
+  node[midway,sloped,below,label] {\emph{Rerun}}
+  node[midway, sloped, above, label] {\twemoji[height=14pt]{gear}};
+
+\end{tikzpicture}
+
+\end{document}

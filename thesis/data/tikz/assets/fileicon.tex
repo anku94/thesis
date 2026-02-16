@@ -1,0 +1,59 @@
+% ASSET: file icons (document icons with folded corner)
+% Requires: ext/Apache_Parquet_logo.pdf
+
+% Clipped Parquet logo
+\tikzset{
+  pics/parquetlogo/.style={
+    code={
+      \node[inner sep=0pt, anchor=center] {\includegraphics[width=0.3cm,trim=0cm 0cm 17.5cm 0cm,clip]{ext/Apache_Parquet_logo.pdf}};
+    }
+  }
+}
+
+% Parquet file icon
+\tikzset{
+  pics/pqfile/.style={
+    code={
+      \def\w{0.4}  % width
+      \def\h{0.5}  % height
+      \def\f{0.12} % fold size
+      % Main shape
+      \fill[white] (0,0) -- (\w,0) -- (\w,\h-\f) -- (\w-\f,\h) -- (0,\h) -- cycle;
+      \draw (0,0) -- (\w,0) -- (\w,\h-\f) -- (\w-\f,\h) -- (0,\h) -- cycle;
+      % Folded corner
+      \fill[gray!30] (\w,\h-\f) -- (\w-\f,\h-\f) -- (\w-\f,\h) -- cycle;
+      \draw (\w,\h-\f) -- (\w-\f,\h-\f) -- (\w-\f,\h);
+      % Clipped Parquet logo inside
+      \begin{scope}
+        \clip (0.05,0.05) rectangle (\w-0.05,\h-\f-0.05);
+        \pic at (0.2,0.2) {parquetlogo};
+      \end{scope}
+      % Bounds node for fit
+      \node[inner sep=0pt, minimum width=\w cm, minimum height=\h cm, anchor=south west] (-bounds) at (0,0) {};
+    }
+  }
+}
+
+% JSON file icon
+\definecolor{jsoncolor}{HTML}{F5A623}  % orange/yellow for JSON
+\tikzset{
+  pics/jsonfile/.style={
+    code={
+      \def\w{0.4}  % width
+      \def\h{0.5}  % height
+      \def\f{0.12} % fold size
+      % Main shape
+      \fill[white] (0,0) -- (\w,0) -- (\w,\h-\f) -- (\w-\f,\h) -- (0,\h) -- cycle;
+      \draw (0,0) -- (\w,0) -- (\w,\h-\f) -- (\w-\f,\h) -- (0,\h) -- cycle;
+      % Folded corner
+      \fill[gray!30] (\w,\h-\f) -- (\w-\f,\h-\f) -- (\w-\f,\h) -- cycle;
+      \draw (\w,\h-\f) -- (\w-\f,\h-\f) -- (\w-\f,\h);
+      % Braces above
+      \node[anchor=center, font=\sffamily\bfseries\fontsize{4pt}{4pt}\selectfont, jsoncolor] at (\w/2, 0.28) {\{\}};
+      % Yellow banner at bottom with JSON text
+      \node[anchor=center, fill=jsoncolor, inner sep=0.5pt, font=\sffamily\bfseries\fontsize{2pt}{2pt}\selectfont, text=white] at (\w/2, 0.09) {JSON};
+      % Bounds node for fit
+      \node[inner sep=0pt, minimum width=\w cm, minimum height=\h cm, anchor=south west] (-bounds) at (0,0) {};
+    }
+  }
+}

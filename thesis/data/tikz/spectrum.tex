@@ -1,0 +1,41 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, shapes.arrows}
+\usepackage{twemojis}
+
+\input{assets}
+
+\begin{document}
+
+\begin{tikzpicture}[
+    label/.style={font=\sffamily\small, align=center}
+  ]
+
+
+  % === Double-headed arrow in middle ===
+  \definecolor{spectrumcolor}{HTML}{E8D5C4}  % warm sand/beige
+  \node[
+    double arrow,
+    draw=black!80,
+    fill=spectrumcolor,
+    double arrow head extend=0.1cm,
+    minimum width=0.6cm,
+    minimum height=3cm,
+    thick
+  ] (spectrum) at (0, 0) {};
+
+  % === Left side: coolguy ===
+  \pic (cool) at ([xshift=-1.5cm,yshift=1cm]spectrum.north) {coolguy};
+  \node[label, below=0cm of cool-south] (common) {Common Case};
+  \node[label, below=0.9cm of common.south] {\emph{Less Data}};
+
+  % === Right side: detective ===
+  \pic (det) at ([xshift=1.5cm,yshift=1cm]spectrum.north) {detective};
+  \node[label, below=0cm of det-south] (invest) {Investigation};
+  \node[label, below=0.9cm of invest.south] {\emph{More Data}};
+
+  \node[label, below=0.8cm of spectrum] {\textbf{The Spectrum of Observability Hats}};
+
+\end{tikzpicture}
+
+\end{document}

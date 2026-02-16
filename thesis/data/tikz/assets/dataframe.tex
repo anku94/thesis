@@ -1,0 +1,45 @@
+% ASSET: dataframe (mini dataframe visualizations)
+
+% Dataframe base styles
+\tikzset{
+  dataframe/.style={
+    draw,
+    minimum width=6pt, minimum height=10pt,
+    outer sep=0pt, inner sep=0pt,
+  },
+  dfheader/.style={ dataframe, fill=gray!30, minimum height=5pt },
+  dfbody/.style={ dataframe, fill=white },
+}
+
+% Single column (header + body)
+\tikzset{
+  pics/minidfcol/.style={
+    code={
+      \node[dfheader] (-h) at (0,0) {};
+      \node[dfbody, below=0pt of -h] (-b) {};
+    }
+  }
+}
+
+% 3-column mini dataframe
+\tikzset{
+  pics/minidf/.style args={#1}{
+    code={
+      \pic (p0) at (0,0) {minidfcol};
+      \pic [right=0pt of p0-h] (p1) {minidfcol};
+      \pic [right=0pt of p1-h] (p2) {minidfcol};
+      \node[inner sep=0pt, fit=(p0-h)(p2-b)] (-bounds) {};
+    }
+  }
+}
+
+% Two mini dataframes in a dashed box (partitioned)
+\tikzset{
+  pics/partitioned/.style={
+    code={
+      \pic (p0) at (-0.5,0) {minidf={}};
+      \pic (p1) at (0.5,0) {minidf={}};
+      \node[draw, dashed, fit=(p0-bounds)(p1-bounds), inner sep=2pt] (-box) {};
+    }
+  }
+}
