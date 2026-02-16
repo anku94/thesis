@@ -2,12 +2,27 @@
 \chapter{CARP: Range Query-Optimized Indexing for Streaming Data}
 \label{chap:carp-paper}
 \minitoc
+
 \input{tex/01-carp/01-intro}
-\input{tex/01-carp/02-background}
-\input{tex/01-carp/03-challenges}
-\input{tex/01-carp/04-principles}
-\input{tex/01-carp/05-design}
-\input{tex/01-carp/06-impl}
-\input{tex/01-carp/07-eval}
-\input{tex/01-carp/08-disc}
-\input{tex/01-carp/09-relwork}
+
+\ifdefined\paperstubsonly
+  % === Section stubs for outline view ===
+  \section{Background and Motivation}\label{sec:carp:bg}
+  \section{Range Query Challenges}\label{sec:carp:distrib}
+  \section{Design Principles of CARP}
+  \section{Design of CARP}\label{sec:carp:des}
+  \section{Implementation}\label{sec:carp:impl}
+  \section{Evaluation}\label{sec:carp:eval}
+  \section{Discussion}\label{sec:carp:disc}
+  \section{Related Work}\label{sec:carp:rel_work}
+\else
+  \input{tex/01-carp/02-background}
+  \input{tex/01-carp/03-challenges}
+  \input{tex/01-carp/04-principles}
+  \input{tex/01-carp/05-design}
+  \input{tex/01-carp/06-impl}
+  \input{tex/01-carp/07-eval}
+  \input{tex/01-carp/08-disc}
+  \input{tex/01-carp/09-relwork}
+\fi
+

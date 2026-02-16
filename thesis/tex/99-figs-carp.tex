@@ -74,18 +74,16 @@
 
 % Figure 3.6
 \newcommand{\figdeshist}{
-  {\sidecaptionvpos{figure}{c}
-  \begin{SCfigure}[0.9][h]
+  \begin{figure}[t]
     \centering
     \includegraphics[trim=7.4cm 3.2cm 5.7cm
       3.3cm,clip,height=0.35\textheight,keepaspectratio]{data/figs/carp_reneg_hists_v4.pdf}
-    \captionsetup{format=plain}
     \caption{Partition table renegotiation relies on pivots computed from histograms of keys tracked on
       each rank.
       Pivots are merged, and the new global histogram is divided into equal-mass bins before being
       broadcasted.}
     \label{fig:carp:des-hist}
-  \end{SCfigure}}
+  \end{figure}
 }
 
 % Figure 3.7

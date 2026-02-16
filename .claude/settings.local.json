@@ -20,7 +20,12 @@
       "Bash(python msgcnt_regr.py:*)",
       "Bash(python:*)",
       "Bash(python3:*)",
-      "Bash(pdffonts:*)"
+      "Bash(pdffonts:*)",
+      "Bash(for f in /Users/schwifty/Repos/thesis/thesis/tex/01-carp/*.tex)",
+      "Bash(do head -5 \"$f\")",
+      "Bash(done)",
+      "Bash(for f in /Users/schwifty/Repos/thesis/thesis/tex/02-amr/*.tex)",
+      "Bash(for f in /Users/schwifty/Repos/thesis/thesis/tex/03-orca/*.tex)"
     ]
   }
 }
