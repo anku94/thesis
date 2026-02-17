@@ -1,0 +1,86 @@
+The previous chapter demonstrated a feedback loop that works: CARP reconstructs a global view of
+an evolving key distribution and adapts range partitioning online.
+This chapter examines what it costs when the corresponding loop is high-latency, using our
+experience developing telemetry-driven placement policies for block-structured adaptive mesh
+refinement (AMR) codes as a case study.
+AMR accelerates simulations by refining the mesh only where needed, but that adaptivity produces
+heterogeneous per-block work and shifting communication
+patterns~\cite{Dubey2014:Survey, Burst2011:p4est}.
+At scale, frequent synchronization amplifies this variability into
+stragglers, so placement and load balancing become first-order performance
+concerns~\cite{Dubey2014:Survey, Burst2008:ALPS}.
+Careful end-to-end characterization of these effects in production AMR codes is sparse.
+The best available evidence from exported traces of large MPI
+applications~\cite{Klenk2017:OverviewMPICharacteristics} reports substantial waiting time at scale
+and emphasizes that standard trace data is often insufficient for cross-stack diagnosis, leaving
+algorithmic and infrastructural causes entangled.
+We therefore study real AMR codes on our own research cluster with full-stack access, collect our
+own telemetry, and evaluate changes empirically.
+
+Our goal was to replace static placement heuristics with telemetry-driven workload models, but
+initial experiments were dominated by effects that had nothing to do with placement.
+Fail-slow hardware~\cite{Gunaw2018:FailSlow}, fabric pathologies, MPI runtime
+interactions, and cross-layer tuning issues produced straggler signatures that could not be
+distinguished from genuine placement effects until they were identified and removed.
+Localizing these behaviors required fine-grained telemetry that, in practice, was only accessible
+through traces.
+Standard tracing tools~\cite{Shend2006:TAU, Knupf2012:Score-P} collected this data as per-rank
+logs, but the resulting volume was hard to control across thousands of timesteps, and the fixed
+schemas did not capture the custom fields we needed to interpret AMR behavior.
+We therefore iterated through a series of bespoke instrumentation and analysis pipelines,
+repeatedly adjusting what to emit so that post-hoc analysis remained tractable.
+The result was a slow, manual diagnostic cycle in which time was dominated by collecting, moving,
+and reshaping telemetry, even when the eventual remediation was simple (for example, pruning bad
+nodes, correcting configuration, or fixing an obvious tuning mistake).
+
+With a reliable measurement baseline established, we could finally isolate placement effects.
+Validated telemetry confirmed that synchronization dominated runtime (35--50\% of total time,
+increasing with scale), driven by compute variability across blocks.
+We found that compute load balance and communication locality are competing objectives: improving
+one degrades the other.
+We developed CPLX (\S\ref{sec:amr:design}), a hybrid placement policy that exposes this tradeoff
+through a single tunable parameter $X$.
+At $X{=}0$, CPLX prioritizes locality; at $X{=}100$, it reduces to pure load balancing.
+On a real AMR code across 512--4096 CPU ranks, CPLX improves runtime by up to 21.6\% over tuned
+baselines (\S\ref{sec:amr:eval}), with the best setting of $X$ varying with the code, problem,
+scale, and cluster.
+
+The entire exercise---from diagnosing thermal throttling to evaluating CPLX tradeoffs---was one
+continuous cycle of hypothesis-driven telemetry work.
+There was no clean boundary between denoising and placement.
+Every intervention required re-collecting data, re-analyzing it, and re-validating that the change
+produced the effect we believed it did.
+The cost was establishing measurement fidelity, attributing variability to root causes across the
+stack, and iterating toward a reliable baseline from which placement effects could be studied.
+Developing and evaluating CPLX required the same pattern, including custom instrumentation for
+per-block costs, post-hoc analysis, and repeated checks that apparent improvements reflected
+placement effects rather than residual noise in the measurement and execution environment.
+Every finding was specific to one code on one cluster, and the conditions that made the process
+expensive---including cross-stack confounders, context-dependent tradeoffs, and reshaping telemetry
+for each new question---are structural properties of large-scale parallel systems.
+Because the dominant effects and the best tradeoffs depend on the code, problem, scale, and
+environment, translating a one-off win into a repeatable practice requires repeating much of the
+same process.
+
+This chapter traces that process end to end: the confounders we encountered and how we diagnosed
+them (\S\ref{sec:amr:chal}), the evolution of our telemetry and analysis workflow
+(\S\ref{sec:amr:tele}), and the design and evaluation of CPLX
+(\S\ref{sec:amr:design}, \S\ref{sec:amr:eval}).
+It concludes with empirical guidance on what effective, iterative performance-diagnosis tooling
+would need to support, based on what succeeded and what failed in our experience
+(\S\ref{sec:amr:lessons}).
+
+% Lessons for ORCA: and I think pt 2 should be:
+
+% everything is context-dependent and requires reactions parsing CSVs in pandas was always painful.
+% subsequent loading was nice if we wrote to feather (why were we writing csvs? we were just
+% following established narratives, we had no idea what tools should we be using) nothing is
+% constant. you can't assume canned views. every problem requried a different view. you can't assume
+% a data model. tracing tools forced standard columns but we wanted block IDs to know which kernel
+% belonged to which block. your telemetry data models need to be versatile. SQL works. we tried
+% ETL-ing to clickhouse then triggering sql queries to get dataframes that we analyzed in pandas.
+% that's the building block for the real thing.
+% ebpf showed us the view-driven paradigm. when we were down in the weeds and everything was
+% failing, ebpf was like a savior. instead of giving us telemetry, it asked us: all telemetry is
+% available on top. tell me what do you want to see. this is the thing that needs to exist at
+% cluster scale.
