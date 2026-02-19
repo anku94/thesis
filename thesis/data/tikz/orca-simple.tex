@@ -1,0 +1,58 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usetikzlibrary{fit}
+\usetikzlibrary{positioning}
+\usetikzlibrary{matrix}
+
+\input{assets}
+
+\begin{document}
+
+\begin{tikzpicture}[
+		every node/.style={font=\sffamily},
+		box/.style={draw, rounded corners=4pt, minimum width=2cm, minimum height=1cm, align=center},
+		ctlarrow/.style={draw=red, line width=2pt},
+		aggarrow/.style={draw, line width=4pt}
+	]
+
+	% Human figure
+	\node[inner sep=3pt] (user) {\tikz{\pic {operator};}};
+
+	% CTL, AGG, MPI
+	\node[box, fill=red!20, below=0.3cm of user] (ctl) {Controller};
+	\node[box, fill=gray!10, below=0.5cm of ctl, minimum width=6cm] (agg) {Dedicated Aggregators};
+	\node[box, fill=blue!20, below=0.5cm of agg, minimum width=8cm] (bsp)
+	{Bulk-Synchronous Parallel Application \emph{(e.g. MPI)}};
+
+	\node[
+		draw=red!50!black,
+		thick,
+		dashed,
+		rounded corners,
+		inner sep=6pt,
+		fit={(agg.west |- ctl.north west) (agg.south east)},
+		label={[label distance=3pt]above left:ORCA}
+	] {};
+
+	% Arrows
+	\draw[<-, aggarrow] ([xshift=0.5cm]ctl.south) -- ([xshift=0.5cm]agg.north);
+	\draw[->, ctlarrow] ([xshift=-0.5cm]ctl.south) -- ([xshift=-0.5cm]agg.north);
+	\draw[<-, aggarrow] ([xshift=0.5cm]agg.south) -- ([xshift=0.5cm]bsp.north);
+	\draw[->, ctlarrow] ([xshift=-0.5cm]agg.south) -- ([xshift=-0.5cm]bsp.north);
+
+	% Legend
+	\matrix[
+		draw=white,
+		rounded corners=2pt,
+		fill=white,
+		inner sep=4pt,
+		column sep=12pt,
+		anchor=north west,
+		below=0.5cm of bsp.south
+	] (legend) {
+		\node[right] {\tikz \draw[->, ctlarrow] (0,0.1)--(0.7cm,0.1cm); Control}; &
+		\node[right] {\tikz \draw[->, aggarrow] (0,0)--(0.7cm,0); Realtime~Feedback}; \\
+	};
+
+\end{tikzpicture}
+
+\end{document}

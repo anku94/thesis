@@ -1,0 +1,38 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, backgrounds, fit}
+
+\input{assets}
+
+\begin{document}
+
+\begin{tikzpicture}
+  [
+  barrier/.style={flowcolor, thick},
+  edge/.style={mpicolor, thick, -{Stealth}},
+  ranklabel/.style={font=\sffamily\small\itshape, mpicolor},
+  ]
+
+  % Barrier line
+  \draw[barrier] (0, 0) -- (3, 0);
+
+  % Rank edges and labels
+  \foreach \i/\label in {0/R0, 1/R1, 2/\dots} {
+    \node[ranklabel] at (\i + 0.5, 0.8) {\label};
+    \draw[edge] (\i + 0.5, 0.6) -- (\i + 0.5, 0.05);
+  }
+
+  % Legend
+  \begin{scope}[yshift=-0.6cm, xshift=0.5cm, local bounding box=legend]
+    \draw[edge] (0, 0) -- (0.5, 0);
+    \node[font=\sffamily\scriptsize, anchor=west] at (0.6, 0) {Local State};
+    \draw[barrier] (0, -0.4) -- (0.5, -0.4);
+    \node[font=\sffamily\scriptsize, anchor=west] at (0.6, -0.4) {Global State};
+  \end{scope}
+  \begin{scope}[on background layer]
+    \node[fit=(legend), draw=gray!70, rounded corners=3pt, inner ysep=0pt] {};
+  \end{scope}
+
+\end{tikzpicture}
+
+\end{document}

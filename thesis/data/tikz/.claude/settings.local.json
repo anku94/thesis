@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash:*)",
+      "Bash(latexmk:*)",
+      "Bash(ls:*)",
+      "Bash(xargs:*)",
+      "Bash(python:*)"
+    ]
+  }
+}

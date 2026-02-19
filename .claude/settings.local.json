@@ -25,7 +25,9 @@
       "Bash(do head -5 \"$f\")",
       "Bash(done)",
       "Bash(for f in /Users/schwifty/Repos/thesis/thesis/tex/02-amr/*.tex)",
-      "Bash(for f in /Users/schwifty/Repos/thesis/thesis/tex/03-orca/*.tex)"
+      "Bash(for f in /Users/schwifty/Repos/thesis/thesis/tex/03-orca/*.tex)",
+      "Bash(chmod:*)",
+      "Bash(/Users/schwifty/Repos/mon-paper/data/ppts/gensvg.sh)"
     ]
   }
 }

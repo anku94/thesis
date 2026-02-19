@@ -1,0 +1,51 @@
+\documentclass[border=10pt]{standalone}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{twemojis}
+
+\input{assets}
+
+\begin{document}
+
+\begin{tikzpicture}
+  [
+  ctlarrow/.style={-{Stealth}, draw=red, line width=1.5pt},
+  aggarrow/.style={-{Stealth}, draw, line width=3pt},
+  pics/appblock/.style={
+      code={
+          \begin{scope}[local bounding box=-bbox]
+            \begin{scope}[rotate=90]
+              \pic (-mpi) at (0,0) {mpinodes};
+            \end{scope}
+            \node[font=\sffamily\small, anchor=north] at (0, -0.2) {HPC/ML App};
+          \end{scope}
+        }
+    },
+  pics/userblock/.style={
+      code={
+          \begin{scope}[local bounding box=-bbox]
+            \pic (-op) at (0,0) {operator};
+            \node[font=\sffamily\small, anchor=north] at (0, -0.25) {User};
+          \end{scope}
+        }
+    },
+  ]
+
+  \node[inner sep=3pt] (app) {\tikz{\pic {appblock};}};
+
+  \node[inner sep=3pt, right=3cm of app] (user) {\tikz{\pic {userblock};}};
+
+  % App -> User: with plot
+  \draw[aggarrow] ($(app.east)+(0,0.15)$) -- ($(user.west)+(0,0.15)$)
+    node[midway, above=0.2cm, inner sep=0pt] {
+      \includegraphics[width=1cm, trim=4.5cm 1.28cm 1.5cm 0.57cm, clip]{/Users/schwifty/Repos/mon-paper/data/figs/lesson_volfunc_single.pdf}
+    };
+
+  % User -> App: reconfig
+  \draw[ctlarrow] ($(user.west)+(0,-0.15)$) -- ($(app.east)+(0,-0.15)$)
+    node[midway, below=0.1cm] {\twemoji[height=14pt]{gear}};
+
+\end{tikzpicture}
+
+\end{document}
