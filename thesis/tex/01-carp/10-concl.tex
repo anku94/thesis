@@ -52,7 +52,7 @@ fixed-function feedback loops.
 \paragraph{Applicability of OLAP techniques} While hash and range-partitioning are standard
 database
 techniques, their application to scientific data management is shaped by the environment.
-These pipelines terminate in a parallel filesystem or burst buffer that is designed to absorb
+These pipelines terminate in parallel filesystems~\cite{Braam2002:Lustre,Oeste2025:StorageGaps} designed to absorb
 massive,
 synchronized ingestion from tens of thousands of writers.
 As a result, these techniques must be embedded into in-situ pipelines

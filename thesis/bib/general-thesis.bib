@@ -69,7 +69,7 @@
   doi = {10.1017/9781009070218.003},
   url = {https://www.cambridge.org/core/product/identifier/9781009070218%23c1/type/book_part},
   urldate = {2025-08-13},
-  isbn = {978-1-00-907021-8 978-1-316-51358-3},
+  isbn = {978-1-009-07021-8 978-1-316-51358-3},
   langid = {english},
   file = {/Users/schwifty/Zotero/storage/PQCLLDEV/2021 - Mathematics, Models and Architectures.pdf}
 }
@@ -174,7 +174,7 @@
   url = {https://dl.acm.org/doi/10.1145/3581784.3627037},
   urldate = {2025-07-04},
   eventtitle = {{{SC}} '23: {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
-  isbn = {9798400701092},
+  isbn = {979-8-4007-0109-2},
   langid = {english},
   annotation = {GB2023: motivation for scale (8k Frontier GPU nodes, 32k GPUs)},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/carpbib/2023_das_et_al_large-scale_materials_modeling_at_quantum_accuracy.pdf}
@@ -211,7 +211,7 @@
   urldate = {2025-07-04},
   abstract = {Scientific workflows drive most modern large-scale science breakthroughs by allowing scientists to define their computations as a set of jobs executed in a given order based on their data dependencies. Workflow management systems (WMSs) have become key to automating scientific workflows—executing computational jobs and orchestrating data transfers between those jobs running on complex high-performance computing (HPC) platforms. Traditionally, WMSs use files to communicate between jobs: a job writes out files that are read by other jobs. However, HPC machines face a growing gap between their storage and compute capabilities. To address that concern, the scientific community has adopted a new approach called in situ, which bypasses costly parallel filesystem I/O operations with faster in-memory or in-network communications. When using in situ approaches, communication and computations can be interleaved. In this work, we leverage the Decaf in situ dataflow framework to accelerate task-based scientific workflows managed by the Pegasus WMS, by replacing file communications with faster MPI messaging. We propose a new execution engine that uses Decaf to manage communications within a sub-workflow (i.e., set of jobs) to optimize inter-job communications. We consider two workflows in this study: (i) a synthetic workflow that benchmarks and compares file- and MPI-based communication; and (ii) a realistic bioinformatics workflow that computes mutational overlaps in the human genome. Experiments show that in situ communication can improve the bioinformatics workflow execution time by 22 to 30 times compared with file communication. Our results motivate further opportunities and challenges for bridging traditional WMSs with in situ frameworks.},
   eventtitle = {2022 22nd {{International Symposium}} on {{Cluster}}, {{Cloud}} and {{Internet Computing}} ({{CCGrid}})},
-  isbn = {978-1-66549-956-9},
+  isbn = {978-1-6654-9956-9},
   langid = {english},
   file = {/Users/schwifty/Zotero/storage/R5CRBVJ6/Do et al. - 2022 - Accelerating Scientific Workflows on HPC Platforms.pdf}
 }
@@ -252,7 +252,7 @@
 }
 
 @inproceedings{Eisen2022:Checkpoint,
-  title = {\{\vphantom\}{{Check-N-Run}}\vphantom\{\}: A {{Checkpointing System}} for {{Training Deep Learning Recommendation Models}}},
+  title = {\{{{Check-N-Run}}\}: A {{Checkpointing System}} for {{Training Deep Learning Recommendation Models}}},
   shorttitle = {Checkpoint},
   author = {Eisenman, Assaf and Matam, Kiran Kumar and Ingram, Steven and Mudigere, Dheevatsa and Krishnamoorthi, Raghuraman and Nair, Krishnakumar and Smelyanskiy, Misha and Annavaram, Murali},
   date = {2022},
@@ -431,7 +431,7 @@
   abstract = {This paper introduces ALPINE, a flyweight in situ infrastructure. The infrastructure is designed for leading-edge supercomputers, and has support for both distributed-memory and shared-memory parallelism. It can take advantage of computing power on both conventional CPU architectures and on many-core architectures such as NVIDIA GPUs or the Intel Xeon Phi. Further, it has a flexible design that supports for integration of new visualization and analysis routines and libraries. The paper describes ALPINE's interface choices and architecture, and also reports on initial experiments performed using the infrastructure.},
   isbn = {978-1-4503-5139-3},
   keywords = {HPC,In Situ,Scientific Visualization},
-  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2017_larsen_et_al_the_alpine_in_situ_infrastructure.pdf}
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2017_larsen_et_al_the_alpine_in_situ_i.pdf}
 }
 
 @inproceedings{Larse2022:Ascent,
@@ -464,7 +464,7 @@
   urldate = {2025-07-17},
   abstract = {Scientific discovery increasingly depends on complex workflows consisting of multiple phases and sometimes millions of parallelizable tasks or pipelines. These workflows access storage resources for a variety of purposes, including preprocessing, simulation output, and postprocessing steps. Unfortunately, most workflow models focus on the scheduling and allocation of computational resources for tasks while the impact on storage systems remains a secondary objective and an open research question. I/O performance is not usually accounted for in workflow telemetry reported to users.},
   eventtitle = {2018 {{IEEE}}/{{ACM}} 3rd {{International Workshop}} on {{Parallel Data Storage}} \& {{Data Intensive Scalable Computing Systems}} ({{PDSW-DISCS}})},
-  isbn = {978-1-72810-192-7},
+  isbn = {978-1-7281-0192-7},
   langid = {english},
   file = {/Users/schwifty/Zotero/storage/XQ6JPJ7Y/Luttgau et al. - 2018 - Toward Understanding IO Behavior in HPC Workflows.pdf}
 }
@@ -546,7 +546,7 @@
   urldate = {2025-07-03},
   abstract = {The accurate simulation of complex biochemical phenomena has historically been hampered by the computational requirements of high-fidelity molecular-modeling techniques. Quantum mechanical methods, such as ab initio wave-function (WF) theory, deliver the desired accuracy, but have impractical scaling for modeling biosystems with thousands of atoms. Combining molecular fragmentation with MP2 perturbation theory, this study presents an innovative approach that enables biomolecular-scale ab initio molecular dynamics (AIMD) simulations at WF theory level. Leveraging the resolution-of-the-identity approximation for Hartree-Fock and MP2 gradients, our approach eliminates computationally intensive four-center integrals and their gradients, while achieving near-peak performance on modern GPU architectures. The introduction of asynchronous time steps minimizes time step latency, overlapping computational phases and effectively mitigating load imbalances. Utilizing up to 9,400 nodes of Frontier and achieving 59\% (1006.7 PFLOP/s) of its double-precision floating-point peak, our method enables us to break the million-electron and 1 EFLOP/s barriers for AIMD simulations with quantum accuracy.},
   eventtitle = {{{SC}} '24: {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
-  isbn = {9798350352917},
+  isbn = {979-8-3503-5291-7},
   annotation = {GB2024: motivation for scale (9400 Frontier nodes)},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/General-Thesis/2024_stocks_et_al_breaking_the_million-electron_and_1_eflop-s_barriers.pdf}
 }

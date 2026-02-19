@@ -171,6 +171,17 @@
   file = {/Users/schwifty/Zotero/storage/LUHW47ZK/Cernuda et al. - Hades A Context-Aware Active Storage Framework fo.pdf}
 }
 
+@inproceedings{Chang2006:Bigtable,
+  title = {Bigtable: {{A Distributed Storage System}} for {{Structured Data}}},
+  shorttitle = {Bigtable},
+  author = {Chang, Fay and Dean, Jeffrey and Ghemawat, Sanjay and Hsieh, Wilson C. and Wallach, Deborah A. and Burrows, Mike and Chandra, Tushar and Fikes, Andrew and Gruber, Robert E.},
+  date = {2006},
+  url = {https://www.usenix.org/conference/osdi-06/bigtable-distributed-storage-system-structured-data},
+  urldate = {2026-02-18},
+  eventtitle = {7th {{USENIX Symposium}} on {{Operating Systems Design}} and {{Implementation}} ({{OSDI}} 06)},
+  langid = {english}
+}
+
 @article{Child2020:TerminologySituVisualization,
   title = {A Terminology for in Situ Visualization and Analysis Systems},
   author = {Childs, Hank and Ahern, Sean D. and Ahrens, James and Bauer, Andrew C. and Bennett, Janine and Bethel, E. Wes and Bremer, Peer-Timo and Brugger, Eric and Cottam, Joseph and Dorier, Matthieu and Dutta, Soumya and Favre, Jean M. and Fogal, Thomas and Frey, Steffen and Garth, Christoph and Geveci, Berk and Godoy, William F. and Hansen, Charles D. and Harrison, Cyrus and Hentschel, Bernd and Insley, Joseph and Johnson, Chris R. and Klasky, Scott and Knoll, Aaron and Kress, James and Larsen, Matthew and Lofstead, Jay and Ma, Kwan-Liu and Malakar, Preeti and Meredith, Jeremy and Moreland, Kenneth and Navrátil, Paul and O’Leary, Patrick and Parashar, Manish and Pascucci, Valerio and Patchett, John and Peterka, Tom and Petruzza, Steve and Podhorszki, Norbert and Pugmire, David and Rasquin, Michel and Rizzi, Silvio and Rogers, David H. and Sane, Sudhanshu and Sauer, Franz and Sisneros, Robert and Shen, Han-Wei and Usher, Will and Vickery, Rhonda and Vishwanath, Venkatram and Wald, Ingo and Wang, Ruonan and Weber, Gunther H. and Whitlock, Brad and Wolf, Matthew and Yu, Hongfeng and Ziegeler, Sean B.},
@@ -187,6 +198,38 @@
   abstract = {The term “in situ processing” has evolved over the last decade to mean both a specific strategy for visualizing and analyzing data and an umbrella term for a processing paradigm. The resulting confusion makes it difficult for visualization and analysis scientists to communicate with each other and with their stakeholders. To address this problem, a group of over 50 experts convened with the goal of standardizing terminology. This paper summarizes their findings and proposes a new terminology for describing in situ systems. An important finding from this group was that in situ systems are best described via multiple, distinct axes: integration type, proximity, access, division of execution, operation controls, and output type. This paper discusses these axes, evaluates existing systems within the axes, and explores how currently used terms relate to the axes.},
   langid = {english},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2020_childs_et_al_a_terminology_for_in_situ_visualization_and_analysis_systems.pdf}
+}
+
+@inproceedings{Chou2011:FastQuery,
+  title = {{{FastQuery}}: {{A Parallel Indexing System}} for {{Scientific Data}}},
+  shorttitle = {{{FastQuery}}},
+  booktitle = {2011 {{IEEE International Conference}} on {{Cluster Computing}}},
+  author = {Chou, Jerry and Wu, Kesheng and {Prabhat}},
+  date = {2011-09},
+  pages = {455--464},
+  issn = {2168-9253},
+  doi = {10.1109/CLUSTER.2011.86},
+  url = {https://ieeexplore.ieee.org/document/6061134},
+  urldate = {2026-02-04},
+  abstract = {Modern scientific datasets present numerous data management and analysis challenges. State-of-the-art index and query technologies such as FastBit can significantly improve accesses to these datasets by augmenting the user data with indexes and other secondary information. However, a challenge is that the indexes assume the relational data model but the scientific data generally follows the array data model. To match the two data models, we design a generic mapping mechanism and implement an efficient input and output interface for reading and writing the data and their corresponding indexes. To take advantage of the emerging many-core architectures, we also develop a parallel strategy for indexing using threading technology. This approach complements our on-going MPI-based parallelization efforts. We demonstrate the flexibility of our software by applying it to two of the most commonly used scientific data formats, HDF5 and NetCDF. We present two case studies using data from a particle accelerator model and a global climate model. We also conducted a detailed performance study using these scientific datasets. The results show that FastQuery speeds up the query time by a factor of 2.5x to 50x, and it reduces the indexing time by a factor of 16 on 24 cores.},
+  eventtitle = {2011 {{IEEE International Conference}} on {{Cluster Computing}}},
+  keywords = {Arrays,Data models,Indexing,Layout,Libraries},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2011_chou_et_al_fastquery_a_paralle.pdf}
+}
+
+@article{Comer1979:UbiquitousBTree,
+  title = {Ubiquitous {{B-Tree}}},
+  author = {Comer, Douglas},
+  date = {1979-06-01},
+  journaltitle = {ACM Comput. Surv.},
+  volume = {11},
+  number = {2},
+  pages = {121--137},
+  issn = {0360-0300},
+  doi = {10.1145/356770.356776},
+  url = {https://dl.acm.org/doi/10.1145/356770.356776},
+  urldate = {2026-02-04},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/1979_comer_ubiquitous_b-tree.pdf}
 }
 
 @inproceedings{Coope2010:BenchmarkingCloudServing,
@@ -245,8 +288,7 @@
   pages = {444--455},
   publisher = {VLDB Endowment},
   abstract = {We consider the problem of horizontally partitioning a dynamic relation across a large number of disks/nodes by the use of range partitioning. Such partitioning is often desirable in large-scale parallel databases, as well as in peer-to-peer (P2P) systems. As tuples are inserted and deleted, the partitions may need to be adjusted, and data moved, in order to achieve storage balance across the participant disks/nodes. We propose efficient, asymptotically optimal algorithms that ensure storage balance at all times, even against an adversarial insertion and deletion of tuples. We combine the above algorithms with distributed routing structures to architect a P2P system that supports efficient range queries, while simultaneously guaranteeing storage balance.},
-  isbn = {0-12-088469-0},
-  venue = {Toronto, Canada}
+  isbn = {0-12-088469-0}
 }
 
 @article{Ghand1990:HybridrangePartitioningStrategy,
@@ -360,6 +402,23 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2019_kumar_et_al_spatially-aware_parallel_i-o_for_particle_data.pdf}
 }
 
+@article{Lu2017:WiscKey,
+  title = {{{WiscKey}}: {{Separating Keys}} from {{Values}} in {{SSD-Conscious Storage}}},
+  shorttitle = {{{WiscKey}}},
+  author = {Lu, Lanyue and Pillai, Thanumalayan Sankaranarayana and Gopalakrishnan, Hariharan and Arpaci-Dusseau, Andrea C. and Arpaci-Dusseau, Remzi H.},
+  date = {2017-03-02},
+  journaltitle = {ACM Trans. Storage},
+  volume = {13},
+  number = {1},
+  pages = {5:1--5:28},
+  issn = {1553-3077},
+  doi = {10.1145/3033273},
+  url = {https://dl.acm.org/doi/10.1145/3033273},
+  urldate = {2026-02-04},
+  abstract = {We present WiscKey, a persistent LSM-tree-based key-value store with a performance-oriented data layout that separates keys from values to minimize I/O amplification. The design of WiscKey is highly SSD optimized, leveraging both the sequential and random performance characteristics of the device. We demonstrate the advantages of WiscKey with both microbenchmarks and YCSB workloads. Microbenchmark results show that WiscKey is 2.5 × to 111 × faster than LevelDB for loading a database (with significantly better tail latencies) and 1.6 × to 14 × faster for random lookups. WiscKey is faster than both LevelDB and RocksDB in all six YCSB workloads.},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2017_lu_et_al_wisckey_separating.pdf}
+}
+
 @article{Lua2005:SurveyComparisonPeertopeer,
   title = {A Survey and Comparison of Peer-to-Peer Overlay Network Schemes},
   author = {Lua, Eng Keong and Crowcroft, Jon and Pias, Marcelo and Sharma, Ravi and Lim, Steven},
@@ -454,6 +513,44 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/_najafi_vandebogart_linux_memory_mapped_system_call_performance.pdf}
 }
 
+@article{Oeste2025:StorageGaps,
+  title = {An Analysis of the {{I}}/{{O}} Semantic Gaps of {{HPC}} Storage Stacks},
+  shorttitle = {{{StorageGaps}}},
+  author = {Oeste, Sebastian and Höhn, Patrick and Kluge, Michael and Kunkel, Julian},
+  date = {2025-08-11},
+  journaltitle = {Frontiers in High Performance Computing},
+  shortjournal = {Front. High Perform. Comput.},
+  volume = {3},
+  publisher = {Frontiers},
+  issn = {2813-7337},
+  doi = {10.3389/fhpcp.2025.1393936},
+  url = {https://www.frontiersin.org/journals/high-performance-computing/articles/10.3389/fhpcp.2025.1393936/full},
+  urldate = {2026-02-19},
+  abstract = {Modern high-performance computing (HPC) Input/Output (I/O) systems consist of stacked hard- and software layers that provide interfaces for data access. Depending on application needs, developers usually choose higher layers with richer semantics for the ease of use or lower layers for performance. Each I/O interface on a given stack consists of a set of operations and their syntactic definition, as well as a set of semantic properties. To properly function, high-level libraries such as Hierarchical Data Format version 5 (HDF5) need to map their semantics to lower-level Application Programming Interface (API) such as Portable Operating System Interface (POSIX). Lower-level storage backends provide different I/O semantics than the layers in the stack above while sometimes implementing the same interface. However, most I/O interfaces do not transport semantic information through their APIs. Ideally, no semantics of an I/O operation should be lost while passing through the I/O stack, allowing lower layers to optimize performance. Unfortunately, there is a lack of general definition and unified taxonomy of I/O semantics. Similarly, system-level APIs offer little support for passing semantics to underlying layers. Thus, passing semantic information between layers is currently not feasible. In this article, we systematically compare I/O interfaces by examining their semantics across the HPC I/O stack. Our primary goal is to provide a taxonomy and comparative analysis, not to propose a new I/O interface or implementation. We propose a general definition of I/O semantics and present a unified classification of I/O semantics based on the categories of concurrent access, persistency, consistency, spatiality, temporality, and mutability. This allows us to compare I/O interfaces in terms of their I/O semantics. We show that semantic information is lost while traveling through the storage stack, which often prevents the underlying storage backends from making the proper performance and consistency decisions. In other words, each layer acts like a semantic filter for the lower layers. We discuss how higher-level abstractions could propagate their semantics and assumptions down through the lower-levels of the I/O stack. As a possible mitigation, we discuss the conceptual design of semantics-aware interfaces, to illustrate how such interfaces might address semantic loss—though we do not propose a concrete new implementation.},
+  langid = {english},
+  keywords = {HPC,I/O,I/O semantics,I/O stack,MPIIO,POSIX},
+  annotation = {Good review of storage stacks},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2025_oeste_et_al_an_analysis_of_the_i.pdf}
+}
+
+@article{Oldfi2012:Nessie,
+  title = {Trilinos {{I}}/{{O Support Trios}}},
+  shorttitle = {Nessie},
+  author = {Oldfield, Ron A. and {View Profile} and Sjaardema, Gregory D. and {View Profile} and Lofstead, Gerald F. and {View Profile} and Kordenbrock, Todd and {View Profile}},
+  date = {2012-04},
+  journaltitle = {Scientific Programming},
+  volume = {20},
+  number = {2},
+  pages = {181--196},
+  publisher = {IOS Press},
+  doi = {10.1155/2012/842791},
+  url = {https://dl.acm.org/doi/abs/10.1155/2012/842791},
+  urldate = {2026-02-04},
+  abstract = {Trilinos I/O Support Trios is a new capability area in Trilinos that serves two important roles: 1 it provides and supports I/O libraries used by in-production scientific codes; 2 it provides a research vehicle for the evaluation and distribution of new techniques to improve I/O on advanced platforms. This paper provides a brief overview of the production-grade I/O libraries in Trios as well as some of the ongoing research efforts that contribute to the experimental libraries in Trios.},
+  keywords = {Data Services,Data Staging,I/O Libraries,Parallel I/O},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2012_oldfield_et_al_trilinos_io_support.pdf}
+}
+
 @article{Olma2017:Slalom,
   title = {Slalom: Coasting through Raw Data via Adaptive Partitioning and Indexing},
   shorttitle = {Slalom},
@@ -513,6 +610,40 @@
   isbn = {978-1-939133-26-7}
 }
 
+@inproceedings{Raben2004:MoreEfficientReduction,
+  title = {More {{Efficient Reduction Algorithms}} for {{Non-Power-of-Two Number}} of {{Processors}} in {{Message-Passing Parallel Systems}}},
+  booktitle = {Recent {{Advances}} in {{Parallel Virtual Machine}} and {{Message Passing Interface}}},
+  author = {Rabenseifner, Rolf and Träff, Jesper Larsson},
+  editor = {Kranzlmüller, Dieter and Kacsuk, Péter and Dongarra, Jack},
+  date = {2004},
+  pages = {36--46},
+  publisher = {Springer},
+  location = {Berlin, Heidelberg},
+  doi = {10.1007/978-3-540-30218-6_13},
+  abstract = {We present improved algorithms for global reduction operations for message-passing systems. Each of p processors has a vector of m data items, and we want to compute the element-wise “sum” under a given, associative function of the p vectors. The result, which is also a vector of m items, is to be stored at either a given root processor (MPI\_Reduce), or all p processors (MPI\_Allreduce). A further constraint is that for each data item and each processor the result must be computed in the same order, and with the same bracketing. Both problems can be solved in O(m+log2p) communication and computation time. Such reduction operations are part of MPI (the Message Passing Interface), and the algorithms presented here achieve significant improvements over currently implemented algorithms for the important case where p is not a power of 2. Our algorithm requires ⌈log2p⌉\,+\,1 rounds – one round off from optimal – for small vectors. For large vectors twice the number of rounds is needed, but the communication and computation time is less than 3mβ and 3/2mγ, respectively, an improvement from 4mβ and 2mγ achieved by previous algorithms (with the message transfer time modeled as α + mβ, and reduction-operation execution time as mγ). For p=3× 2nand p=9× 2nand small m ≤ b for some threshold b, and p=q 2nwith small q, our algorithm achieves the optimal ⌈log2p⌉ number of rounds.},
+  isbn = {978-3-540-30218-6},
+  langid = {english},
+  keywords = {Exchange Step,Message Passing Interface,Reduction Algorithm,Reduction Phase,Result Vector},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2004_rabenseifner_träff_more_efficient_reduc.pdf}
+}
+
+@inproceedings{Raben2004:OptimizationCollectiveReduction,
+  title = {Optimization of {{Collective Reduction Operations}}},
+  booktitle = {Computational {{Science}} - {{ICCS}} 2004},
+  author = {Rabenseifner, Rolf},
+  editor = {Bubak, Marian and family=Albada, given=Geert Dick, prefix=van, useprefix=true and Sloot, Peter M. A. and Dongarra, Jack},
+  date = {2004},
+  pages = {1--9},
+  publisher = {Springer},
+  location = {Berlin, Heidelberg},
+  doi = {10.1007/978-3-540-24685-5_1},
+  abstract = {A 5-year-profiling in production mode at the University of Stuttgart has shown that more than 40\% of the execution time of Message Passing Interface (MPI) routines is spent in the collective communication routines MPI\_Allreduce and MPI\_Reduce. Although MPI implementations are now available for about 10 years and all vendors are committed to this Message Passing Interface standard, the vendors’ and publicly available reduction algorithms could be accelerated with new algorithms by a factor between 3 (IBM, sum) and 100 (Cray T3E, maxloc) for long vectors. This paper presents five algorithms optimized for different choices of vector size and number of processes. The focus is on bandwidth dominated protocols for power-of-two and non-power-of-two number of processes, optimizing the load balance in communication and computation.},
+  isbn = {978-3-540-24685-5},
+  langid = {english},
+  keywords = {Collective Operations,Message Passing,MPI,Reduction},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2004_rabenseifner_optimization_of_coll.pdf}
+}
+
 @inproceedings{Raju2017:PebblesDB,
   title = {{{PebblesDB}}: {{Building Key-Value Stores}} Using {{Fragmented Log-Structured Merge Trees}}},
   shorttitle = {{{PebblesDB}}},
@@ -536,6 +667,26 @@
   publisher = {USENIX Association},
   location = {USA},
   abstract = {We present TritonSort, a highly efficient, scalable sorting system. It is designed to process large datasets, and has been evaluated against as much as 100 TB of input data spread across 832 disks in 52 nodes at a rate of 0.916 TB/min. When evaluated against the annual Indy GraySort sorting benchmark, TritonSort is 60\% better in absolute performance and has over six times the per-node efficiency of the previous record holder. In this paper, we describe the hardware and software architecture necessary to operate TritonSort at this level of efficiency. Through careful management of system resources to ensure cross-resource balance, we are able to sort data at approximately 80\% of the disks' aggregate sequential write speed.We believe the work holds a number of lessons for balanced system design and for scale-out architectures in general. While many interesting systems are able to scale linearly with additional servers, per-server performance can lag behind per-server capacity by more than an order of magnitude. Bridging the gap between high scalability and high performance would enable either significantly cheaper systems that are able to do the same work or provide the ability to address significantly larger problem sets with the same infrastructure.}
+}
+
+@article{Ross2020:Mochi,
+  title = {Mochi: {{Composing Data Services}} for {{High-Performance Computing Environments}}},
+  shorttitle = {Mochi},
+  author = {Ross, Robert B. and Amvrosiadis, George and Carns, Philip and Cranor, Charles D. and Dorier, Matthieu and Harms, Kevin and Ganger, Greg and Gibson, Garth and Gutierrez, Samuel K. and Latham, Robert and Robey, Bob and Robinson, Dana and Settlemyer, Bradley and Shipman, Galen and Snyder, Shane and Soumagne, Jerome and Zheng, Qing},
+  date = {2020-01-01},
+  journaltitle = {Journal of Computer Science and Technology},
+  shortjournal = {J. Comput. Sci. Technol.},
+  volume = {35},
+  number = {1},
+  pages = {121--144},
+  issn = {1860-4749},
+  doi = {10.1007/s11390-020-9802-0},
+  url = {https://doi.org/10.1007/s11390-020-9802-0},
+  urldate = {2026-02-04},
+  abstract = {Technology enhancements and the growing breadth of application workflows running on high-performance computing (HPC) platforms drive the development of new data services that provide high performance on these new platforms, provide capable and productive interfaces and abstractions for a variety of applications, and are readily adapted when new technologies are deployed. The Mochi framework enables composition of specialized distributed data services from a collection of connectable modules and subservices. Rather than forcing all applications to use a one-size-fits-all data staging and I/O software configuration, Mochi allows each application to use a data service specialized to its needs and access patterns. This paper introduces the Mochi framework and methodology. The Mochi core components and microservices are described. Examples of the application of the Mochi methodology to the development of four specialized services are detailed. Finally, a performance evaluation of a Mochi core component, a Mochi microservice, and a composed service providing an object model is performed. The paper concludes by positioning Mochi relative to related work in the HPC space and indicating directions for future work.},
+  langid = {english},
+  keywords = {data-intensive computing,distributed services,high-performance computing,storage and I/O},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2020_ross_et_al_mochi_composing_dat.pdf}
 }
 
 @inproceedings{Stoic2001:ChordScalablePeertopeer,
@@ -581,10 +732,96 @@
   abstract = {For daily sysadmin work you often need to do the same specific task to a lot of files/ users/hosts/tables . Very often it doesn’t matter which one is done first and it would be fine to do them in parallel—but you do not want to run them all in parallel, as that will slow your computer to a crawl . This is what GNU Parallel can help you do . In this article you will see examples of uses of GNU Parallel . The examples are kept simple to make it easy to understand the idea, but there’s nothing that prevents you from using GNU Parallel for more complex tasks . More complex examples can be found at http://www .gnu .org/software/parallel/man .html}
 }
 
+@article{Usher2021:AdaptiveSpatiallyAware,
+  title = {Adaptive {{Spatially Aware I}}/{{O}} for {{Multiresolution Particle Data Layouts}}},
+  author = {Usher, Will and Huang, Xuan and Petruzza, Steve and Kumar, Sidharth and Slattery, Stuart R. and Reeve, Sam T. and Wang, Feng and Johnson, Chris R. and Pascucci, Valerio},
+  date = {2021-05},
+  journaltitle = {2021 IEEE International Parallel and Distributed Processing Symposium (IPDPS)},
+  pages = {547--556},
+  publisher = {IEEE},
+  location = {Portland, OR, USA},
+  doi = {10.1109/IPDPS49936.2021.00063},
+  url = {https://ieeexplore.ieee.org/document/9460496/},
+  urldate = {2026-02-05},
+  abstract = {Large-scale simulations on nonuniform particle distributions that evolve over time are widely used in cosmology, molecular dynamics, and engineering. Such data are often saved in an unstructured format that neither preserves spatial locality nor provides metadata for accelerating spatial or attribute subset queries, leading to poor performance of visualization tasks. Furthermore, the parallel I/O strategy used typically writes a file per process or a single shared file, neither of which is portable or scalable across different HPC systems. We present a portable technique for scalable, spatially aware adaptive aggregation that preserves spatial locality in the output. We evaluate our approach on two supercomputers, Stampede2 and Summit, and demonstrate that it outperforms prior approaches at scale, achieving up to \$2.5 \textbackslash times\$ faster writes and reads for nonuniform distributions. Furthermore, the layout written by our method is directly suitable for visual analytics, supporting low-latency reads and attribute-based filtering with little overhead.},
+  eventtitle = {2021 {{IEEE International Parallel}} and {{Distributed Processing Symposium}} ({{IPDPS}})},
+  isbn = {9781665440660},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2021_usher_et_al_adaptive_spatially_a.pdf}
+}
+
+@inproceedings{Vishw2011:GLEAN,
+  title = {Topology-Aware Data Movement and Staging for {{I}}/{{O}} Acceleration on {{Blue Gene}}/{{P}} Supercomputing Systems},
+  shorttitle = {{{GLEAN}}},
+  booktitle = {Proceedings of 2011 {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  author = {Vishwanath, Venkatram and Hereld, Mark and Morozov, Vitali and Papka, Michael E.},
+  date = {2011-11-12},
+  pages = {1--11},
+  publisher = {ACM},
+  location = {Seattle Washington},
+  doi = {10.1145/2063384.2063409},
+  url = {https://dl.acm.org/doi/10.1145/2063384.2063409},
+  urldate = {2026-02-04},
+  abstract = {There is growing concern that I/O systems will be hard pressed to satisfy the requirements of future leadership-class machines. Even current machines are found to be I/O bound for some applications. In this paper, we identify existing performance bottlenecks in data movement for I/O on the IBM Blue Gene/P (BG/P) supercomputer currently deployed at several leadership computing facilities. We improve the I/O performance by exploiting the network topology of BG/P for collective I/O, leveraging data semantics of applications and incorporating asynchronous data staging. We demonstrate the efficacy of our approaches for synthetic benchmark experiments and for application-level benchmarks at scale on leadership computing systems.},
+  eventtitle = {{{SC}} '11: {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
+  isbn = {978-1-4503-0771-0},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2011_vishwanath_et_al_topology-aware_data.pdf;/Users/schwifty/Zotero/storage/ABLBSXQ3/2011_vishwanath_et_al_topology-aware_data.pdf}
+}
+
+@inproceedings{Vishw2011:SimulationtimeDataAnalysis,
+  title = {Toward Simulation-Time Data Analysis and {{I}}/{{O}} Acceleration on Leadership-Class Systems},
+  booktitle = {2011 {{IEEE Symposium}} on {{Large Data Analysis}} and {{Visualization}}},
+  author = {Vishwanath, Venkatram and Hereld, Mark and Papka, Michael E.},
+  date = {2011-10},
+  pages = {9--14},
+  doi = {10.1109/LDAV.2011.6092178},
+  url = {https://ieeexplore.ieee.org/document/6092178},
+  urldate = {2026-02-05},
+  abstract = {The performance mismatch between computing and I/O components of current-generation HPC systems has made I/O the critical bottleneck for scientific applications. It is therefore critical to make data movement as efficient as possible, and, to facilitate simulation-time data analysis and visualization to reduce the data written to storage. These will be of paramount importance to enabling us to glean novel insights from simulations. We present our work in GLEAN, a flexible framework for data-analysis and I/O acceleration at extreme scale. GLEAN leverages the data semantics of applications, and fully exploits the diverse system topologies and characteristics. We discuss the performance of GLEAN for simulation-time analysis and I/O acceleration with simulations at scale on leadership class systems.},
+  eventtitle = {2011 {{IEEE Symposium}} on {{Large Data Analysis}} and {{Visualization}}},
+  keywords = {Analytical models,Computational modeling,Data analysis,Data models,Data visualization,Fractals,Network topology},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2011_vishwanath_et_al_toward_simulation-ti.pdf}
+}
+
+@inproceedings{Zhang2018:SuRF,
+  title = {{{SuRF}}: {{Practical Range Query Filtering}} with {{Fast Succinct Tries}}},
+  shorttitle = {{{SuRF}}},
+  booktitle = {Proceedings of the 2018 {{International Conference}} on {{Management}} of {{Data}}},
+  author = {Zhang, Huanchen and Lim, Hyeontaek and Leis, Viktor and Andersen, David G. and Kaminsky, Michael and Keeton, Kimberly and Pavlo, Andrew},
+  date = {2018-05-27},
+  series = {{{SIGMOD}} '18},
+  pages = {323--336},
+  publisher = {Association for Computing Machinery},
+  location = {New York, NY, USA},
+  doi = {10.1145/3183713.3196931},
+  url = {https://dl.acm.org/doi/10.1145/3183713.3196931},
+  urldate = {2026-02-04},
+  abstract = {We present the Succinct Range Filter (SuRF), a fast and compact data structure for approximate membership tests. Unlike traditional Bloom filters, SuRF supports both single-key lookups and common range queries: open-range queries, closed-range queries, and range counts. SuRF is based on a new data structure called the Fast Succinct Trie (FST) that matches the point and range query performance of state-of-the-art order-preserving indexes, while consuming only 10 bits per trie node. The false positive rates in SuRF for both point and range queries are tunable to satisfy different application needs. We evaluate SuRF in RocksDB as a replacement for its Bloom filters to reduce I/O by filtering requests before they access on-disk data structures. Our experiments on a 100 GB dataset show that replacing RocksDB's Bloom filters with SuRFs speeds up open-seek (without upper-bound) and closed-seek (with upper-bound) queries by up to 1.5× and 5× with a modest cost on the worst-case (all-missing) point query throughput due to slightly higher false positive rate.},
+  isbn = {978-1-4503-4703-7},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2018_zhang_et_al_surf_practical_rang.pdf}
+}
+
 @article{Zheng2006:DistributedSegmentTree,
   title = {Distributed Segment Tree: {{Support}} of Range Query and Cover Query over Dht},
   author = {Zheng, Changxi and Shen, Guobin and Li, Shipeng and Shenker, S},
   date = {2006},
   journaltitle = {Workshop on Peer-to-Peer Systems (},
   abstract = {This study describes clients perceptions about the nursing consultation, under the interpersonal communication context point of view. Data were collected through semi-structured interviews, with a sample of 11 (eleven) clients, who attended the Diabetis Control and High Blood Pressure Program of the Medical Specialities Center of Campo Grande - MS. Results demonstrated clients positive perceptions about nursing consultation and nurses and clients difficulties in explaining their feelings clearly.}
+}
+
+@inproceedings{Zheng2010:PreDatA,
+  title = {{{PreDatA}} – Preparatory Data Analytics on Peta-Scale Machines},
+  shorttitle = {{{PreDatA}}},
+  booktitle = {2010 {{IEEE International Symposium}} on {{Parallel}} \& {{Distributed Processing}} ({{IPDPS}})},
+  author = {Zheng, Fang and Abbasi, Hasan and Docan, Ciprian and Lofstead, Jay and Liu, Qing and Klasky, Scott and Parashar, Manish and Podhorszki, Norbert and Schwan, Karsten and Wolf, Matthew},
+  date = {2010-04},
+  pages = {1--12},
+  issn = {1530-2075},
+  doi = {10.1109/IPDPS.2010.5470454},
+  url = {https://ieeexplore.ieee.org/document/5470454},
+  urldate = {2026-02-04},
+  abstract = {Peta-scale scientific applications running on High End Computing (HEC) platforms can generate large volumes of data. For high performance storage and in order to be useful to science end users, such data must be organized in its layout, indexed, sorted, and otherwise manipulated for subsequent data presentation, visualization, and detailed analysis. In addition, scientists desire to gain insights into selected data characteristics `hidden' or `latent' in these massive datasets while data is being produced by simulations. PreDatA, short for Preparatory Data Analytics, is an approach to preparing and characterizing data while it is being produced by the large scale simulations running on peta-scale machines. By dedicating additional compute nodes on the machine as `staging' nodes and by staging simulations' output data through these nodes, PreDatA can exploit their computational power to perform select data manipulations with lower latency than attainable by first moving data into file systems and storage. Such intransit manipulations are supported by the PreDatA middleware through asynchronous data movement to reduce write latency, application-specific operations on streaming data that are able to discover latent data characteristics, and appropriate data reorganization and metadata annotation to speed up subsequent data access. PreDatA enhances the scalability and flexibility of the current I/O stack on HEC platforms and is useful for data pre-processing, runtime data analysis and inspection, as well as for data exchange between concurrently running simulations.},
+  eventtitle = {2010 {{IEEE International Symposium}} on {{Parallel}} \& {{Distributed Processing}} ({{IPDPS}})},
+  keywords = {Analytical models,Computational modeling,Data analysis,Data visualization,Delay,File systems,Large-scale systems,Middleware,Performance analysis,Scalability},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2010_zheng_et_al_predata_–_preparator.pdf}
 }

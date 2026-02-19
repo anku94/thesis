@@ -1,0 +1,169 @@
+@article{2020:IntelPerformanceScaled,
+  title = {{{Intel}}® {{Performance Scaled Messaging}} 2 ({{PSM2}}) — {{Programmer}}'s {{Guide}}},
+  date = {2020},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/G46TMW95/2020 - Intel® Performance Scaled Messaging 2 (PSM2) — Pro.pdf}
+}
+
+@article{Chandy1985:DistributedSnapshotsDetermining,
+  title = {Distributed {{Snapshots}}: {{Determining Global States}} of {{Distributed Systems}}},
+  author = {Chandy, K. Mani and Lamport, Leslie},
+  date = {1985},
+  journaltitle = {ACM Transactions on Computer Systems (TOCS)},
+  issn = {15577333},
+  doi = {10.1145/214451.214456},
+  abstract = {This paper presents an algorithm by which a process in a distributed system determines a global state of the system during a computation. Many problems in distributed systems can be cast in terms of the problem of detecting global states. For instance, the global state detection algorithm helps to solve an important class of problems: stable property detection. A stable property is one that persists: once a stable property becomes true it remains true thereafter. Examples of stable properties are “computation has terminated,” “the system is deadlocked” and “all tokens in a token ring have disappeared.” The stable property detection problem is that of devising algorithms to detect a given stable property. Global state detection can also be used for checkpointing. © 1985, ACM. All rights reserved.}
+}
+
+@article{Child2012:InSitu,
+  title = {In {{Situ Processing}}},
+  shorttitle = {{{InSitu}}},
+  author = {Childs, Hank},
+  date = {2012-11-01},
+  url = {https://escholarship.org/uc/item/3st8x19d},
+  urldate = {2024-08-23},
+  abstract = {Author(s): Childs, Hank},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/carpbib/2012_childs_in_situ_processing.pdf}
+}
+
+@article{Grete2023:Parthenon,
+  title = {Parthenon—a Performance Portable Block-Structured Adaptive Mesh Refinement Framework},
+  shorttitle = {Parthenon},
+  author = {Grete, Philipp and Dolence, Joshua C and Miller, Jonah M and Brown, Joshua and Ryan, Ben and Gaspar, Andrew and Glines, Forrest and Swaminarayan, Sriram and Lippuner, Jonas and Solomon, Clell J and Shipman, Galen and Junghans, Christoph and Holladay, Daniel and Stone, James M and Roberts, Luke F},
+  date = {2023-09-01},
+  journaltitle = {The International Journal of High Performance Computing Applications},
+  volume = {37},
+  number = {5},
+  pages = {465--486},
+  publisher = {SAGE Publications Ltd STM},
+  issn = {1094-3420},
+  doi = {10.1177/10943420221143775},
+  url = {https://doi.org/10.1177/10943420221143775},
+  urldate = {2024-08-21},
+  abstract = {On the path to exascale the landscape of computer device architectures and corresponding programming models has become much more diverse. While various low-level performance portable programming models are available, support at the application level lacks behind. To address this issue, we present the performance portable block-structured adaptive mesh refinement (AMR) framework Parthenon, derived from the well-tested and widely used Athena++ astrophysical magnetohydrodynamics code, but generalized to serve as the foundation for a variety of downstream multi-physics codes. Parthenon adopts the Kokkos programming model, and provides various levels of abstractions from multidimensional variables, to packages defining and separating components, to launching of parallel compute kernels. Parthenon allocates all data in device memory to reduce data movement, supports the logical packing of variables and mesh blocks to reduce kernel launch overhead, and employs one-sided, asynchronous MPI calls to reduce communication overhead in multi-node simulations. Using a hydrodynamics miniapp, we demonstrate weak and strong scaling on various architectures including AMD and NVIDIA GPUs, Intel and AMD x86 CPUs, IBM Power9 CPUs, as well as Fujitsu A64FX CPUs. At the largest scale on Frontier (the first TOP500 exascale machine), the miniapp reaches a total of 1.7 × 1013 zone-cycles/s on 9216 nodes (73,728 logical GPUs) at ≈92\% weak scaling parallel efficiency (starting from a single node). In combination with being an open, collaborative project, this makes Parthenon an ideal framework to target exascale simulations in which the downstream developers can focus on their specific application rather than on the complexity of handling massively-parallel, device-accelerated AMR.},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/AMR-Codes/2023_grete_et_al_parthenon—a_performance_portable_block-structured_adaptive_mesh_refinement.pdf}
+}
+
+@inproceedings{Gu2018:ADIOS,
+  title = {Querying {{Large Scientific Data Sets}} with {{Adaptable IO System ADIOS}}},
+  shorttitle = {{{ADIOS}}},
+  booktitle = {Supercomputing {{Frontiers}}},
+  author = {Gu, Junmin and Klasky, Scott and Podhorszki, Norbert and Qiang, Ji and Wu, Kesheng},
+  editor = {Yokota, Rio and Wu, Weigang},
+  date = {2018},
+  pages = {51--69},
+  publisher = {Springer International Publishing},
+  location = {Cham},
+  doi = {10.1007/978-3-319-69953-0_4},
+  abstract = {When working with a large dataset, a relatively small fraction of data records are of interest in each analysis operation. For example, while examining a billion-particle dataset from an accelerator model, the scientists might focus on a few thousand fastest particles, or on the particle farthest from the beam center. In general, this type of selective data access is challenging because the selected data records could be anywhere in the dataset and require a significant amount of time to locate and retrieve. In this paper, we report our experience of addressing this data access challenge with the Adaptable IO System ADIOS. More specifically, we design a query interface for ADIOS to allow arbitrary combinations of range conditions on known variables, implement a number of different mechanisms for resolving these selection conditions, and devise strategies to reduce the time needed to retrieve the scattered data records. In many cases, the query mechanism can retrieve the selected data records orders of magnitude faster than the brute-force approach.},
+  isbn = {978-3-319-69953-0},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2018_gu_et_al_querying_large_scientific_data_sets_with_adaptable_io_system_adios2.pdf}
+}
+
+@article{Marou2023:VETI,
+  title = {Resource-Aware Adaptive Indexing for in Situ Visual Exploration and Analytics},
+  shorttitle = {{{VETI}}},
+  author = {Maroulis, Stavros and Bikakis, Nikos and Papastefanatos, George and Vassiliadis, Panos and Vassiliou, Yannis},
+  date = {2023-01-01},
+  journaltitle = {The VLDB Journal},
+  shortjournal = {The VLDB Journal},
+  volume = {32},
+  number = {1},
+  pages = {199--227},
+  issn = {0949-877X},
+  doi = {10.1007/s00778-022-00739-z},
+  url = {https://doi.org/10.1007/s00778-022-00739-z},
+  urldate = {2024-05-23},
+  abstract = {In in situ data management scenarios, large data files, which do not fit in main memory, must be efficiently handled using commodity hardware, without the overhead of a preprocessing phase or the loading of data into a database. In this work, we study the challenges posed by the visual analysis tasks in in situ scenarios in the presence of memory constraints. We present an indexing scheme and adaptive query evaluation techniques, which enable efficient categorical-based group-by and filter operations, combined with 2D visual interactions, such as exploration of data points on maps or scatter plots. The indexing scheme combines a tile-based structure, which offers efficient visual exploration over the 2D plane, with a tree-based structure, which organizes a tile’s objects based on its categorical values. The index is constructed on-the-fly, resides in main memory, and is built progressively as the user explores parts of the raw file, whereas its structure and level of granularity are adjusted to the user’s exploration areas and type of analysis. To handle the cases where limited resources are available, we introduce a resource-aware index initialization mechanism, we formulate it as an NP-hard optimization problem and we propose two efficient approximation algorithms to solve it. We conduct extensive experiments using real and synthetic datasets and demonstrate that our approach reports interactive query response times (less than 0.04sec) and in most cases is more than 100\$\$\textbackslash times \$\$faster and performs up to two orders of magnitude less I/O operations compared to existing solutions. The proposed methods are implemented as part of an open-source system for in situ visual exploration and analytics.},
+  langid = {english},
+  keywords = {Adaptive indexing,Data visualization,In-situ processing,Interactive exploration,Visual analytics},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2023_maroulis_et_al_resource-aware_adaptive_indexing_for_in_situ_visual_exploration_and_analytics.pdf}
+}
+
+@inproceedings{Raju2017,
+  title = {{{PebblesDB}}: {{Building Key-Value Stores}} Using {{Fragmented Log-Structured Merge Trees}}},
+  booktitle = {{{SOSP}} 2017 - {{Proceedings}} of the 26th {{ACM Symposium}} on {{Operating Systems Principles}}},
+  author = {Raju, Pandian and Chidambaram, Vijay and Kadekodi, Rohan and Abraham, Ittai},
+  date = {2017},
+  doi = {10.1145/3132747.3132765},
+  abstract = {Key-value stores such as LevelDB and RocksDB offer excellent write throughput, but suffer high write amplification. The write amplification problem is due to the Log-Structured Merge Trees data structure that underlies these key-value stores. To remedy this problem, this paper presents a novel data structure that is inspired by Skip Lists, termed Fragmented Log-Structured Merge Trees (FLSM). FLSM introduces the notion of guards to organize logs, and avoids rewriting data in the same level. We build PebblesDB, a high-performance key-value store, by modifying HyperLevelDB to use the FLSM data structure. We evaluate PebblesDB using micro-benchmarks and show that for write-intensive workloads, PebblesDB reduces write amplification by 2.4-3× compared to RocksDB, while increasing write throughput by 6.7×. We modify two widely-used NoSQL stores, MongoDB and HyperDex, to use PebblesDB as their underlying storage engine. Evaluating these applications using the YCSB benchmark shows that throughput is increased by 18-105\% when using PebblesDB (compared to their default storage engines) while write IO is decreased by 35-55\%.},
+  isbn = {978-1-4503-5085-3},
+  keywords = {Key-value stores,Log-structured merge trees,Write-optimized data structures}
+}
+
+@online{Ray2023:ClusteredIndexes,
+  title = {Clustered and Nonclustered Indexes - {{SQL Server}}},
+  shorttitle = {{{ClusteredIndexes}}},
+  author = {Ray, Mike},
+  date = {2023-08-14},
+  url = {https://learn.microsoft.com/en-us/sql/relational-databases/indexes/clustered-and-nonclustered-indexes-described?view=sql-server-ver16},
+  urldate = {2024-08-23},
+  abstract = {Describes clustered and nonclustered indexes.},
+  langid = {american},
+  file = {/Users/schwifty/Zotero/storage/S96IA9TI/clustered-and-nonclustered-indexes-described.html}
+}
+
+@report{Vigil2014:Trinity,
+  title = {Trinity {{Advanced Technology System Overview}}},
+  shorttitle = {Trinity},
+  author = {Vigil, Benny},
+  date = {2014-10-20},
+  number = {LA-UR-14-28143, 1160100},
+  pages = {LA-UR-14-28143, 1160100},
+  doi = {10.2172/1160100},
+  url = {https://www.osti.gov/servlets/purl/1160100/},
+  urldate = {2024-08-23},
+  langid = {english},
+  file = {/Users/schwifty/Zotero/storage/T2L2UL43/Vigil - 2014 - Trinity Advanced Technology System Overview.pdf}
+}
+
+@article{Wu2005:FastBit,
+  title = {{{FastBit}}: An Efficient Indexing Technology for Accelerating Data-Intensive Science},
+  shorttitle = {{{FastBit}}},
+  author = {Wu, Kesheng},
+  date = {2005-01},
+  journaltitle = {Journal of Physics: Conference Series},
+  shortjournal = {J. Phys.: Conf. Ser.},
+  volume = {16},
+  number = {1},
+  pages = {556},
+  issn = {1742-6596},
+  doi = {10.1088/1742-6596/16/1/077},
+  url = {https://dx.doi.org/10.1088/1742-6596/16/1/077},
+  urldate = {2024-08-22},
+  abstract = {FastBit is a software tool for searching large read-only datasets. It organizes user data in a column-oriented structure which is efficient for on-line analytical processing (OLAP), and utilizes compressed bitmap indices to further speed up query processing. Analyses have proven the compressed bitmap index used in FastBit to be theoretically optimal for onedimensional queries. Compared with other optimal indexing methods, bitmap indices are superior because they can be efficiently combined to answer multi-dimensional queries whereas other optimal methods can not. In this paper, we first describe the searching capability of FastBit, then briefly highlight two applications that make extensive use of FastBit, namely Grid Collector and DEX.},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/carpbib/2005_wu_fastbit.pdf}
+}
+
+@article{Zhang2021:AMReX,
+  title = {{{AMReX}}: {{Block-structured}} Adaptive Mesh Refinement for Multiphysics Applications},
+  shorttitle = {{{AMReX}}},
+  author = {Zhang, Weiqun and Myers, Andrew and Gott, Kevin and Almgren, Ann and Bell, John},
+  date = {2021-11-01},
+  journaltitle = {The International Journal of High Performance Computing Applications},
+  volume = {35},
+  number = {6},
+  pages = {508--526},
+  publisher = {SAGE Publications Ltd STM},
+  issn = {1094-3420},
+  doi = {10.1177/10943420211022811},
+  url = {https://doi.org/10.1177/10943420211022811},
+  urldate = {2024-06-19},
+  abstract = {Block-structured adaptive mesh refinement (AMR) provides the basis for the temporal and spatial discretization strategy for a number of Exascale Computing Project applications in the areas of accelerator design, additive manufacturing, astrophysics, combustion, cosmology, multiphase flow, and wind plant modeling. AMReX is a software framework that provides a unified infrastructure with the functionality needed for these and other AMR applications to be able to effectively and efficiently utilize machines from laptops to exascale architectures. AMR reduces the computational cost and memory footprint compared to a uniform mesh while preserving accurate descriptions of different physical processes in complex multiphysics algorithms. AMReX supports algorithms that solve systems of partial differential equations in simple or complex geometries and those that use particles and/or particle–mesh operations to represent component physical processes. In this article, we will discuss the core elements of the AMReX framework such as data containers and iterators as well as several specialized operations to meet the needs of the application projects. In addition, we will highlight the strategy that the AMReX team is pursuing to achieve highly performant code across a range of accelerator-based architectures for a variety of different applications.},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/AMR-Codes/2021_zhang_et_al_amrex.pdf}
+}
+
+@inproceedings{Zheng2017,
+  title = {Software-Defined Storage for Fast Trajectory Queries Using a {{deltaFS}} Indexed Massive Directory},
+  booktitle = {Proceedings of {{PDSW-DISCS}} 2017 - 2nd {{Joint International Workshop}} on {{Parallel Data Storage}} and {{Data Intensive Scalable Computing Systems}} - {{Held}} in Conjunction with {{SC}} 2017: {{The International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} a},
+  author = {Zheng, Qing and Amvrosiadis, George and Kadekodi, Saurabh and Gibson, Garth A. and Cranor, Charles D. and Settlemyer, Bradley W. and Grider, Gary and Guo, Fan},
+  date = {2017},
+  doi = {10.1145/3149393.3149398},
+  abstract = {In this paper we introduce the Indexed Massive Directory, a new technique for indexing data within DeltaFS. With its design as a scalable, server-less file system for HPC platforms, DeltaFS scales file system metadata performance with application scale. The Indexed Massive Directory is a novel extension to the DeltaFS data plane, enabling in-situ indexing of massive amounts of data written to a single directory simultaneously, and in an arbitrarily large number of files. We achieve this through a memory-efficient indexing mechanism for reordering and indexing data, and a log-structured storage layout to pack small writes into large log objects, all while ensuring compute node resources are used frugally. We demonstrate the efficiency of this indexing mechanism through VPIC, a widely-used simulation code that scales to trillions of particles. With DeltaFS, we modify VPIC to create a file for each particle to receive writes of that particle's output data. Dynamically indexing the directory's underlying storage allows us to achieve a 5000x speedup in single particle trajectory queries, which require reading all data for a single particle. This speedup increases with application scale while the overhead is fixed at 3\% of available memory.},
+  isbn = {978-1-4503-5134-8}
+}

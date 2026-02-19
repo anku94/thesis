@@ -347,7 +347,7 @@
   shortjournal = {High Performance Computing},
   volume = {12151},
   eprint = {null},
-  eprinttype = {pmid},
+  eprinttype = {pubmed},
   pages = {517--535},
   doi = {10.1007/978-3-030-50743-5_26},
   url = {https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7295353/},
@@ -397,7 +397,7 @@
   abstract = {Performance analysis is critical for eliminating scalability bottlenecks in parallel codes. There are many profiling tools that can instrument codes and gather performance data. However, analytics and visualization tools that are general, easy to use, and programmable are limited. In this paper, we focus on the analytics of structured profiling data, such as that obtained from calling context trees or nested region timers in code. We present a set of techniques and operations that build on the pandas data analysis library to enable analysis of parallel profiles. We have implemented these techniques in a Python-based library called Hatchet that allows structured data to be filtered, aggregated, and pruned. Using performance datasets obtained from profiling parallel codes, we demonstrate performing common performance analysis tasks reproducibly with a few lines of Hatchet code. Hatchet brings the power of modern data science tools to bear on performance analysis.},
   eventtitle = {{{SC}} '19: {{The International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}}, and {{Analysis}}},
   langid = {english},
-  file = {/Users/schwifty/Zotero/storage/RG8HCZLX/Bhatele et al. - 2019 - Hatchet pruning the overgrowth in parallel profil.pdf}
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2019_bhatele_et_al_hatchet_pruning_the 1.pdf}
 }
 
 @inproceedings{Boehm2016:Caliper,
@@ -683,7 +683,7 @@
   urldate = {2025-07-15},
   abstract = {A well designed event trace data format is the basis of all trace-based analysis methods. In this paper, we introduce the Open Trace Format Version 2 (OTF2). It is a major re-design based on the experiences of its predecessor formats, the Open Trace Format (Version 1) and the EPILOG trace format. It comes with a new file encoding, a close integration in the trace recording system Score-P, and a number of improvements for performance and scalability. Besides the actual format, it consists of a read/write support library with a powerful API plus supportive tools, which are distributed as Open Source software. Furthermore, OTF2 will serve as a joint data source for the analysis tools Scalasca and Vampir in the near future.},
   langid = {english},
-  file = {/Users/schwifty/Zotero/storage/SL42S8NF/Eschweiler Dominic et al. - 2012 - Open Trace Format 2 The Next Generation of Scalab.pdf}
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2012_eschweiler dominic_et_al_open_trace_format_2.pdf}
 }
 
 @inproceedings{Gangi2024:RDMA,
@@ -700,9 +700,9 @@
   urldate = {2025-01-28},
   abstract = {The rapid growth in both computational density and scale in AI models in recent years motivates the construction of an efficient and reliable dedicated network infrastructure. This paper presents the design, implementation, and operation of Meta’s Remote Direct Memory Access over Converged Ethernet (RoCE) networks for distributed AI training.},
   eventtitle = {{{ACM SIGCOMM}} '24: {{ACM SIGCOMM}} 2024 {{Conference}}},
-  isbn = {9798400706141},
+  isbn = {979-8-4007-0614-1},
   langid = {english},
-  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/2024_gangidi_et_al_rdma_over_ethernet_for_distributed_training_at_meta_scale.pdf}
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/ml/2024_gangidi_et_al_rdma_over_ethernet_f.pdf}
 }
 
 @article{Garey1975:ComplexityResultsMultiprocessor,
@@ -1027,6 +1027,8 @@
   title = {Optimization of Communication Intensive Applications on {{HPC}} Networks},
   author = {Jain, Nikhil},
   date = {2016-02-12},
+  eprint = {2142/90472},
+  eprinttype = {hdl},
   institution = {University of Illinois at Urbana-Champaign},
   url = {https://hdl.handle.net/2142/90472},
   urldate = {2024-09-30},
@@ -1047,7 +1049,7 @@
   urldate = {2024-06-07},
   abstract = {Most high-fidelity physics simulation codes, such as Flash-X, need to save intermediate results (checkpoint files) to restart or gain insights into the evolution of the simulation. These simulation codes save such intermediate files synchronously, where computation is stalled while the data is written to storage. Depending on the problem size and computational requirements, this file write time can be a substantial portion of the total simulation time. In order to hide the I/O latency of checkpointing, asynchronous I/O methods have been introduced. These methods use background threads for performing I/O while the main threads continue with the simulation. The usage of background threads can compete for resources on the node as well as with communication. In this paper, we evaluate the overheads and the overall benefit of asynchronous I/O in HDF5 to simulations. Results from real-world high-fidelity simulations on the Summit supercomputer show that I/O operation is overlapped with application communication or computation or both, effectively hiding some or all of the I/O latency. Our evaluation shows that while using asynchronous I/O adds overhead to the application, the I/O time reduction is more significant, resulting in overall up to 1.5X performance speedup.},
   eventtitle = {2022 {{IEEE}}/{{ACM International Parallel Data Systems Workshop}} ({{PDSW}})},
-  isbn = {978-1-66547-562-4},
+  isbn = {978-1-6654-7562-4},
   langid = {english},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/AMR-Broad/2022_jain_et_al_accelerating_flash-x_simulations_with_asynchronous_i-o.pdf}
 }
@@ -1083,7 +1085,7 @@
   urldate = {2025-08-01},
   abstract = {The scale of applications and computing systems is tremendously increasing and needs to increase even more to realize exascale systems. As the number of nodes keeps growing, communication has become key to high performance.The Message Passing Interface (MPI) has evolved to the de facto standard for inter-node data transfers. Consequently, MPI is well suited to serve as proxy for an analysis of communication characteristics of exascale proxy applications.This work presents characteristics like time spent in certain operations, point-to-point versus collective communication, and message sizes and rates, gathered from a comprehensive trace analysis. We provide an understanding of how applications use MPI to exploit node-level parallelism, always with respect to scalability, and also locate parts which require more optimization. We emphasize on the analysis of the message matching and report queue lengths and associated matching rates.It is shown that most data is transferred via point-to-point operations, but the most time is spent in collectives. Message matching rates significantly depend on the length of message queues, which tend to increase with the number of processes. As messages are also become smaller, the matching is important to high message rates in large-scale applications.},
   isbn = {978-3-319-58666-3},
-  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2017_klenk_froning_an_overview_of_mpi_characteristics_of_exascale_proxy_applications.pdf}
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2017_klenk_fröning_an_overview_of_mpi_c.pdf}
 }
 
 @inproceedings{Knupf2012:ScoreP,
@@ -1152,7 +1154,7 @@
   url = {https://dl.acm.org/doi/10.1145/3624062.3624114},
   urldate = {2025-02-07},
   abstract = {Distributed scientific applications run on a complex stack of software and network technologies. Each layer has configuration options for tuning performance. These can range from protocol thresholds to algorithmic changes for collectives. Micro-benchmarks are a common methodology to evaluate the communication stack and are relatively easy to tune. However they aren’t representative of application behavior. Proxy applications, however, offer a simplified, but realistic, representation of the main computational and communicative methods in scientific programs. Since these proxy applications contain realistic message passing patterns, the correlation between micro-benchmarks and proxy application performance is not obvious. In this paper we present a study of statistically analysing the impacts of tuning. Our results show how tuned micro-benchmark performance correlates with tuned proxy application performance.},
-  isbn = {9798400707858},
+  isbn = {979-8-4007-0785-8},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/2023_kruse_et_al_a_statistical_analysis_of_hpc_network_tuning.pdf}
 }
 
@@ -1236,6 +1238,8 @@
   title = {Extending Paratreet, a Framework for Spatial Tree Based Algorithms, with Gpu Kernels and Load Balancers},
   author = {Liu, Simeng},
   date = {2022-04-28},
+  eprint = {2142/115802},
+  eprinttype = {hdl},
   institution = {University of Illinois at Urbana-Champaign},
   url = {https://hdl.handle.net/2142/115802},
   urldate = {2024-09-30},
@@ -1318,6 +1322,8 @@
   title = {Adaptive Load Balancing for {{HPC}} Applications},
   author = {Menon, Gopalakrishnan and Menon, Harshitha},
   date = {2016-10-10},
+  eprint = {2142/95292},
+  eprinttype = {hdl},
   institution = {University of Illinois at Urbana-Champaign},
   url = {https://hdl.handle.net/2142/95292},
   urldate = {2024-09-30},
@@ -1585,7 +1591,7 @@
   url = {https://dl.acm.org/doi/10.1145/3600006.3613170},
   urldate = {2023-10-24},
   abstract = {Software-defined networking (SDN) and software-defined flash (SDF) have been serving as the backbone of modern data centers. They are managed separately to handle I/O requests. At first glance, this is a reasonable design by following the rack-scale hierarchical design principles. However, it suffers from suboptimal end-to-end performance, due to the lack of coordination between SDN and SDF. In this paper, we co-design the SDN and SDF stack by redefining the functions of their control plane and data plane, and splitting up them within a new architecture named RackBlox. RackBlox decouples the storage management functions of flash-based solid-state drives (SSDs), and allow the SDN to track and manage the states of SSDs in a rack. Therefore, we can enable the state sharing between SDN and SDF, and facilitate global storage resource management. RackBlox has three major components: (1) coordinated I/O scheduling, in which it dynamically adjusts the I/O scheduling in the storage stack with the measured and predicted network latency, such that it can coordinate the effort of I/O scheduling across the network and storage stack for achieving predictable end-to-end performance; (2) coordinated garbage collection (GC), in which it will coordinate the GC activities across the SSDs in a rack to minimize their impact on incoming I/O requests; (3) rack-scale wear leveling, in which it enables global wear leveling among SSDs in a rack by periodically swapping data, for achieving improved device lifetime for the entire rack. We implement RackBlox using programmable SSDs and switch. Our experiments demonstrate that RackBlox can reduce the tail latency of I/O requests by up to 5.8× over state-of-the-art rack-scale storage systems.},
-  isbn = {9798400702297},
+  isbn = {979-8-4007-0229-7},
   keywords = {network/storage co-design,rack-scale storage,software-defined flash,software-defined networking},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/2023_reidys_et_al_rackblox.pdf}
 }
@@ -1609,6 +1615,8 @@
   title = {Techniques for Communication Optimization of Parallel Programs in an Adaptive Runtime System},
   author = {Robson, Michael P.},
   date = {2020-07-16},
+  eprint = {2142/108622},
+  eprinttype = {hdl},
   institution = {University of Illinois at Urbana-Champaign},
   url = {https://hdl.handle.net/2142/108622},
   urldate = {2024-09-30},
@@ -1716,7 +1724,7 @@
   urldate = {2025-05-02},
   langid = {english},
   annotation = {LDMS, DOI: 10.2172/1822583},
-  file = {/Users/schwifty/Zotero/storage/2R3G7FMQ/Schwaller - 2021 - Integrated System and Application Continuous Perfo.pdf}
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2021_schwaller_integrated_system_an.pdf}
 }
 
 @book{Sedov1959:SimilarityDimensionalMethods,
@@ -1736,7 +1744,7 @@
   author = {Sharma, Bharatkumar},
   date = {2015},
   langid = {english},
-  file = {/Users/schwifty/Zotero/storage/U458S3UW/Sharma - Towards a Catalog of Performance Smells for Parall.pdf}
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2015_sharma_towards_a_catalog_of.pdf}
 }
 
 @article{Shend2006:TAU,
@@ -1753,7 +1761,7 @@
   url = {https://doi.org/10.1177/1094342006064482},
   urldate = {2025-02-03},
   abstract = {The ability of performance technology to keep pace with the growing complexity of parallel and distributed systems depends on robust performance frameworks that can at once provide system-specific performance capabilities and support high-level performance problem solving. Flexibility and portability in empirical methods and processes are influenced primarily by the strategies available for instrmentation and measurement, and how effectively they are integrated and composed. This paper presents the TAU (Tuning and Analysis Utilities) parallel performance sytem and describe how it addresses diverse requirements for performance observation and analysis.},
-  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/AsyncFrameworks/2006_shende_malony_the_tau_parallel_performance_system.pdf}
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2006_shende_malony_the_tau_parallel_per.pdf}
 }
 
 @article{Shend2006:TAUa,
