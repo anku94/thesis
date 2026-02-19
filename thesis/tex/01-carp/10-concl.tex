@@ -1,0 +1,107 @@
+% \section{Lessons for Scientific Data Infrastructure}
+
+% CARP demonstrates that adaptive range partitioning, driven by periodic reconstruction of global
+% histograms, can effectively range partition scientific data in situ. The resulting data layout is
+% partially ordered, requiring some residual compaction at query time. Our evaluation demonstrates
+% that this is the right tradeoff for scientific data: differences in query performance are
+% imperceptible for analytical usecases, while ingestion performance is maximized.
+
+
+% 1. Scientific data pipelines ingest synchronously from a massive stream of parallel writers,
+% terminating in a parallel filesystem. Parallel filesystems and burst buffers are designed to
+% absorb this synchronous and continuous burst. While database-style approaches like range
+% partitioning remain deeply relevant, they need to be rearchitected for this environment. Partially
+% organized data lyouts, persisted as append-only logs to a filesystem, are a natural fit for this
+% environment. The goal is to uplevel database techniques into this pipeline, rather than ingesting
+% into a database itself.
+
+% 2. Similarity with OLAP. our storage backend implements a custom format that derives from
+% DeltaFS's flattened LSM tree: a set of disjoint SSTables. It implements contiguous key and value
+% blocks for more efficient sequential reads. Statistics over overlapping ranges are maintained in a
+% catalog, and used to prune irrelevant partitions at query time. This is essentially identical to
+% Parquet and Iceberg, and our first brush with analytics bottlenecks and columnar remedies that
+% shows up over the rest of this thesis. Combined with the previous point, it further underscores
+% the natural fit of this paradigm for scientific data pipelines. A natural concern is
+% interoperability/composability between CARP's partitioning and additional indexing strategies,
+% which are automatically remedied by planning-based approaches. We discuss this more in
+% (thesis-conclusions).
+
+% 3. Limitations of a fixed-function loop. CARP's loop can materialize only one view using one
+% reduction technique. Additional views are desirable not only for other workload types, but also
+% for better range partitioning. For example, sketch-based quintiles may provide better distribution
+% fidelity over histograms. Renegotiation policies may need to be more adaptive: CARP relies on more
+% frequent renegotiation not being counterproductive, but this may not hold.
+
+\section{Lessons for Scientific Data Infrastructure}
+\label{sec:carp:lessons}
+
+CARP demonstrates that adaptive range partitioning, driven by periodic reconstruction of global
+histograms, can effectively range-partition scientific data in situ.
+The resulting layout is
+partially ordered, so range queries may require some residual compaction at query time.
+Our
+evaluation shows that this is the right tradeoff for scientific data: differences in query
+performance are
+imperceptible for analytical use cases, while ingestion performance is maximized.
+% binding constraint, while differences in query performance are not material for analytical use
+% cases. 
+Two lessons recur across the AMR study discussed next and inform ORCA’s design: the
+applicability of OLAP techniques to scientific data management, and the limits of
+fixed-function feedback loops.
+
+\paragraph{Applicability of OLAP techniques} While hash and range-partitioning are standard
+database
+techniques, their application to scientific data management is shaped by the environment.
+These pipelines terminate in a parallel filesystem or burst buffer that is designed to absorb
+massive,
+synchronized ingestion from tens of thousands of writers.
+As a result, these techniques must be embedded into in-situ pipelines
+that reorganize data in flight to parallel filesystems.
+% While techniques remain deeply relevant, they need to be rearchitected for in-situ pipelines that
+% reorganize data in flight to a parallel filesystem.
+
+Beyond techniques, OLAP formats also remain relevant for scientific data, at least insofar as
+data fits the relational model.
+CARP evolves a custom storage format derived from DeltaFS's~\cite{Zheng2018:DeltaFS}
+flattened LSM tree: disjoint SSTables with contiguous key and value blocks for efficient sequential
+reads,
+with per-SSTable statistics maintained in a catalog for query-time pruning.
+This is essentially identical to Parquet~\cite{:ApacheParquet} and open table formats like
+Iceberg~\cite{:Iceberg}.
+Queryability over other attributes is a natural concern automatically remedied by such
+formats
+and planning-based query engines.
+We revisit this topic in \S\ref{sec:concl:extensions}.
+
+\paragraph{Limitations of fixed-function loops} CARP’s feedback loop is fixed-function: it can
+materialize one view via one reduction type, triggered by a static policy.
+Additional views
+may be desirable not only for other workload types but for better range partitioning itself.
+Sketch-based quantile estimates~\cite{Karni2016:KLLSketch} may provide better distribution fidelity
+than histograms.
+Decisions such as tuning renegotiation intervals and pivot counts would
+benefit from runtime visibility into how well the partitioning is performing---visibility that
+CARP’s own loop cannot provide.
+
+% Database and analytics patterns recur throughout scientific data management, but the environment
+% constrains how they apply. Workloads are diverse and configurations are transient, so no single
+% database architecture fits as the default endpoint. Ingestion to a database is not viable. The
+% pipeline itself must be the site of data management. Scientific data pipelines terminate in a
+% parallel filesystem or burst buffer that is designed to absorb massive, synchronized ingestion
+% from thousands of writers. Workloads are diverse and configurations are transient, so no single
+% database architecture fits as the default endpoint. Ingestion to a database is not viable. The
+% pipeline itself must be the site of data management.
+
+% What translates are techniques and formats. CARP demonstrates range partitioning adapted into an
+% ingestion pipeline, operating over data in flight rather than reorganizing it at rest. The storage
+% format converges in the same direction. Our backend derives from DeltaFS’s flattened LSM tree:
+% disjoint SSTables with contiguous key and value blocks for efficient sequential reads, and
+% per-range statistics maintained in a catalog for query-time pruning. This is essentially Parquet
+% with an Iceberg-style catalog. This convergence between scientific data management and analytical
+% storage recurs throughout the thesis and is revisited in the conclusions.
+
+% Renegotiation policies may need to be more adaptive. Other views may enable adaptive range
+% partitioning policies, or guidance to operators choosing renegotiation intervals and the fidelity
+% of statistics. CARP assumes that more frequent renegotiation is not counterproductive, but this
+% may not hold in all settings.
+% Tuning these decisions would

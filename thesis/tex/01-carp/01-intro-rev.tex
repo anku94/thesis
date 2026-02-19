@@ -17,34 +17,39 @@ dominate time-to-discovery~\cite{Bauer2016:SituMethodsInfrastructures}.
 
 Among existing indexing approaches, those that enable range queries force undesirable tradeoffs
 between
-ingestion and query performance, while in-situ approaches do not enable range queries.
-Distributed out-of-core sorts produce fully ordered layouts which enable both efficient
-\emph{location}
-of overlapping keys and efficient \emph{retrieval}, via large sequential reads.
-This enables excellent
-query performance, but requires two additional read and write passes over the data.
-Auxiliary bitmap indices do not reorder data but generate additional index structures.
-They can accelerate location of matching keys, but retrieval still
-incurs additional random reads over scattered keys.
-Database-style ingestion is unviable: it is designed for mixed workloads but
-write amplification from periodic reorganization makes it impractical for ingestion-heavy
-scientific workloads~\cite{Raju2017:PebblesDB}.
+ingestion and query performance, while in-situ approaches do not produce locality-friendly layouts
+without additional I/O passes.
+Distributed out-of-core sorts~\cite{Rasmu2011:TritonSort} produce fully ordered layouts which
+enable both efficient \emph{location} of keys overlapping a given range, and efficient
+\emph{retrieval} via large sequential reads.
+This enables excellent query performance but requires multiple additional passes, slowing
+ingestion.
+% , but requires two additional read and write passes over the data.
+Auxiliary bitmap indices~\cite{Chou2011:FastQuery} do not reorder data but generate additional
+index structures.
+They can accelerate location of matching keys, but
+retrieval still
+incurs random reads over scattered keys.
+% Database-style ingestion is unviable: it is designed for mixed workloads but write amplification
+% from periodic reorganization makes it impractical for ingestion-heavy scientific
+% workloads~\cite{Raju2017:PebblesDB}.
 Among in-situ approaches, DeltaFS~\cite{Zheng2018:DeltaFS} demonstrates the viability of in-situ
 hash partitioning
 via an embedded all-to-all shuffle on MPI ranks, but hash-based
-partitioning destroys key locality and does not support range queries.
+partitioning destroys key locality, making it unsuitable for range queries.
 
 The central challenge of extending in-situ partitioning to range queries is that of providing
 efficient ingestion for unknown key distributions.
 Our analysis of real scientific codes shows that these distributions are often highly skewed and
-can shift significantly across epochs.
+can shift significantly across epochs (\S\ref{sec:carp:distrib}).
 Distributed databases manage range-partitioned layouts by reactively reordering on-disk data
-in response to partition imbalance, incurring unacceptable write amplification.
+in response to partition imbalance, incurring unacceptable write
+amplification~\cite{Raju2017:PebblesDB,Chang2006:Bigtable}.
 Our goal is an adaptive partitioner that makes no assumptions about key distributions,
-and optimizes for ingestion performance by never reordering on-disk data, while still enabling
+and maximizes ingestion performance by never reordering on-disk data, while still enabling
 efficient range queries.
 This requires mechanisms for discovering global key distributions,
-reacting as they evolve, handling out-of-bounds keys, all while maintaining high
+reacting as they evolve, and handling out-of-bounds keys, all while maintaining high
 storage utilization.
 
 % Boundaries computed from early data become stale as distributions evolve, creating load hotspots
@@ -56,12 +61,14 @@ storage utilization.
 % view quality affects boundary balance, and boundary changes affect how in-flight data is
 % routed---and the entire mechanism must operate at negligible cost relative to checkpoint I/O.
 
-CARP realizes adaptive single-pass range partitioning via a feedback loop for discovering
-and reacting to global key distributions.
-A primitive called \emph{renegotiation} is used to materialize the view for this loop: a reduction
+CARP realizes adaptive single-pass range partitioning via a feedback loop for reconstructing
+and adapting to global key distributions.
+A primitive called \emph{renegotiation} is used to materialize the view for this loop using a
+reduction
 tree
-over local histograms maintained at shuffle senders materializes the current global distribution,
-which is used to compute and broadcast new load-balanced partition boundaries.
+over local histograms maintained at shuffle senders,
+which is used to compute and broadcast new load-balanced partition boundaries.% materializes the
+% current global distribution,
 % Called \emph{renegotiation}, it uses a reduction tree over local histograms maintained at shuffle
 % senders to materialize the current global distribution, which is then used to compute and
 % broadcast new load-balanced partition boundaries.
@@ -80,7 +87,8 @@ ingestion.
 The rest of this chapter provides background on data organization for range queries and the
 tradeoffs involved (\S\ref{sec:carp:bg}), characterizes key distributions and their drift in real
 scientific codes (\S\ref{sec:carp:distrib}), presents the design of CARP and its storage backend
-KoiDB (\S\ref{sec:carp:des}), evaluates write and query performance (\S\ref{sec:carp:eval_write},
-\S\ref{sec:carp:eval_read}), and discusses adaptations for different deployment requirements
+KoiDB (\S\ref{sec:carp:des}), evaluates performance and tuning behavior
+(\S\ref{sec:carp:eval_write},
+\S\ref{sec:carp:eval_read}), and discusses deployment considerations
 (\S\ref{sec:carp:disc}).
-%The CARP framework and KoiDB backend are open source~\cite{Jain2024:CARP}.
+% The CARP framework and KoiDB backend are open source~\cite{Jain2024:CARP}.
