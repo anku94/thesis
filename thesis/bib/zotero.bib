@@ -409,12 +409,6 @@
   file = {/Users/schwifty/Zotero/storage/RQDZAJ3U/nccl.html}
 }
 
-@online{:NetmanaiopsorgPeidanANM2019,
-  title = {Netman.Aiops.Org/\textasciitilde peidan/{{ANM2019}}/7.{{TraceAnomalyDetection}}/{{ReadingList}}/{{2010Google}}\_{{Dapper}}.Pdf},
-  url = {https://netman.aiops.org/~peidan/ANM2019/7.TraceAnomalyDetection/ReadingList/2010Google_Dapper.pdf},
-  urldate = {2026-02-18}
-}
-
 @online{:Neuropsychopharmacology,
   title = {Neuropsychopharmacology},
   url = {https://www.scimagojr.com/journalsearch.php?q=18017&tip=sid&clean=0},
@@ -510,6 +504,16 @@
   url = {https://github.com/parthenon-hpc-lab/parthenon},
   urldate = {2024-04-01},
   file = {/Users/schwifty/Zotero/storage/72IHRE2Y/parthenon.html}
+}
+
+@online{:PerfettoSystemProfiling,
+  title = {Perfetto - {{System}} Profiling, App Tracing and Trace Analysis},
+  shorttitle = {Perfetto},
+  url = {https://perfetto.dev/},
+  urldate = {2026-02-20},
+  langid = {english},
+  organization = {Perfetto},
+  file = {/Users/schwifty/Zotero/storage/IIED7S8X/perfetto.dev.html}
 }
 
 @online{:Perfintelpt1LinuxManual,
@@ -7303,6 +7307,26 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/AMR/AMR-Broad/2005_norman_the_impact_of_amr_in_numerical_astrophysics_and_cosmology.pdf}
 }
 
+@article{Oeste2025:StorageGaps,
+  title = {An Analysis of the {{I}}/{{O}} Semantic Gaps of {{HPC}} Storage Stacks},
+  shorttitle = {{{StorageGaps}}},
+  author = {Oeste, Sebastian and Höhn, Patrick and Kluge, Michael and Kunkel, Julian},
+  date = {2025-08-11},
+  journaltitle = {Frontiers in High Performance Computing},
+  shortjournal = {Front. High Perform. Comput.},
+  volume = {3},
+  publisher = {Frontiers},
+  issn = {2813-7337},
+  doi = {10.3389/fhpcp.2025.1393936},
+  url = {https://www.frontiersin.org/journals/high-performance-computing/articles/10.3389/fhpcp.2025.1393936/full},
+  urldate = {2026-02-19},
+  abstract = {Modern high-performance computing (HPC) Input/Output (I/O) systems consist of stacked hard- and software layers that provide interfaces for data access. Depending on application needs, developers usually choose higher layers with richer semantics for the ease of use or lower layers for performance. Each I/O interface on a given stack consists of a set of operations and their syntactic definition, as well as a set of semantic properties. To properly function, high-level libraries such as Hierarchical Data Format version 5 (HDF5) need to map their semantics to lower-level Application Programming Interface (API) such as Portable Operating System Interface (POSIX). Lower-level storage backends provide different I/O semantics than the layers in the stack above while sometimes implementing the same interface. However, most I/O interfaces do not transport semantic information through their APIs. Ideally, no semantics of an I/O operation should be lost while passing through the I/O stack, allowing lower layers to optimize performance. Unfortunately, there is a lack of general definition and unified taxonomy of I/O semantics. Similarly, system-level APIs offer little support for passing semantics to underlying layers. Thus, passing semantic information between layers is currently not feasible. In this article, we systematically compare I/O interfaces by examining their semantics across the HPC I/O stack. Our primary goal is to provide a taxonomy and comparative analysis, not to propose a new I/O interface or implementation. We propose a general definition of I/O semantics and present a unified classification of I/O semantics based on the categories of concurrent access, persistency, consistency, spatiality, temporality, and mutability. This allows us to compare I/O interfaces in terms of their I/O semantics. We show that semantic information is lost while traveling through the storage stack, which often prevents the underlying storage backends from making the proper performance and consistency decisions. In other words, each layer acts like a semantic filter for the lower layers. We discuss how higher-level abstractions could propagate their semantics and assumptions down through the lower-levels of the I/O stack. As a possible mitigation, we discuss the conceptual design of semantics-aware interfaces, to illustrate how such interfaces might address semantic loss—though we do not propose a concrete new implementation.},
+  langid = {english},
+  keywords = {HPC,I/O,I/O semantics,I/O stack,MPIIO,POSIX},
+  annotation = {Good review of storage stacks},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/RangeQueries/2025_oeste_et_al_an_analysis_of_the_i.pdf}
+}
+
 @inproceedings{Oki1988:Viewstampedreplicationnew,
   title = {Viewstamped Replication: {{A}} New Primary Copy Method to Support Highly-Available Distributed Systems},
   booktitle = {Proceedings of the {{Annual ACM Symposium}} on {{Principles}} of {{Distributed Computing}}},
@@ -8616,6 +8640,14 @@
   author = {Sidler, David and Wang, Zeke and Chiosa, Monica and Kulkarni, Amit and Alonso, Gustavo},
   date = {2020},
   pages = {1--16}
+}
+
+@article{Sigel:DapperLargeScaleDistributed,
+  title = {Dapper, a {{Large-Scale Distributed Systems Tracing Infrastructure}}},
+  author = {Sigelman, Benjamin H and Barroso, Luiz Andre and Burrows, Mike and Stephenson, Pat and Plakal, Manoj and Beaver, Donald and Jaspan, Saul and Shanbhag, Chandan},
+  abstract = {Modern Internet services are often implemented as complex, large-scale distributed systems. These applications are constructed from collections of software modules that may be developed by different teams, perhaps in different programming languages, and could span many thousands of machines across multiple physical facilities. Tools that aid in understanding system behavior and reasoning about performance issues are invaluable in such an environment.},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/sigelman_et_al_dapper,_a_large-scal.pdf}
 }
 
 @article{Sigel2010:Dapper,
