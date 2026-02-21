@@ -1,0 +1,164 @@
+% !TeX root = ../../main.tex
+
+% Synthesize, benefit, name
+
+In the previous chapters, we discussed two instances of feedback loops over distributed BSP
+state.
+CARP implements an online but fixed-function loop, reconstructing the global key distribution to
+drive adaptive, in-situ range partitioning.
+The AMR study implements an offline loop, where trace analysis informs reconfiguration and reruns.
+In both cases, the relevant state is not knowable a priori, and making progress requires
+iterating between measurement and action.
+The AMR experience highlights the practical limitation of doing so offline: iteration latency
+becomes the bottleneck, and the resulting insights and mitigations are often deployment-specific
+rather than readily transferable.
+These properties motivate generalizing the pattern into a substrate that can materialize feedback
+via in-situ reductions of application state and support online interventions in response.
+Such a capability directly addresses the visibility requirements identified in
+\S\ref{sec:amr:concl}: always-on, in-production visibility that surfaces high-level symptoms of
+pathologies and enables online steering.
+It also subsumes CARP's renegotiation loop, which becomes a policy running on the substrate
+rather than a bespoke mechanism.
+We call the resulting paradigm \emph{steerable observability}.
+
+
+Steerable observability requires two capabilities: feedback, materializing views over distributed
+state, and control, coordinating interventions across ranks.
+The loop may be steered by human operators, automated agents, or policies.
+No existing tool provides these as an always-on, BSP-aware capability.
+Metrics and logs provide baseline visibility but rarely enough workload structure to attribute
+causes.
+BSP traces are emitted as per-rank logs and analyzed post-hoc.
+Distributed tracing as evolved through
+X-Trace~\cite{Fonse2007:X-Trace} and Dapper~\cite{Sigel2010:Dapper} captures causality in
+asynchronous microservices by propagating request IDs, but the model does not fit BSP.
+Timesteps separated by global synchronization, not requests, are the primary unit of work, and
+even identifying the straggler at a single barrier requires aggregating telemetry from all ranks
+participating in that barrier.
+Control poses a coordination challenge: interventions must be applied with well-defined
+consistency and atomicity across ranks.
+Parallel debuggers~\cite{:TotalView} provide interactive control but are
+designed for debugging sessions, not always-on, in-production observability.
+
+
+Steerable observability requires a programmable interface for streaming reductions over
+distributed telemetry.
+Dataframe-style trace analytics are increasingly the norm in both HPC and ML
+training workflows~\cite{:HTA,Yildi2023:IOMax,Boehm2016:Caliper,Devar2024:DFTracer}
+A streaming, in-situ variant is the logical online counterpart.
+We propose \emph{timestep dataframes} as the core abstraction for BSP telemetry: a logical
+representation comprising all telemetry emitted during a single timestep across all ranks.
+Because BSP synchronization causally partitions execution, each timestep dataframe is a natural
+unit of analysis: it summarizes what happened at workload scale and provides the local context
+needed to attribute causes.
+External stream processing systems can theoretically window event
+streams~\cite{Kreps2011:Kafka,Carbo2015:ApacheFlink}, but they decompose this structure into
+individual events that must be reaggregated, cannot leverage RDMA fabrics, and cannot provide
+coordinated control semantics.
+An on-fabric tree-based overlay over columnar data is the natural architecture: Arrow's contiguous
+memory layout enables both efficient in-situ reductions and efficient transfers over RDMA, while
+the same tree topology supports broadcast for coordinated control.
+The result is observability infrastructure that leverages a supercomputer's resources
+rather than requiring a second one to process its output.
+
+We present a \emph{tree-based overlay network} (TBON) for real-time observability and control of
+large-scale BSP applications, called
+ORCA~(\emph{Observability~with~Real-time~Control~and~Aggregation}).
+ORCA treats telemetry as columnar streams, transformed via a SQL-based analytics interface called
+\emph{OrcaFlow} en route to \emph{sinks} such as dashboards or parallel filesystems.
+An RDMA-based TBON-optimized transport (\S\ref{sec:orca:des_xport}) enables low-overhead collection
+of timestep dataframes.
+They can then be transformed via SQL-based analytics, routed to a dashboard, or persisted as
+partitioned Parquet for zero-ETL post-mortems.
+This accelerates observability workflows across the spectrum, ranging from real-time monitoring
+over application-specific metrics, to offline trace analytics.
+Distributed query planning with operator pushdown minimizes data movement across the overlay
+(\S\ref{sec:orca:des_insitu}).
+A control plane (\S\ref{sec:orca:des_ctl}) provides atomic and timestep-consistent control
+semantics, guaranteeing correctness for interventions such as new analytics, probes, and parameter
+updates.
+ORCA combines a modern columnar analytics
+stack~\cite{:ApacheArrow,:ApacheParquet,Lamb2024:DataFusion} with RDMA and BSP-aligned data and
+control paths to realize low-overhead, real-time, closed-loop feedback.
+This accelerates observability workflows across the spectrum, from application-level metrics
+monitored in real time, to post-hoc trace analyses backed by in-situ transforms and
+timestep-partitioned Parquet.
+% This accelerates observability workflows across the spectrum, ranging from application-level
+% metrics monitored in real-time, to post hoc analyses via in-situ filters and transforms and
+% partitioned Parquet.
+
+% with collected telemetry that filter or transform telemetry on the fabric and analyze the
+% remainder offline, and conventional trace collection persisted as timestep-partitioned Parquet for
+% zero-ETL post-mortem analysis.
+
+We evaluate ORCA on a real AMR code at up to 4096 CPU ranks.
+% , and progressively study its transport, analytics, and control capabilities.
+
+\begin{itemize}[leftmargin=*]
+  \item In conventional tracing workflows, ORCA incurs \textasciitilde{2}\% runtime overhead
+        (vs 56--81\% for state-of-the-art tracers), produces up to 42$\times$ smaller
+        traces for equivalent telemetry, and enables up to
+        6900$\times$ faster analyses than existing trace formats (\S\ref{sec:orca:eval-trace}).
+  \item In-situ analytics enable low-overhead needle-in-the-haystack
+        workflows---outlier \mpiw{} calls are isolated in real-time at sub-2\% runtime
+        overhead, while discarding up to 99.999\% of data at MPI ranks (\S\ref{sec:orca:eval-insitu}).
+  \item In an agentic evaluation of its closed-loop capabilities using an LLM
+        agent as a proxy for a human operator, ORCA enables localizing a performance
+        anomaly---the same bug from our AMR study that took months of manual
+        investigation---in 27 minutes, while reducing data volume by up to
+        144$\times$ (\S\ref{sec:orca:eval-agent}).
+\end{itemize}
+More broadly, ORCA demonstrates that declarative SQL analytics can be embedded on a supercomputer
+fabric alongside a live MPI application, enabling streaming analytics workflows beyond
+observability.
+ORCA is open source~\cite{Autho2026:orca-code}.
+
+% This requires a programmable interface for streaming reductions, which must also be declarative to
+% support on the fly stuff. Offline trace analysis using dataframe-based analytics. Streaming in
+% situ SQL-based over Arrow is a natural online counterpart. We propose an abstraction called
+% timestep dataframe for BSP telemetry: similar to Spark RDDs, logical constructs consisting of all
+% telemetry emitted from a single timestep. BSP timesteps are causally partitioned: a timestep
+% dataframe is a naturally independent unit of analysis as it contains both the global state: what
+% happened, and the local state: why it happened. While streaming event processing pipelines can
+% theoretically assemble these windows, they will 1. break these nice timestep dataframes into
+% separate rows which need to be reassembled afterwards, paying unnecessary cost, 2. cannot leverage
+% capabilities like RDMA, 3. can not provide control semantics. As a result, handling
+% supercomputer-scale telemetry requires supercomputer-scale analytics clusters incurring
+% unnecessary data movement costs. An on-fabric tree-based overlay is a natural choice: enabling
+% both hierarchical reductions and broadcast and operator pushdown. Arrow complements RDMA very
+% well. Can pushdown. Can use accelerators on path (future capability). Reduction topologies and
+% tree-based overlays are common in HPC in the past. On-fabric columnar native TBON is the right
+% choice.
+
+
+% Both CARP and AMR feature materialized views of the application state as inputs into better
+% decision-making processes. The process was automatic in CARP but fixed-function. The AMR version
+% was manual. Materialized application views periodically occur as a primitive because they are
+% targeted renders. They compress a cluster with trillions of operations into specific questions
+% asked by a policy or an operator. CARP and AMR studies show that fast views enable fast loops and
+% slow views perpetuate bottlenecks. Generalizing these into a programmable substrate allows
+% AMR-style studies to become a commonplace operational capacity instead of specialized
+% undertakings. Beyond feedback, this has other benefits: by targeting views, we are not
+% accumulating raw data all the time. We collect legible signals and use them to intervene on
+% demand. No useless data management problem.
+
+% We argue for always on steerable observability. This capability largely does not exist. Metrics
+% are nice and captured but also limited. Workload-level insight is missing. Dapper is a useful
+% analog. Equivalent semantics were never defined for BSP. ML work is building ad hoc pipelines for
+% custom requirements. A common substrate is possible. We show that timesteps and not requests are
+% the causally independent units. Telemetry must aggregated by timesteps in a streaming manner via
+% programmable interface. Closing feedback loops also requires control semantics that must be
+% likewise respect this strucure.
+
+% While event-based streaming systems exist (ref: Kafka and Flink) and can technically aggregate
+% streams, they cannot provide control, and they do not understand BSP environment. The execution
+% environment is a tightly coupled supercomputer. Telemetry is produced in synchronous bursts.
+% Converting it into a signal requires a massive reduction. Even the simplest problem of knowing
+% which rank is the straggler at a timestep requires joins over telemetry from all ranks. If the
+% problem is externalized by shipping all telemetry to an external system, you have created a
+% supercomputer class problem. The smarter thing instead is to adapt to the environment. Use the
+% application resourecs and the fabric. Streaming in-situ analytics and control. Our previosu work
+% also shows columnar analytics as a recurring feature. Arrow, pushdown and RDMa over a tree based
+% overlay are the right solution shape.
+
+% Now we present ORCA. P4 (copy verbatim)

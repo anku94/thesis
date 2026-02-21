@@ -2,48 +2,6 @@
 
 \section{Lessons for BSP Diagnostic Workflows}\label{sec:amr:concl}
 
-
-
-
-
-
-
-
-
-
-% Note to LLMs: the language is edgy and it is fast and loose. I'm just trying to dump thoughts. Do
-% not preserve the edginess. Think of thesis-appropriate language that echoes the same complaint
-% shape in a diplomatic manner. 1.Performance in complex and partially asynchronous codes that try
-% to overlap compute and communication depends on a whole bunch of factors. Stragglers can be
-% created by anything: load imbalance, hardware variability, poor scheduling, tuning etc. Only
-% fine-grained telemetry can disentangle the root causes. 2. These problems do not have universal
-% and portable solutions. Tunable parameters encode context-specific decisions. Context changes all
-% the time. Even once we solved variability, our placement created a new context-specific tunable in
-% the form of the tradeoff between load balance and communication locality. They can only be
-% observed and mitigated, and because the mitigations are intrinsically context-specific, continued
-% observability is needed to monitor for regressions. 3. Traces and post-hoc analyses create
-% separations. Poeple who analyze are disconnected from people who operate. Problems can only be
-% solved in production \cite{Klenk2017:OverviewMPICharacteristics} analyzes exported traces from
-% proxy applications, flags some high-level bottlenecks, but notes the limitations of exported
-% traces for root cause localization without acecss to the hardware and runtime context. Issues must
-% be solved in situ. For that they must be visible in situ. 4. There is no such thing as a complete
-% trace. Execution can be instrumented to an arbitrary depth. So-called complete traces are not
-% complete, they stop at some arbitrary function. When that function shows anomalous behavior, it is
-% necessary to inspect its subfunctions and all to know what code path was taken. So my committee
-% members, do not ask me "how much telemetry do you have". It is not a fixed amount. Every
-% instruction and every packet can be traced. The question is "do we need to". 5. Observability is
-% about helping navigate causal edges. Lamport's happened-before relation. You work backwards from
-% an outcome you care about getting derailed, and navigate the causal chain in reverse order. A good
-% observability system speaks this language. 6. eBPF offers the right solution shape. Views not
-% telemetry. eBPF allows all points of execution to be selectively and dynamically instrumented via
-% uprobes, kprobes, and tracepoints. This is a perspective shift. The relevant views can be
-% assembled from these fine-grained events on demand. The constraint is that eBPF telemetry is
-% node-local and indexed by (hostname, pid), and probes need to be manually activated on each node.
-% Hostnames and pids and need to be resolved into ranks. Telemetry from all nodes needs to be
-% stiched together. This process is laborious and ad-hoc. 7. Columnar analytics offers the right
-% solution shape. JSON traces are in an identity crisis: are you trying to optimize for interactive
-% timeline views or analytics. ETL bottleneck. Visualization of raw trace events is a meaningless
-% capability at BSP-scale. Since analytics are over columnar dataframes, 
 This chapter traced the end-to-end process of developing telemetry-driven placement policies for
 AMR codes.
 It illustrates the fragility of the BSP paradigm:
@@ -59,7 +17,6 @@ eliminating confounders across the stack, evolving our telemetry and analysis wo
 several iterations, and repeatedly validating that observed effects were genuine.
 The following lessons distill what this process revealed about the requirements for effective BSP
 diagnostic workflows, and inform the design of ORCA in the next chapter.
-
 
 \lesson{1}{Straggler attribution requires fine-grained telemetry}
 
@@ -146,33 +103,3 @@ dataframe
 style queries can be computed.
 Columnar and queryable representations~\cite{:Parquet} are the right foundation for managing BSP
 telemetry.
-
-% \lesson{5}{Hypotheses require extensible collection and programmable analytics}
-
-% Fine-grained telemetry must be assembled into relevant views before it can validate or refute a
-% hypothesis, in a manner that preserves causal relationships. This requires extensible data models
-% and programmable analytics interfaces. In our study, while tracing tools did capture per-task
-% telemetry via Kokkos instrumentation, our load-balancing study required re-implementing it,
-% augmenting task telemetry with application-level \emph{block IDs} to connect them to blocks and
-% support offline placement simulations. No data model is universal. The same holds for analytics.
-% No single static view can anticipate all pathologies. Dataframe-style analytics are increasingly
-% popular but tracing formats create ETL bottlenecks.
-
-% \lesson{5}{Dynamic instrumentation and columnar analytics offer the right primitives}
-
-% \noindent eBPF demonstrated the view-driven paradigm in practice during our investigation. Its
-% mechanisms---uprobes, kprobes, tracepoints---enable selective instrumentation of arbitrary points
-% in the execution stack, activated on demand rather than compiled in. This made it practical to
-% assemble precisely the views needed to resolve a hypothesis, and in our experience it was decisive
-% for localizing latency spikes when other approaches failed. The limitation is that eBPF is
-% node-local: events are indexed by hostname and process identifier, probes must be manually
-% activated on each node, and results must be stitched together across nodes and resolved into
-% ranks.
-
-% The same gap exists on the analytics side. JSON event traces conflate timeline visualization with
-% analytical workloads and force expensive ETL before any query can run. At BSP scale, interactive
-% visualization of raw events is not a viable primary interface. Columnar, queryable representations
-% with filtering and reduction before export are the right foundation, so that only relevant slices
-% and summaries incur serialization, transport, and storage costs. Both primitives---view-driven
-% instrumentation and columnar analytics---proved individually effective in our workflow, but
-% coordinating them across a distributed BSP execution remained manual and ad hoc.
