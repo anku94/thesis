@@ -9,39 +9,51 @@
 \begin{table}[h]
   \centering
   \scriptsize
-  \begin{tabularx}{1\textwidth}{p{1.0in} p{1.5in} Y Y}
+  \begin{tabularx}{1\textwidth}{p{1.0in} p{1.5in} Y Y }
     \toprule
-    \textbf{System}                                                                                    & \textbf{Diagnostic Task}         & \textbf{Their Approach}                                              & \textbf{ORCA Equivalent}                                                                      \\
-    \midrule
-    \multirow[t]{1}{=}[0pt]{\raggedright XPUTimer~\cite{Cui2025:XPUTimer} \emph{(Training anomalies)}} & Stall detection/disambiguation   & Call stack analysis                                                  & In-situ heartbeat reduction                                                                   \\
-    \addlinespace
-                                                                                                       & Slowdown analysis                & Periodic metrics                                                     & In-situ trace event aggregation                                                               \\
-    \midrule
-    TrainCheck~\cite{Jiang2025:TrainCheck} \emph{(Training correctness)}                               & Correctness invariants           & Offline trace analysis for invariant generation,  online enforcement & Timestep-aligned traces for offline generation, in-situ enforcement via OrcaFlow              \\
-    \midrule
-    \multirow[t]{1}{=}[0pt]{\raggedright Minder~\cite{Deng2025:Minder} \emph{(Fault~diagnosis)}}       & Fail-slow hardware               & Cluster-level metrics and anomaly detection                          & Workload-level trace events                                                                   \\
-    \midrule
-    \multirow[t]{1}{=}[0pt]{\raggedright Aegis~\cite{Dong2025:Aegis} \emph{(Fault~diagnosis)}}         & Fail-stop hardware               & Per-node NCCL counters pulled on timeouts                            & Workload-level trace events                                                                   \\
-    \midrule
-    \multirow[t]{2}{=}[0pt]{\raggedright Holmes~\cite{Yao2025:Holmes} \emph{(Fail-slows)}}             & Outlier collective detection     & Random forest model                                                  & Policy-dependent                                                                              \\
-    \addlinespace
-                                                                                                       & Localization                     & Graph search                                                         & Learn collective topology at bootstrap, \texttt{GROUPBY swid}, trace critical path in reverse \\
+    \textbf{System}                                                                              & \textbf{Diagnostic Task}                      & \textbf{Their Approach}                               & \textbf{ORCA Equivalent}                                       \\
     \midrule
     \multirow[t]{2}{=}[0pt]{\raggedright Greyhound~\cite{Wu2025:GREYHOUND} \emph{(Fail-slows)}}
-                                                                                                       & Iteration boundary detection
-                                                                                                       & Autocorrelation over collectives
-                                                                                                       & \texttt{PostTimestepAdvance}                                                                                                                                                                            \\
+                                                                                                 & Iteration boundary detection
+                                                                                                 & Autocorrelation over collectives
+                                                                                                 & \texttt{PostTimestepAdvance}                                                                                                                                           \\
     \addlinespace
-                                                                                                       & Fail-slow detection              & Track iteration times                                                & Track iteration times                                                                         \\
+                                                                                                 & Fail-slow detection                           & Track iteration times                                 & Track iteration times                                          \\
     \addlinespace
-                                                                                                       & Straggler localization           & Aggregate NCCL events off-fabric                                     & \texttt{GROUPBY swid} (on-fabric)                                                             \\
+                                                                                                 & Straggler localization                        & Aggregate NCCL events (off-fabric)                    & \texttt{GROUPBY swid} (on-fabric)
+    \\
     \addlinespace
-                                                                                                       & Straggler cause disambiguation   & Microbenchmarks                                                      & Microbenchmarks or trace events                                                               \\
+                                                                                                 & Straggler cause disambiguation                & Microbenchmarks                                       & Microbenchmarks or trace events                                \\
     \addlinespace
-                                                                                                       & Online interventions             & Tune micro-batch distribution or parallelism topology                & Supported via control plane                                                                   \\
+                                                                                                 & Online interventions                          & Tune micro-batch distribution or parallelism topology & Supported via
+    control plane                                                                                                                                                                                                                                                         \\
+    \midrule
+    \multirow[t]{1}{=}[0pt]{\raggedright XPUTimer~\cite{Cui2025:XPUTimer} \emph{(Training anomalies)}}
+                                                                                                 & Stall detection/disambiguation                & Call stack analysis                                   & In-situ reductions                                             \\
+    \addlinespace
+                                                                                                 & Slowdown analysis                             & Periodic metrics                                      & In-situ trace event aggregation                                \\
+    \multirow[t]{2}{=}[0pt]{\raggedright Holmes~\cite{Yao2025:Holmes} \emph{(Fail-slows)}}       & Outlier
+    collective detection                                                                         & Random forest model                           & Policy-dependent                                                                                                       \\
+    \addlinespace
+                                                                                                 & Localization                                  & Graph search                                          & Learn collective topology at bootstrap, \texttt{GROUPBY swid},
+    trace critical path in reverse                                                                                                                                                                                                                                        \\
+    \midrule
+    TrainCheck~\cite{Jiang2025:TrainCheck} \emph{(Training correctness)}                         & Correctness invariants                        &
+    Offline trace analysis for invariant generation, online enforcement                          & Timestep-aligned traces for
+    offline generation, in-situ enforcement via OrcaFlow                                                                                                                                                                                                                  \\
+    \midrule
+    \multirow[t]{1}{=}[0pt]{\raggedright Minder~\cite{Deng2025:Minder} \emph{(Fault~diagnosis)}} &
+    Fail-slow hardware                                                                           & Cluster-level metrics and anomaly detection   & Workload-level trace events                                                                                            \\
+    \midrule
+    \multirow[t]{1}{=}[0pt]{\raggedright Aegis~\cite{Dong2025:Aegis} \emph{(Fault~diagnosis)}}   &
+    Fail-stop hardware                                                                           & Per-node NCCL counters pulled on timeouts     & Workload-level trace events                                                                                            \\
+    \midrule
+    Reveal~\cite{Chen2025:Reveal} \emph{(Training~anomalies)}                                    & Anomaly detection and bottleneck
+    attribution                                                                                  & Time-windowed metrics + unsupervised learning & Workload-level trace events                                                                                      \\
     \bottomrule
   \end{tabularx}
-  \caption{Comparison of diagnostic approaches in ML training.}~\label{tab:orca:related-work}
+  \caption{Comparison of diagnostic approaches in ML training.
+  }~\label{tab:orca:related-work}
 \end{table}
 
 \parahead{Tool Infrastructure and Tracing}
