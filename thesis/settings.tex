@@ -73,8 +73,12 @@
 % capitalize: capitalize first letter, nameinlink: include name in link
 \usepackage[capitalize,nameinlink]{cleveref} % for terse references
 % For tables
+\usepackage{multirow}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{tabularx} % better table with X columns?
+\usepackage{ragged2e} % improves ragged-right wrapping with better line breaking/hyphenation in table cells
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X} % reusable left-aligned X-style column for wrapped table text
 \usepackage{threeparttable}
 % For algorithms (AMR paper)
 \usepackage{algorithm}

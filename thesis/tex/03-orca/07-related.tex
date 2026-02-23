@@ -6,55 +6,74 @@
 
 \section{Related Work}
 
-\begin{table}[h]
-  \centering
-  \scriptsize
-  \begin{tabularx}{1\textwidth}{p{1.0in} p{1.5in} Y Y }
-    \toprule
-    \textbf{System}                                                                              & \textbf{Diagnostic Task}                      & \textbf{Their Approach}                               & \textbf{ORCA Equivalent}                                       \\
-    \midrule
-    \multirow[t]{2}{=}[0pt]{\raggedright Greyhound~\cite{Wu2025:GREYHOUND} \emph{(Fail-slows)}}
-                                                                                                 & Iteration boundary detection
-                                                                                                 & Autocorrelation over collectives
-                                                                                                 & \texttt{PostTimestepAdvance}                                                                                                                                           \\
-    \addlinespace
-                                                                                                 & Fail-slow detection                           & Track iteration times                                 & Track iteration times                                          \\
-    \addlinespace
-                                                                                                 & Straggler localization                        & Aggregate NCCL events (off-fabric)                    & \texttt{GROUPBY swid} (on-fabric)
-    \\
-    \addlinespace
-                                                                                                 & Straggler cause disambiguation                & Microbenchmarks                                       & Microbenchmarks or trace events                                \\
-    \addlinespace
-                                                                                                 & Online interventions                          & Tune micro-batch distribution or parallelism topology & Supported via
-    control plane                                                                                                                                                                                                                                                         \\
-    \midrule
-    \multirow[t]{1}{=}[0pt]{\raggedright XPUTimer~\cite{Cui2025:XPUTimer} \emph{(Training anomalies)}}
-                                                                                                 & Stall detection/disambiguation                & Call stack analysis                                   & In-situ reductions                                             \\
-    \addlinespace
-                                                                                                 & Slowdown analysis                             & Periodic metrics                                      & In-situ trace event aggregation                                \\
-    \multirow[t]{2}{=}[0pt]{\raggedright Holmes~\cite{Yao2025:Holmes} \emph{(Fail-slows)}}       & Outlier
-    collective detection                                                                         & Random forest model                           & Policy-dependent                                                                                                       \\
-    \addlinespace
-                                                                                                 & Localization                                  & Graph search                                          & Learn collective topology at bootstrap, \texttt{GROUPBY swid},
-    trace critical path in reverse                                                                                                                                                                                                                                        \\
-    \midrule
-    TrainCheck~\cite{Jiang2025:TrainCheck} \emph{(Training correctness)}                         & Correctness invariants                        &
-    Offline trace analysis for invariant generation, online enforcement                          & Timestep-aligned traces for
-    offline generation, in-situ enforcement via OrcaFlow                                                                                                                                                                                                                  \\
-    \midrule
-    \multirow[t]{1}{=}[0pt]{\raggedright Minder~\cite{Deng2025:Minder} \emph{(Fault~diagnosis)}} &
-    Fail-slow hardware                                                                           & Cluster-level metrics and anomaly detection   & Workload-level trace events                                                                                            \\
-    \midrule
-    \multirow[t]{1}{=}[0pt]{\raggedright Aegis~\cite{Dong2025:Aegis} \emph{(Fault~diagnosis)}}   &
-    Fail-stop hardware                                                                           & Per-node NCCL counters pulled on timeouts     & Workload-level trace events                                                                                            \\
-    \midrule
-    Reveal~\cite{Chen2025:Reveal} \emph{(Training~anomalies)}                                    & Anomaly detection and bottleneck
-    attribution                                                                                  & Time-windowed metrics + unsupervised learning & Workload-level trace events                                                                                      \\
-    \bottomrule
-  \end{tabularx}
-  \caption{Comparison of diagnostic approaches in ML training.
-  }~\label{tab:orca:related-work}
-\end{table}
+
+\tabOrcaRelated{}
+
+\parahead{ML Training Observability}
+Recent ML training systems build application-specific pipelines spanning
+straggler
+localization~\cite{Wu2025:GREYHOUND,Yao2025:Holmes,Deng2025:Mycroft},
+fault diagnosis~\cite{Deng2025:Minder,Dong2025:Aegis}, and correctness
+enforcement~\cite{Jiang2025:TrainCheck}.
+% % -- one paragraph version -- \parahead{ML Training Observability} Recent ML training systems
+% build application-specific pipelines spanning straggler
+% localization~\cite{Wu2025:GREYHOUND,Yao2025:Holmes,Deng2025:Mycroft}, fault
+% diagnosis~\cite{Deng2025:Minder,Dong2025:Aegis}, and correctness
+% enforcement~\cite{Jiang2025:TrainCheck}. ORCA generalizes the pattern.
+% Greyhound~\cite{Wu2025:GREYHOUND} implements a complete feedback loop with NCCL event collection,
+% microbenchmark validation, and online rebalancing. This is a fixed-function version of what ORCA
+% expresses as composable operators. Holmes~\cite{Yao2025:Holmes} uses graph search over collective
+% telemetry to find anomalies. ORCA's aligned collection makes stragglers surface through simple
+% grouped aggregations, without requiring complex detection algorithms.
+% Mycroft~\cite{Deng2025:Mycroft} buffers fine-grained NCCL telemetry locally and flushes to
+% Kafka~\cite{Kreps2011:Kafka} on trigger, but notes the scalability limits of central logging.
+% ORCA's tree-based overlay scales out naturally. TrainCheck~\cite{Jiang2025:TrainCheck} enforces
+% training correctness via offline invariant generation and online checks. ORCA's timestep-aligned
+% columnar analytics accelerate both stages. Minder~\cite{Deng2025:Minder} and
+% Aegis~\cite{Dong2025:Aegis} operate at the cluster infrastructure level, using hardware counters
+% and metrics to identify faulty nodes across workloads. This is a complementary scope to ORCA,
+% which provides high-fidelity visibility into a single workload but does not yet support
+% cross-workload diagnosis in multi-tenant environments.
+ORCA generalizes the pattern.
+Holmes~\cite{Yao2025:Holmes} uses graph search over collective telemetry to
+find anomalies.
+ORCA's aligned collection makes stragglers surface through
+simple grouped aggregations, no complex detection needed.
+Mycroft~\cite{Deng2025:Mycroft} buffers fine-grained NCCL~\cite{:NCCL} telemetry locally
+and flushes to Kafka~\cite{Kreps2011:Kafka} on trigger, but notes the scalability limits of central
+logging.
+ORCA's tree-based overlay scales out naturally.
+TrainCheck~\cite{Jiang2025:TrainCheck} enforces training correctness via
+offline invariant generation and online checks.
+ORCA's timestep-aligned
+columnar analytics accelerate both stages.
+Minder~\cite{Deng2025:Minder} and
+Aegis~\cite{Dong2025:Aegis} operate at the cluster infrastructure level,
+using hardware counters and metrics to identify faulty nodes across
+workloads.
+This targets a fundamentally different scope: identifying bad
+hardware across many workloads treated as black boxes.
+ORCA provides
+high-fidelity visibility into a single workload but does not yet support
+cross-workload diagnosis in multi-tenant environments.
+\Cref{tab:orca:related-work} summarizes the diagnostic mechanisms implemented in these systems and
+their ORCA equivalents.
+
+Among these systems, Greyhound~\cite{Wu2025:GREYHOUND} is the closest to
+ORCA in scope, implementing a complete feedback loop: iteration times are
+tracked, NCCL events are collected for localization when outliers are
+detected, microbenchmarks are dispatched to validate stragglers, and online
+tuning rebalances work in response.
+This is a fixed-function version of what ORCA expresses as composable operators.
+ORCA's timestep dataframe abstraction preserves fine-grained trace events,
+enabling disambiguation of stragglers without needing microbenchmarks for validation.
+Greyhound's control semantics require pausing the application,
+while ORCA implements an asynchronous control plane with atomicity and timestep-consistency
+guarantees.
+Additionally, ORCA's on-fabric broadcast tree enables faster message dissemination than a central
+controller.
+% arbitrary collectives to inject probes, while ORCA propagates updates asynchronously at step
+% boundaries and uses on-fabric broadcast for faster dissemination than a central controller.
 
 \parahead{Tool Infrastructure and Tracing}
 MRNet~\cite{Roth2003:MRNet} introduced TBONs for scalable tool infrastructure, but its compiled C++
@@ -62,21 +81,10 @@ filter model has not evolved with modern analytics.
 Fay~\cite{Erlin2011:Fay} and Snicket~\cite{Berg2021:Snicket} compile declarative queries into
 distributed probes that filter and aggregate at source.
 ORCA combines both: a TBON with Arrow interchange, declarative SQL, and BSP-aligned control.
-Dynamic instrumentation via eBPF~\cite{:eBPF} and DynInst~\cite{Berna2011:DynInst} extends reach
+Dynamic instrumentation via eBPF~\cite{:eBPF} and DynInst~\cite{Berna2011:DynInst} can extend reach
 into runtime and kernel layers.
 Sketch-based telemetry reduction~\cite{Sriva2024:Circa} aligns with ORCA's in-situ aggregation
 model.
-
-\parahead{ML Training Observability}
-Recent ML training systems address pathologies from straggler
-localization~\cite{Yao2025:Holmes,Wu2025:GREYHOUND,Cui2025:XPUTimer,Guan2025:PerfTracker,Chen2025:Reveal}
-to fault diagnosis~\cite{Deng2025:Minder,Dong2025:Aegis} to training
-correctness~\cite{Jiang2025:TrainCheck}, each building application-specific collection and analysis
-pipelines.
-Mycroft~\cite{Deng2025:Mycroft} uses collective structure for real-time root-cause analysis,
-working backward from stalls to causes.
-Unlike ORCA's timestep dataframe abstraction, Mycroft analyzes approximate telemetry slices by
-querying a database, without completeness guarantees or in-situ reduction.
 
 \parahead{Unified Analytics}
 Arrow is emerging as common interchange for tabular HPC data ---TileDB~\cite{:TileDB} and
@@ -89,6 +97,51 @@ shufflers for embedded in-situ hash and range-partitioning.
 ORCA's TBON could accommodate shuffling as an intra-tier operation.
 As these ecosystems converge, common infrastructure can subsume analytics workflows ranging from
 observability to checkpoint indexing to scientific queries.
+
+% -- Details -- \parahead{ML Training Observability} Recent ML training systems address pathologies
+% from straggler
+% localization~\cite{Wu2025:GREYHOUND,Cui2025:XPUTimer,Yao2025:Holmes,Deng2025:Mycroft,Guan2025:PerfTracker,Chen2025:Reveal}
+% to fault diagnosis~\cite{Deng2025:Minder,Dong2025:Aegis} to training
+% correctness~\cite{Jiang2025:TrainCheck}, each building application-specific collection and
+% analysis pipelines. % Megatron (NVIDIA), DeepSpeed (Microsoft) This is conceptual generalization.
+% ORCA's interfaces will need to be extended to support 3D/4D parallelism, but the concepts apply.
+
+
+% Greyhound implements a complete feedback loop: iteration times are tracked, NCCL events are
+% collected for localization if outliers are detected, microbenchmarks are dispatched to validate
+% stragglers, and online tuning interventions rebalance work in response. This is similar to a fixed
+% function version of ORCA,
+
+% 1. ORCA can materialize fine-grained statistics such as collective distribution histograms
+% in-situ, more principled way to detect shifting straggler patterns in dynamic workloads like AMR
+% codes. 2. In-situ aggregation and on-fabric transport allows trace events to be preserved for
+% straggler attribution without necessarily requiring additional validation 3. Their control plane
+% blocks at arbitrary collectives. ORCA's control plane asynchronous updates at step boundaries
+% without needing to block. And on-fabric broadcast tree enables faster broadcast vs central
+% controller.
+
+% % Mycroft explicitly says that they don't currently scale to 10k+ GPUs Their eval is for 32 GPUs,
+% % deployments at 128 GPUs or so Mycroft~\cite{Deng2025:Mycroft} uses fine-grained NCCL telemetry
+% buffered locally and flushed to Kafka if heuristics trigger, but notes the scalability limits of
+% central logging. ORCA's tree-based overlay enables scaling out.
+
+% TrainCheck studies enforcing correctness in ML training via invariants. They use offline trace
+% analysis for invariant generation, and online enforcement. ORCA emits timestep-aligned and
+% partitioned Parquet, accelerating both offline analysis for invariant generation and in-situ
+% enforcement.
+
+% Holmes implements a graph search to analyze collective telemetry for anomalies. ORCA aligns
+% collected dataframes, enabling simple GROUPBY's to identify stragglers.
+
+% Reveal uses unsupervised learning on time-windowed metrics: ORCA can collect both metrics and
+% trace events, but the latter is the source of truth.
+
+% Minder and Aegis use cluster-level metrics and counters to identify faulty hardware. While these
+% approaches are probalistic, they are more suited at cloud provider/infra level where workloads
+% must be treated as black boxes. ORCA enables high-fidelity visibility into a single workload, but
+% does not yet enable cross-workload visibility in multi-tenant environments.
+
+
 
 % Arrays point: abandoned More broadly, scientific computing's array-native ecosystems
 % (xarray~\cite{Hoyer2017:xarray}, Zarr~\cite{:Zarr}, HDF5~\cite{Folk2011:HDF5}) and relational
@@ -260,6 +313,11 @@ observability to checkpoint indexing to scientific queries.
 % enable caching Parquet metadata to speed up subsequent queries without custom solutions.
 
 
-% % ML Papers: % Aegis (Alibaba): no access to source code, instrument CCL % - Pull local stats if
-% timeout detected (timeout ~ only fail-slow) % - If collectives started == n, it's a communication
-% failure. If it's n - 1, it's a compute failure.
+% % ML Papers: 
+
+% Aegis (Alibaba): no access to source code, instrument CCL % - Pull local stats if timeout detected
+% (timeout ~ only fail-slow) % - If collectives started == n, it's a communication failure. If it's
+% n - 1, it's a compute failure.
+
+% Mycroft: fairly ORCA-shaped - Local logs/circular buffers of intra-collective events (fine-grained
+% intra-NCCL flows) - Sampling based trigger: hoping it will catch stalls (only 10 ranks)
