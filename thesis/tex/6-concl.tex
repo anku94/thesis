@@ -48,6 +48,11 @@ either tier at runtime.
 Second, unlike ADIOS-style offload as a peer MPI job~\cite{Eisen2024:ADIOS}, ORCA's analytics tier
 is fully asynchronous while still preserving timestep-consistent semantics.
 
+We conclude this thesis by recapping the steerable observability paradigm and its limits
+(\S\ref{sec:concl:retrospective}), synthesizing broader lessons for scientific data management
+from CARP and ORCA (\S\ref{sec:concl:olap}), describing extensions within immediate reach
+(\S\ref{sec:concl:extensions}), and outlining longer-term directions (\S\ref{sec:concl:future}).
+
 % ORCA realizes a programmable tree-based overlay for in-situ analytics using OLAP primitives such
 % as columnar formats, SQL planning, and embeddable query engines. Compared with prior in-situ HPC
 % systems, ORCA differs in two ways. First, it enables a hybrid execution model. Instead of
@@ -60,10 +65,6 @@ is fully asynchronous while still preserving timestep-consistent semantics.
 % The rest of this chapter reflects on this design point (\S\ref{sec:concl:retrospective}),
 % describes extensions within immediate reach (\S\ref{sec:concl:extensions}), and outlines
 % longer-term directions (\S\ref{sec:concl:future}).
-
-We conclude this thesis by recapping the steerable observability paradigm and its limits
-(\S\ref{sec:concl:retrospective}), describing extensions within immediate reach
-(\S\ref{sec:concl:extensions}), and outlining longer-term directions (\S\ref{sec:concl:future}).
 
 \section{Steerable Observability: Retrospective and Synthesis}\label{sec:concl:retrospective}
 
@@ -111,6 +112,8 @@ microservices.
 ORCA extends this to BSP workloads, adding a
 control plane for steerability.
 
+
+
 \paragraph{Steerability Limits}
 Feedback-driven mechanisms have an inherent latency floor: collection, reduction, and transport
 take physical time.
@@ -123,6 +126,145 @@ When conditions are too transient for online intervention, ORCA's in-situ reduct
 their structure more efficiently than any post-hoc approach, providing the empirical basis for
 developing predictive strategies that anticipate rather than react~\cite{Smith1957:Predict}.
 
+
+\section{OLAP Lessons for Scientific Data Management}\label{sec:concl:olap}
+
+\paragraph{Why HPC Ingestion Is Filesystem-Centric}
+HPC applications write to parallel filesystems~\cite{Braam2002:Lustre,Schmu2002:GPFS,:VDURA,2025:VASTAI,:WekaIO,:Hammerspace} and object
+stores~\cite{Liang2020:DAOS} designed to
+absorb synchronized bursts of data from tens of thousands of ranks, instead of databases.
+% % Why do HPC and OLAP get along so well?% What does it imply for the future of scientific data?%
+% What is ingestion?% What is ingestion?
+Workflows may additionally interpose intermediate staging tiers~\cite{Liu2012:RoleBurstBuffers}.
+While data management techniques such as partitioning are deeply relevant,
+they must be realized as in-situ streaming pipelines that reorganize data while minimizing
+ingestion overhead, terminating in files and objects.
+The finite nature of HPC jobs, along with the heterogenous and application-specific nature of
+scientific data formats, resists monolithic databases.
+
+
+% HPC applications write to parallel filesystems. Lustre, DAOS, WekaFS, and similar systems are
+% co-designed to absorb synchronized write bursts from thousands of ranks. Staging workflows may
+% interpose burst buffers, but the endpoint is always a filesystem. Every application generates
+% different data types under different schemas, and workloads are transient. A monolithic database
+% that owns the entire data lifecycle is the wrong shape for this environment. If you want streaming
+% analytics for BSP, the primitive is in-situ reduction materializing results into this existing
+% storage stack, not ingestion into a centralized store.
+
+\paragraph{Open Table Formats Decouple Ingestion from Analytics}
+Modern analytics systems increasingly decouple query engines from storage.
+Open table formats such as Iceberg~\cite{:Iceberg} and Delta Lake~\cite{Armbr2020:Deltalake} maintain a
+lightweight catalog over partitioned
+columnar files or objects.
+Query engines attach at read time and use this catalog for pruning, pushdown, and lazy evaluation.
+CARP and ORCA converge on the same pattern.
+CARP range-partitions particle data into contiguous key and value blocks with metadata as a
+separate manifest, structurally identical to Parquet~\cite{:ApacheParquet} and Iceberg.
+ORCA writes trace data as timestep-partitioned Parquet but does not currently generate a catalog.
+Open table formats are immediately applicable to other forms of scientific data, insofar as they
+fit the
+relational model.
+
+% Modern analytics trends mirror this decoupling of query engines from storage. Open table formats
+% like Iceberg and Delta Lake maintain a lightweight catalog over partitioned columnar files or
+% objects. Query engines attach at read time and leverage the catalog for pushdown, pruning, and
+% lazy evaluation. CARP and ORCA independently converge on this pattern. CARP range-partitions
+% particle data into a custom format comprising contiguous key and value blocks, with metadata as a
+% separate manifest --- structurally identical to Parquet and Iceberg. ORCA writes trace data as
+% timestep-partitioned Parquet, but does not currently generate a catalog. This pattern is
+% immediately applicable to other forms of scientific data, insofar as it fits the relational model.
+
+\paragraph{Challenges for Scientific Catalog Formats}
+Scientific data formats extend beyond the relational model.
+While particle data and telemetry streams map cleanly to tables, other simulation paradigms write
+multidimensional arrays and custom metadata via formats like HDF5~\cite{Folk2011:HDF5},
+netCDF~\cite{:NetCDF},
+Zarr~\cite{:Zarr}, and XDMF~\cite{Clark2007:XDMFE}.
+Among these, Zarr is closest to a catalog-backed layout, having evolved for GIS data stored in
+cloud
+object stores.
+Its metadata enables index-based pruning,
+but it lacks value-level statistics for filter predicates.
+arrow-zarr~\cite{2026:arrow-zarr} is an early attempt to bridge Zarr and Arrow~\cite{:ApacheArrow}.
+Despite these gaps, simulation structure already aligns with the broader pattern: problem
+decomposition
+intrinsically partitions state in many codes, and the main task is to preserve that partitioning
+through I/O and
+capture it in a catalog.
+On the analytics side, such catalogs would enable query engine-based access to scientific data,
+extending the benefits of pushdown, pruning, and planning beyond relational workloads.
+DataFusion's~\cite{Lamb2024:DataFusion} extensibility makes this a viable path.
+
+% Not all scientific data is tabular. Particle data and telemetry streams map cleanly to the
+% relational model, but other simulation paradigms write multidimensional arrays and custom metadata
+% via formats like HDF5, netCDF, Zarr, XDMF etc. Zarr is the closet to a catalog format, as it
+% volved for GIS data stored in cloud. It stores statistics for enabling index-based pushdowns, but
+% not value-based statistics like Iceberg to enable filter predicates. arrow-zarr is an early
+% attempt to bridge Zarr and Arrow. But the structure of simulations aligns: problems are already
+% partitioned because of decomposition, we just need to preserve it in the I/O and capture a
+% snapshot in the catalog. On the analytics front, catalogs can enable interacting with this data
+% via query engine-based approaches can extending the benefits of pushdowns, pruning, and planning
+% to scientific data. DataFusion makes extension viable.
+
+% meshes, AMR hierarchies, and irregular tensors need richer logical schemas. A scientific catalog
+% must encode array semantics: shapes, coordinates, topology, neighborhood relations, and indexing
+% structures that enable domain-aware pruning across dimensions like spatial extent, block ID, AMR
+% level, or timestep. The append-mostly nature of simulation output simplifies consistency, but
+% atomic commits across many ranks and timesteps, manifest scaling under synchronized parallel
+% writes, and small-file pressure on parallel filesystem metadata services are real engineering
+% challenges. Zarr and arrow-zarr represent early movement in this direction from the GIS community,
+% offering an array-native format closer to Iceberg than HDF5 in its design assumptions.
+
+% \paragraph{ORCA as Scientific Data Infrastructure} ORCA's tree-based overlay is naturally
+% positioned to synthesize catalogs during collection. As data flows through the TBON, reductions
+% can generate partition statistics and catalog metadata alongside the data itself. The relational
+% algebra currently implemented via DataFusion handles tabular telemetry and particle data. But
+% DataFusion is extensible. Building a library of scientific kernels and providers for array and
+% mesh data would bring the same lazy-query-with-pushdown ecosystem to a broader class of scientific
+% datasets. Combined with CARP-style intra-tier shuffles composed as operators in the same query
+% plan and scheduled phase-aware to avoid interference, this points toward a unified analytics
+% substrate for scientific data: a system where you point at data on a parallel filesystem and write
+% query plans, and the system handles placement, pushdown, and execution.
+
+% Is ingestion writing to ClickHouse? No.
+
+% HPC applications write to parallel filesystems. Lustre, DAOS, pNFS, WekaFS, Hammerspace. Burst
+% buffers and staging workflows may be included. These are designed for the paradigm. Parallel
+% filesystems are co-designed and sized to handle synchronized bursts. Workflows may need complex
+% staging: write to burst buffers then drain to filesystems. Every application generates different
+% datatypes. As a result it is not practical to have a database.
+
+% Ingestion has traditionally been via different scientific formats like HDF5 or XDMF. Coupled with
+% MPI-IO. People are increasingly finding out that Parquet is suitable for at least certain types of
+% data. Particle data tracks fixed entities with properties: something that fits the relational
+% model. Meshes and unstructured stuff is more complicated.
+
+% We keep stumbling upon similar findings. CARP generated a Parquet-like format + a catalog. If you
+% squint, it looks like Iceberg. ORCA generates partitioned Parquet. Iceberg is a natural stepping
+% stone, although currently not implemented. As object store interfaces become more common, open
+% table formats like this are a natural step forward. Maybe HDF5 can be expressed as Parquet +
+% metadata. Maybe not.
+
+% How does this compare to a database as a monolithic entity? IMO this is a decoupling of the ingest
+% and the query sides. DeltaFS and CARP implement in-situ transforms but ultimately generate a bunch
+% of per-rank logs + an object file. Insofar as data fits Iceberg, this is excellent. Query-side
+% concerns are pretty simple as data is not mutated once written. You only need query plans to
+% accelerate reads on arrays and all. Xarray is relevant here.
+
+% The question then arises: what is the end goal of scientific data? IMO decoupled catalogs are
+% still a natural fit. Each rank already emits a partitioned version of the entire dataset, because
+% problem decomposition creates partitioning. You just need to capture the metadata into a catalog.
+% HDF5 can plausibly be represented as Parquet + metadata. After all it's just contiguous arrays.
+% That metadata doesn't necessary need to be Iceberg.
+
+% The opportunity this opens up is more universal query engines that can pushdown scans and all for
+% different analytics.
+
+% ORCA is naturally in the middle of this. The TBON enables catalogs to be synthesized along with
+% catalogs. Currently it implements a relational algebra with DataFusion. Works well out of the box
+% for relational data. But this toolkit is very extensible. Can build a library of kernels and
+% providers for a scientific catalog. As we do that, complex workflows get easier and easier. ORCA
+% combined with CARP can be a unified Kafka + Flink + Spark for scientific data.
 
 \section{Immediate Extensions}\label{sec:concl:extensions}
 
