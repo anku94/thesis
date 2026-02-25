@@ -1,7 +1,7 @@
 \documentclass[border=10pt]{standalone}
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, fit, positioning, calc}
+\usetikzlibrary{arrows.meta, fit, positioning, calc, shapes.symbols}
 \usepackage{twemojis}
 
 % \input{motifs}
@@ -48,6 +48,9 @@
   \pic (pfs) at (0,-9.5) {pfs};
   \node[below=0.3cm of pfs-south, font=\sffamily\small] {pfs};
 
+  \pic (pfs2) at (6,-9.5) {pfs2};
+  \node[below=0.3cm of pfs2-south, font=\sffamily\small] {pfs2};
+
   % --- Staging ---
   \pic (op) at (12.5,-3) {operator};
   \node[below=0.3cm of op-south, font=\sffamily\small] {operator};
@@ -78,6 +81,25 @@
 
   \pic (jf) at (14.5,-6) {jsonfile};
   \node[below=0.3cm of jf-bounds.south, font=\sffamily\small] {jsonfile};
+
+  \pic (rl) at (12,-9.5) {ranklog};
+  \node[below=0.3cm of rl-south, font=\sffamily\small] {ranklog};
+\end{tikzpicture}
+
+% ============================================================
+%  Composition: ranklogs + pfs2
+% ============================================================
+\begin{tikzpicture}
+  \pgfmathsetmacro{\xdel}{0.7}
+  \pgfmathsetmacro{\ydel}{-0.1}
+  \foreach \i in {1,2,3,4} {
+    \pgfmathsetmacro{\x}{\xdel * (\i - 1)}
+    \pgfmathsetmacro{\y}{\ydel * (\i - 1)}
+    \pic (rl\i) at (\x, \y) {ranklog};
+  }
+
+  % pfs2 at bottom
+  \pic (pfs) at (2.7, -1.8) {pfs2};
 \end{tikzpicture}
 
 \end{document}

@@ -5,12 +5,7 @@
 \pgfdeclarelayer{deepbackground}
 \pgfsetlayers{deepbackground,background,main}
 
-% === Color Palette ===
-\definecolor{carpcolor}{HTML}{FDF6E3}    % cream/beige for CARP container
-\definecolor{shufcolor}{HTML}{B8D4E3}    % blue-teal for shuffle sender
-\definecolor{appcolor}{HTML}{FEF9E7}     % light yellow for app-related
-\definecolor{trigcolor}{HTML}{C8E6C9}    % light green for triggers
-\definecolor{innercolor}{gray}{0.95}     % light gray for inner nodes
+\input{carp-common.tex}
 
 \begin{document}
 
@@ -129,7 +124,7 @@
     \draw[renegline] (0, -0.5) -- (0.8, -0.5);
   \end{scope}
   \begin{scope}[on background layer]
-    \node[draw=black!60, rounded corners=3pt, fill=shufcolor!30, fit=(legend), inner xsep=4pt,inner ysep=2pt] (legend-box) {};
+    \node[draw=black!60, rounded corners=3pt, fill=nord6, fit=(legend), inner xsep=4pt,inner ysep=2pt] (legend-box) {};
   \end{scope}
   \begin{pgfonlayer}{deepbackground}
     \node[draw=black!60, rounded corners=3pt, fill=carpcolor, fit=(buffer-write)(legend-box)(write-intercepted)(oob-full), inner sep=2pt] {};

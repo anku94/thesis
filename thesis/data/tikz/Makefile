@@ -2,13 +2,13 @@
 # Builds all standalone .tex files to pdf/
 
 # Exclude non-standalone files
-EXCLUDE := motifs.tex assets.tex
+EXCLUDE := motifs.tex assets.tex carp-common.tex nordcolors.tex
 SOURCES := $(filter-out $(EXCLUDE),$(wildcard *.tex))
 PDFS := $(patsubst %.tex,pdf/%.pdf,$(SOURCES))
 
 .PHONY: all clean tidy
 
-all: pdf $(PDFS)
+all: tidy pdf $(PDFS)
 
 pdf:
 	mkdir -p pdf

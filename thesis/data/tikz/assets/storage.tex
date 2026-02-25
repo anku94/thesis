@@ -1,9 +1,13 @@
+% Layer for pic backgrounds (avoids conflict with document's background layer)
+\pgfdeclarelayer{picbackground}
+\pgfsetlayers{picbackground,main}
+
 % ASSET: storage (single disk / storage target)
 \tikzset{
   pics/storage/.style args={#1}{
     code={
       % Body fill
-      \fill[blue!6]
+      \fill[pqcolor!10]
         (-0.4,0.25) -- (-0.4,-0.25)
         arc (180:360:0.4 and 0.12)
         -- (0.4,0.25)
@@ -14,7 +18,7 @@
       % Bottom ellipse (front half)
       \draw[thick] (-0.4,-0.25) arc (180:360:0.4 and 0.12);
       % Top ellipse (full, filled)
-      \draw[thick, fill=blue!12] (0,0.25) ellipse (0.4 and 0.12);
+      \draw[thick, fill=pqcolor!20] (0,0.25) ellipse (0.4 and 0.12);
       % Label
       \node[anchor=center, font=\sffamily\scriptsize, inner sep=0pt] at (0,0) {#1};
       % Anchors
@@ -26,4 +30,84 @@
     }
   },
   pics/storage/.default={}
+}
+
+% ASSET: pfs (parallel filesystem = storage targets + namespace band)
+\tikzset{
+  pics/pfs/.style={
+    code={
+      % -- Storage targets in a row --
+      \pic (-s0) at (-1.5, 0) {storage};
+      \pic (-s1) at (-0.5, 0) {storage};
+      \pic (-s2) at ( 0.5, 0) {storage};
+      \pic (-s3) at ( 1.5, 0) {storage};
+      % -- Namespace / metadata band on top --
+      \draw[thick, fill=nord9!15]
+        (-2.1, 0.52) rectangle (2.1, 0.72);
+      \draw[thin, nord9!50] (-2.1, 0.62) -- (2.1, 0.62);
+      % -- Stubs from band down to storage tops --
+      \foreach \sx in {-1.5,-0.5,0.5,1.5} {
+        \draw[semithick, nord9!50] (\sx, 0.52) -- (\sx, 0.37);
+      }
+      % -- Anchors --
+      \coordinate (-north)  at ( 0,   0.72);
+      \coordinate (-south)  at ( 0,  -0.37);
+      \coordinate (-east)   at ( 2.1,  0.18);
+      \coordinate (-west)   at (-2.1,  0.18);
+      \coordinate (-center) at ( 0,    0.18);
+    }
+  }
+}
+
+% ASSET: pfs2 (storage targets + bounding box, no band)
+\tikzset{
+  pics/pfs2/.style={
+    code={
+      % -- Storage targets in a row --
+      \begin{scope}[local bounding box=-cyls]
+        \pic (-s0) at (-1.5, 0) {storage};
+        \pic (-s1) at (-0.5, 0) {storage};
+        \pic (-s2) at ( 0.5, 0) {storage};
+        \pic (-s3) at ( 1.5, 0) {storage};
+      \end{scope}
+      % -- Bounding box fitted to cylinders --
+      \begin{pgfonlayer}{picbackground}
+        \node[draw, densely dotted, thick, rounded corners=3pt, fill=white,
+              fit=(-cyls), inner sep=4pt] (-box) {};
+      \end{pgfonlayer}
+      % -- Anchors --
+      \coordinate (-north)  at (-box.north);
+      \coordinate (-south)  at (-box.south);
+      \coordinate (-east)   at (-box.east);
+      \coordinate (-west)   at (-box.west);
+      \coordinate (-center) at (-box.center);
+    }
+  }
+}
+
+% ASSET: ranklog (tape-bend style log/partition)
+\tikzset{
+  pics/ranklog/.style={
+    code={
+      \fill[draw=black, thick, fill=pqcolor!30] (0, 0) -- (2.5, 0)
+        .. controls (1.9, -0.05) and (1.8, -0.29) .. (2.5, -0.29)
+        .. controls (3.6, -0.36) and (3.6, -0.6) .. (2.5, -0.6)
+        -- (0, -0.6) -- cycle;
+
+      % Anchors
+      \coordinate (-north) at (1.66, 0);
+      \coordinate (-south) at (1.66, -0.6);
+      \coordinate (-east) at (3.33, -0.3);
+      \coordinate (-west) at (0, -0.3);
+      \coordinate (-center) at (1.66, -0.3);
+
+      % Debug: show anchors
+      \ifdebugassets
+        \foreach \a/\pos in {north/above,south/below,east/right,west/left,center/above} {
+          \fill[red] (-\a) circle[radius=1.5pt];
+          \node[font=\tiny,red,\pos,inner sep=1pt] at (-\a) {\a};
+        }
+      \fi
+    }
+  }
 }

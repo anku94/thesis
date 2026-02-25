@@ -17,6 +17,9 @@
 
 \input{assets}
 
+% Merge layers: picbackground (from assets) + original layers
+\pgfsetlayers{deepestbackground,deepbackground,picbackground,background,main}
+
 % -- userblock pic --
 \tikzset{
   pics/userblock/.style={

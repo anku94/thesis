@@ -1,0 +1,79 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usetikzlibrary{calc,arrows.meta}
+
+% Reusable pic with exported anchors.
+% Read as: "cd to /tikz/module namespace"
+% "width param is to be stored in \modwidth"
+% "its default is 2.4"
+% "its complete path is /tikz/module/width"
+\tikzset{
+  module/.cd,
+  width/.store in=\modwidth,
+  height/.store in=\modheight,
+  label/.store in=\modlabel,
+  width=2.4,
+  height=1.4,
+  label=Module,
+}
+
+\tikzset{
+  pics/module/.style args={#1}{
+    code={
+      \tikzset{module/.cd,#1}
+      \pgfmathsetmacro{\halfw}{0.5*\modwidth}
+      \pgfmathsetmacro{\halfh}{0.5*\modheight}
+
+      % Explicit bbox keeps exported anchors stable.
+      \path[pic actions] (-\halfw,-\halfh) rectangle (\halfw,\halfh);
+
+      % Body and simple internals to mimic a complex pic.
+      \draw[pic actions,rounded corners=2pt] (-\halfw,-\halfh) rectangle (\halfw,\halfh);
+      \draw[pic actions] (-\halfw,0) -- (\halfw,0);
+      \draw[pic actions] (0,-\halfh) -- (0,\halfh);
+      \node[pic actions,font=\sffamily\small] at (0,0) {\modlabel};
+
+      % Export anchors/ports as pic-local names; named pics expose A-west, A-in, etc.
+      \coordinate (-west) at (-\halfw,0);
+      \coordinate (-east) at (\halfw,0);
+      \coordinate (-north) at (0,\halfh);
+      \coordinate (-south) at (0,-\halfh);
+      \coordinate (-in) at (-0.75*\halfw,0.25*\halfh);
+      \coordinate (-out) at (0.75*\halfw,-0.25*\halfh);
+      \fill[pic actions] (-in) circle[radius=1.1pt];
+      \fill[pic actions] (-out) circle[radius=1.1pt];
+    }
+  }
+}
+
+% Place a pic by matching one exported anchor to a target coordinate.
+% Optional #1 transform options are applied to both measurement and final draw.
+\newcommand{\PlacePicByAnchor}[5][]{%
+  \pgfinterruptboundingbox
+  \begin{scope}[opacity=0,#1]
+    \pic[name=#3-meas] at (0,0) {#2};
+  \end{scope}
+  \endpgfinterruptboundingbox
+  \path let \p1=(#4), \p2=(#3-meas-#5) in
+    coordinate (#3-shift) at (\x1-\x2,\y1-\y2);
+  \begin{scope}[shift={(#3-shift)},#1]
+    \pic[name=#3] at (0,0) {#2};
+  \end{scope}
+}
+
+\begin{document}
+\begin{tikzpicture}[>=Stealth,thick]
+  % Reference pic.
+  \pic[name=A] at (0,0) {module={label=A,width=3.0,height=1.8}};
+
+  % Place B so B-west aligns with A-east.
+  \PlacePicByAnchor{module={label=B,width=2.2,height=1.2}}{B}{A-east}{west}
+
+  % Place C so C-north aligns with A-south under a transform.
+  \PlacePicByAnchor[rotate=8]{module={label=C,width=2.6,height=1.5}}{C}{A-south}{north}
+
+  % Wiring proves exported anchors/ports are usable after placement.
+  \draw[->] (A-out) -- (B-in);
+  \draw[->] (A-west) -- (C-east);
+  \draw[->] (B-south) -- (C-north);
+\end{tikzpicture}
+\end{document}

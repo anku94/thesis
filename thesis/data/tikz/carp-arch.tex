@@ -1,0 +1,99 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,backgrounds,calc,arrows.meta}
+
+\input{carp-common.tex}
+\input{assets}
+
+% Merge layers: picbackground (from assets), background (from backgrounds lib), main
+\pgfsetlayers{picbackground,background,main}
+
+\begin{document}
+
+
+% === Styles ===
+\tikzset{
+  ioarrow/.style={-{Stealth}},
+  box/.style={
+    draw,
+    text width=1.8cm,
+    align=center,
+    minimum height=0.7cm,
+    font=\sffamily\small,
+  },
+  appbox/.style={box, fill=white},
+  carpbox/.style={box, fill=carpcolor},
+  shufflebox/.style={box, fill=shufcolor},
+  rankbox/.style={draw, rounded corners=5pt, fill=rankcolor, inner sep=6pt},
+  pics/storagebox/.style={code={
+    % Ranklogs (cascading)
+    \pgfmathsetmacro{\xdel}{0.7}
+    \pgfmathsetmacro{\ydel}{-0.1}
+    \foreach \i in {1,2,3,4} {
+      \pgfmathsetmacro{\x}{\xdel * (\i - 1)}
+      \pgfmathsetmacro{\y}{\ydel * (\i - 1)}
+      \pic (-rl\i) at (\x, \y) {ranklog};
+    }
+    \node[right=0.3cm of -rl4-east, font=\sffamily\bfseries] (-lbl-logs) {Per-rank Logs};
+
+    % PFS at bottom
+    \pic (-pfs) at (2.7, -1.8) {pfs2};
+    \node[anchor=west, font=\sffamily\bfseries] at (-lbl-logs.west |- -pfs-east) {Parallel Filesystem};
+
+    % Anchors
+    \coordinate (-south) at (-pfs-south);
+    \coordinate (-north) at (-rl1-north -| -south);
+    \coordinate (-center) at ($(-north)!0.5!(-south)$);
+
+    % Debug: show anchors
+    \ifdebugassets
+      \foreach \a/\pos in {north/above,south/below,center/right} {
+        \fill[red] (-\a) circle[radius=1.5pt];
+        \node[font=\tiny,red,\pos,inner sep=1pt] at (-\a) {\a};
+      }
+    \fi
+  }},
+  pics/rank/.style={code={
+    \node[appbox] (-app) {App I/O};
+    \node[above=0.0cm of -app.north west, anchor=south west, font=\sffamily\small\bfseries] (-lbl) {Rank #1};
+    \node[carpbox, below=0 of -app] (-carp) {CARP};
+    \node[shufflebox, below=0 of -carp] (-snd) {Shuffle Sender};
+    \node[shufflebox, below=1.0cm of -snd] (-rcv) {Shuffle Receiver};
+    \node[carpbox, below=0 of -rcv] (-koi) {KoiDB};
+    \begin{scope}[on background layer]
+      \node[rankbox, fit=(-lbl)(-koi)] (-bg) {};
+    \end{scope}
+  }},
+}
+
+\begin{tikzpicture}
+  \pic (r1) {rank=1};
+  \pic (r2) at (2.8,0) {rank=2};
+  \pic (r3) at (5.6,0) {rank=3};
+  \pic (rN) at (8.8,0) {rank=N};
+
+  % Ellipsis between rank 3 and N
+  \node at ($(r3-app)!0.5!(rN-app)$) {\dots};
+
+  % All-to-All Shuffler bar
+  \coordinate (shuf-l) at ($(r1-snd.south west)!0.5!(r1-rcv.north west)$);
+  \coordinate (shuf-r) at ($(rN-snd.south east)!0.5!(rN-rcv.north east)$);
+  \node[font=\sffamily\small] (shuf-txt) at ($(shuf-l)!0.5!(shuf-r)$) {All-to-All Shuffler};
+  \begin{scope}[on background layer]
+    \node[draw, rounded corners=2pt, fill=shufcolor, inner sep=0,
+          fit=(shuf-l)(shuf-r)(shuf-txt)] {};
+  \end{scope}
+
+  % storage box
+  \coordinate (storage-origin) at ($(r1-koi.south)!0.5!(rN-koi.south) + (0,-1)$);
+  \PlacePicByAnchor{storagebox}{stg}{storage-origin}{north}
+
+  % Arrows from KoiDB to ranklogs
+  \draw[ioarrow] (r1-koi.south) -- (stg-rl1-north);
+  \draw[ioarrow] (r2-koi.south) -- (stg-rl2-north);
+  \draw[ioarrow] (r3-koi.south) -- (stg-rl3-north);
+  \draw[ioarrow] (rN-koi.south) -- (stg-rl4-north);
+
+\end{tikzpicture}
+
+\end{document}
