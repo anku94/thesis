@@ -14,7 +14,7 @@
   % Query arrow
   qarrow/.style={-{Stealth}, thick, shorten <=0.3cm, shorten >=0.3cm},
   % Query annotation (red highlights and merge lines)
-  qannot/.style={nord11, line width=1.8pt},
+  qannot/.style={nord11, line width=1.4pt},
   % SSTable cell
   sstable/.style={
     draw,
@@ -194,7 +194,7 @@
   \end{scope}
 
   % Merging arrows from highlighted SSTables to sst-north
-  \coordinate (junction) at ($(b1-north)!0.5!(b2-north) + (0,-1.4cm)$);
+  \coordinate (junction) at ($(b1-north)!0.5!(b2-north) + (0,-2.6cm)$);
   \coordinate (ctrl) at ([yshift=-1cm]junction);
   \draw[qannot, rounded corners=3pt] (b1-c1.east) -| (junction);
   \draw[qannot, rounded corners=3pt] (b1-c3.east) -| (junction);
