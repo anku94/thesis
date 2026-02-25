@@ -2,7 +2,7 @@
 # Builds all standalone .tex files to pdf/
 
 # Exclude non-standalone files
-EXCLUDE := motifs.tex assets.tex carp-common.tex nordcolors.tex
+EXCLUDE := motifs.tex assets.tex
 SOURCES := $(filter-out $(EXCLUDE),$(wildcard *.tex))
 PDFS := $(patsubst %.tex,pdf/%.pdf,$(SOURCES))
 

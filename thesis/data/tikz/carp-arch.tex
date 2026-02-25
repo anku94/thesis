@@ -2,7 +2,6 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,fit,backgrounds,calc,arrows.meta}
 
-\input{carp-common.tex}
 \input{assets}
 
 % Merge layers: picbackground (from assets), background (from backgrounds lib), main
@@ -21,10 +20,10 @@
     minimum height=0.7cm,
     font=\sffamily\small,
   },
-  appbox/.style={box, fill=white},
-  carpbox/.style={box, fill=carpcolor},
-  shufflebox/.style={box, fill=shufcolor},
-  rankbox/.style={draw, rounded corners=5pt, fill=rankcolor, inner sep=6pt},
+  appbox/.style={box, fill=carp0app},
+  carpbox/.style={box, fill=carp0carp},
+  shufflebox/.style={box, fill=carp0shuf},
+  rankbox/.style={draw, rounded corners=5pt, fill=carp0rank, inner sep=6pt},
   pics/storagebox/.style={code={
     % Ranklogs (cascading)
     \pgfmathsetmacro{\xdel}{0.7}
@@ -80,7 +79,7 @@
   \coordinate (shuf-r) at ($(rN-snd.south east)!0.5!(rN-rcv.north east)$);
   \node[font=\sffamily\small] (shuf-txt) at ($(shuf-l)!0.5!(shuf-r)$) {All-to-All Shuffler};
   \begin{scope}[on background layer]
-    \node[draw, rounded corners=2pt, fill=shufcolor, inner sep=0,
+    \node[draw, rounded corners=2pt, fill=carp0shuf, inner sep=0,
           fit=(shuf-l)(shuf-r)(shuf-txt)] {};
   \end{scope}
 

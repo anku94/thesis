@@ -5,7 +5,10 @@
 \pgfdeclarelayer{deepbackground}
 \pgfsetlayers{deepbackground,background,main}
 
-\input{carp-common.tex}
+\input{assets}
+
+% Merge layers
+\pgfsetlayers{picbackground,deepbackground,background,main}
 
 \begin{document}
 
@@ -21,15 +24,15 @@
       font=\sffamily\small, align=center,
       aspect=2,
       inner sep=1pt,
-      fill=innercolor
+      fill=carp0inner
     },
-    action/.style={ box, fill=innercolor },
-    trigger/.style={ decision, fill=trigcolor },
-    trigger-alt/.style={ decision, fill=trigcolor },
-    appbox/.style={ box, fill=appcolor },
-    process/.style={ box, fill=innercolor },
+    action/.style={ box, fill=carp0inner },
+    trigger/.style={ decision, fill=carp0trig },
+    trigger-alt/.style={ decision, fill=carp0trig },
+    appbox/.style={ box, fill=carp0app },
+    process/.style={ box, fill=carp0inner },
     external/.style={ box, fill=white },
-    shuffle/.style={ box, fill=shufcolor },
+    shuffle/.style={ box, fill=carp0shuf },
     label-only/.style={ font=\sffamily\small\itshape },
     % Line styles
     ccaseline/.style={ -{Stealth}, thick },
@@ -127,7 +130,7 @@
     \node[draw=black!60, rounded corners=3pt, fill=nord6, fit=(legend), inner xsep=4pt,inner ysep=2pt] (legend-box) {};
   \end{scope}
   \begin{pgfonlayer}{deepbackground}
-    \node[draw=black!60, rounded corners=3pt, fill=carpcolor, fit=(buffer-write)(legend-box)(write-intercepted)(oob-full), inner sep=2pt] {};
+    \node[draw=black!60, rounded corners=3pt, fill=carp0carp, fit=(buffer-write)(legend-box)(write-intercepted)(oob-full), inner sep=2pt] {};
   \end{pgfonlayer}
 
 \end{tikzpicture}

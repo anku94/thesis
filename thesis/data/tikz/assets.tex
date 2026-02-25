@@ -5,7 +5,31 @@
 % Requires: tikz, arrows.meta, positioning, calc
 
 % === Nord Palette ===
-\input{nordcolors.tex}
+% https://www.nordtheme.com/docs/colors-and-palettes
+
+% --- Polar Night (dark backgrounds) ---
+\definecolor{nord0}{HTML}{2E3440}   % #2E3440
+\definecolor{nord1}{HTML}{3B4252}   % #3B4252
+\definecolor{nord2}{HTML}{434C5E}   % #434C5E
+\definecolor{nord3}{HTML}{4C566A}   % #4C566A
+
+% --- Snow Storm (light backgrounds/text) ---
+\definecolor{nord4}{HTML}{D8DEE9}   % #D8DEE9
+\definecolor{nord5}{HTML}{E5E9F0}   % #E5E9F0
+\definecolor{nord6}{HTML}{ECEFF4}   % #ECEFF4
+
+% --- Frost (primary accents - blues/cyans) ---
+\definecolor{nord7}{HTML}{8FBCBB}   % #8FBCBB
+\definecolor{nord8}{HTML}{88C0D0}   % #88C0D0
+\definecolor{nord9}{HTML}{81A1C1}   % #81A1C1
+\definecolor{nord10}{HTML}{5E81AC}  % #5E81AC
+
+% --- Aurora (secondary accents) ---
+\definecolor{nord11}{HTML}{BF616A}  % #BF616A red
+\definecolor{nord12}{HTML}{D08770}  % #D08770 orange
+\definecolor{nord13}{HTML}{EBCB8B}  % #EBCB8B yellow
+\definecolor{nord14}{HTML}{A3BE8C}  % #A3BE8C green
+\definecolor{nord15}{HTML}{B48EAD}  % #B48EAD purple
 
 % === Semantic Colors (from Nord) ===
 \colorlet{ctlcolor}{nord10}   % Steel blue
@@ -13,6 +37,14 @@
 \colorlet{mpicolor}{nord12}   % Coral/salmon
 \colorlet{pqcolor}{nord15}    % Muted purple (for parquet)
 \colorlet{flowcolor}{nord14}  % Dusty green
+
+% === CARP Colors (carp0<name>) ===
+\colorlet{carp0app}{white}
+\colorlet{carp0carp}{nord13!25!white}
+\colorlet{carp0shuf}{nord12!25!white}
+\colorlet{carp0rank}{nord5!50!white}
+\colorlet{carp0trig}{nord14!50!white}
+\colorlet{carp0inner}{nord9!25!white}
 
 % === Debug Mode ===
 % Enable with: \tikzset{debug assets} or \begin{tikzpicture}[debug assets]
