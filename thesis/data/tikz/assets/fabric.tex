@@ -1,23 +1,29 @@
 % ASSET: fabric (network interconnect)
+% Usage: \pic {fabric=<half-width>};  e.g., fabric=1.8 gives width 3.6
 \tikzset{
-  pics/fabric/.style={
+  pics/fabric/.style args={#1}{
     code={
-      % Band
-      \draw[thick, draw=orange!50, fill=orange!15]
-        (-1.8,-0.18) rectangle (1.8, 0.18);
-      % Horizontal traces
-      \draw[thin, orange!50] (-1.8, 0.06) -- (1.8, 0.06);
-      \draw[thin, orange!50] (-1.8,-0.06) -- (1.8,-0.06);
-      % Vertical ticks (switch crosspoints)
-      \foreach \x in {-1.4,-1.0,-0.6,-0.2,0.2,0.6,1.0,1.4} {
-        \draw[thin, orange!50] (\x,-0.18) -- (\x,0.18);
-      }
-      % Anchors
-      \coordinate (-west)   at (-1.8, 0);
-      \coordinate (-east)   at ( 1.8, 0);
-      \coordinate (-north)  at ( 0, 0.18);
-      \coordinate (-south)  at ( 0,-0.18);
-      \coordinate (-center) at ( 0, 0);
+      \def\hw{#1}
+      \colorlet{fabclr}{nord2}
+      \begin{scope}[local bounding box=-bbox]
+        % Band
+        \draw[line width=1.0pt, draw=fabclr!70, fill=fabclr!5, rounded corners=1pt]
+          (-\hw,-0.18) rectangle (\hw, 0.18);
+        % Horizontal traces
+        \draw[thin, fabclr!50] (-\hw, 0.06) -- (\hw, 0.06);
+        \draw[thin, fabclr!50] (-\hw,-0.06) -- (\hw,-0.06);
+        % Vertical ticks (switch crosspoints)
+        \pgfmathsetmacro{\tickstep}{0.4}
+        \pgfmathsetmacro{\numticks}{floor(\hw/\tickstep)}
+        \draw[thin, fabclr!50] (0,-0.18) -- (0,0.18);
+        \foreach \i in {1,...,\numticks} {
+          \pgfmathsetmacro{\xpos}{\i*\tickstep}
+          \draw[thin, fabclr!50] (\xpos,-0.18) -- (\xpos,0.18);
+          \draw[thin, fabclr!50] (-\xpos,-0.18) -- (-\xpos,0.18);
+        }
+      \end{scope}
+      \PicBboxAnchors{-bbox}
     }
-  }
+  },
+  pics/fabric/.default={1.8}
 }

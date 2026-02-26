@@ -5,6 +5,7 @@
 EXCLUDE := motifs.tex assets.tex
 SOURCES := $(filter-out $(EXCLUDE),$(wildcard *.tex))
 PDFS := $(patsubst %.tex,pdf/%.pdf,$(SOURCES))
+ASSETS := assets.tex $(wildcard assets/*.tex)
 
 .PHONY: all clean tidy
 
@@ -13,7 +14,7 @@ all: tidy pdf $(PDFS)
 pdf:
 	mkdir -p pdf
 
-pdf/%.pdf: %.tex motifs.tex
+pdf/%.pdf: %.tex $(ASSETS)
 	latexmk -pdf -synctex=0 -output-directory=pdf -auxdir=build $<
 
 # Remove top-level PDFs and synctex (one-time cleanup)

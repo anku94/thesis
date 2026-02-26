@@ -1,31 +1,63 @@
-% ASSET: application (BSP app = ranks + fabric)
-% Requires pics/rank
+% ASSET: application (BSP app = ranks + fabric + storage)
+% Requires pics/rank, pics/fabric, pics/storage
 \tikzset{
+  stub/.style={line width=1.0pt, nord2!70},
+  applabel/.style={anchor=east, font=\sffamily\normalsize, align=right, text width=2.8cm},
   pics/application/.style={
     code={
-      % -- Ranks in a row --
-      \pic (-r0) at (-2.1, 0) {rank={0}};
-      \pic (-r1) at (-0.7, 0) {rank={1}};
-      \pic (-r2) at ( 0.7, 0) {rank={2}};
-      \pic (-r3) at ( 2.1, 0) {rank={$\cdots$}};
-      % -- Fabric band underneath --
-      \draw[thick, draw=orange!50, fill=orange!15]
-        (-2.8,-1.0) rectangle (2.8,-0.64);
-      \draw[thin, orange!50] (-2.8,-0.78) -- (2.8,-0.78);
-      \draw[thin, orange!50] (-2.8,-0.86) -- (2.8,-0.86);
-      \foreach \x in {-2.4,-2.0,...,2.4} {
-        \draw[thin, orange!50] (\x,-1.0) -- (\x,-0.64);
-      }
-      % -- Stubs connecting rank pins to fabric --
-      \foreach \rx in {-2.1,-0.7,0.7,2.1} {
-        \draw[semithick, gray!60] (\rx,-0.62) -- (\rx,-0.64);
-      }
-      % -- Anchors --
-      \coordinate (-north)  at ( 0,    0.62);
-      \coordinate (-south)  at ( 0,   -1.0);
-      \coordinate (-east)   at ( 2.8, -0.19);
-      \coordinate (-west)   at (-2.8, -0.19);
-      \coordinate (-center) at ( 0,   -0.19);
+      \def\rankgap{0.4cm}
+      \def\storagegap{0.2cm}
+
+      \begin{scope}[local bounding box=-bbox]
+        % -- Ranks in a row --
+        \pic (-r0) at (0, 0) {rank={0}};
+
+        \coordinate (-r1pos) at ([xshift=\rankgap]-r0-east);
+        \PlacePicByAnchor{rank={1}}{-r1}{-r1pos}{west}
+
+        \coordinate (-r2pos) at ([xshift=\rankgap]-r1-east);
+        \PlacePicByAnchor{rank={2}}{-r2}{-r2pos}{west}
+
+        \coordinate (-r3pos) at ([xshift=\rankgap]-r2-east);
+        \PlacePicByAnchor{rank={$\cdots$}}{-r3}{-r3pos}{west}
+
+        % -- Fabric band underneath ranks --
+        \coordinate (-fabcenter) at ($(-r0-south)!0.5!(-r3-south) + (0,-0.7)$);
+        \pic (-fab) at (-fabcenter) {fabric=2.4};
+
+        % -- Storage cylinders underneath fabric --
+        \coordinate (-s0pos) at ($(-fab-south) + (-1.5,-0.9)$);
+        \pic (-s0) at (-s0pos) {storage};
+
+        \coordinate (-s1pos) at ([xshift=\storagegap]-s0-east);
+        \PlacePicByAnchor{storage}{-s1}{-s1pos}{west}
+
+        \coordinate (-s2pos) at ([xshift=\storagegap]-s1-east);
+        \PlacePicByAnchor{storage}{-s2}{-s2pos}{west}
+
+        \coordinate (-s3pos) at ([xshift=\storagegap]-s2-east);
+        \PlacePicByAnchor{storage}{-s3}{-s3pos}{west}
+
+        % -- Stubs connecting ranks to fabric --
+        \foreach \n in {r0,r1,r2,r3} {
+          \draw[stub] (-\n-south) -- (-\n-south|-{-fab-north});
+        }
+
+        % -- Stubs connecting fabric to storage --
+        \foreach \n in {s0,s1,s2,s3} {
+          \draw[stub] (-\n-north) -- (-\n-north|-{-fab-south});
+        }
+
+        % -- Labels on the left --
+        \def\labelgap{0.3cm}
+        \path let \p1=(-r0-west), \p2=(-fab-west), \p3=(-s0-west) in
+          coordinate (-labelx) at ({min(\x1,\x2,\x3) - \labelgap}, 0);
+        \node[applabel] at (-labelx|-{-r0-center}) {\textbf{Application Ranks}};
+        \node[applabel] at (-labelx|-{-fab-center}) {\textbf{RDMA Fabric}};
+        \node[applabel] at (-labelx|-{-s0-center}) {\textbf{Parallel Storage} \\ \emph{(Lustre, DAOS)}};
+      \end{scope}
+
+      \PicBboxAnchors{-bbox}
     }
   }
 }

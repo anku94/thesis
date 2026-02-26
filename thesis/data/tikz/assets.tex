@@ -7,6 +7,12 @@
 % === Macros ===
 \newcommand{\mytilde}{{\raise.17ex\hbox{$\scriptstyle\sim$}}}
 
+% === Layers (user can override with \pgfsetlayers) ===
+\pgfdeclarelayer{deepestbackground}
+\pgfdeclarelayer{deepbackground}
+\pgfdeclarelayer{background}
+\pgfsetlayers{deepestbackground,deepbackground,background,main}
+
 % === Nord Palette ===
 % https://www.nordtheme.com/docs/colors-and-palettes
 
@@ -35,9 +41,9 @@
 \definecolor{nord15}{HTML}{B48EAD}  % #B48EAD purple
 
 % === Semantic Colors (from Nord) ===
-\colorlet{ctlcolor}{nord10}   % Steel blue
-\colorlet{aggcolor}{nord7}    % Teal
-\colorlet{mpicolor}{nord12}   % Coral/salmon
+\colorlet{ctlcolor}{nord12}   % Coral/salmon
+\colorlet{aggcolor}{nord10}   % Steel blue
+\colorlet{mpicolor}{nord7}    % Teal
 \colorlet{pqcolor}{nord15}    % Muted purple (for parquet)
 \colorlet{flowcolor}{nord14}  % Dusty green
 
@@ -81,6 +87,23 @@
   \begin{scope}[shift={(#3-shift)},#1]
     \pic[name=#3] at (0,0) {#2};
   \end{scope}
+}
+
+% Declare standard anchors from a bounding box node.
+% Use inside pics to export anchors from a local bounding box.
+%
+% Usage:
+%   \begin{scope}[local bounding box=-bbox]
+%     % ... pic content ...
+%   \end{scope}
+%   \PicBboxAnchors{-bbox}
+%
+\newcommand{\PicBboxAnchors}[1]{%
+  \coordinate (-north) at (#1.north);
+  \coordinate (-south) at (#1.south);
+  \coordinate (-east) at (#1.east);
+  \coordinate (-west) at (#1.west);
+  \coordinate (-center) at (#1.center);
 }
 
 % Shared curve path (used by distrib and distribpart)
