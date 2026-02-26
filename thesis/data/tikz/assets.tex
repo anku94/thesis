@@ -8,10 +8,11 @@
 \newcommand{\mytilde}{{\raise.17ex\hbox{$\scriptstyle\sim$}}}
 
 % === Layers (user can override with \pgfsetlayers) ===
+\usetikzlibrary{backgrounds}
 \pgfdeclarelayer{deepestbackground}
 \pgfdeclarelayer{deepbackground}
-\pgfdeclarelayer{background}
-\pgfsetlayers{deepestbackground,deepbackground,background,main}
+\pgfdeclarelayer{picbackground}
+\pgfsetlayers{deepestbackground,deepbackground,background,picbackground,main}
 
 % === Nord Palette ===
 % https://www.nordtheme.com/docs/colors-and-palettes
