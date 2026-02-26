@@ -27,8 +27,7 @@
 \newcommand{\figdeslayout}{
   \begin{SCfigure}[0.9][h]
     \centering
-    \includegraphics[trim=3.5cm 4.0cm 3.5cm
-      4.3cm,clip,width=\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_layout_v2.pdf}
+    \includegraphics[width=\columnwidth,height=0.25\textheight,keepaspectratio]{data/tikz/pdf/carp-layout.pdf}
     \captionsetup{format=plain}
     \caption{A logical view of CARP's data layout and querying.
       Incoming data is partitioned and stored as SSTables, and partition boundaries shift with key
@@ -43,8 +42,7 @@
   {\sidecaptionvpos{figure}{c}
   \begin{SCfigure}[0.9][h]
     \centering
-    \includegraphics[trim=8cm 7.8cm 8cm
-      6.5cm,clip,width=0.9\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_arch_v12mini.pdf}
+    \includegraphics[width=0.9\columnwidth,height=0.25\textheight,keepaspectratio]{data/tikz/pdf/carp-arch.pdf}
     \captionsetup{format=plain}
     \caption{Example of an N-rank application using CARP.
       Writes are intercepted and partitioned via an all-to-all shuffler.
@@ -59,8 +57,7 @@
   {\sidecaptionvpos{figure}{c}
   \begin{SCfigure}[0.9][h]
     \centering
-    \includegraphics[trim=7.9cm 6.5cm 7.7cm
-      4.8cm,clip,width=0.85\columnwidth,height=0.25\textheight,keepaspectratio]{data/figs/carp_sender_wobg_v6.pdf}
+    \includegraphics[width=0.85\columnwidth,height=0.25\textheight,keepaspectratio]{data/tikz/pdf/carp-sender.pdf}
     \captionsetup{format=plain}
     \caption{CARP data and control flow.
       Application data is routed by the shuffle sender to its partition.

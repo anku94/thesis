@@ -211,6 +211,7 @@ plaintext formats
 Columnar formats like Parquet~\cite{:ApacheParquet} offer efficient post-hoc analytics, but do not
 by themselves address overcollection, working set scaling, or real-time feedback, and remain
 largely unadopted in tracing workflows.
+\todo[inline]{verify benchmark results}
 In a simple internal port of HTA analyses from JSON to Parquet, we observed 50$\times$ faster data
 loading
 and 18$\times$ faster end-to-end analysis.
@@ -229,7 +230,7 @@ are designed for independent event streams over IP networks.
 They lack fabric-aware transport, BSP-aligned coordinated collection, and control semantics,
 precluding views like \Cref{fig:orca:bg-volatile} without expensive off-fabric aggregation.
 
-\subsection{A Template for Steerable Observability}\label{sec:orca:bg:template}
+\subsection{A Template for Dynamic Observability}\label{sec:orca:bg:template}
 
 In our AMR study, eBPF~\cite{:eBPF} was decisive for diagnosing the pathology in
 \Cref{fig:orca:bg-volatile} after conventional

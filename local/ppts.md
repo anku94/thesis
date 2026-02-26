@@ -25,5 +25,6 @@ Do read AGENTS.md first
 
 ## Notes
 
+- Use `ppt.mplstyle` (not `paper.mplstyle`) for presentations - larger fonts, line widths, marker sizes
 - Always inspect artist indices empirically before defining frames (don't guess)
 - Debug: `for i, a in enumerate(ax.get_children()): print(i, type(a).__name__, getattr(a, 'get_label', lambda: '')())`

@@ -1,6 +1,8 @@
 % ASSET: pivottable (partition boundary table)
+% Usage: pivottable={v1/v2/v3/v4}
+% Example: \pic {pivottable={0-25/25-50/50-75/75-100}};
 \tikzset{
-  pics/pivottable/.style={
+  pics/pivottable/.style args={#1/#2/#3/#4}{
     code={
       \def\cw{1.0}  % cell width
       \def\ch{0.35} % cell height
@@ -11,7 +13,7 @@
         \node[anchor=center, font=\sffamily\scriptsize] at ({(\i+0.5)*\cw - 2*\cw}, {1.5*\ch}) {\lbl};
       }
       % Value row (ranges)
-      \foreach \i/\val in {0/{0--0.3}, 1/{0.3--0.4}, 2/{0.4--0.6}, 3/{0.6--1.0}} {
+      \foreach \i/\val in {0/#1, 1/#2, 2/#3, 3/#4} {
         \draw[thick, fill=white]
           ({\i*\cw - 2*\cw}, 0) rectangle ({(\i+1)*\cw - 2*\cw}, \ch);
         \node[anchor=center, font=\sffamily\scriptsize] at ({(\i+0.5)*\cw - 2*\cw}, {0.5*\ch}) {\val};

@@ -1,11 +1,11 @@
 % ! TeX root = ../main.tex
 
-\section{Requirements for Closed-Loop Observability}
+\section{Requirements for Steerable BSP Observability}
 \label{sec:orca:req}
 
 We now state the key requirements for closed-loop observability.
-The goal is real-time feedback through interactive views over running applications, while retaining
-the ability to capture detailed traces when deeper investigation is required.
+% The goal is real-time feedback through interactive views over running applications, while retaining
+% the ability to capture detailed traces when deeper investigation is required.
 
 \parahead{BSP-Aware Semantic Guarantees}
 BSP observability requires guarantees on both data and control paths.
@@ -37,7 +37,8 @@ runtime, without recompilation or restart.
 The collection interface must also be source and schema-agnostic, as telemetry may be emitted by
 any layer of the runtime stack, including MPI, runtime libraries, or custom annotations.
 
-These requirements are in tension.
+% These requirements are in tension.
+Satisfying these requirements simultaneously is the key design challenge.
 Coordinated semantics demand global completeness, low overhead requires not disrupting the
 application, and low feedback latency requires streaming to materialize views quickly instead of
 accumulating

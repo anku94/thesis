@@ -1,0 +1,282 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,backgrounds,calc,arrows.meta,shapes.symbols,shapes.arrows}
+
+\input{assets}
+
+% Declare and merge layers
+\pgfdeclarelayer{deepbackground}
+\pgfsetlayers{deepbackground,picbackground,background,main}
+
+\begin{document}
+
+% Helper: declare standard anchors from a bounding box
+\newcommand{\BBoxAnchors}[1]{%
+  \coordinate (-north) at (#1.north);
+  \coordinate (-south) at (#1.south);
+  \coordinate (-east) at (#1.east);
+  \coordinate (-west) at (#1.west);
+  \coordinate (-center) at (#1.center);
+}
+
+% === Styles ===
+\tikzset{
+  pics/ptabold/.style={
+    code={
+      \begin{scope}[local bounding box=-bbox]
+        \pic {pivottable=0-25/25-50/50-75/75-100};
+      \end{scope}
+      \BBoxAnchors{-bbox}
+    }
+  },
+  pics/ptabnew/.style={
+    code={
+      \begin{scope}[local bounding box=-bbox]
+        \pic {pivottable=0-36/36-47/47-61/61-103};
+      \end{scope}
+      \BBoxAnchors{-bbox}
+    }
+  },
+  % pivots=<color>
+  pics/pivots/.style args={#1}{
+    code={
+      \def\prad{0.1cm}
+      \def\psep{0.24cm}
+      \begin{scope}[local bounding box=-pivbbox]
+        \foreach \i in {0,1,2,3} {
+          \fill[#1] ({\i*\psep}, 0) circle[radius=\prad];
+        }
+      \end{scope}
+      \BBoxAnchors{-pivbbox}
+    }
+  },
+  pics/localpivots/.style={
+    code={
+      \pic {pivots=nord11};
+      \BBoxAnchors{-pivbbox}
+    }
+  },
+  pics/globalpivots/.style={
+    code={
+      \pic {pivots=nord14};
+      \BBoxAnchors{-pivbbox}
+    }
+  },
+  % Bucket (U-shaped beaker): bucket=<width>/<height>
+  pics/bucket/.style args={#1/#2}{
+    code={
+      \def\bufPad{0.1cm}
+      \def\bufLip{0.05cm}
+      \draw[thick, rounded corners=2pt]
+        (-#1/2 - \bufPad - \bufLip, \bufLip)
+        -- (-#1/2 - \bufPad, \bufLip)
+        -- (-#1/2 - \bufPad, -#2 - \bufPad)
+        -- (#1/2 + \bufPad, -#2 - \bufPad)
+        -- (#1/2 + \bufPad, \bufLip)
+        -- (#1/2 + \bufPad + \bufLip, \bufLip);
+      \coordinate (-north) at (0, \bufLip);
+      \coordinate (-south) at (0, -#2 - \bufPad);
+      \coordinate (-center) at (0, -#2/2);
+      \coordinate (-east) at (#1/2 + \bufPad, -#2/2);
+      \coordinate (-west) at (-#1/2 - \bufPad, -#2/2);
+    }
+  },
+  % OOB key: oobkey=<value>
+  pics/oobkey/.style args={#1}{
+    code={
+      \node[draw, thick, fill=nord12!30, minimum height=0.4cm, inner ysep=1pt,
+      rounded corners=2pt, inner xsep=2pt,
+            font=\sffamily\scriptsize] (-box) {#1};
+      \coordinate (-north) at (-box.north);
+      \coordinate (-south) at (-box.south);
+      \coordinate (-east) at (-box.east);
+      \coordinate (-west) at (-box.west);
+      \coordinate (-center) at (-box.center);
+    }
+  },
+  % Rank box style
+  rankboxstyle/.style={draw, rounded corners=3pt, fill=carp0rank, inner sep=3pt},
+  % Arrow styles
+  reducearrow/.style={-{Stealth}, line width=0.5pt, rounded corners=3pt, nord11!70!black},
+  bcastarrow/.style={-{Stealth}, line width=0.5pt, rounded corners=2pt, nord14!70!black},
+  redstatearrow/.style={-{Stealth}, thick, rounded corners=3pt, nord14!70!black, densely dotted},
+  bcaststatearrow/.style={-{Stealth}, thick, nord14!70!black},
+  % Plus sign: plus=<color>/<width>
+  pics/plus/.style args={#1/#2}{
+    code={
+      \def\plusarm{#2}
+      \def\plusthick{0.4*#2}
+      \begin{scope}[local bounding box=-plusbbox]
+        \fill[#1] (-\plusarm, -\plusthick/2) rectangle ++(\plusarm*2, \plusthick);
+        \fill[#1] (-\plusthick/2, -\plusarm) rectangle ++(\plusthick, \plusarm*2);
+      \end{scope}
+      \BBoxAnchors{-plusbbox}
+    }
+  },
+  % Histogram with distribution curve: histogram=<color>
+  pics/histogram/.style args={#1}{
+    code={
+      \def\barw{0.18cm}
+      \def\barsep{0.03cm}
+      \def\barheights{{0.5, 1.0, 0.8, 0.45, 0.2}}
+      \def\histw{1.35cm}
+      \def\histh{1.45cm}
+      \begin{scope}[local bounding box=-histbbox]
+        % Axes
+        \draw[-{Stealth}, thick] (0, 0) -- (0, \histh);
+        \draw[-{Stealth}, thick] (0, 0) -- (\histw, 0);
+        % Bars
+        \foreach \i in {0,...,4} {
+          \pgfmathsetmacro{\h}{\barheights[\i]}
+          \filldraw[fill=#1!10, draw=black] ({0.05cm + \i*(\barw+\barsep)}, 0) rectangle +(\barw, \h);
+        }
+        % Curve and pivots
+        \begin{scope}[shift={(0.0, 0.1)}]
+          \draw[thick, nord3]
+            (0.05, 0.4) .. controls (0.2, 0.9) and (0.3, 1.1) ..
+            (0.45, 0.85) .. controls (0.6, 0.5) and (0.8, 0.25) ..
+            (1.1, 0.08);
+          % Pivot balls (equal area positions)
+          \def\prad{0.12cm}
+          \fill[#1,draw=black] (0.05, 0.5) circle[radius=\prad];
+          \fill[#1,draw=black] (0.22, 0.8) circle[radius=\prad];
+          \fill[#1,draw=black] (0.55, 0.64) circle[radius=\prad];
+          \fill[#1,draw=black] (0.98, 0.1) circle[radius=\prad];
+        \end{scope}
+      \end{scope}
+      \BBoxAnchors{-histbbox}
+    }
+  },
+  % Global state (blowup of global state)
+  pics/globalstate/.style={
+    code={
+      \begin{scope}[local bounding box=-gsbbox]
+        \begin{scope}[local bounding box=-gpivbbox]
+        \pic (-gpiv) {globalpivots};
+        \end{scope}
+        \node[double arrow, draw, fill=black!20, minimum width=0.3cm, minimum height=0.6cm, inner sep=1pt, double arrow head extend=0.05cm] (arrow) at ([xshift=0.7cm]-gpiv-east) {};
+        \coordinate (distpos) at ([xshift=0.3cm]arrow.east);
+        \PlacePicByAnchor{histogram=nord14}{gdist}{distpos}{west}
+        % Labels
+        \coordinate (labely) at ([yshift=-0.9cm]-gpiv-south);
+        \node[anchor=north, font=\sffamily\scriptsize\bfseries, inner ysep=0] at (-gpiv-center|-labely) {Merged Pivots};
+        \node[anchor=north, font=\sffamily\scriptsize\bfseries, inner ysep=0] at (gdist-center|-labely) {Global Distribution};
+      \end{scope}
+      \BBoxAnchors{-gsbbox}
+    }
+  },
+  % Rank state (blowup of a single rank)
+  pics/rankstate/.style={
+    code={
+      \begin{scope}[local bounding box=-rsbbox]
+        \pic (bkt) {bucket=1cm/1cm};
+        \pic at ([xshift=-0.1cm, yshift=0.2cm]bkt-center) {oobkey=101};
+        \pic at ([xshift=0.1cm, yshift=-0.3cm]bkt-center) {oobkey=103};
+        \pic (plus) at ([xshift=0.5cm]bkt-east) {plus=black!50/0.2cm};
+        \coordinate (distpos) at ([xshift=0.3cm]plus-east);
+        \PlacePicByAnchor{histogram=nord11}{dist}{distpos}{west}
+        % Labels (aligned to same y, same width for symmetry)
+        \coordinate (labely) at ([yshift=-0.2cm]bkt-south);
+        \node[anchor=north, font=\sffamily\scriptsize\bfseries, align=center, text width=1.5cm] (lbl1) at (bkt-center|-labely) {Local Out-of-Bounds Buffer};
+        \node[anchor=north, font=\sffamily\scriptsize\bfseries, align=center, text width=1.5cm] (lbl2) at (dist-center|-labely) {Local Pivots};
+        % Partition table below labels
+        \coordinate (ptpos) at ([yshift=-0.4cm]$(lbl1.south)!0.5!(lbl2.south)$);
+        \PlacePicByAnchor{ptabold}{pt}{ptpos}{north}
+        \node[anchor=north, font=\sffamily\scriptsize\bfseries,inner ysep=0] at ([yshift=-0.1cm]pt-south) {Partition Table (\textit{Old})};
+      \end{scope}
+      \BBoxAnchors{-rsbbox}
+      \coordinate (-pt-east) at (pt-east);
+    }
+  },
+}
+
+% === Figure ===
+\begin{tikzpicture}
+  \def\gap{0.4cm}
+  \def\vgap{0.4cm}
+
+  % Rank boxes stacked vertically
+  \node[rankboxstyle, font=\sffamily\small] (r1) at (0,0) {Rank 1};
+  \node[rankboxstyle, font=\sffamily\small, below=\vgap of r1] (r2) {Rank 2};
+  \node[rankboxstyle, font=\sffamily\small, below=1.0cm of r2] (rN) {Rank N};
+
+  % Pivots to the right of each rank
+  \coordinate (t1) at ([xshift=\gap]r1.east);
+  \PlacePicByAnchor{localpivots}{lp1}{t1}{west}
+
+  \coordinate (t2) at ([xshift=\gap]r2.east);
+  \PlacePicByAnchor{localpivots}{lp2}{t2}{west}
+
+  \coordinate (tN) at ([xshift=\gap]rN.east);
+  \PlacePicByAnchor{localpivots}{lpN}{tN}{west}
+
+  % Vdots centered between rank and pivots columns
+  \coordinate (dotsx) at ($(r2.east)!0.5!(lp2-west)$);
+  \coordinate (dotsy) at ($(r2.south)!0.5!(rN.north)$);
+  \node[inner sep=0] (vdots) at (dotsx|-dotsy) {$\vdots$};
+  \node[below=1.1cm of vdots, font=\sffamily\scriptsize\bfseries, align=center] {Local Pivots\\on Each Rank};
+
+  % Rank state blowup (left of figure, north aligned with r1)
+  \coordinate (rspos) at ([xshift=-3cm]r1.west|-r1.north);
+  \PlacePicByAnchor{rankstate}{rs1}{rspos}{north}
+
+  % Global state blowup (right of figure, north aligned with r1)
+  \coordinate (gspos) at ([xshift=4cm]lp1-east|-r1.north);
+  \PlacePicByAnchor{globalstate}{gs1}{gspos}{north}
+
+  % New partition table under global state
+  \coordinate (ptnpos) at ([yshift=-0.7cm]gs1-south);
+  \PlacePicByAnchor{ptabnew}{ptn}{ptnpos}{north}
+  \node[anchor=north, font=\sffamily\scriptsize\bfseries] at (ptn-south) {Partition Table (\textit{New})};
+
+  % Background fills
+  \begin{scope}[on background layer]
+    % Local pivots boxes
+    \node[draw, thick, rounded corners=2pt, fill=nord11!10, fit=(lp1-pivbbox), inner sep=2pt] (lp1box) {};
+    \node[draw, thick, rounded corners=2pt, fill=nord11!10, fit=(lp2-pivbbox), inner sep=2pt] (lp2box) {};
+    \node[draw, thick, rounded corners=2pt, fill=nord11!10, fit=(lpN-pivbbox), inner sep=2pt] (lpNbox) {};
+    % Rank state box
+    \node[draw, rounded corners=3pt, fill=carp0rank, fit=(rs1-rsbbox), inner sep=3pt] (rsbox) {};
+    % Global state box
+    \node[draw, rounded corners=3pt, fill=nord14!5, fit=(gs1-gsbbox), inner sep=3pt] (gsbox) {};
+    % Global pivots box in global state
+    \node[draw, thick, rounded corners=2pt, fill=nord14!10, fit=(gs1-gpivbbox), inner sep=2pt] {};
+  \end{scope}
+
+  \begin{pgfonlayer}{deepbackground}
+    % Blowout lines from r1 to rsbox
+    \filldraw[fill=nord6!30, draw=nord4, line width=0.5pt]
+      ([xshift=0.05cm, yshift=-0.01cm]r1.north west) --
+      ([xshift=0.05cm, yshift=0.01cm]r1.south west) --
+      ([xshift=-0.02cm, yshift=0.1cm]rsbox.south east) --
+      ([xshift=-0.06cm, yshift=-0.01cm]rsbox.north east) -- cycle;
+  \end{pgfonlayer}
+
+  % Reduce arrows from local pivots to global state
+  \coordinate (reduce-mid) at (gsbox.west|-lp2box.east);
+  \coordinate (reduce-join) at ([xshift=-0.5cm]reduce-mid);
+  \draw[reducearrow] (lp1box.east) -| (reduce-join) -- (reduce-mid);
+  \draw[reducearrow] (lp2box.east) -- (reduce-join) 
+  node[midway, sloped,above, font=\sffamily\scriptsize\itshape, inner sep=1pt] {Reduce}
+  node[midway, sloped,below, font=\sffamily\scriptsize\itshape, inner sep=1pt] {pivots}
+  -- (reduce-mid);
+  \draw[reducearrow] (lpNbox.east) -| (reduce-join) -- (reduce-mid);
+
+  % Arrow from global state to new partition table
+  \draw[bcaststatearrow] (gsbox.south) -- (ptn-north);
+
+  % Broadcast arrows from new partition table to each rank
+  \begin{scope}[on background layer]
+    \draw[bcastarrow] ([yshift=0.12cm]ptn-west) -| ([xshift=-0.2cm]r1.south);
+    \draw[bcastarrow] ([yshift=-0.0cm]ptn-west) -| (r2.south);
+    \draw[bcastarrow] ([yshift=-0.12cm]ptn-west) -| ([xshift=0.2cm]rN.south);
+  \end{scope}
+
+  % Arrow from rank 1 to its partition table (geometric)
+  \draw[redstatearrow] (r1.west) -- +(-0.5cm,0)
+  |-
+    node[pos=0.25, sloped, below=0.05cm, rotate=180, font=\sffamily\scriptsize\itshape] {Update part. table}
+  (rs1-pt-east);
+\end{tikzpicture}
+
+\end{document}
