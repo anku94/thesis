@@ -5,17 +5,24 @@
 
 % Color aliases for this figure
 \colorlet{barriercolor}{flowcolor}
-\colorlet{computecolor}{mpicolor}
+\colorlet{computecolor}{nord11}
 \definecolor{timestepcolor}{HTML}{A63D40}  % muted dark red (one-off)
 
 \begin{document}
 \begin{tikzpicture}[
   font=\Large,
   textnode/.style={font=\Large\sffamily\bfseries},
+  ranknode/.style={circle, fill=mpicolor!15, draw=mpicolor!50!black, minimum size=8mm},
+  compbar/.style={draw=black, fill=computecolor!35},
+  barline/.style={line width=6.5pt, barriercolor},
+  rankline/.style={dotted, line width=1.2pt},
+  timeaxis/.style={->, thick, -stealth, line width=1.5pt},
 ]
 
   % === Named coordinates ===
   \def\rsp{1.4}  % rank spacing
+  \def\barw{0.25} % bar half-width
+  \def\bargap{0.10} % gap below barrier line
   \def\nranks{5}
   \def\ntimesteps{6}
 
@@ -31,48 +38,85 @@
 
   % === Grid ===
   \foreach \i in {0, 1, 2, 3, 4} {
-      \node[textnode] at (r\i |- 0, 0.5) {R\i};
-      \draw[dotted] (r\i) -- (r\i |- 0, -7);
+      \node[ranknode, textnode] at (r\i |- 0, 0.5) {R\i};
+      \draw[rankline] (r\i) -- (r\i |- 0, -7);
     }
 
+  % === Timesteps ===
+  \def\tsp{1.2}  % timestep spacing
+
+  % -- T0 --
+  \coordinate (t0) at (0, -0.2);  % start
+  \coordinate (t1) at ($(t0) + (0, -\tsp)$);
+  \coordinate (t0mid) at ($(t0)!0.5!(t1)$);
+  \node[textnode, anchor=east] at ([xshift=-0.3cm]leftedge |- t0mid) {T0};
+  \draw[barline] (leftedge |- t1) -- (rightedge |- t1);
+
+  \foreach \i/\frac in {0/0.6, 1/0.45, 2/0.7, 3/0.5, 4/0.82} {
+    \pgfmathsetmacro{\barh}{\frac * \tsp}
+    \fill[compbar] ([xshift=-\barw cm, yshift=-\bargap cm]r\i |- t0) rectangle ([xshift=\barw cm, yshift=-\bargap cm - \barh cm]r\i |- t0);
+  }
+
+  % -- T1 --
+  \coordinate (t2) at ($(t1) + (0, -3)$);
+  \coordinate (t1mid) at ($(t1)!0.5!(t2)$);
+  \node[textnode, anchor=east] at ([xshift=-0.3cm]leftedge |- t1mid) {T1};
+  \draw[barline] (leftedge |- t2) -- (rightedge |- t2);
+
+  \foreach \i/\frac in {0/0.1, 1/0.2, 2/0.3, 3/0.92, 4/0.2} {
+    \pgfmathsetmacro{\barh}{\frac * 3}
+    \fill[compbar] ([xshift=-\barw cm, yshift=-\bargap cm]r\i |- t1) rectangle ([xshift=\barw cm, yshift=-\bargap cm - \barh cm]r\i |- t1);
+  }
+
+  % -- T2 --
+  \coordinate (t3) at ($(t2) + (0, -\tsp)$);
+  \coordinate (t2mid) at ($(t2)!0.5!(t3)$);
+  \node[textnode, anchor=east] at ([xshift=-0.3cm]leftedge |- t2mid) {T2};
+  \draw[barline] (leftedge |- t3) -- (rightedge |- t3);
+
+  \foreach \i/\frac in {0/0.7, 1/0.5, 2/0.82, 3/0.45, 4/0.6} {
+    \pgfmathsetmacro{\barh}{\frac * \tsp}
+    \fill[compbar] ([xshift=-\barw cm, yshift=-\bargap cm]r\i |- t2) rectangle ([xshift=\barw cm, yshift=-\bargap cm - \barh cm]r\i |- t2);
+  }
+
   % \foreach \y in {1, 2, 3, 4, 5, 6} {
-  %     \draw[densely dashed, line width=1.5pt, barriercolor] (leftedge |- 0, -\y) -- (rightedge |- 0, -\y);
+  %     \draw[barline] (leftedge |- 0, -\y) -- (rightedge |- 0, -\y);
   %     \node[anchor=south east, text=black!40] at (-1, -\y) {T\y};
   %   }
 
   % Time axis
-  \draw[->,thick,-stealth] (0, 0) -- (0, -7)
+  \draw[timeaxis] (0, 0) -- (0, -7)
   node[textnode, midway, sloped, above, rotate=180, fill=white, fill opacity=0.9] {Timesteps};
 
   % % Work boxes for each timestep
   % % T1 (between y=0 and y=-1)
   % \foreach \rank/\h in {0/0.6, 1/0.45, 2/0.7, 3/0.5, 4/0.8} {
-  %   \fill[computecolor] ([xshift=-0.15cm]r\rank |- 0,-0.05) rectangle ([xshift=0.15cm]r\rank |- 0,-0.05-\h);
+  %   \fill[compbar] ([xshift=-\barw cm]r\rank |- 0,-0.05) rectangle ([xshift=\barw cm]r\rank |- 0,-0.05-\h);
   % }
 
   % % T2 (between y=-1 and y=-2)
   % \foreach \rank/\h in {0/0.5, 1/0.6, 2/0.4, 3/0.9, 4/0.55} {
-  %   \fill[computecolor] ([xshift=-0.15cm]r\rank |- 0,-1.05) rectangle ([xshift=0.15cm]r\rank |- 0,-1.05-\h);
+  %   \fill[compbar] ([xshift=-\barw cm]r\rank |- 0,-1.05) rectangle ([xshift=\barw cm]r\rank |- 0,-1.05-\h);
   % }
 
   % % T3 (between y=-2 and y=-3)
   % \foreach \rank/\h in {0/0.7, 1/0.5, 2/0.85, 3/0.45, 4/0.6} {
-  %   \fill[computecolor] ([xshift=-0.15cm]r\rank |- 0,-2.05) rectangle ([xshift=0.15cm]r\rank |- 0,-2.05-\h);
+  %   \fill[compbar] ([xshift=-\barw cm]r\rank |- 0,-2.05) rectangle ([xshift=\barw cm]r\rank |- 0,-2.05-\h);
   % }
 
   % % T4 (between y=-3 and y=-4)
   % \foreach \rank/\h in {0/0.55, 1/0.8, 2/0.5, 3/0.65, 4/0.4} {
-  %   \fill[computecolor] ([xshift=-0.15cm]r\rank |- 0,-3.05) rectangle ([xshift=0.15cm]r\rank |- 0,-3.05-\h);
+  %   \fill[compbar] ([xshift=-\barw cm]r\rank |- 0,-3.05) rectangle ([xshift=\barw cm]r\rank |- 0,-3.05-\h);
   % }
 
   % % T5 (between y=-4 and y=-5)
   % \foreach \rank/\h in {0/0.65, 1/0.4, 2/0.75, 3/0.5, 4/0.8} {
-  %   \fill[computecolor] ([xshift=-0.15cm]r\rank |- 0,-4.1) rectangle ([xshift=0.15cm]r\rank |- 0,-4.1-\h);
+  %   \fill[compbar] ([xshift=-\barw cm]r\rank |- 0,-4.1) rectangle ([xshift=\barw cm]r\rank |- 0,-4.1-\h);
   % }
 
   % % T6 (between y=-5 and y=-6)
   % \foreach \rank/\h in {0/0.5, 1/0.7, 2/0.55, 3/0.8, 4/0.45} {
-  %   \fill[computecolor] ([xshift=-0.15cm]r\rank |- 0,-5.05) rectangle ([xshift=0.15cm]r\rank |- 0,-5.05-\h);
+  %   \fill[compbar] ([xshift=-\barw cm]r\rank |- 0,-5.05) rectangle ([xshift=\barw cm]r\rank |- 0,-5.05-\h);
   % }
 
   % Annotation pointing to T1 barrier
@@ -89,7 +133,7 @@
 
   % Legend
   % \begin{scope}[local bounding box=legend]
-  %   \draw[densely dashed, line width=1.5pt, barriercolor] (0, -8) -- (1, -8);
+  %   \draw[barline] (0, -8) -- (1, -8);
   %   \node[anchor=west, font=\sffamily\Large] at (1.2, -8) {Global Synchronization};
   % \end{scope}
   % \node[draw, rounded corners=3pt, inner sep=5pt, fit=(legend)] {};
