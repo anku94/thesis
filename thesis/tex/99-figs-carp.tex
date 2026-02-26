@@ -25,39 +25,36 @@
 
 % Figure 3.3
 \newcommand{\figdeslayout}{
-  \begin{SCfigure}[0.9][h]
+  \begin{figure}[t]
     \centering
-    \includegraphics[width=\columnwidth,height=0.25\textheight,keepaspectratio]{data/tikz/pdf/carp-layout.pdf}
-    \captionsetup{format=plain}
+    \includegraphics[height=0.35\textheight,keepaspectratio]{data/tikz/pdf/carp-layout.pdf}
     \caption{A logical view of CARP's data layout and querying.
       Incoming data is partitioned and stored as SSTables, and partition boundaries shift with key
       distribution changes.
       Queries retrieve relevant SSTables and merge them.}
     \label{fig:carp:des-layout}
-  \end{SCfigure}
+  \end{figure}
 }
 
 % Figure 3.4
 \newcommand{\figdesarch}{
-  {\sidecaptionvpos{figure}{c}
-  \begin{SCfigure}[0.9][h]
+  \begin{figure}[t]
     \centering
-    \includegraphics[width=0.9\columnwidth,height=0.25\textheight,keepaspectratio]{data/tikz/pdf/carp-arch.pdf}
-    \captionsetup{format=plain}
+    \includegraphics[height=0.38\textheight,keepaspectratio]{data/tikz/pdf/carp-arch.pdf}
     \caption{Example of an N-rank application using CARP.
       Writes are intercepted and partitioned via an all-to-all shuffler.
       Each rank is both a sender and receiver.
       Partitioned data collected by receivers is stored by a local storage backend (KoiDB).}
     \label{fig:carp:des-arch}
-  \end{SCfigure}}
+  \end{figure}
 }
 
 % Figure 3.5
 \newcommand{\figdessend}{
   {\sidecaptionvpos{figure}{c}
-  \begin{SCfigure}[0.9][h]
+  \begin{SCfigure}[0.8][h]
     \centering
-    \includegraphics[width=0.85\columnwidth,height=0.25\textheight,keepaspectratio]{data/tikz/pdf/carp-sender.pdf}
+    \includegraphics[width=0.9\columnwidth,height=0.35\textheight,keepaspectratio]{data/tikz/pdf/carp-sender.pdf}
     \captionsetup{format=plain}
     \caption{CARP data and control flow.
       Application data is routed by the shuffle sender to its partition.
@@ -73,8 +70,7 @@
 \newcommand{\figdeshist}{
   \begin{figure}[t]
     \centering
-    \includegraphics[trim=7.4cm 3.2cm 5.7cm
-      3.3cm,clip,height=0.35\textheight,keepaspectratio]{data/figs/carp_reneg_hists_v4.pdf}
+    \includegraphics[width=\columnwidth,keepaspectratio]{data/tikz/pdf/carp-reneg.pdf}
     \caption{Partition table renegotiation relies on pivots computed from histograms of keys tracked on
       each rank.
       Pivots are merged, and the new global histogram is divided into equal-mass bins before being
