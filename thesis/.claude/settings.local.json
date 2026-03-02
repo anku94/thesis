@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(latexmk:*)"
+      "Bash(latexmk:*)",
+      "Bash(command make pdf/tsdf.pdf)",
+      "Bash(python:*)"
     ]
   }
 }
