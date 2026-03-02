@@ -2,7 +2,7 @@
 % Requires pics/rank, pics/fabric, pics/storage
 \tikzset{
   stub/.style={line width=1.0pt, nord2!70},
-  applabel/.style={anchor=east, font=\sffamily\normalsize, align=right, text width=2.8cm},
+  applabel/.style={anchor=east, font=\sffamily\normalsize, align=right, text width=3.0cm},
   pics/application/.style={
     code={
       \def\rankgap{0.4cm}
@@ -52,8 +52,8 @@
         \def\labelgap{0.3cm}
         \path let \p1=(-r0-west), \p2=(-fab-west), \p3=(-s0-west) in
           coordinate (-labelx) at ({min(\x1,\x2,\x3) - \labelgap}, 0);
-        \node[applabel] at (-labelx|-{-r0-center}) {\textbf{Application Ranks}};
-        \node[applabel] at (-labelx|-{-fab-center}) {\textbf{RDMA Fabric}};
+        \node[applabel] at (-labelx|-{-r0-center}) {\textbf{Application Ranks}\\\emph{O(10--100K)}};
+        \node[applabel] at (-labelx|-{-fab-center}) {\textbf{RDMA Fabric}\\\emph{400\,Gbps}};
         \node[applabel] at (-labelx|-{-s0-center}) {\textbf{Parallel Storage} \\ \emph{(Lustre, DAOS)}};
       \end{scope}
 

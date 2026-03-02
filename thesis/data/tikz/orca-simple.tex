@@ -18,13 +18,13 @@
 	\node[inner sep=3pt] (user) {\tikz{\pic {operator};}};
 
 	% CTL, AGG, MPI
-	\node[box, fill=red!20, below=0.3cm of user] (ctl) {Controller};
-	\node[box, fill=gray!10, below=0.5cm of ctl, minimum width=6cm] (agg) {Dedicated Aggregators};
-	\node[box, fill=blue!20, below=0.5cm of agg, minimum width=8cm] (bsp)
+	\node[box, fill=ctlcolor!20, below=0.3cm of user] (ctl) {Controller};
+	\node[box, fill=aggcolor!20, below=0.5cm of ctl, minimum width=6cm] (agg) {Dedicated Aggregators};
+	\node[box, fill=mpicolor!20, below=0.5cm of agg, minimum width=8cm] (bsp)
 	{Bulk-Synchronous Parallel Application \emph{(e.g. MPI)}};
 
 	\node[
-		draw=red!50!black,
+		draw=ctlcolor!50!black,
 		thick,
 		dashed,
 		rounded corners,

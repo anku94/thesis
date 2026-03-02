@@ -8,7 +8,7 @@ PDFS := $(patsubst %.tex,pdf/%.pdf,$(SOURCES))
 ASSETS := assets.tex $(wildcard assets/*.tex)
 
 # SVG targets (explicit list)
-SVG_SOURCES := bsp.tex application.tex
+SVG_SOURCES := bsp.tex application.tex orca-arch.tex
 SVGS := $(patsubst %.tex,svg/%.svg,$(SVG_SOURCES))
 
 .PHONY: all clean tidy svg svg-dir

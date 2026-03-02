@@ -1,0 +1,29 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{fontawesome5}
+
+\input{assets}
+
+\begin{document}
+
+\begin{tikzpicture}
+  \node[anchor=north west, inner sep=0pt, font=\sffamily] {
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{0.9}
+    \begin{tabular}{ccccc}
+      \toprule
+      \faClock & \textbf{Step} & \textbf{Rank} & \textbf{Function} & \textbf{Dura.} \\
+      \midrule
+      1513 & 671 & 0  & \texttt{MPI\_Barrier} & 42\,ms \\
+      1591 & 671 & 1  & \texttt{MPI\_Barrier} & 67\,ms \\
+      1409 & 671 & 2  & \texttt{MPI\_Barrier} & 23\,ms \\
+      \multicolumn{5}{c}{$\vdots$} \\
+      1487 & 671 & 14 & \texttt{MPI\_Barrier} & 89\,ms \\
+      1552 & 671 & 15 & \texttt{MPI\_Barrier} & 51\,ms \\
+      \bottomrule
+    \end{tabular}
+  };
+\end{tikzpicture}
+
+\end{document}
