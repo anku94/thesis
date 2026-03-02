@@ -71,7 +71,8 @@
 \usepackage{enumitem} % to customize enumerate
 \usepackage{setspace} % for line spacing (replaces memoir's \OnehalfSpacing)
 % capitalize: capitalize first letter, nameinlink: include name in link
-\usepackage[capitalize,nameinlink]{cleveref} % for terse references
+\usepackage[capitalize,nameinlink,sort]{cleveref} % for terse references, "sort" disables compression
+% \renewcommand{\creflastconjunction}{, and~} % for oxford comma. Need to place after begin document
 % For tables
 \usepackage{multirow}
 \usepackage{booktabs}
