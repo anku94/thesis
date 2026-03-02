@@ -50,19 +50,36 @@ Because the governing conditions are fundamentally unknowable in advance, addres
 production requires general-purpose infrastructure for closing these loops,
 which BSP workloads largely lack today.
 
-BSP's tight coupling is both the source of these bottlenecks and what makes them structurally
-addressable.
-In BSP, synchronization boundaries are the moments when distributed execution becomes globally
-interpretable and when coordinated change is well-defined.
-Closing a runtime feedback loop therefore requires two capabilities at those boundaries:
-observation to materialize a view of execution, and action to apply a coordinated response.
-Together, these enable always-on visibility into runtime behavior: lightweight workload-level
-metrics in the common case, and higher-fidelity views and coordinated interventions
-in response to observed anomalies.
-We call the resulting paradigm steerable observability: the ability to navigate across views at
-multiple fidelities during the run and to intervene on the application guided by those views.
-We propose ORCA (\emph{Observability with Real-time Control and Aggregation}), which instantiates
-steerable observability with synchronization-aligned views and control semantics.
+\todo[inline]{Better connection with CARP and AMR, specifics, too high level}
+
+% BSP's tight coupling is both the source of these bottlenecks and what makes them structurally
+% addressable.
+% In BSP, synchronization boundaries are the moments when distributed execution becomes globally
+% interpretable and when coordinated change is well-defined.
+% Closing a runtime feedback loop therefore requires two capabilities at those boundaries:
+% observation to materialize a view of execution state, and action to apply a coordinated response.
+% % The state could be telemetry or application structures, and actions could range from
+% % additional views to interventions.
+% Together, these enable always-on visibility into runtime behavior: lightweight workload-level
+% metrics in the common case, and higher-fidelity views and coordinated interventions
+% in response to observed anomalies.
+% We call the resulting paradigm steerable observability: the ability to navigate across views at
+% multiple fidelities during the run and to intervene on the application guided by those views.
+% We propose ORCA (\emph{Observability with Real-time Control and Aggregation}), which instantiates
+% steerable observability with synchronization-aligned views and control semantics.
+
+Closing these loops requires two capabilities: views materialized from distributed application
+state, and coordinated actions informed by those views.
+BSP synchronization boundaries are the natural points where both are well-defined: global state
+is coherent, and coordinated change can be applied consistently across ranks.
+Together, these enable a class of adaptive workflows over always-on visibility into runtime
+behavior, ranging from steering what is observed to intervening on application
+behavior---a paradigm we call \emph{steerable observability}.
+This subsumes fixed-function loops like CARP's renegotiation protocol, and enables online
+monitoring, tuning, and root-cause localization for problems encountered during the AMR study.
+We propose ORCA (\emph{Observability with Real-time Control and Aggregation}), a programmable
+overlay network that realizes steerable observability with synchronization-aligned views and
+control semantics.
 
 % BSP's tight coupling is both the source of these bottlenecks and what makes them structurally
 % addressable. Closing a runtime feedback loop requires two capabilities: observation to materialize
