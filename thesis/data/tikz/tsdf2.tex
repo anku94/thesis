@@ -25,8 +25,8 @@
 
   % -- MPI Ranks --
   \node [treenode, mpi] (r0) {$R_0$};
-  \node [treenode, mpi, right=0.6cm of r0] (r1) {$R_3$};
-  \node [treenode, mpi, right=0.6cm of r1] (r2) {$R_{12}$};
+  \node [treenode, mpi, right=0.6cm of r0] (r1) {$R_1$};
+  \node [treenode, mpi, right=0.6cm of r1] (r2) {$R_{14}$};
   \node [treenode, mpi, right=0.6cm of r2] (r3) {$R_{15}$};
   % place dots at the intersection of r1 and r2
   \node at ($(r1)!0.5!(r2)$) (rdots) {$\cdots$};
@@ -60,6 +60,7 @@
             1513 & 0 & 0  & \texttt{MPI\_Barrier} & 42\,ms \\
             1591 & 0 & 1  & \texttt{MPI\_Barrier} & 67\,ms \\[-4pt]
             \multicolumn{5}{c}{$\vdots$} \\[-8pt] \\
+            1583 & 0 & 15  & \texttt{MPI\_Barrier} & 31\,ms \\[-3pt]
           \end{tabular}}
     };
   \end{scope}
