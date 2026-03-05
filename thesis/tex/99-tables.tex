@@ -2,6 +2,36 @@
 
 \newcommand{\tabOrcaCell}[2]{\multirow[t]{#1}{=}[0pt]{\raggedright #2}}
 
+\newcommand{\tabIntroCaps}{
+  \begin{table}[t]
+    \centering
+    \scriptsize
+    \begin{tabularx}{\textwidth}{p{1.0in} p{2.5in} Y}
+      \toprule
+      \textbf{Capability}   & \textbf{Example Use Cases}                                                     & \textbf{Observability Requirement} \\
+      \midrule
+      Online feedback       & Straggler distributions at collectives                                         & BSP-aware streaming aggregations   \\
+      \midrule
+      Offline feedback      & Compute kernel telemetry to facilitate development and simulation of placement
+      policies
+                            &
+      In-situ analytics to filter relevant telemetry,\newline
+      BSP-aware layout for faster offline analytics                                                                                               \\
+      \midrule
+      Online interventions  & Additional instrumentation to localize anomalies, or hyperparameter tuning     &
+      Control plane with consistency guarantees                                                                                                   \\
+      \midrule
+      Offline interventions & New placement algorithms, bad hardware removal                                 & \emph{Not in scope}                \\
+      \bottomrule
+    \end{tabularx}
+    \caption{Example observability use cases identified during the AMR study.
+      % \midrule Offline intervention & \begin{itemize}[noitemsep,topsep=0pt,leftmargin=*] \item New
+      % placement algorithms \item Exclude bad hardware \end{itemize} & Not in scope \\
+    }
+    \label{tab:intro:caps}
+  \end{table}
+}
+
 \newcommand{\tabOrcaRelated}{
   \begin{table}[h]
     \centering

@@ -1,5 +1,4 @@
-% !TEX root = ../main.tex 
-%%% Preamble %%% ------------------------------------------------
+% !TEX root = ../main.tex %% Preamble %%% ------------------------------------------------
 
 % ## 1.0: Preamble
 
@@ -25,10 +24,13 @@ paths.
 On the data path, bursts of checkpointed state create massive I/O demands on the storage and
 analytics
 infrastructure~\cite{Jones2012:Checkpointing,Eisen2022:Checkpoint,Lian2025:UniversalCheckpointing}.
-On the compute path, frequent global synchronization amplifies the system's sensitivity to
+On the compute path, frequent global synchronization amplifies the system's sensitivity ---
+factors such as
 execution
-variability~\cite{Hoefl2010:Noise,Petri2003:Missing,Yildi2016:IONoise,Kocol2018:Varbench,Acun2016:Variation},
-and also amplifies correctness risks when failures or corrupted state propagate across ranks.
+variability~\cite{Hoefl2010:Noise,Petri2003:Missing,Yildi2016:IONoise,Kocol2018:Varbench,Acun2016:Variation,Wu2025:GREYHOUND,Yao2025:Holmes,Deng2025:Mycroft,Deng2025:Minder,Chen2025:Reveal,Deng2025:Mycroft},
+failures~\cite{Cui2025:XPUTimer,Dong2025:Aegis}, and correctness risks~\cite{Jiang2025:TrainCheck}
+from corrupted state affect workload-wide progress.
+% and also amplifies correctness risks when failures or corrupted state propagate across ranks.
 Runtime artifacts that would be manageable in loosely coupled systems, such as minor OS-level
 interruptions or thermal throttling, become critical scaling barriers when every worker must wait
 for the slowest participant.
@@ -52,24 +54,22 @@ which BSP workloads largely lack today.
 
 \todo[inline]{Better connection with CARP and AMR, specifics, too high level}
 
-% BSP's tight coupling is both the source of these bottlenecks and what makes them structurally
-% addressable.
-% In BSP, synchronization boundaries are the moments when distributed execution becomes globally
-% interpretable and when coordinated change is well-defined.
-% Closing a runtime feedback loop therefore requires two capabilities at those boundaries:
-% observation to materialize a view of execution state, and action to apply a coordinated response.
-% % The state could be telemetry or application structures, and actions could range from
-% % additional views to interventions.
-% Together, these enable always-on visibility into runtime behavior: lightweight workload-level
-% metrics in the common case, and higher-fidelity views and coordinated interventions
-% in response to observed anomalies.
-% We call the resulting paradigm steerable observability: the ability to navigate across views at
-% multiple fidelities during the run and to intervene on the application guided by those views.
-% We propose ORCA (\emph{Observability with Real-time Control and Aggregation}), which instantiates
-% steerable observability with synchronization-aligned views and control semantics.
 
 Closing these loops requires two capabilities: views materialized from distributed application
 state, and coordinated actions informed by those views.
+% BSP's tight coupling is both the source of these bottlenecks and what makes them structurally
+% addressable. In BSP, synchronization boundaries are the moments when distributed execution becomes
+% globally interpretable and when coordinated change is well-defined. Closing a runtime feedback
+% loop therefore requires two capabilities at those boundaries: observation to materialize a view of
+% execution state, and action to apply a coordinated response. % The state could be telemetry or
+% application structures, and actions could range from % additional views to interventions.
+% Together, these enable always-on visibility into runtime behavior: lightweight workload-level
+% metrics in the common case, and higher-fidelity views and coordinated interventions in response to
+% observed anomalies. We call the resulting paradigm steerable observability: the ability to
+% navigate across views at multiple fidelities during the run and to intervene on the application
+% guided by those views. We propose ORCA (\emph{Observability with Real-time Control and
+% Aggregation}), which instantiates steerable observability with synchronization-aligned views and
+% control semantics.
 BSP synchronization boundaries are the natural points where both are well-defined: global state
 is coherent, and coordinated change can be applied consistently across ranks.
 Together, these enable a class of adaptive workflows over always-on visibility into runtime
@@ -93,12 +93,14 @@ control semantics.
 % pipelines.
 
 % \begin{tcolorbox}[thesisbox]
-  \tstatement{\textbf{Thesis Statement:} \emph{A large class of efficiency bottlenecks in BSP systems arise from
-  conditions that are unknowable before runtime.
-  Through two studies spanning the data and compute paths, this thesis demonstrates that such
+\tstatement{\textbf{Thesis Statement:} \emph{A large class of efficiency bottlenecks in BSP systems
+    arise from
+    conditions that are unknowable before runtime.
+    Through two studies spanning the data and compute paths, this thesis demonstrates that such
     conditions are systematically addressable through adaptive mechanisms if the requisite feedback
     loops exist, and perpetuate if they do not.
-    We present ORCA as general-purpose infrastructure for closing these loops at scale.}}
+    We present ORCA as general-purpose infrastructure for closing these loops at scale.
+  }}
 % \end{tcolorbox}
 
 The rest of this chapter motivates programmable feedback loops through two studies
@@ -219,18 +221,25 @@ In evaluation, CPLX reduced runtime by up to 21.6\% in real AMR workloads over t
 like
 CARP's renegotiation interval, exposed another context-dependent tunable knob.
 
-\subsection{The Infrastructure Gap}
+\subsection{Why Programmable Feedback Loops?
+}
 \label{sec:intro:case:gap}
 
 Both studies instantiate the same primitive---a feedback loop over distributed execution---but
 with starkly different costs.
-In CARP, the loop is online: it materializes the specific view it
-needs during the run and uses it to drive reconfiguration with low turnaround.
-The AMR loop was expensive, as telemetry was collected as bulk traces and analyzed offline.
-Offline loops are expensive in three compounding ways:
+CARP uses an online loop, built on a materialized view of global key distribution, to adapt to skew
+and drift.
+The AMR study documents broader examples of runtime inefficiencies, and the costs of
+acquiring feedback via offline analysis of bulk traces.
+Three compounding factors contribute to these costs:
+
 
 \begin{itemize}[leftmargin=*]
   \item \textbf{Deferred Materialization Costs.
+          % In CARP, the loop is online: it materializes the specific view it needs during the run and uses it
+          % to drive reconfiguration with low turnaround. The AMR loop was expensive, as telemetry was
+          % collected as bulk traces and analyzed offline. Offline loops are expensive in three compounding
+          % ways:
         }
         Raw telemetry is captured at full volume and written
         to storage before any reduction occurs.
@@ -258,75 +267,158 @@ Offline loops are expensive in three compounding ways:
         reruns and offline pipelines rather than by the running job.
 \end{itemize}
 
+\tabIntroCaps{}
+
+These costs can be addressed via programmable observability with control --- enabling not only
+visibility via interactive queries, but also online interventions where possible.
+\Cref{tab:intro:caps} grounds these requirements in example use cases identified from the AMR
+study.
+In situ view materialization shortens the feedback latency and enables discarding raw telemetry
+after reductions.
+Online interventions reduce the need for reruns, while ETL costs can be eliminated by reorganizing
+data en route to storage.
+CARP serves as a template for this generalization in two ways: it
+demonstrates
+the effectiveness of fixed-function feedback loops over distributed state, as well as in-situ
+reorganization
+to accelerate offline analyses.
+A spectrum of workflows can thus be accelerated, from offline telemetry analytics to
+feedback-guided online interventions.
 
 
-The real cost is foregone analysis: feedback bottlenecks incentivize ad-hoc mitigations
-over systematic investigation.
-CARP shows that online closure is feasible, but implements a fixed-function loop built for one
-adaptive mechanism, not as general-purpose programmable infrastructure.
-These pathologies recur across BSP systems and are well-documented, yet persist because no
-general-purpose substrate for closed-loop observability workflows exists.
+\section{ORCA: Programmable, Real-time Feedback and Control}
 
-\section{ORCA: A Substrate for Closed-Loop Observability}
-\label{sec:intro:orca}
+Our goal is always-on, programmable, BSP-aware observability: lightweight aggregates in the common
+case, with depth when needed.
+We call this paradigm \emph{steerable observability}.
+While event-based streaming systems~\cite{Kreps2011:Kafka,Carbo2015:ApacheFlink} are widely
+deployed in cloud
+environments, they treat telemetry as detached events that are serialized and shipped to separate
+analytics clusters.
+Causal windows must then be reconstructed manually: establishing the straggler at a barrier
+requires aggregating telemetry from all $O(10K)$ ranks for that barrier.
+At supercomputer scale, exporting telemetry to an external analytics cluster through a conventional
+TCP stack moves it off the
+primary compute resource, introduces TCP-induced jitter, and fails to leverage the available
+high-performance fabrics.
+We show that BSP telemetry has a regular causal structure amenable to columnar
+representations~\cite{:ApacheArrow},
+RDMA, and operator pushdown.
+Global synchronization partitions execution into causally independent timesteps: telemetry can
+therefore be accumulated locally and flushed each timestep into rank-partitioned
+in-memory \emph{timestep dataframes} for analysis.
+These timestep dataframes capture both the global workload-wide state at the end of the timestep
+and the
+rank-local events that led to that state.
 
-The preceding analysis points to a missing piece: a programmable substrate for closing feedback
-loops over BSP execution online, supporting operator-specified views and coordinated interventions
-without bespoke pipelines.
-We call the resulting paradigm \emph{steerable observability}.
-The system materializes views of distributed state on demand, operators navigate across fidelities
-at runtime, and interventions are applied consistently at synchronization boundaries guided by
-those views.
-This makes always-on collection viable: a lightweight summary can run continuously, with detail
-enabled only when needed.
+% add a figure
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.6\textwidth]{orca-simple.pdf}
+  \caption{ORCA architecture.
+  }
+  \label{fig:intro:orca}
+\end{figure}
 
-\paragraph{Requirements} We identify three requirements for steerable observability:
-
-\begin{itemize}
-  \item \textbf{In-situ view materialization.
-        }
-        Views must be reduced in-situ during the run, not
-        deferred to post-hoc reconstruction through the storage tier.
-        Overhead should scale with fidelity:
-        always-on lightweight aggregates in the common case, with details available on demand.
-
-  \item \textbf{Programmable views.
-        }
-        Operators must be able to specify and evolve views as queries
-        over per-rank observations, without recompilation, restarts, or bespoke pipelines---not
-        write-optimized per-rank logs in flat formats that require expensive reshaping before any question
-        can be asked.
-        A fixed catalog of views cannot anticipate every pathology.
-
-  \item \textbf{Control semantics.
-        }
-        A well-defined mechanism for applying coordinated interventions
-        at synchronization boundaries, so that refining a hypothesis or changing what is observed does not
-        require reconfiguration and re-execution.
-\end{itemize}
-
-\paragraph{ORCA} We propose a \emph{tree-based overlay network} (TBON) called ORCA
-(\emph{Observability with
-  Real-time Control and Aggregation}) as a programmable substrate for steerable observability in BSP
-workloads.
-ORCA attaches a tier of dedicated aggregators to a running application and executes SQL
-queries over columnar telemetry in the overlay, materializing boundary-aligned views through
-in-situ reduction.
-A timestep-consistent control plane (TS2PC) applies coordinated interventions,
-including changes to what is observed, atomically at barriers.
+Leveraging the timestep dataframe abstraction, we propose ORCA
+(\emph{Observability with Real-time Control and Aggregation}), a system for steerable BSP
+observability.
+ORCA (\Cref{fig:intro:orca}) builds a \emph{tree-based overlay network} (TBON)
+for real-time feedback loops between operators and applications via a controller at the root
+and a tier of dedicated aggregators attached to the application
+ranks.
+Feedback is materialized via in-situ reductions over timestep dataframes,
+while control is applied via broadcast.
+A SQL-based analytics interface transforms dataframes en route to
+storage and visualization,
+with operator pushdown and RDMA to minimize data movement across the overlay.
+A custom two-phase commit variant called \emph{TS2PC} ensures that control inputs are applied on
+all ranks at the same timestep.
 On a real AMR code at 4096 ranks,
 ORCA collects detailed traces at 1--2\% overhead versus 56--81\% for conventional tracers,
 eliminates 98.5--99.999\% of telemetry at source for evaluated queries, and in a closed-loop
 evaluation with an LLM agent localizes a performance anomaly in 27 minutes that previously took
 months of manual iteration.
 
+% \paragraph{ORCA} for feedback via in-situ reductions and broadcast for control.
+
+% Timestep-consistent control guarantees are provided via a protocol called Feedback is materialized
+% via in-situ reductions over timestep dataframes, while a \emph{tree-based overlay network} (TBON)
+% called workloads. ORCA attaches a tier of dedicated aggregators to a running application and
+% executes SQL queries over columnar telemetry in the overlay, materializing boundary-aligned views
+% through in-situ reduction. A timestep-consistent control plane (TS2PC) applies coordinated
+% interventions, including changes to what is observed, atomically at barriers.
+
+% Our goal is always-on, programmable, BSP-aware observability --- capable of materializing
+% lightweight aggregates in the common case with depth when needed. We call the resulting paradigm
+% \emph{steerable observability}. While event processing and streaming systems such as Kafka and
+% Flink are widely deployed in cloud environments for collection and streaming analytics, they treat
+% telemetry as separate events, serialized and transported to separate analytics clusters. Causal
+% windows of related events must be reconstructed manually --- establishing the straggler at a
+% barrier requires aggregating telemetry from all ranks for that barrier. Transporting the telemetry
+% generated by a supercomputer-scale application via a conventional TCP stack not only moves it off
+% the primary computational resource in a supercomputing environment, it also introduces jitter and
+% does not leverage the RDMA fabric available in these environments. We show that BSP telemetry has
+% a highly regular causal structure amenable to columnar formats, RDMA, and operator pushdown.
+% Global synchronization divides execution into causally independent timesteps, as execution resets
+% after each timestep. All telemetry can therefore be accumulated locally and flushed every
+% timestep, into rank-partitioned in-memory \emph{timestep dataframes} for analyses. Timestep
+% dataframes capture both the global workload-wide state at the end of that timestep, as well as the
+% local events on each rank that led to that state.
+
+% Steerable Observability:
+
+% % aggregated telemetry visibility into large BSP workloads capable of materializing meaningful
+% on-demand % views and supporting coordinated actions. 1. Support ad-hoc queries 2. Support a
+% spectrum of workflows 3. Online interventions
+
+% \section{ORCA: A Substrate for Closed-Loop Observability} \label{sec:intro:orca}
+
+% \todo[inline]{Move requirements to 1.1? } \todo[inline]{Why does this need to be built afresh, why
+% can't you just use existing stuff}
+
+% The preceding analysis points to a missing piece: a programmable substrate for closing feedback
+% loops over BSP execution online, supporting operator-specified views and coordinated interventions
+% without bespoke pipelines. We call the resulting paradigm \emph{steerable observability}. The
+% system materializes views of distributed state on demand, operators navigate across fidelities at
+% runtime, and interventions are applied consistently at synchronization boundaries guided by those
+% views. This makes always-on collection viable: a lightweight summary can run continuously, with
+% detail enabled only when needed.
+
+% \paragraph{Requirements} We identify three requirements for steerable observability:
+
+% \begin{itemize} \item \textbf{In-situ view materialization. } Views must be reduced in-situ during
+% the run, not deferred to post-hoc reconstruction through the storage tier. Overhead should scale
+% with fidelity: always-on lightweight aggregates in the common case, with details available on
+% demand.
+
+% \item \textbf{Programmable views. } Operators must be able to specify and evolve views as queries
+% over per-rank observations, without recompilation, restarts, or bespoke pipelines---not
+% write-optimized per-rank logs in flat formats that require expensive reshaping before any question
+% can be asked. A fixed catalog of views cannot anticipate every pathology.
+
+% \item \textbf{Control semantics. } A well-defined mechanism for applying coordinated interventions
+% at synchronization boundaries, so that refining a hypothesis or changing what is observed does not
+% require reconfiguration and re-execution. \end{itemize}
+
+% \paragraph{ORCA} We propose a \emph{tree-based overlay network} (TBON) called ORCA
+% (\emph{Observability with Real-time Control and Aggregation}) as a programmable substrate for
+% steerable observability in BSP workloads. ORCA attaches a tier of dedicated aggregators to a
+% running application and executes SQL queries over columnar telemetry in the overlay, materializing
+% boundary-aligned views through in-situ reduction. A timestep-consistent control plane (TS2PC)
+% applies coordinated interventions, including changes to what is observed, atomically at barriers.
+% On a real AMR code at 4096 ranks, ORCA collects detailed traces at 1--2\% overhead versus 56--81\%
+% for conventional tracers, eliminates 98.5--99.999\% of telemetry at source for evaluated queries,
+% and in a closed-loop evaluation with an LLM agent localizes a performance anomaly in 27 minutes
+% that previously took months of manual iteration.
+
 \paragraph{Scope}
-ORCA provides two capabilities: in-situ view materialization and timestep-consistent control.
-ORCA is agnostic to how telemetry is produced and to who drives the loop---
+ORCA provides two capabilities: SQL-based streaming analytics and timestep-consistent control.
+The system is agnostic to how telemetry originates and to who drives the loop---
 operators may be human or automated agents, or fixed policies.
 Telemetry can originate from probes, counters, or application annotations, as long as it can be
 represented as structured columnar data.
-Where SQL is insufficient, ORCA supports user-defined operators within the overlay.
+Where SQL is insufficient, ORCA supports user-defined \emph{map} operators within the overlay.
 
 
 % \subsection{Status Quo and Limitations} \label{sec:intro:orca:statusquo}
