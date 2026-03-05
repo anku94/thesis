@@ -1,0 +1,81 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usetikzlibrary{fit}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{fontawesome5}
+
+\pgfdeclarelayer{deepbackground}
+\pgfsetlayers{deepbackground,background,main}
+
+\begin{document}
+
+\input{assets}
+
+\tikzset{
+  treenode/.style={ circle, draw, solid, line width=0.3pt, minimum size=8mm },
+  mpi/.style={ fill=mpicolor!30 },
+  tablenode/.style={ rectangle, draw=black!70, fill=mpicolor!3, solid },
+  zoomline/.style={mpicolor!80!black, densely dashed, dash pattern=on 1.5pt off 1pt },
+}
+
+\begin{tikzpicture}
+
+  % -- MPI Ranks --
+  \node [treenode, mpi] (r0) {$R_0$};
+  \node [treenode, mpi, right=0.6cm of r0] (r1) {$R_3$};
+  \node [treenode, mpi, right=0.6cm of r1] (r2) {$R_{12}$};
+  \node [treenode, mpi, right=0.6cm of r2] (r3) {$R_{15}$};
+  % place dots at the intersection of r1 and r2
+  \node at ($(r1)!0.5!(r2)$) (rdots) {$\cdots$};
+
+  % -- Timestep Dataframe --
+  \node[below=4pt of r0] (df0) {\tikz\pic{minidf={}};};
+  \node at (df0.east -| r1.north) (df1) {\tikz\pic{minidf={}};};
+  \node at (df1.east -| r2.north) (df2) {\tikz\pic{minidf={}};};
+  \node at (df2.east -| r3.north) (df3) {\tikz\pic{minidf={}};};
+
+  % -- dfbox --
+  \begin{scope}[on background layer]
+    \node[
+      fit=(df0)(df3), inner sep=0pt,
+      draw=mpicolor!70!black,
+      line width=0.1pt,
+      fill=mpicolor!15,
+      rounded corners
+    ] (dfbox) {};
+  \end{scope}
+
+  % -- Table --
+  \begin{scope}[shift={(-0.4, -1.6)}, font=\footnotesize\sffamily]
+    \node[anchor=north west, tablenode] (tbl) at (0, 0) {
+      {\tabcolsep=3pt
+          \renewcommand{\arraystretch}{0.9}
+          \begin{tabular}
+            {@{}cccccc@{}}
+            \faClock & \textbf{Step} & \textbf{Rank} & \textbf{Function} & \textbf{Dura.} \\
+            \midrule
+            1513 & 0 & 0  & \texttt{MPI\_Barrier} & 42\,ms \\
+            1591 & 0 & 1  & \texttt{MPI\_Barrier} & 67\,ms \\[-4pt]
+            \multicolumn{5}{c}{$\vdots$} \\[-8pt] \\
+          \end{tabular}}
+    };
+  \end{scope}
+
+  \node[below=2pt of tbl, align=center, font=\footnotesize\sffamily] (tbltext)
+    {Timestep Dataframe (\emph{Rank-Partitioned})};
+
+  % -- Zoom callout from df3 to table --
+  \begin{scope}[on background layer]
+    \fill[mpicolor!15, opacity=0.5]
+    (dfbox.south west) -- (tbl.north west) --
+    (tbl.north east) -- (dfbox.south east) -- cycle;
+  \end{scope}
+  \draw[zoomline] (dfbox.south west) -- (tbl.north west);
+  \draw[zoomline] (dfbox.south east) -- (tbl.north east);
+
+\end{tikzpicture}
+
+\end{document}

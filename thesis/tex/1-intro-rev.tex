@@ -206,6 +206,16 @@ In practice, we found placement effects
 repeatedly confounded by unrelated artifacts---fail-slow hardware, fabric pathologies, and tuning
 issues—that had to be identified and eliminated before placement could be isolated.
 
+\begin{figure}[t]
+  \centering
+    \includegraphics[width=0.6\textwidth]{broken-loop.pdf}
+  \caption{Analysis workflow via state-of-the-art HPC/ML tracing tools~\cite{Shend2006:TAU,2025:PytorchKineto}. Traces as collected as per-rank logs,
+  requiring expensive \emph{extract-transform-load} (ETL) before any analysis can begin. Reconfigurations such as additional instrumentation
+  require rerunning the application and repeating the workflow, slowing down diagnosis.
+  }
+  \label{fig:intro:amr}
+\end{figure}
+
 The resulting loop---collect traces, analyze offline, refine hypothesis, reconfigure and
 rerun---was entirely manual and slow.
 Conventional HPC tracers~\cite{Shend2006:TAU,Knupf2012:Score-P} emit large per-rank logs in
@@ -314,8 +324,18 @@ rank-local events that led to that state.
 % add a figure
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.6\textwidth]{orca-simple.pdf}
-  \caption{ORCA architecture.
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[height=0.25\textheight,keepaspectratio]{tsdf2.pdf}
+    \caption{The timestep dataframe abstraction}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[height=0.25\textheight,keepaspectratio]{orca-simple.pdf}
+    \caption{ORCA architecture}
+  \end{subfigure}
+  \caption{ORCA architecture. (Left) telemetry is flushed into \emph{timestep dataframes} after every timestep. Consisting of rank-partitioned shards,
+  these form causally independent units for in-situ analysis.
+  (Right) a simplified view of ORCA's tree-based overlay, showing a root controller and a tier of dedicated aggregators, enabling online feedback and control
+  via in-situ reductions and broadcast.
   }
   \label{fig:intro:orca}
 \end{figure}
