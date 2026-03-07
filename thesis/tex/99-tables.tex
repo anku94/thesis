@@ -6,17 +6,17 @@
   \begin{table}[t]
     \centering
     \scriptsize
-    \begin{tabularx}{\textwidth}{p{1.0in} p{2.5in} Y}
+    \begin{tabularx}{\textwidth}{p{1.0in} p{2.4in} Y}
       \toprule
-      \textbf{Capability}   & \textbf{Example Use Cases}                                                     & \textbf{Observability Requirement} \\
+      \textbf{Capability}   & \textbf{Example Use Cases}                                                     & \textbf{Design Requirement} \\
       \midrule
-      Online feedback       & Straggler distributions at collectives                                         & BSP-aware streaming aggregations   \\
+      Online views       & Straggler distributions at collectives                                         & Coordinated cross-rank streaming aggregations   \\
       \midrule
-      Offline feedback      & Compute kernel telemetry to facilitate development and simulation of placement
+      Offline analytics      & Compute kernel telemetry to facilitate development and simulation of placement
       policies
                             &
       In-situ analytics to filter relevant telemetry,\newline
-      BSP-aware layout for faster offline analytics                                                                                               \\
+      repartitioning for faster offline analytics                                                                                               \\
       \midrule
       Online interventions  & Additional instrumentation to localize anomalies, or hyperparameter tuning     &
       Control plane with consistency guarantees                                                                                                   \\
@@ -24,7 +24,9 @@
       Offline interventions & New placement algorithms, bad hardware removal                                 & \emph{Not in scope}                \\
       \bottomrule
     \end{tabularx}
-    \caption{Example observability use cases identified during the AMR study.
+    \caption{
+      Steerable observability capabilities and design requirements, along with example AMR use cases.
+      % Example observability use cases identified during the AMR study.
       % \midrule Offline intervention & \begin{itemize}[noitemsep,topsep=0pt,leftmargin=*] \item New
       % placement algorithms \item Exclude bad hardware \end{itemize} & Not in scope \\
     }
