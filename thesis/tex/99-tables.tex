@@ -6,29 +6,31 @@
   \begin{table}[t]
     \centering
     \scriptsize
-    \begin{tabularx}{\textwidth}{p{1.0in} p{2.4in} Y}
+    \begin{tabularx}{\textwidth}{p{1.0in} Y p{2.4in}}
       \toprule
-      \textbf{Capability}   & \textbf{Example Use Cases}                                                     & \textbf{Design Requirement} \\
+      \textbf{Capability}                       & \textbf{Design Requirement}                                                    & \textbf{Example Use Cases}                     \\
       \midrule
-      Online views       & Straggler distributions at collectives                                         & Coordinated cross-rank streaming aggregations   \\
+      Online views                              & Coordinated cross-rank streaming aggregations                                  & Straggler distributions at
+      collectives                                                                                                                                                                 \\
       \midrule
-      Offline analytics      & Compute kernel telemetry to facilitate development and simulation of placement
-      policies
-                            &
+      Offline analytics                         &
       In-situ analytics to filter relevant telemetry,\newline
-      repartitioning for faster offline analytics                                                                                               \\
+      repartitioning for faster offline analytics
+                                                & Compute kernel telemetry to facilitate development and simulation of placement
+      policies                                                                                                                                                                    \\
       \midrule
-      Online interventions  & Additional instrumentation to localize anomalies, or hyperparameter tuning     &
-      Control plane with consistency guarantees                                                                                                   \\
+      Online interventions                      &
+      Control plane with consistency guarantees & Additional instrumentation to localize anomalies, or
+      hyperparameter tuning                                                                                                                                                       \\
       \midrule
-      Offline interventions & New placement algorithms, bad hardware removal                                 & \emph{Not in scope}                \\
+      Offline interventions                     & \emph{Not in scope}                                                            & New placement algorithms, bad hardware removal \\
       \bottomrule
     \end{tabularx}
     \caption{
       Steerable observability capabilities and design requirements, along with example AMR use cases.
-      % Example observability use cases identified during the AMR study.
-      % \midrule Offline intervention & \begin{itemize}[noitemsep,topsep=0pt,leftmargin=*] \item New
-      % placement algorithms \item Exclude bad hardware \end{itemize} & Not in scope \\
+      % Example observability use cases identified during the AMR study. \midrule Offline intervention &
+      % \begin{itemize}[noitemsep,topsep=0pt,leftmargin=*] \item New placement algorithms \item Exclude
+      % bad hardware \end{itemize} & Not in scope \\
     }
     \label{tab:intro:caps}
   \end{table}

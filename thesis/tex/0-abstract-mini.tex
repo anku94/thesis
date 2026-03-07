@@ -1,0 +1,46 @@
+% !TEX root = ../main.tex
+
+\frontchapter{Abstract (mini)}
+
+The bulk-synchronous parallel (BSP) paradigm---powering large-scale scientific simulations and
+distributed ML training---poses unique efficiency challenges.
+These workloads impose periodic global synchronization across 10,000s of ranks, which compounds
+small inefficiencies into cluster-wide bottlenecks.
+Many arise from conditions unknowable before runtime, such as load imbalance and performance
+pathologies, and can only be addressed through adaptation.
+Efficiency in production therefore hinges on \emph{adaptation latency}: how quickly conditions can
+be observed, characterized, and responded to.
+This thesis argues that general-purpose infrastructure
+for adaptive feedback loops
+is the missing piece in today's BSP systems.
+
+We develop this claim through two studies that instantiate the same primitive---a feedback loop
+over application state---with starkly different outcomes.
+On the data path, CARP implements an online loop for range-query-optimized data ingestion: it
+periodically materializes a view of global key distributions via in-situ reduction and uses it to
+recompute load-balanced range partitions as distributions evolve, matching the query performance of
+a full sort with up to $4.9\times$ faster ingestion.
+On the compute path, we study placement in adaptive mesh refinement codes, where apparent load
+imbalance is confounded by faulty hardware, execution variability, and tuning artifacts.
+Here the loop comprised multiple time-consuming cycles of
+bulk trace collection, offline analyses, reconfiguration, and re-execution.
+Isolating true placement effects consumed months even though individual mitigations typically took
+days.
+With reliable telemetry established, we design CPLX, a tunable placement policy that achieves up
+to $21.6\%$ runtime improvement.
+CARP demonstrates that online feedback loops are effective when they exist.
+The AMR study demonstrates the cost when they do not.
+
+Because these effects are intrinsically unpredictable, production BSP systems need an always-on,
+programmable loop for observing and responding to runtime behavior.
+Coarse views surface deviations, and the loop enables both steering into narrower views for
+localization and triggering online interventions where viable.
+We call this paradigm steerable observability.
+ORCA realizes this via a BSP-aware tree-based overlay that
+materializes runtime views through in-situ reduction and provides a timestep-consistent control
+plane for coordinated interventions.
+On a real AMR code at 4096 ranks, ORCA collects detailed traces at 1--2\% overhead versus
+conventional HPC tracers at 56--81\% and eliminates 98.5--99.999\% of telemetry at source for
+evaluated queries.
+In an evaluation of its closed-loop capabilities using an LLM agent, a performance anomaly that
+took months to diagnose manually is localized in 27 minutes.

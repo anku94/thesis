@@ -1,14 +1,19 @@
 % !TEX root = ../main.tex
 
 %%% --- Title Page ---
-\newgeometry{vmargin=2in,hmargin=1in}
+\newgeometry{vmargin=1.5in,hmargin=1.5in}
 \begin{titlingpage}
 \centering
-{\Large\bfseries \thesisTitle\par}
+{\huge\bfseries \thesisTitle\par}
+% {\huge\bfseries \thesisTitle\par}
+
+\vspace{2em}
+
+{\LARGE\bfseries \thesisAuthor\par}
 
 \vfill
-Submitted in partial fulfillment of the requirements for\\
-the degree of\\
+\emph{Submitted in partial fulfillment of the requirements for}\\
+\emph{the degree of}\\
 
 \vspace{1em}
 Doctor of Philosophy\\
@@ -17,18 +22,18 @@ in\\
 \vspace{1em}
 Department of Electrical and Computer Engineering\\
 
-\vfill
-\thesisAuthor\\
-\vspace{1em}
-B.Tech., Computer Science and Engineering, IIIT Hyderabad
-
 % \vfill
-% Committee:\\
-% Prof. George Amvrosiadis (Chair)\\
-% Prof. Greg Ganger\\
-% Prof. Andy Pavlo\\
-% Prof. Vyas Sekar\\
-% Dr. Brad Settlemyer
+% \thesisAuthor\\
+% \vspace{1em}
+% B.Tech., Computer Science and Engineering, IIIT Hyderabad
+
+\vfill
+\emph{Thesis Committee:}\\
+Prof. George Amvrosiadis (Chair)\\
+Prof. Greg Ganger\\
+Prof. Andy Pavlo\\
+Prof. Vyas Sekar\\
+Dr. Brad Settlemyer
 
 \vfill
 Carnegie Mellon University\\
@@ -39,26 +44,26 @@ March 2026
 
 % == XXXAJ: some content disabled for author convenience ==
 %% --- Copyright Page ---
-% \newgeometry{vmargin=2in,hmargin=1in}
-% \begin{titlingpage}
-% \null% vfill needs something to push against
-% \vfill
-% \centering
-% \copyright\ Ankush Jain, 2026\\
-% All Rights Reserved
-% \end{titlingpage}
-% \restoregeometry
+\newgeometry{vmargin=2in,hmargin=1in}
+\begin{titlingpage}
+\null% vfill needs something to push against
+\vfill
+\centering
+\copyright\ Ankush Jain, 2026\\
+All Rights Reserved
+\end{titlingpage}
+\restoregeometry
 
 \setcounter{page}{3} % title page=i, copyright=ii
 
 \input{acks} % acknowledgments page (TMP: disabled)
 \input{tex/0-abstract} % abstract page
 \dominitoc
-\adjustmtc[3] % Skip acknowledgements + abstract
+\adjustmtc[5] % Skip acknowledgements + abstract
 
 % Tighten spacing a bit
 {\setstretch{1.00}\hypersetup{linkcolor=black}\tableofcontents}
 % \tableofcontents
 %%% -- TMP: disabled --
-% \listoftables
-% \listoffigures
+\listoftables
+\listoffigures

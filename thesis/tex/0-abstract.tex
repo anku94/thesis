@@ -2,22 +2,55 @@
 
 \frontchapter{Abstract}
 
+% The bulk-synchronous parallel (BSP) paradigm --- powering large-scale scientific simulations and distributed ML training --- poses unique efficiency challenges.
+% Periodic global synchronization across 10,000s of ranks compounds small inefficiencies into cluster-wide bottlenecks.
+% Many of these inefficiencies arise from conditions unknowable before runtime, such as load imbalance and performance pathologies,
+% and can only be addressed reactively.
+% Efficiency in production therefore hinges on adaptation latency: how quickly conditions can be observed, characterized, and responded to.
+% This thesis argues that general-purpose infrastructure for closing feedback loops at BSP synchronization
+% boundaries is the missing piece in today's BSP systems.
 
-Bulk Synchronous Parallel (BSP) workloads power large-scale scientific simulations and distributed
-machine learning, running for long durations at massive scale where small inefficiencies translate
-into major cost and time-to-discovery impacts.
-Many of the most consequential inefficiencies arise from conditions unknowable before runtime,
-including evolving data distributions, performance variability, and environment-dependent
-pathologies.
-Such conditions can only be addressed through adaptation, and efficiency in production
-therefore hinges on adaptation latency: how quickly conditions can be observed, characterized, and
-responded to.
-% in production, effectiveness hinges on adaptation latency: how quickly conditions can be observed,
-% characterized, and responded to.
-In BSP, synchronization boundaries provide a natural structure for such feedback: they define when
+% Bulk-synchronous parallel (BSP) workloads---large-scale HPC simulations and distributed ML
+% training---run for long durations at massive scale where small inefficiencies compound into major
+% costs.
+% Many arise from conditions unknowable before runtime, such as evolving data distributions and
+% performance pathologies, and can only be addressed through adaptation.
+% Efficiency in production therefore hinges on adaptation latency: how quickly conditions can be
+% observed, characterized, and responded to.
+% This thesis argues that general-purpose infrastructure for closing feedback loops at BSP
+% synchronization
+% boundaries is the missing piece in today's BSP systems.
+
+
+% Bulk Synchronous Parallel (BSP) workloads power large-scale scientific simulations and distributed
+% machine learning, running for long durations at massive scale where small inefficiencies translate
+% into major cost and time-to-discovery impacts.
+% Many of the most consequential inefficiencies arise from conditions unknowable before runtime,
+% including evolving data distributions, performance variability, and environment-dependent
+% pathologies.
+% Such conditions can only be addressed through adaptation, and efficiency in production
+% therefore hinges on adaptation latency: how quickly conditions can be observed, characterized, and
+% responded to.
+% % in production, effectiveness hinges on adaptation latency: how quickly conditions can be observed,
+% % characterized, and responded to.
+% In BSP, synchronization boundaries provide a natural structure for such feedback: they define when
+% distributed state is globally interpretable and when coordinated change is well-defined.
+% This thesis argues that general-purpose infrastructure for closing feedback loops at these
+% boundaries is the missing piece in today's BSP systems.
+
+The \emph{bulk-synchronous parallel} (BSP) paradigm---powering large-scale scientific simulations and
+distributed ML training---poses unique efficiency challenges.
+These workloads impose periodic global synchronization across 10,000s of ranks, which compounds
+small inefficiencies into cluster-wide bottlenecks.
+Many arise from conditions unknowable before runtime, such as load imbalance and performance
+pathologies, and can only be addressed through adaptation.
+Efficiency in production therefore hinges on \emph{adaptation latency}: how quickly conditions can
+be observed, characterized, and responded to.
+BSP synchronization boundaries provide a natural structure for such observations and interventions: they define when
 distributed state is globally interpretable and when coordinated change is well-defined.
-This thesis argues that general-purpose infrastructure for closing feedback loops at these
-boundaries is the missing piece in today's BSP systems.
+This thesis argues that general-purpose infrastructure
+for adaptive feedback loops
+is the missing piece in today's BSP systems.
 
 
 
@@ -60,23 +93,20 @@ The AMR study demonstrates the cost when they do not.
 
 % Because these conditions recur unpredictably, production BSP systems need an always-on,
 % programmable observability loop: coarse views surface deviations, and the loop can be steered on
-% demand into narrower views to localize and act on them.
-% We call this steerable observability.
-% ORCA realizes this via a tree-based overlay for programmable feedback and control in BSP systems,
+% demand into narrower views to localize and act on them. We call this steerable observability. ORCA
+% realizes this via a tree-based overlay for programmable feedback and control in BSP systems,
 % materializing runtime views through in-situ reduction and providing a timestep-consistent control
-% plane for coordinated interventions.
-% On a real AMR code at 4096 ranks, ORCA collects detailed
-% traces at 1--2\% overhead versus conventional HPC tracers at 56--81\% and eliminates 98.5--99.999\%
-% of telemetry at source for evaluated queries.
-% In an evaluation of its closed-loop capabilities
-% using an LLM agent, a performance anomaly that took months to diagnose manually is localized in 27
-% minutes.
+% plane for coordinated interventions. On a real AMR code at 4096 ranks, ORCA collects detailed
+% traces at 1--2\% overhead versus conventional HPC tracers at 56--81\% and eliminates
+% 98.5--99.999\% of telemetry at source for evaluated queries. In an evaluation of its closed-loop
+% capabilities using an LLM agent, a performance anomaly that took months to diagnose manually is
+% localized in 27 minutes.
 
 Because these effects recur unpredictably, production BSP systems need an always-on,
 programmable loop for observing and responding to runtime behavior.
 Coarse views surface deviations, and the loop can be steered on demand into narrower views to
 localize and act on them.
-We call this steerable observability.
+We call this \emph{steerable observability}.
 ORCA realizes this via a tree-based overlay for programmable feedback and control in BSP systems,
 materializing runtime views through in-situ reduction and providing a timestep-consistent control
 plane for coordinated interventions.

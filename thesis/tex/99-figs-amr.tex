@@ -5,9 +5,9 @@
   \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth,keepaspectratio]{data/figs/amr_msgcnt_regr_hor.pdf}
-    \caption{Telemetry challenges in AMR codes: correlation between message counts and timing.
-      Initial telemetry shows poor correlation between work (message counts) and
-      communication time.
+    \caption{An example of telemetry challenges in AMR codes, showing poor correlation between work (message counts) and communication time.
+      % Initial telemetry shows poor correlation between work (message counts) and
+      % communication time.
       Tuning for system-level issues improves correlation and telemetry reliability.}
     \label{fig:amr:chal:regr}
   \end{figure}
@@ -17,10 +17,15 @@
 \newcommand{\figAmrChalVol}{
   \begin{figure}[t]
     \centering
-    \includegraphics[height=0.32\textheight,keepaspectratio]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
-    \caption{Telemetry challenges in AMR codes: coarse vs fine-grained telemetry.
-      Fine-grained telemetry reveals subtle
-      performance anomalies affecting average collective time by $3\times$.}
+    \includegraphics[height=0.28\textheight,keepaspectratio]{data/figs/amr_lesson_volfunc_v2_short_zoom.pdf}
+    \caption{
+      Coarse and fine-grained views of telemetry from a volatile function, followed by a collective.
+      Aggregate telemetry (left) averages out random spikes in the volatile function, attributing the bulk of the runtime to the collective.
+      Fine-grained telemetry (right) reveals subtle performance anomalies affecting average collective time by $3\times$.
+      % Telemetry challenges in AMR codes: coarse vs fine-grained telemetry.
+      % Fine-grained telemetry reveals subtle
+      % performance anomalies affecting average collective time by $3\times$.
+      }
     \label{fig:amr:chal:vol}
   \end{figure}
 }
@@ -66,8 +71,8 @@
       \caption{Two-rank critical path}
       \label{fig:amr:model:2rcp}
     \end{subfigure}
-    \caption{Critical path examples.
-      Delay chains can be purely local (a) or involve exactly two ranks with one P2P communication round (b).}
+    \caption{Critical path examples involving one rank (left) and two ranks (right).
+      Critical paths can be purely local, as in the single-rank case, or involve a maximum of two ranks assuming one P2P communication round.}
     \label{fig:amr:model:cp}
   \end{figure}
 }
@@ -91,7 +96,7 @@
 \newcommand{\figoctree}{
   \begin{figure}[t]
     \centering
-    \includegraphics[height=0.45\textheight, keepaspectratio]{data/figs/amr_octree.pdf}
+    \includegraphics[height=0.35\textheight, keepaspectratio]{data/figs/amr_octree.pdf}
     \caption{Example of an adaptively refined mesh, octrees, and Z-order
       Space-Filling Curves (SFCs) in two dimensions.
       Mesh blocks correspond to octree nodes with refinement creating child nodes.

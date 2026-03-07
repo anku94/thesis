@@ -1,9 +1,9 @@
 % !TEX root = ../main.tex
-\chapter{Conclusions}\label{chap:concl}
+\chapter{Conclusions and Future Directions}\label{chap:concl}
 \begin{center}
-      \begin{minipage}{0.95\textwidth}
-\minitoc
-\end{minipage}
+  \begin{minipage}{0.95\textwidth}
+    \minitoc
+  \end{minipage}
 \end{center}
 
 
@@ -131,12 +131,15 @@ their structure more efficiently than any post-hoc approach, providing the empir
 developing predictive strategies that anticipate rather than react~\cite{Smith1957:Predict}.
 
 
-\section{OLAP Lessons for Scientific Data Management}\label{sec:concl:olap}
+\section{Lessons from OLAP for Scientific Data Management}\label{sec:concl:olap}
 
-Having reviewed ORCA as an observability and control substrate, we now turn to broader lessons from CARP and ORCA for scientific data management.
+Having reviewed ORCA as an observability and control substrate, we now turn to broader lessons from
+CARP and ORCA for scientific data management.
 
 \paragraph{Why HPC Ingestion Is Filesystem-Centric}
-HPC applications write to parallel filesystems~\cite{Braam2002:Lustre,Schmu2002:GPFS,:VDURA,2025:VASTAI,:WekaIO,:Hammerspace} and object
+HPC applications write to parallel
+filesystems~\cite{Braam2002:Lustre,Schmu2002:GPFS,:VDURA,2025:VASTAI,:WekaIO,:Hammerspace} and
+object
 stores~\cite{Liang2020:DAOS} designed to
 absorb synchronized bursts of data from tens of thousands of ranks, instead of databases.
 % % Why do HPC and OLAP get along so well?% What does it imply for the future of scientific data?%
@@ -157,9 +160,10 @@ scientific data formats, resists monolithic databases.
 % analytics for BSP, the primitive is in-situ reduction materializing results into this existing
 % storage stack, not ingestion into a centralized store.
 
-\paragraph{Open Table Formats Decouple Ingestion from Analytics}
+\paragraph{Relevance of Open Table Formats}
 Modern analytics systems increasingly decouple query engines from storage.
-Open table formats such as Iceberg~\cite{:Iceberg} and Delta Lake~\cite{Armbr2020:Deltalake} maintain a
+Open table formats such as Iceberg~\cite{:Iceberg} and Delta Lake~\cite{Armbr2020:Deltalake}
+maintain a
 lightweight catalog over partitioned
 columnar files or objects.
 Query engines attach at read time and use this catalog for pruning, pushdown, and lazy evaluation.
@@ -274,21 +278,19 @@ DataFusion's~\cite{Lamb2024:DataFusion} extensibility makes this a viable path.
 
 \section{Immediate Extensions}\label{sec:concl:extensions}
 
-\paragraph{Instrumentation Sources}
-Tools like Kineto~\cite{2025:PytorchKineto} aggregate telemetry from multiple sources into a
-unified trace.
-ORCA supports the same but as real-time aggregations over any interface that emits structured
-events---NVTX/CUPTI GPU hooks, MPI runtime probes, hardware counters.
-eBPF~\cite{:eBPF} and DynInst~\cite{Berna2011:DynInst} are especially appealing as they enable dynamic instrumentation without
-recompilation, extending visibility into arbitrary functions at runtime.
-
-\paragraph{Approximate Summaries}
-Mergeable sketches can summarize streams in-flight at far lower cost and fit naturally into ORCA’s
-reduction topology.
-For example, KLL~\cite{Karni2016:KLLSketch} can estimate latency percentiles, and
-Count-Min~\cite{Cormo2005:CountMin} can
-identify heavy hitters such as straggler ranks or hottest callsites, all with bounded error and
-without retaining raw events.
+\paragraph{Multi-Dimensional Parallelism for ML Training}
+Large-scale ML training implements multiple levels of parallelism --- data, tensor, pipeline, and
+expert --- that compose into complex multi-dimensional
+topologies~\cite{Gratt2024:Llama3Scale,Rahma2024:MLScale}.
+While the execution model remains fundamentally BSP at each level, the nesting creates structure
+that ORCA does not currently exploit.
+The TBON topology and the query planner would benefit from alignment to these parallelism
+dimensions, enabling intra-data-parallel reductions to be pushed deeper in the tree than
+cross-data-parallel aggregations.
+The ML training ecosystem currently lacks a standard way to construct and query these topologies
+at runtime, so this would require integration with training frameworks such as
+Megatron~\cite{Shoey2020:Megatron-LM} and DeepSpeed~\cite{:DeepSpeed}
+to discover the parallelism layout and map it onto ORCA's overlay.
 
 \paragraph{Shuffling-Based Streaming Analytics}
 Shuffling-based in-situ indexing systems like DeltaFS~\cite{Zheng2018:DeltaFS} and
@@ -300,25 +302,37 @@ Because the MPI tier has substantial egress bandwidth, the planner can be
 phase-aware, scheduling sinks at the MPI tier in checkpoint phases while avoiding that
 interference during compute phases.
 
-% \paragraph{Open Table Formats for HPC}
-% While ORCA writes telemetry as partitioned Parquet, it does not currently emit a metadata catalog.
-% Open table formats such as Iceberg~\cite{:Iceberg} maintain a lightweight index over partitioned
-% Parquet
-% files---partition boundaries, column statistics, file locations---enabling engines to prune
-% irrelevant data without scanning.
-% Any HPC pipeline that already writes Parquet would benefit from the same treatment, replacing ad
-% hoc file-management conventions with self-describing, immediately queryable datasets.
+\paragraph{Instrumentation Sources}
+Tools like Kineto~\cite{2025:PytorchKineto} aggregate telemetry from multiple sources into a
+unified trace.
+ORCA supports the same but as real-time aggregations over any interface that emits structured
+events---CUPTI~\cite{:CUPTI} GPU hooks, MPI runtime probes, hardware counters.
+eBPF~\cite{:eBPF} and DynInst~\cite{Berna2011:DynInst} are especially appealing as they enable dynamic instrumentation without
+recompilation, extending visibility into arbitrary functions at runtime.
+
+\paragraph{Approximate Summaries}
+Mergeable sketches can summarize streams in-flight at far lower cost and fit naturally into ORCA’s
+reduction topology.
+For example, KLL~\cite{Karni2016:KLLSketch} can estimate latency percentiles, and
+Count-Min~\cite{Cormo2005:CountMin} can
+identify heavy hitters such as straggler ranks or hottest callsites, all with bounded error and
+without retaining raw events.
+
+
+% \paragraph{Open Table Formats for HPC} While ORCA writes telemetry as partitioned Parquet, it does
+% not currently emit a metadata catalog. Open table formats such as Iceberg~\cite{:Iceberg} maintain
+% a lightweight index over partitioned Parquet files---partition boundaries, column statistics, file
+% locations---enabling engines to prune irrelevant data without scanning. Any HPC pipeline that
+% already writes Parquet would benefit from the same treatment, replacing ad hoc file-management
+% conventions with self-describing, immediately queryable datasets.
 
 \paragraph{Control Interface Regularization}
 The set of controllable actions is currently defined ad hoc per integration.
 Regularizing this into typed providers that advertise capabilities, accept structured commands, and
-return typed acknowledgments makes control capabilities discoverable and composable, analogous to a
-southbound API in SDN.
+return typed acknowledgments makes control capabilities discoverable and composable.
+analogous to a southbound API in SDN~\cite{Braun2014:SDN}.
 
-\todo[inline]{Maybe something like: broader ML integration, parallelisms etc, pipelines and
-  implications}
-\todo[inline]{Implifications of rdma-estats and things like that?
-}
+
 
 \section{Future Directions}\label{sec:concl:future}
 
@@ -349,10 +363,13 @@ emit compact summaries without transferring full tensors to the host.
 ORCA's overlay currently executes all operators on host-side aggregators.
 Additional execution tiers are becoming viable: SmartNICs can run Arrow-native reductions on the
 fabric itself~\cite{Ulmer2023:ExtendingComposableDatab,Liu2022:ProcessingParticleData}, and eBPF
-can push filter and sketch logic into kernel-space probes.
+can push filter and sketch logic into kernel-side probes.
 Each tier admits a restricted operator subset under different resource and state constraints.
-The compilation problem is decomposing a high-level query across these tiers---deciding which
-operators run where and how intermediate results flow between them.
+More broadly, unified intermediate representations and layered compilation are emerging as the path
+toward composing data processing across heterogeneous execution targets~\cite{Jungm2025:DesigningFutureProofData}.
+The compilation problem for ORCA --- decomposing a high-level query across
+host, NIC, and kernel tiers --- is an instance of this.
+%  --- deciding which operators run where and how intermediate results flow between them.
 
 \paragraph{Cost-Aware Reactive Placement}
 ORCA’s placement today follows tree the topology: per-partition work is pushed down, while

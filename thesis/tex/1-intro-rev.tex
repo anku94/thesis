@@ -96,10 +96,12 @@ control semantics.
 \tstatement{\textbf{Thesis Statement:} \emph{A large class of efficiency bottlenecks in BSP systems
     arise from
     conditions that are unknowable before runtime.
-    Through two studies spanning the data and compute paths, this thesis demonstrates that such
+    % Through two studies spanning the data and compute paths, this thesis demonstrates that 
+    Such
     conditions are systematically addressable through adaptive mechanisms if the requisite feedback
     loops exist, and perpetuate if they do not.
-    We present ORCA as general-purpose infrastructure for closing these loops at scale.
+    A general-purpose programmable substrate can close these loops at scale.
+    % We present ORCA as general-purpose infrastructure for closing these loops at scale.
   }}
 % \end{tcolorbox}
 
@@ -208,10 +210,13 @@ issues—that had to be identified and eliminated before placement could be isol
 
 \begin{figure}[t]
   \centering
-    \includegraphics[width=0.6\textwidth]{broken-loop.pdf}
-  \caption{Analysis workflow via state-of-the-art HPC/ML tracing tools~\cite{Shend2006:TAU,2025:PytorchKineto}. Traces as collected as per-rank logs,
-  requiring expensive \emph{extract-transform-load} (ETL) before any analysis can begin. Reconfigurations such as additional instrumentation
-  require rerunning the application and repeating the workflow, slowing down diagnosis.
+  \includegraphics[width=0.6\textwidth]{broken-loop.pdf}
+  \caption{Analysis workflow via state-of-the-art HPC/ML tracing
+    tools~\cite{Shend2006:TAU,2025:PytorchKineto}.
+    Traces as collected as per-rank logs,
+    requiring expensive \emph{extract-transform-load} (ETL) before any analysis can begin.
+    Reconfigurations such as additional instrumentation
+    require rerunning the application and repeating the workflow, slowing down diagnosis.
   }
   \label{fig:intro:amr}
 \end{figure}
@@ -251,13 +256,16 @@ Three compounding factors contribute to these costs:
           % collected as bulk traces and analyzed offline. Offline loops are expensive in three compounding
           % ways:
         }
-        Raw telemetry is captured at full volume and written
-        to storage before any reduction occurs.
+        Raw telemetry is captured at full volume and
+        persisted
+        before any reduction occurs.
+        % written to storage
         Because the right subset is not knowable without feedback,
         the paradigm intrinsically tends to overcollect.
-        The resulting dataset is supercomputer-scale,
-        so a reduction that could run in situ over an HPC fabric is instead forced through a
-        write--read--parse cycle on the slowest tier in the hierarchy: storage.
+        % The resulting dataset is supercomputer-scale, so a r
+        Reductions that could run in situ over an HPC fabric are instead forced through a
+        write--read--parse cycle of telemetry from O(10-100K) ranks on the slowest tier in the hierarchy:
+        storage.
 
   \item \textbf{ETL Costs.
         }
@@ -277,17 +285,18 @@ Three compounding factors contribute to these costs:
         reruns and offline pipelines rather than by the running job.
 \end{itemize}
 
+
 \tabIntroCaps{}
 
-These costs can be addressed via programmable observability with control --- enabling not only
-visibility via interactive queries, but also online interventions where possible.
-\Cref{tab:intro:caps} grounds these requirements in example use cases identified from the AMR
-study.
-In situ view materialization shortens the feedback latency and enables discarding raw telemetry
-after reductions.
-Online interventions reduce the need for reruns, while ETL costs can be eliminated by reorganizing
-data en route to storage.
-CARP serves as a template for this generalization in two ways: it
+% CARP serves as a template: it demonstrates both a fixed-function online feedback loop over
+% distributed state and in-situ reorganization to accelerate offline analyses.
+% A programmable substrate would generalize these across the spectrum, from offline analytics to
+% feedback-guided online interventions.
+These costs can be addressed via a common streaming analytics and control plane --- one that provides
+online feedback loops via materialized views and online interventions, and accelerates offline workflows
+via in-situ filtering and data reorganization en route to storage.
+\Cref{tab:intro:caps} grounds these capabilities in example use cases from the AMR study.
+CARP serves as a template in two ways: it
 demonstrates
 the effectiveness of fixed-function feedback loops over distributed state, as well as in-situ
 reorganization
@@ -296,7 +305,25 @@ A spectrum of workflows can thus be accelerated, from offline telemetry analytic
 feedback-guided online interventions.
 
 
+% These costs can be addressed via programmable observability with control --- enabling not only
+% visibility via interactive queries, but also online interventions where possible.
+% \Cref{tab:intro:caps} grounds these requirements in example use cases identified from the AMR
+% study.
+% In situ view materialization shortens the feedback latency and enables discarding raw telemetry
+% after reductions.
+% Online interventions reduce the need for reruns, while ETL costs can be eliminated by reorganizing
+% data en route to storage.
+% CARP serves as a template for this generalization in two ways: it
+% demonstrates
+% the effectiveness of fixed-function feedback loops over distributed state, as well as in-situ
+% reorganization
+% to accelerate offline analyses.
+% A spectrum of workflows can thus be accelerated, from offline telemetry analytics to
+% feedback-guided online interventions.
+
+
 \section{ORCA: Programmable, Real-time Feedback and Control}
+\label{sec:intro:orca}
 
 Our goal is always-on, programmable, BSP-aware observability: lightweight aggregates in the common
 case, with depth when needed.
@@ -306,8 +333,10 @@ deployed in cloud
 environments, they treat telemetry as detached events that are serialized and shipped to separate
 analytics clusters.
 Causal windows must then be reconstructed manually: establishing the straggler at a barrier
-requires aggregating telemetry from all $O(10K)$ ranks for that barrier.
-At supercomputer scale, exporting telemetry to an external analytics cluster through a conventional
+requires aggregating
+that barrier's durations from tens to hundreds of thousands of ranks in real applications.
+% telemetry from all $O(10K)$ ranks for that barrier.
+At these scales, exporting telemetry to an external analytics cluster through a conventional
 TCP stack moves it off the
 primary compute resource, introduces TCP-induced jitter, and fails to leverage the available
 high-performance fabrics.
@@ -317,7 +346,8 @@ RDMA, and operator pushdown.
 Global synchronization partitions execution into causally independent timesteps: telemetry can
 therefore be accumulated locally and flushed each timestep into rank-partitioned
 in-memory \emph{timestep dataframes} for analysis.
-These timestep dataframes capture both the global workload-wide state at the end of the timestep
+These timestep dataframes (\Cref{fig:intro:orca:tsdf}) capture both the global workload-wide state
+at the end of the timestep
 and the
 rank-local events that led to that state.
 
@@ -326,16 +356,18 @@ rank-local events that led to that state.
   \centering
   \begin{subfigure}[b]{0.45\textwidth}
     \includegraphics[height=0.25\textheight,keepaspectratio]{tsdf2.pdf}
-    \caption{The timestep dataframe abstraction}
+    \caption{The timestep dataframe abstraction}\label{fig:intro:orca:tsdf}
   \end{subfigure}
   \begin{subfigure}[b]{0.45\textwidth}
     \includegraphics[height=0.25\textheight,keepaspectratio]{orca-simple.pdf}
-    \caption{ORCA architecture}
+    \caption{ORCA architecture}\label{fig:intro:orca:arch}
   \end{subfigure}
-  \caption{ORCA architecture. (Left) telemetry is flushed into \emph{timestep dataframes} after every timestep. Consisting of rank-partitioned shards,
-  these form causally independent units for in-situ analysis.
-  (Right) a simplified view of ORCA's tree-based overlay, showing a root controller and a tier of dedicated aggregators, enabling online feedback and control
-  via in-situ reductions and broadcast.
+  \caption{ORCA architecture.
+    (Left) telemetry is flushed into \emph{timestep dataframes} after every timestep.
+    Consisting of rank-partitioned shards,
+    these form causally independent units for in-situ analysis.
+    (Right) a simplified view of ORCA's tree-based overlay, showing a root controller and a tier of dedicated aggregators, enabling online feedback and control
+    via in-situ reductions and broadcast.
   }
   \label{fig:intro:orca}
 \end{figure}
@@ -343,7 +375,7 @@ rank-local events that led to that state.
 Leveraging the timestep dataframe abstraction, we propose ORCA
 (\emph{Observability with Real-time Control and Aggregation}), a system for steerable BSP
 observability.
-ORCA (\Cref{fig:intro:orca}) builds a \emph{tree-based overlay network} (TBON)
+ORCA (\Cref{fig:intro:orca:arch}) builds a \emph{tree-based overlay network} (TBON)
 for real-time feedback loops between operators and applications via a controller at the root
 and a tier of dedicated aggregators attached to the application
 ranks.
@@ -495,7 +527,7 @@ Where SQL is insufficient, ORCA supports user-defined \emph{map} operators withi
 \section{List of Contributions}
 \label{sec:intro:contribs}
 
-\paragraph{CARP}
+\paragraph{CARP (\emph{Continuous Adaptive Range Partitioner})}
 \begin{itemize}
   \item An adaptive in-situ range partitioner for streaming scientific data, designed to accelerate
         range queries under unknown and evolving key distributions.
@@ -513,7 +545,7 @@ Where SQL is insufficient, ORCA supports user-defined \emph{map} operators withi
         counterpart needed for range queries.
 \end{itemize}
 
-\paragraph{AMR placement}
+\paragraph{Placement in AMR (\emph{Adaptive Mesh Refinement}) Codes}
 \begin{itemize}
   \item An end-to-end empirical study integrating collection, tuning, and placement, showing how
         artifacts such as overheating, fabric bugs, and operation ordering obscure placement effects.
@@ -523,7 +555,7 @@ Where SQL is insufficient, ORCA supports user-defined \emph{map} operators withi
         $512$--$4096$ ranks.
 \end{itemize}
 
-\paragraph{ORCA}
+\paragraph{ORCA (\emph{Observability with Real-time Control and Aggregation})}
 \begin{itemize}
   \item A BSP-aware observability and control substrate that aligns both analysis and coordinated
         interventions to synchronization boundaries.
