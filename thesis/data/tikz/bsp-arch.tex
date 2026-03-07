@@ -1,0 +1,125 @@
+\documentclass[tikz,border=11pt]{standalone}
+\usetikzlibrary{arrows.meta, positioning, calc, fit, patterns.meta}
+\usepackage{fontspec}
+\setsansfont{Latin Modern Sans}
+
+\input{assets}
+
+% Color aliases for this figure
+\colorlet{barriercolor}{flowcolor}
+\colorlet{computecolor}{nord11}
+
+% Dimensions
+\def\rsp{1.4}       % rank spacing
+\def\barw{0.5}      % bar width
+\def\barrierh{0.35} % barrier rectangle height
+\def\tsp{1.20}       % timestep spacing
+\pgfmathsetmacro{\barrierwid}{4*\rsp + 2.3} % barrier width (leftedge to rightedge)
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\Large,
+  textnode/.style={font=\Large\sffamily\bfseries},
+  ranknode/.style={circle, fill=mpicolor!15, draw=mpicolor!50!black, minimum size=8mm},
+  compbar/.style={draw=computecolor, fill=computecolor!35, minimum width=\barw cm, anchor=north, inner sep=0pt},
+  ckptbar/.style={draw=pqcolor, fill=pqcolor!45},
+  barrier/.style={draw=barriercolor!50!black, fill=barriercolor, minimum height=\barrierh cm, minimum width=\barrierwid cm, inner sep=0pt, anchor=north},
+  rankline/.style={dotted, line width=1.2pt},
+  timeaxis/.style={->, thick, -stealth, line width=1.5pt},
+]
+
+  % === Application pic on the left ===
+  \PlacePicByAnchor[scale=1.8, transform shape]{application}{app}{0,0}{north east}
+
+  % === BSP Matrix on the right ===
+  \begin{scope}[shift={(4, -1.0)}]
+    % Rank x-positions
+    \foreach \i in {0, 1, 2, 3, 4} {
+      \pgfmathsetmacro{\rx}{\i * \rsp + 1}
+      \coordinate (r\i) at (\rx, 0);
+    }
+    % Boundaries
+    \coordinate (leftedge) at (-0.5, 0);
+    \coordinate (rightedge) at ($(r4) + (0.8, 0)$);
+
+    % === Grid ===
+    \foreach \i in {0, 1, 2, 3, 4} {
+        \node[ranknode, textnode] at (r\i |- 0, 0.5) {R\i};
+        \draw[rankline] (r\i) -- (r\i |- 0, -7);
+      }
+
+    % === Timesteps ===
+    % -- T0 --
+    \coordinate (t0) at (0, -0.2);
+    \coordinate (t1) at ($(t0) + (0, -\tsp)$);
+    \coordinate (t0mid) at ($(t0)!0.5!(t1)$);
+    \node[textnode, anchor=east] (t0label) at ([xshift=-0.3cm]leftedge |- t0mid) {T\textsubscript{0}};
+    \foreach \i/\frac in {0/0.6, 1/0.45, 2/0.7, 3/0.5, 4/0.82} {
+      \pgfmathsetmacro{\barh}{\frac * \tsp}
+      \node[compbar, minimum height=\barh cm] (c0-\i) at (r\i |- t0) {};
+    }
+    % Barrier at bottom of max bar (c0-4)
+    \node[barrier] (b0) at ([xshift=-0.5cm]c0-4.south -| r2) {};
+
+    % -- T1 --
+    \coordinate (t2) at ($(t1) + (0, -3)$);
+    \coordinate (t1mid) at ($(t1)!0.5!(t2)$);
+    \node[textnode, anchor=east] (t1label) at ([xshift=-0.3cm]leftedge |- t1mid) {T\textsubscript{1}};
+    \foreach \i/\frac in {0/0.1, 1/0.2, 2/0.3, 4/0.2} {
+      \pgfmathsetmacro{\barh}{\frac * 3}
+      \node[compbar, minimum height=\barh cm] (c1-\i) at (r\i |- b0.south) {};
+    }
+    % Longest bar (straggler) drawn separately with darker color
+    \pgfmathsetmacro{\barh}{0.92 * 3}
+    \node[compbar, fill=computecolor!80, draw=computecolor!40!black, minimum height=\barh cm] (c1-3) at (r3 |- b0.south) {};
+    % Barrier at bottom of max bar (c1-3)
+    \node[barrier] (b1) at ([xshift=-0.5cm]c1-3.south -| r2) {};
+
+    % -- T2 --
+    \foreach \i/\frac in {0/0.7, 1/0.5, 2/0.82, 3/0.45, 4/0.6} {
+      \pgfmathsetmacro{\barh}{\frac * \tsp}
+      \node[ckptbar, minimum width=\barw cm, minimum height=\barh cm, anchor=north, inner sep=0pt] (c2-\i) at (r\i |- b1.south) {};
+    }
+    \node[textnode, anchor=east] (t2label) at ([xshift=-0.3cm]leftedge |- c2-2.center) {C\textsubscript{0}};
+    % Barrier at bottom of max bar (c2-2)
+    \node[barrier] (b2) at ([xshift=-0.5cm]c2-2.south -| r2) {};
+
+    % Time axis
+    \draw[timeaxis] (0, 0) -- (0, -7)
+      node[textnode, midway, sloped, above, rotate=180, fill=white, fill opacity=0.9] {Timesteps};
+
+    % Highlight region between b0 and b1
+    \begin{scope}[on background layer]
+      \fill[barriercolor!15] (b1.north east) rectangle (b0.south -| 0,0);
+      \fill[pattern={Lines[angle=45, distance=4pt, line width=0.5pt]}, pattern color=barriercolor!40] (b1.north east) rectangle (b0.south -| 0,0);
+      % \fill[yellow!20] (b2.north east) rectangle (b1.south -| 0,0);
+      % Wasted Time annotation
+      \node[anchor=north east, font=\Large\sffamily\bfseries\itshape, text width=2cm, align=right, barriercolor!80!black] (wasted) at ([yshift=-0.2cm]t0label.south west) {Wasted Time};
+      \draw[-stealth, line width=3pt, barriercolor!80!black] (wasted.east) -- (wasted.east -| 0,0);
+      % node[midway, below] {Checkpoint};
+
+      \fill[pqcolor!10] (b2.north east) rectangle (b1.south -| 0,0);
+      \fill[pattern={Lines[angle=-45, distance=4pt, line width=0.5pt]}, pattern color=pqcolor!30] (b2.north east) rectangle (b1.south -| 0,0);
+    \end{scope}
+  \end{scope}
+
+  % Arrow from T2 to application storage
+  \coordinate (app-store) at ($(app-s1-south)!0.5!(app-s2-south)$);
+  \draw[-stealth, line width=3pt, pqcolor!95!black] (t2label) -| (app-store)
+  node[pos=0.1, above, font=\Large\sffamily\bfseries\itshape, pqcolor!95!black] {Checkpoint};
+
+  % === Legend ===
+  \begin{scope}[shift={(-4, -7.5)}, local bounding box=legend]
+    \coordinate (leg1) at (0, 0);
+    \coordinate (leg2) at (3, 0);
+    \node[compbar, minimum width=1.0cm, minimum height=0.25cm, anchor=east] at (leg1) {};
+    \node[anchor=west, font=\Large\sffamily] at ([xshift=10pt]leg1) {Work};
+    \node[fill=barriercolor, draw=barriercolor!50!black, minimum width=1.0cm, minimum height=0.25cm, anchor=east] at (leg2) {};
+    \node[anchor=west, font=\Large\sffamily] at ([xshift=10pt]leg2) {Global Sync.};
+  \end{scope}
+
+  \begin{scope}[on background layer]
+    \node[fit=(legend), draw=black!80, line width=0.5pt, rounded corners=4pt, inner sep=4pt] {};
+  \end{scope}
+\end{tikzpicture}
+\end{document}

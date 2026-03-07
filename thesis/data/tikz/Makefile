@@ -19,7 +19,7 @@ pdf:
 	mkdir -p pdf
 
 pdf/%.pdf: %.tex $(ASSETS)
-	latexmk -pdf $<
+	latexmk $<
 	cp build/$*.pdf $@
 
 # Remove top-level PDFs and synctex (one-time cleanup)
