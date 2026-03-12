@@ -1,0 +1,78 @@
+% ASSET: app-mini (Mini BSP app = 2 ranks + fabric + 2 storage)
+% Requires pics/fabric, pics/storage
+
+% Local rank variant for customization
+\tikzset{
+  pics/rank2/.style args={#1}{
+    code={
+      \def\rankbody{0.38}
+      \def\rankdie{0.22}
+      \begin{scope}[local bounding box=-bbox]
+        % Package body
+        \draw[thick, fill=nord11!10, rounded corners=1pt]
+          (-\rankbody,-\rankbody) rectangle (\rankbody,\rankbody);
+        % Die
+        \draw[semithick, fill=nord11!40]
+          (-\rankdie,-\rankdie) rectangle (\rankdie,\rankdie);
+        % Label
+        \node[anchor=center, font=\sffamily\normalsize\bfseries, inner sep=0pt] at (0,0) {#1};
+      \end{scope}
+      \PicBboxAnchors{-bbox}
+    }
+  },
+  pics/rank2/.default={}
+}
+
+\tikzset{
+  pics/app-mini/.style={
+    code={
+      \def\rankgap{0.2cm}
+      \def\storagegap{0.2cm}
+
+      \begin{scope}[local bounding box=-bbox]
+        % -- Ranks in a row (3: 0, 1, cdots) --
+        \pic (-r0) at (0, 0) {rank2={0}};
+
+        \coordinate (-r1pos) at ([xshift=\rankgap]-r0-east);
+        \PlacePicByAnchor{rank2={1}}{-r1}{-r1pos}{west}
+
+        \coordinate (-r2pos) at ([xshift=\rankgap]-r1-east);
+        \PlacePicByAnchor{rank2={$\cdots$}}{-r2}{-r2pos}{west}
+
+        % -- Fabric band underneath ranks --
+        \coordinate (-fabcenter) at ($(-r0-south)!0.5!(-r2-south) + (0,-0.7)$);
+        \pic (-fab) at (-fabcenter) {fabric=1.6};
+
+        % -- Storage cylinders underneath fabric (only 2) --
+        \begin{scope}[local bounding box=-storages]
+          \coordinate (-s0pos) at ($(-fab-south) + (-0.5,-0.9)$);
+          \pic (-s0) at (-s0pos) {storage};
+
+          \coordinate (-s1pos) at ([xshift=\storagegap]-s0-east);
+          \PlacePicByAnchor{storage}{-s1}{-s1pos}{west}
+        \end{scope}
+
+        % -- Dotted box around storage --
+        \node[draw, dotted, thick, rounded corners=3pt, inner sep=4pt, fit=(-storages)] (-sbox) {};
+
+        % -- Stubs connecting ranks to fabric --
+        \foreach \n in {r0,r1,r2} {
+          \draw[stub] (-\n-south) -- (-\n-south|-{-fab-north});
+        }
+
+        % -- Stub connecting storage box to fabric --
+        \draw[stub] (-sbox.north) -- (-sbox.north|-{-fab-south});
+
+        % -- Labels on the left --
+        \def\labelgap{0.3cm}
+        \path let \p1=(-r0-west), \p2=(-fab-west), \p3=(-s0-west) in
+          coordinate (-labelx) at ({min(\x1,\x2,\x3) - \labelgap}, 0);
+        \node[applabel] at (-labelx|-{-r0-center}) {\textbf{BSP Ranks}\\\emph{10--100K}};
+        \node[applabel] at (-labelx|-{-fab-center}) {\textbf{RDMA Fabric}\\\emph{400\,Gbps}};
+        \node[applabel] at (-labelx|-{-s0-center}) {\textbf{Parallel Storage} \\ \emph{(Lustre, DAOS)}};
+      \end{scope}
+
+      \PicBboxAnchors{-bbox}
+    }
+  }
+}

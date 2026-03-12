@@ -1,5 +1,5 @@
 \documentclass[tikz,border=11pt]{standalone}
-\usetikzlibrary{arrows.meta, positioning, calc, fit}
+\usetikzlibrary{arrows.meta, positioning, calc, fit, patterns.meta, backgrounds}
 
 \input{assets}
 
@@ -37,10 +37,13 @@
   \coordinate (annotate) at ($(rightedge) + (0.5, 0)$);
 
   % === Grid ===
-  \foreach \i in {0, 1, 2, 3, 4} {
-      \node[ranknode, textnode] at (r\i |- 0, 0.5) {R\i};
-      \draw[rankline] (r\i) -- (r\i |- 0, -7);
+  \foreach \i in {0, 1, 2, 3} {
+      \node[ranknode, textnode] at (r\i |- 0, 0.5) {R\textsubscript{\i}};
+      \draw[rankline] (r\i) -- (r\i |- 0, -6.5);
     }
+  % Last rank with ellipsis
+  \node[ranknode, textnode] at (r4 |- 0, 0.5) {$\cdots$};
+  \draw[rankline] (r4) -- (r4 |- 0, -6.5);
 
   % === Timesteps ===
   \def\tsp{1.2}  % timestep spacing
@@ -58,26 +61,36 @@
   }
 
   % -- T1 --
-  \coordinate (t2) at ($(t1) + (0, -3)$);
+  \coordinate (t2) at ($(t1) + (0, -\tsp)$);
   \coordinate (t1mid) at ($(t1)!0.5!(t2)$);
   \node[textnode, anchor=east] at ([xshift=-0.3cm]leftedge |- t1mid) {T1};
   \draw[barline] (leftedge |- t2) -- (rightedge |- t2);
 
-  \foreach \i/\frac in {0/0.1, 1/0.2, 2/0.3, 3/0.92, 4/0.2} {
-    \pgfmathsetmacro{\barh}{\frac * 3}
+  \foreach \i/\frac in {0/0.7, 1/0.5, 2/0.82, 3/0.45, 4/0.6} {
+    \pgfmathsetmacro{\barh}{\frac * \tsp}
     \fill[compbar] ([xshift=-\barw cm, yshift=-\bargap cm]r\i |- t1) rectangle ([xshift=\barw cm, yshift=-\bargap cm - \barh cm]r\i |- t1);
   }
 
   % -- T2 --
-  \coordinate (t3) at ($(t2) + (0, -\tsp)$);
+  \coordinate (t3) at ($(t2) + (0, -3)$);
   \coordinate (t2mid) at ($(t2)!0.5!(t3)$);
   \node[textnode, anchor=east] at ([xshift=-0.3cm]leftedge |- t2mid) {T2};
   \draw[barline] (leftedge |- t3) -- (rightedge |- t3);
 
-  \foreach \i/\frac in {0/0.7, 1/0.5, 2/0.82, 3/0.45, 4/0.6} {
-    \pgfmathsetmacro{\barh}{\frac * \tsp}
+  % Non-straggler bars
+  \foreach \i/\frac in {0/0.1, 1/0.2, 2/0.3, 4/0.2} {
+    \pgfmathsetmacro{\barh}{\frac * 3}
     \fill[compbar] ([xshift=-\barw cm, yshift=-\bargap cm]r\i |- t2) rectangle ([xshift=\barw cm, yshift=-\bargap cm - \barh cm]r\i |- t2);
   }
+  % Straggler bar (R3) with darker shade
+  \pgfmathsetmacro{\stragglerh}{0.92 * 3}
+  \fill[fill=computecolor!80, draw=computecolor!40!black, line width=0.8pt] ([xshift=-\barw cm, yshift=-\bargap cm]r3 |- t2) rectangle ([xshift=\barw cm, yshift=-\bargap cm - \stragglerh cm]r3 |- t2);
+
+  % Wasted time hatch pattern
+  \begin{scope}[on background layer]
+    \fill[barriercolor!15] (leftedge |- t2) rectangle ([yshift=-\bargap cm]rightedge |- t3);
+    \fill[pattern={Lines[angle=45, distance=4pt, line width=0.5pt]}, pattern color=barriercolor!40] (leftedge |- t2) rectangle ([yshift=-\bargap cm]rightedge |- t3);
+  \end{scope}
 
   % \foreach \y in {1, 2, 3, 4, 5, 6} {
   %     \draw[barline] (leftedge |- 0, -\y) -- (rightedge |- 0, -\y);
@@ -85,7 +98,7 @@
   %   }
 
   % Time axis
-  \draw[timeaxis] (0, 0) -- (0, -7)
+  \draw[timeaxis] (0, 0) -- (0, -6.5)
   node[textnode, midway, sloped, above, rotate=180, fill=white, fill opacity=0.9] {Timesteps};
 
   % % Work boxes for each timestep

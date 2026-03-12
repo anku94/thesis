@@ -1,0 +1,83 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usepackage{twemojis}
+\usetikzlibrary{arrows.meta, fit, positioning, calc, shapes.geometric, shapes.callouts}
+
+\input{assets}
+
+% Stack of JSON files
+\tikzset{
+  pics/jsonstack/.style={
+    code={
+      \def\xd{0.08}  % x offset
+      \def\yd{-0.12} % y offset (negative = stack down)
+      \pic at (0, 0) {jsonfile};
+      \pic at (\xd, \yd) {jsonfile};
+      \pic at (2*\xd, 2*\yd) {jsonfile};
+      \pic at (3*\xd, 3*\yd) {jsonfile};
+    }
+  }
+}
+
+\begin{document}
+
+\begin{tikzpicture}[
+    arr/.style={-{Stealth[length=6pt]}, thick},
+    fbline/.style={arr, loopfbcolor, line width=1.5pt},
+    ctlline/.style={arr, loopctlcolor},
+    box/.style={rectangle, draw, thick, rounded corners=3pt,
+      minimum width=2.8cm, minimum height=0.9cm,
+      font=\sffamily, align=center},
+    piccap/.style={font=\sffamily\scriptsize, inner sep=1pt},
+    problemcallout/.style={draw=gray!60, fill=white, shape=cloud callout, cloud puffs=8, aspect=1.5,
+      callout pointer start size=0.13 of callout,
+      callout pointer end size=0.07 of callout,
+      inner sep=0pt}
+  ]
+
+  \def\delta{0.5}
+  \def\loopylen{2.3cm}
+
+  % --- AMR feedback loop ---
+  \begin{scope}[local bounding box=amr loop]
+    % Bottom box first (so top box can be centered relative to it)
+    \node[inner sep=0pt] (amrfig) {\includegraphics[scale=0.5, trim=4.5cm 1.28cm 1.5cm 0.57cm, clip]{../figs/orca_lesson_volfunc_single.pdf}};
+    \node[below=0.20cm of amrfig, inner sep=0pt] (amr-inner-1) { \tikz\pic {operator}; };
+
+    % Thought bubbles around operator (cloud callouts)
+    % Left: overheating
+    \node[problemcallout, callout relative pointer={(10:0.3cm)}, anchor=east]
+      (thought1) at ([xshift=-0.2cm]amr-inner-1.west)
+      {\twemoji[height=12pt]{thermometer}\twemoji[height=12pt]{desktop computer}};
+    % Right: tuning
+    \node[problemcallout, callout relative pointer={(210:0.35cm)}, anchor=south west]
+      (thought2) at ([xshift=0.4cm, yshift=0.12cm]amr-inner-1.north east)
+      {\twemoji[height=14pt]{control knobs}};
+    % Right: load imbalance
+    \node[problemcallout, callout relative pointer={(155:0.3cm)}, anchor=north west]
+      (thought3) at ([xshift=0.4cm, yshift=0.65cm]amr-inner-1.south east)
+      {\twemoji[height=14pt]{balance scale}};
+
+    \node[box, fit=(amrfig) (amr-inner-1) (thought1) (thought2) (thought3)] (amr) {};
+    \node[below=0.00cm of amr, piccap, font=\sffamily\large\bfseries, inner sep=4pt] (amr-text) {Lessons from AMR};
+
+    % Top box (placed relative to bottom box, so they are centered)
+    \node[inner sep=0pt, above=\loopylen of amr.north] (rg2) { \tikz\pic {mpinodes}; };
+    \node[above=0.1cm of rg2, font=\sffamily\bfseries] (rg2-label) {AMR Code};
+    \node[box, fit=(rg2) (rg2-label)] (app) {};
+
+    \draw[fbline, densely dotted] ([xshift=-\delta cm]app.south) -- ([xshift=-\delta cm]amr.north)
+      node[midway, left, inner sep=2pt, align=center, color=black] {\tikz[scale=1.0]{\pic {jsonstack};}\\\sffamily\small JSON traces};
+
+    \draw[ctlline, densely dotted] ([xshift=\delta cm]amr.north) -- ([xshift=\delta cm]app.south)
+      node[midway, right, inner sep=2pt, align=center, color=black] {\twemoji[height=16pt]{wrench}\\\sffamily\small Reconfigure};
+
+    % Loop icon in center
+    \node at ($(app.south)!0.5!(amr.north)$) {\faHourglassHalf};
+  \end{scope}
+
+\end{tikzpicture}
+
+\end{document}

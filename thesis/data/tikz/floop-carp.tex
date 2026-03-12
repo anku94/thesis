@@ -1,0 +1,55 @@
+\documentclass[border=2pt]{standalone}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usepackage{twemojis}
+\usetikzlibrary{arrows.meta, fit, positioning, calc}
+
+\input{assets}
+
+\begin{document}
+
+\begin{tikzpicture}[
+    arr/.style={-{Stealth[length=6pt]}, thick},
+    fbline/.style={arr, loopfbcolor, line width=1.5pt},
+    ctlline/.style={arr, loopctlcolor},
+    box/.style={rectangle, draw, thick, rounded corners=3pt,
+      minimum width=2.8cm, minimum height=0.9cm,
+      font=\sffamily, align=center},
+    piccap/.style={font=\sffamily\scriptsize, inner sep=1pt}
+  ]
+
+  \def\delta{0.5}
+  \def\loopylen{2cm}
+
+  % --- CARP feedback loop ---
+  \begin{scope}[local bounding box=carp loop]
+    \node[inner sep=0pt] (rg1) { \tikz\pic {mpinodes}; };
+    \node[above=0.1cm of rg1, font=\sffamily\bfseries] (rg1-label) {Particle Code};
+    \node[box, fit=(rg1) (rg1-label)] (app) {};
+
+    \node[inner sep=0pt, below=2.5cm of app.south] (dpart) { \tikz\pic {distribpart}; };
+    \node[below=0.00cm of dpart, piccap, font=\sffamily\small] (dpart-text) {\emph{Load-balanced Partitions}};
+    \node[below=0.00cm of dpart-text, font=\sffamily\large] (dpart-inner-1) { \twemoji[height=14pt]{gear} };
+    \node[box, fit=(dpart) (dpart-text) (dpart-inner-1)] (carp) {};
+    \node[below=0.00cm of carp, piccap, font=\sffamily\large\bfseries, inner sep=4pt] (carp-text) {CARP};
+
+    % Feedback line
+    \draw[fbline] ([xshift=-\delta cm]app.south) -- ([xshift=-\delta cm]carp.north)
+      node[midway, left, inner ysep=0pt] (fb1pic) {\tikz\pic {distrib};};
+
+    % Control line
+    \draw[ctlline] ([xshift=\delta cm]carp.north) -- ([xshift=\delta cm]app.south)
+      node[midway, right, inner ysep=0pt] (ctl1pic) {\tikz\pic {pivottablemini};};
+
+    % Captions
+    \node[below=0.00cm of fb1pic, piccap, font=\sffamily\small] {Distributions};
+    \node[below=0.00cm of ctl1pic, piccap, font=\sffamily\small] {Boundaries};
+
+    % Loop icon in center
+    \node at ($(app.south)!0.5!(carp.north)$) {\faSync};
+  \end{scope}
+
+\end{tikzpicture}
+
+\end{document}

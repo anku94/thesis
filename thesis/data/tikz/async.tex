@@ -1,0 +1,101 @@
+\documentclass[tikz,border=11pt]{standalone}
+\usetikzlibrary{arrows.meta, positioning, calc, fit}
+
+\input{assets}
+
+% Color aliases for this figure
+\colorlet{computecolor}{nord11}
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\Large,
+  textnode/.style={font=\Large\sffamily\bfseries},
+  ranknode/.style={circle, fill=mpicolor!15, draw=mpicolor!50!black, minimum size=8mm},
+  compbar/.style={draw=black, fill=computecolor!35},
+  rankline/.style={dotted, line width=1.2pt},
+  timeaxis/.style={->, thick, -stealth, line width=1.5pt},
+]
+
+  % === Named coordinates ===
+  \def\rsp{1.4}  % rank spacing
+  \def\barw{0.25} % bar half-width
+  \def\bargap{0.08} % gap between bars
+
+  % Rank x-positions
+  \foreach \i in {0, 1, 2, 3, 4} {
+    \pgfmathsetmacro{\rx}{\i * \rsp + 1}
+    \coordinate (r\i) at (\rx, 0);
+  }
+
+  % === Grid ===
+  \foreach \i in {0, 1, 2, 3} {
+      \node[ranknode, textnode] at (r\i |- 0, 0.5) {P\textsubscript{\i}};
+      \draw[rankline] (r\i) -- (r\i |- 0, -5.5);
+    }
+  % Last rank with ellipsis
+  \node[ranknode, textnode] at (r4 |- 0, 0.5) {$\cdots$};
+  \draw[rankline] (r4) -- (r4 |- 0, -5.5);
+
+  % === Async work bars (stacked sequentially per rank) ===
+  % Each rank has its own sequence of work, no barriers
+  % Bars stack contiguously - next starts where previous ends
+
+  \def\ystart{-0.2}
+
+  % R0: 5 tasks
+  \pgfmathsetmacro{\ycur}{\ystart}
+  \foreach \h in {0.8, 0.5, 1.1, 0.6, 0.9} {
+    \fill[compbar] ([xshift=-\barw cm]r0 |- 0, \ycur) rectangle ([xshift=\barw cm]r0 |- 0, \ycur - \h);
+    \pgfmathsetmacro{\ycur}{\ycur - \h - \bargap}
+    \global\let\ycur=\ycur
+  }
+
+  % R1: 6 tasks
+  \pgfmathsetmacro{\ycur}{\ystart}
+  \foreach \h in {0.6, 0.9, 0.4, 0.7, 0.5, 0.8} {
+    \fill[compbar] ([xshift=-\barw cm]r1 |- 0, \ycur) rectangle ([xshift=\barw cm]r1 |- 0, \ycur - \h);
+    \pgfmathsetmacro{\ycur}{\ycur - \h - \bargap}
+    \global\let\ycur=\ycur
+  }
+
+  % R2: 4 tasks + 1 long straggler
+  \pgfmathsetmacro{\ycur}{\ystart}
+  \foreach \h in {0.6, 0.5} {
+    \fill[compbar] ([xshift=-\barw cm]r2 |- 0, \ycur) rectangle ([xshift=\barw cm]r2 |- 0, \ycur - \h);
+    \pgfmathsetmacro{\ycur}{\ycur - \h - \bargap}
+    \global\let\ycur=\ycur
+  }
+  % Long straggler bar (darker)
+  \def\stragglerh{2.2}
+  \fill[fill=computecolor!80, draw=computecolor!40!black, line width=0.8pt] ([xshift=-\barw cm]r2 |- 0, \ycur) rectangle ([xshift=\barw cm]r2 |- 0, \ycur - \stragglerh);
+  \pgfmathsetmacro{\ycur}{\ycur - \stragglerh - \bargap}
+  \global\let\ycur=\ycur
+  % Continue with remaining tasks
+  \foreach \h in {0.7, 0.5} {
+    \fill[compbar] ([xshift=-\barw cm]r2 |- 0, \ycur) rectangle ([xshift=\barw cm]r2 |- 0, \ycur - \h);
+    \pgfmathsetmacro{\ycur}{\ycur - \h - \bargap}
+    \global\let\ycur=\ycur
+  }
+
+  % R3: 5 tasks
+  \pgfmathsetmacro{\ycur}{\ystart}
+  \foreach \h in {0.7, 0.6, 0.8, 1.1, 0.5} {
+    \fill[compbar] ([xshift=-\barw cm]r3 |- 0, \ycur) rectangle ([xshift=\barw cm]r3 |- 0, \ycur - \h);
+    \pgfmathsetmacro{\ycur}{\ycur - \h - \bargap}
+    \global\let\ycur=\ycur
+  }
+
+  % R4 (cdots): 6 tasks
+  \pgfmathsetmacro{\ycur}{\ystart}
+  \foreach \h in {0.5, 0.8, 0.6, 0.4, 0.9, 0.7} {
+    \fill[compbar] ([xshift=-\barw cm]r4 |- 0, \ycur) rectangle ([xshift=\barw cm]r4 |- 0, \ycur - \h);
+    \pgfmathsetmacro{\ycur}{\ycur - \h - \bargap}
+    \global\let\ycur=\ycur
+  }
+
+  % Time axis
+  \draw[timeaxis] (0, 0) -- (0, -5.5)
+  node[textnode, midway, sloped, above, rotate=180, fill=white, fill opacity=0.9] {Time};
+
+\end{tikzpicture}
+\end{document}

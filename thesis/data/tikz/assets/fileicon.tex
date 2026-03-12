@@ -44,10 +44,10 @@
       \def\f{0.12} % fold size
       % Main shape
       \fill[white] (0,0) -- (\w,0) -- (\w,\h-\f) -- (\w-\f,\h) -- (0,\h) -- cycle;
-      \draw (0,0) -- (\w,0) -- (\w,\h-\f) -- (\w-\f,\h) -- (0,\h) -- cycle;
+      \draw[solid, thin, gray, -] (0,0) -- (\w,0) -- (\w,\h-\f) -- (\w-\f,\h) -- (0,\h) -- cycle;
       % Folded corner
       \fill[gray!30] (\w,\h-\f) -- (\w-\f,\h-\f) -- (\w-\f,\h) -- cycle;
-      \draw (\w,\h-\f) -- (\w-\f,\h-\f) -- (\w-\f,\h);
+      \draw[solid, thin, gray, -] (\w,\h-\f) -- (\w-\f,\h-\f) -- (\w-\f,\h);
       % Braces above
       \node[anchor=center, font=\sffamily\bfseries\fontsize{4pt}{4pt}\selectfont, jsoncolor] at (\w/2, 0.28) {\{\}};
       % Yellow banner at bottom with JSON text
