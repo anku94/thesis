@@ -1,0 +1,43 @@
+\documentclass[tikz,border=11pt]{standalone}
+\usetikzlibrary{arrows.meta, positioning, calc, fit, backgrounds}
+
+\input{assets}
+
+% Color aliases for this figure
+\colorlet{barriercolor}{flowcolor}
+\colorlet{computecolor}{nord11}
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\Large,
+  compbar/.style={draw=computecolor, fill=computecolor!35, inner sep=0pt},
+  ranknode/.style={circle, fill=mpicolor!15, draw=mpicolor!50!black, minimum size=6mm, font=\sffamily\bfseries},
+  leglabel/.style={anchor=west, font=\Large\sffamily},
+]
+
+  % === Legend ===
+  \def\labelgap{0.1cm}
+  \def\entrygap{0.7cm}
+  \begin{scope}[local bounding box=legend]
+    % dummy node for padding
+    \node[minimum width=0.5cm, minimum height=0.35cm] (dummy) at (0,0) {};
+
+    \node[ranknode] (n1) at (dummy.east) {P};
+    \node[leglabel] (lbl1) at ([xshift=\labelgap]n1.east) {Process};
+
+    \node[ranknode] (n2) at ([xshift=\entrygap]lbl1.east) {R};
+    \node[leglabel] (lbl2) at ([xshift=\labelgap]n2.east) {Rank};
+
+    \node[compbar, minimum width=0.7cm, minimum height=0.35cm] (n3) at ([xshift=\entrygap]lbl2.east) {};
+    \node[leglabel] (lbl3) at ([xshift=\labelgap]n3.east) {Work};
+
+    \node[fill=barriercolor, draw=barriercolor!50!black, minimum width=0.7cm, minimum height=0.35cm] (n4) at ([xshift=\entrygap]lbl3.east) {};
+    \node[leglabel] at ([xshift=\labelgap]n4.east) {Global Sync.};
+  \end{scope}
+
+  \begin{scope}[on background layer]
+    \node[fit=(legend), draw=black!80, line width=0.5pt, rounded corners=4pt, inner sep=4pt] {};
+  \end{scope}
+
+\end{tikzpicture}
+\end{document}

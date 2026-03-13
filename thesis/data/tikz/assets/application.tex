@@ -1,7 +1,7 @@
 % ASSET: application (BSP app = ranks + fabric + storage)
 % Requires pics/rank, pics/fabric, pics/storage
 \tikzset{
-  stub/.style={line width=1.0pt, nord2!70},
+  stub/.style={line width=1.0pt, fablinkcolor!70},
   applabel/.style={anchor=east, font=\sffamily\normalsize, align=right, text width=3.0cm},
   pics/application/.style={
     code={
@@ -39,14 +39,16 @@
         \PlacePicByAnchor{storage}{-s3}{-s3pos}{west}
 
         % -- Stubs connecting ranks to fabric --
-        \foreach \n in {r0,r1,r2,r3} {
-          \draw[stub] (-\n-south) -- (-\n-south|-{-fab-north});
-        }
+        \begin{scope}[on background layer]
+          \foreach \n in {r0,r1,r2,r3} {
+            \draw[stub] (-\n-south) -- (-\n-south|-{-fab-north});
+          }
 
-        % -- Stubs connecting fabric to storage --
-        \foreach \n in {s0,s1,s2,s3} {
-          \draw[stub] (-\n-north) -- (-\n-north|-{-fab-south});
-        }
+          % -- Stubs connecting fabric to storage --
+          \foreach \n in {s0,s1,s2,s3} {
+            \draw[stub] (-\n-north) -- (-\n-north|-{-fab-south});
+          }
+        \end{scope}
 
         % -- Labels on the left --
         \def\labelgap{0.3cm}

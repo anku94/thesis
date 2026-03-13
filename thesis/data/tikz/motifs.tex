@@ -7,6 +7,7 @@
 \definecolor{ctlcolor}{HTML}{5E81AC}   % Steel blue
 \definecolor{aggcolor}{HTML}{8FBCBB}   % Teal
 \definecolor{mpicolor}{HTML}{D08770}   % Coral/salmon
+\definecolor{nord14}{HTML}{A3BE8C}     % Nord green
 
 % ============================================================
 %  MOTIF: rank (CPU / chip)
@@ -50,14 +51,14 @@
   pics/fabric/.style={
     code={
       % Band
-      \draw[thick, draw=orange!50, fill=orange!15]
+      \draw[thick, draw=nord14!70, fill=nord14!15]
         (-1.8,-0.18) rectangle (1.8, 0.18);
       % Horizontal traces
-      \draw[thin, orange!50] (-1.8, 0.06) -- (1.8, 0.06);
-      \draw[thin, orange!50] (-1.8,-0.06) -- (1.8,-0.06);
+      \draw[thin, nord14!50] (-1.8, 0.06) -- (1.8, 0.06);
+      \draw[thin, nord14!50] (-1.8,-0.06) -- (1.8,-0.06);
       % Vertical ticks (switch crosspoints)
       \foreach \x in {-1.4,-1.0,-0.6,-0.2,0.2,0.6,1.0,1.4} {
-        \draw[thin, orange!50] (\x,-0.18) -- (\x,0.18);
+        \draw[thin, nord14!50] (\x,-0.18) -- (\x,0.18);
       }
       % Anchors
       \coordinate (-west)   at (-1.8, 0);
@@ -325,12 +326,12 @@
       \pic (-r2) at ( 0.7, 0) {rank={2}};
       \pic (-r3) at ( 2.1, 0) {rank={$\cdots$}};
       % -- Fabric band underneath --
-      \draw[thick, draw=orange!50, fill=orange!15]
+      \draw[thick, draw=nord14!70, fill=nord14!15]
         (-2.8,-1.0) rectangle (2.8,-0.64);
-      \draw[thin, orange!50] (-2.8,-0.78) -- (2.8,-0.78);
-      \draw[thin, orange!50] (-2.8,-0.86) -- (2.8,-0.86);
+      \draw[thin, nord14!50] (-2.8,-0.78) -- (2.8,-0.78);
+      \draw[thin, nord14!50] (-2.8,-0.86) -- (2.8,-0.86);
       \foreach \x in {-2.4,-2.0,...,2.4} {
-        \draw[thin, orange!50] (\x,-1.0) -- (\x,-0.64);
+        \draw[thin, nord14!50] (\x,-1.0) -- (\x,-0.64);
       }
       % -- Stubs connecting rank pins to fabric --
       \foreach \rx in {-2.1,-0.7,0.7,2.1} {

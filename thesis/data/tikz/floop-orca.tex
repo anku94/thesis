@@ -14,21 +14,26 @@
     fbline/.style={arr, loopfbcolor, line width=1.5pt},
     ctlline/.style={arr, loopctlcolor},
     box/.style={rectangle, draw, thick, rounded corners=3pt,
-      minimum width=2.8cm, minimum height=0.9cm,
+      minimum width=2.6cm, minimum height=0.9cm,
       font=\sffamily, align=center},
     piccap/.style={font=\sffamily\scriptsize, inner sep=1pt}
   ]
 
   \def\delta{0.5}
-  \def\loopylen{2cm}
+  \def\loopylen{1cm}
 
   % --- ORCA feedback loop ---
   \begin{scope}[local bounding box=orca loop]
     \node[inner sep=0pt] (rg1) { \tikz\pic {mpinodes}; };
     \node[box, fit=(rg1)] (app) {};
+    % sans-serif font
+    % top 
+    \node[above=0cm of app.north, font=\sffamily\bfseries] (app-label) {Application};
 
     \node[below=\loopylen of app.south] (orca-inner) {\twemoji[height=14pt]{man}\quad\twemoji[height=14pt]{gear}\quad\twemoji[height=14pt]{robot}};
     \node[box, fit=(orca-inner)] (orca) {};
+    % bottom
+    \node[below=0cm of orca.south, font=\sffamily\bfseries] (orca-label) {Agent};
 
     % Control line (left)
     \draw[ctlline] ([xshift=-\delta cm]orca.north) -- ([xshift=-\delta cm]app.south);

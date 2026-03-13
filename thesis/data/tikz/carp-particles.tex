@@ -1,0 +1,28 @@
+\documentclass[tikz,border=0pt]{standalone}
+\usepackage{booktabs}
+\usepackage{array}
+
+\input{assets}
+
+\begin{document}
+
+\begin{tikzpicture}
+  \node[anchor=north west, inner sep=0pt, font=\sffamily] {
+    \setlength{\tabcolsep}{6pt}
+    \renewcommand{\arraystretch}{0.9}
+    \begin{tabular}{ccccc}
+      \toprule
+      \textbf{Particle} & \textbf{Energy} & \textbf{X} & \textbf{Y} & \textbf{Z} \\
+      \midrule
+      P\textsubscript{0} & 52.3 & 0.23 & 0.87 & 0.45 \\
+      P\textsubscript{1} & 23.7 & 0.56 & 0.12 & 0.78 \\
+      P\textsubscript{2} & 89.2 & 0.91 & 0.34 & 0.22 \\
+      P\textsubscript{3} & 24.1 & 0.18 & 0.65 & 0.91 \\
+      P\textsubscript{4} & 12.4 & 0.72 & 0.41 & 0.55 \\
+      \multicolumn{5}{c}{$\vdots$} \\
+      \bottomrule
+    \end{tabular}
+  };
+\end{tikzpicture}
+
+\end{document}

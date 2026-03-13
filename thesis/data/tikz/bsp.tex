@@ -14,6 +14,7 @@
   textnode/.style={font=\Large\sffamily\bfseries},
   ranknode/.style={circle, fill=mpicolor!15, draw=mpicolor!50!black, minimum size=8mm},
   compbar/.style={draw=black, fill=computecolor!35},
+  ckptbar/.style={draw=pqcolor, fill=pqcolor!45},
   barline/.style={line width=6.5pt, barriercolor},
   rankline/.style={dotted, line width=1.2pt},
   timeaxis/.style={->, thick, -stealth, line width=1.5pt},
@@ -25,6 +26,7 @@
   \def\bargap{0.10} % gap below barrier line
   \def\nranks{5}
   \def\ntimesteps{6}
+  \def\axislen{7.2}
 
   % Rank x-positions
   \foreach \i in {0, 1, 2, 3, 4} {
@@ -39,11 +41,11 @@
   % === Grid ===
   \foreach \i in {0, 1, 2, 3} {
       \node[ranknode, textnode] at (r\i |- 0, 0.5) {R\textsubscript{\i}};
-      \draw[rankline] (r\i) -- (r\i |- 0, -6.5);
+      \draw[rankline] (r\i) -- (r\i |- 0, -\axislen);
     }
   % Last rank with ellipsis
   \node[ranknode, textnode] at (r4 |- 0, 0.5) {$\cdots$};
-  \draw[rankline] (r4) -- (r4 |- 0, -6.5);
+  \draw[rankline] (r4) -- (r4 |- 0, -\axislen);
 
   % === Timesteps ===
   \def\tsp{1.2}  % timestep spacing
@@ -55,7 +57,7 @@
   \node[textnode, anchor=east] at ([xshift=-0.3cm]leftedge |- t0mid) {T0};
   \draw[barline] (leftedge |- t1) -- (rightedge |- t1);
 
-  \foreach \i/\frac in {0/0.6, 1/0.45, 2/0.7, 3/0.5, 4/0.82} {
+  \foreach \i/\frac in {0/0.52, 1/0.45, 2/0.72, 3/0.58, 4/0.82} {
     \pgfmathsetmacro{\barh}{\frac * \tsp}
     \fill[compbar] ([xshift=-\barw cm, yshift=-\bargap cm]r\i |- t0) rectangle ([xshift=\barw cm, yshift=-\bargap cm - \barh cm]r\i |- t0);
   }
@@ -88,8 +90,25 @@
 
   % Wasted time hatch pattern
   \begin{scope}[on background layer]
-    \fill[barriercolor!15] (leftedge |- t2) rectangle ([yshift=-\bargap cm]rightedge |- t3);
-    \fill[pattern={Lines[angle=45, distance=4pt, line width=0.5pt]}, pattern color=barriercolor!40] (leftedge |- t2) rectangle ([yshift=-\bargap cm]rightedge |- t3);
+    \fill[barriercolor!15] (0,0 |- t2) rectangle ([yshift=-\bargap cm]rightedge |- t3);
+    \fill[pattern={Lines[angle=45, distance=4pt, line width=0.5pt]}, pattern color=barriercolor!40] (0,0 |- t2) rectangle ([yshift=-\bargap cm]rightedge |- t3);
+  \end{scope}
+
+  % -- C0 (Checkpoint) --
+  \coordinate (t4) at ($(t3) + (0, -\tsp)$);
+  \coordinate (c0mid) at ($(t3)!0.5!(t4)$);
+  \node[textnode, anchor=east] at ([xshift=-0.3cm]leftedge |- c0mid) {C\textsubscript{0}};
+  \draw[barline] (leftedge |- t4) -- (rightedge |- t4);
+
+  \foreach \i/\frac in {0/0.65, 1/0.52, 2/0.75, 3/0.48, 4/0.72} {
+    \pgfmathsetmacro{\barh}{\frac * \tsp}
+    \fill[ckptbar] ([xshift=-\barw cm, yshift=-\bargap cm]r\i |- t3) rectangle ([xshift=\barw cm, yshift=-\bargap cm - \barh cm]r\i |- t3);
+  }
+
+  % Checkpoint hatch pattern
+  \begin{scope}[on background layer]
+    \fill[pqcolor!10] (0,0 |- t3) rectangle ([yshift=-\bargap cm]rightedge |- t4);
+    \fill[pattern={Lines[angle=-45, distance=4pt, line width=0.5pt]}, pattern color=pqcolor!30] (0,0 |- t3) rectangle ([yshift=-\bargap cm]rightedge |- t4);
   \end{scope}
 
   % \foreach \y in {1, 2, 3, 4, 5, 6} {
@@ -98,7 +117,7 @@
   %   }
 
   % Time axis
-  \draw[timeaxis] (0, 0) -- (0, -6.5)
+  \draw[timeaxis] (0, 0) -- (0, -\axislen)
   node[textnode, midway, sloped, above, rotate=180, fill=white, fill opacity=0.9] {Timesteps};
 
   % % Work boxes for each timestep

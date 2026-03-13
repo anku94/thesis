@@ -1,0 +1,35 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usetikzlibrary{positioning}
+
+\input{assets}
+
+\begin{document}
+
+\tikzset{
+  sstable/.style={
+    draw,
+    thick,
+    fill=pqcolor!20,
+    minimum width=0.7cm,
+    minimum height=0.7cm,
+    font=\sffamily\small,
+  },
+}
+
+\begin{tikzpicture}
+  \def\sstgap{0.1cm}
+
+  \node[sstable] (s0) at (0,0) {0-12};
+  \node[sstable, right=\sstgap of s0] (s1) {8-21};
+  \node[sstable, right=\sstgap of s1] (s2) {15-28};
+  \node[sstable, right=\sstgap of s2] (s3) {24-38};
+  \node[sstable, right=\sstgap of s3] (s4) {32-48};
+  \node[sstable, right=\sstgap of s4] (s5) {42-59};
+  \node[sstable, right=\sstgap of s5] (s6) {55-72};
+  \node[sstable, right=\sstgap of s6] (s7) {68-85};
+  \node[sstable, right=\sstgap of s7] (s8) {79-95};
+  \node[sstable, right=\sstgap of s8] (s9) {90-103};
+
+\end{tikzpicture}
+
+\end{document}

@@ -4,23 +4,26 @@
   pics/fabric/.style args={#1}{
     code={
       \def\hw{#1}
-      \colorlet{fabclr}{nord2}
+      \colorlet{fabclr}{fablinkcolor}
+      \colorlet{fabdark}{fabclr!90!black}
+      \colorlet{fabmed}{fabclr!100}
+      \colorlet{fablight}{fabclr!5}
       \begin{scope}[local bounding box=-bbox]
-        % Band
-        \draw[line width=1.0pt, draw=fabclr!70, fill=fabclr!5, rounded corners=1pt]
-          (-\hw,-0.18) rectangle (\hw, 0.18);
         % Horizontal traces
-        \draw[thin, fabclr!50] (-\hw, 0.06) -- (\hw, 0.06);
-        \draw[thin, fabclr!50] (-\hw,-0.06) -- (\hw,-0.06);
+        \draw[thin, fabmed] (-\hw, 0.06) -- (\hw, 0.06);
+        \draw[thin, fabmed] (-\hw,-0.06) -- (\hw,-0.06);
         % Vertical ticks (switch crosspoints)
         \pgfmathsetmacro{\tickstep}{0.4}
         \pgfmathsetmacro{\numticks}{floor(\hw/\tickstep)}
-        \draw[thin, fabclr!50] (0,-0.18) -- (0,0.18);
+        \draw[thin, fabmed] (0,-0.18) -- (0,0.18);
         \foreach \i in {1,...,\numticks} {
           \pgfmathsetmacro{\xpos}{\i*\tickstep}
-          \draw[thin, fabclr!50] (\xpos,-0.18) -- (\xpos,0.18);
-          \draw[thin, fabclr!50] (-\xpos,-0.18) -- (-\xpos,0.18);
+          \draw[thin, fabmed] (\xpos,-0.18) -- (\xpos,0.18);
+          \draw[thin, fabmed] (-\xpos,-0.18) -- (-\xpos,0.18);
         }
+        % Band
+        \draw[line width=1.0pt, draw=fabdark, rounded corners=1pt]
+          (-\hw,-0.18) rectangle (\hw, 0.18);
       \end{scope}
       \PicBboxAnchors{-bbox}
     }

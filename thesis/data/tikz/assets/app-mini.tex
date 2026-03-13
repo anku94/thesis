@@ -41,7 +41,7 @@
 
         % -- Fabric band underneath ranks --
         \coordinate (-fabcenter) at ($(-r0-south)!0.5!(-r2-south) + (0,-0.7)$);
-        \pic (-fab) at (-fabcenter) {fabric=1.6};
+        \pic (-fab) at (-fabcenter) {fabric=1.2};
 
         % -- Storage cylinders underneath fabric (only 2) --
         \begin{scope}[local bounding box=-storages]
@@ -56,20 +56,22 @@
         \node[draw, dotted, thick, rounded corners=3pt, inner sep=4pt, fit=(-storages)] (-sbox) {};
 
         % -- Stubs connecting ranks to fabric --
-        \foreach \n in {r0,r1,r2} {
-          \draw[stub] (-\n-south) -- (-\n-south|-{-fab-north});
-        }
+        \begin{scope}[on background layer]
+          \foreach \n in {r0,r1,r2} {
+            \draw[stub] (-\n-south) -- (-\n-south|-{-fab-north});
+          }
 
-        % -- Stub connecting storage box to fabric --
-        \draw[stub] (-sbox.north) -- (-sbox.north|-{-fab-south});
+          % -- Stub connecting storage box to fabric --
+          \draw[stub] (-sbox.north) -- (-sbox.north|-{-fab-south});
+        \end{scope}
 
-        % -- Labels on the left --
+        % -- Labels on the right --
         \def\labelgap{0.3cm}
-        \path let \p1=(-r0-west), \p2=(-fab-west), \p3=(-s0-west) in
-          coordinate (-labelx) at ({min(\x1,\x2,\x3) - \labelgap}, 0);
-        \node[applabel] at (-labelx|-{-r0-center}) {\textbf{BSP Ranks}\\\emph{10--100K}};
-        \node[applabel] at (-labelx|-{-fab-center}) {\textbf{RDMA Fabric}\\\emph{400\,Gbps}};
-        \node[applabel] at (-labelx|-{-s0-center}) {\textbf{Parallel Storage} \\ \emph{(Lustre, DAOS)}};
+        \path let \p1=(-r2-east), \p2=(-fab-east), \p3=(-sbox.east) in
+          coordinate (-labelx) at ({max(\x1,\x2,\x3) + \labelgap}, 0);
+        \node[applabel, anchor=west, align=left] at (-labelx|-{-r0-center}) {\textbf{BSP Ranks}\\\emph{10--100K}};
+        \node[applabel, anchor=west, align=left] at (-labelx|-{-fab-center}) {\textbf{RDMA Fabric}\\\emph{400\,Gbps}};
+        \node[applabel, anchor=west, align=left] at (-labelx|-{-sbox.center}) {\textbf{Parallel Storage} \\ \emph{(Lustre, DAOS)}};
       \end{scope}
 
       \PicBboxAnchors{-bbox}

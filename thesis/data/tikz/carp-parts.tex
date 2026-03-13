@@ -1,0 +1,83 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{positioning,fit,backgrounds,calc,arrows.meta}
+
+\input{assets}
+
+% Merge layers
+\pgfsetlayers{picbackground,background,main}
+
+\begin{document}
+
+% === Styles ===
+\tikzset{
+  % SSTable cell
+  sstable/.style={
+    draw,
+    thick,
+    fill=pqcolor!20,
+    minimum width=2cm,
+    minimum height=0.7cm,
+    font=\sffamily\small,
+  },
+  % U-shaped bucket: bucket={v1/v2/v3}
+  pics/bucket/.style args={#1/#2/#3}{code={
+    % Parameters
+    \def\bucketW{1.0cm}
+    \def\bucketH{0.7cm}
+    \def\bucketPad{0.2cm}
+    \def\bucketLip{0.1cm}
+
+    % Stack of 3 SSTables
+    \node[sstable, minimum width=\bucketW, minimum height=\bucketH] (-c1) at (0, 0) {#1};
+    \node[sstable, minimum width=\bucketW, minimum height=\bucketH, below=0 of -c1] (-c2) {#2};
+    \node[sstable, minimum width=\bucketW, minimum height=\bucketH, below=0 of -c2] (-c3) {#3};
+
+    % Beaker shape behind (on background)
+    \begin{scope}[on background layer]
+      \draw[thick, fill=nord4!50, rounded corners=3pt]
+        % Left lip
+        ([xshift=-\bucketPad-\bucketLip, yshift=\bucketLip]-c1.north west)
+        -- ([xshift=-\bucketPad, yshift=\bucketLip]-c1.north west)
+        % Left side down
+        -- ([xshift=-\bucketPad, yshift=-\bucketPad]-c3.south west)
+        % Flat bottom
+        -- ([xshift=\bucketPad, yshift=-\bucketPad]-c3.south east)
+        % Right side up
+        -- ([xshift=\bucketPad, yshift=\bucketLip]-c1.north east)
+        % Right lip
+        -- ([xshift=\bucketPad+\bucketLip, yshift=\bucketLip]-c1.north east);
+    \end{scope}
+
+    % Anchors
+    \coordinate (-north) at ([yshift=\bucketLip]-c1.north);
+    \coordinate (-south) at ([yshift=-\bucketPad]-c3.south);
+    \coordinate (-center) at ($(-north)!0.5!(-south)$);
+  }},
+}
+
+\begin{tikzpicture}
+  \def\bucketSep{2.0cm}
+
+  \pic (b1) at (0,0) {bucket={0-28/0-23/0-25}};
+  \node[below=0.2cm of b1-south, font=\sffamily\small] {Partition 0};
+
+  % Time axis (left side)
+  \draw[->, thick] ([xshift=-1.2cm]b1-south) -- ([xshift=-1.2cm]b1-north)
+    node[midway, rotate=90, anchor=south, font=\sffamily\small] {Time};
+
+  \coordinate (t2) at ([xshift=\bucketSep]b1-north);
+  \PlacePicByAnchor{bucket={28-55/23-52/25-50}}{b2}{t2}{north}
+  \node[below=0.2cm of b2-south, font=\sffamily\small] {Partition 1};
+
+  \coordinate (t3) at ([xshift=\bucketSep]b2-north);
+  \PlacePicByAnchor{bucket={55-72/52-79/50-75}}{b3}{t3}{north}
+  \node[below=0.2cm of b3-south, font=\sffamily\small] {Partition 2};
+
+  \coordinate (t4) at ([xshift=\bucketSep]b3-north);
+  \PlacePicByAnchor{bucket={72-103/79-103/75-100}}{b4}{t4}{north}
+  \node[below=0.2cm of b4-south, font=\sffamily\small] {Partition 3};
+
+\end{tikzpicture}
+
+\end{document}
