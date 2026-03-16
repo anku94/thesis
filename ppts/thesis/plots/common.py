@@ -118,6 +118,44 @@ def set_colormap(cmap: str):
     plt.rcParams["axes.prop_cycle"] = plt.cycler(color=colors)
 
 
+# Canonical color mapping for AMR phases (Pastel1-Dark)
+COLORS = {
+    "comm": "C0",      # Communication / MPI_Wait
+    "compute": "C1",   # Compute
+    "sync": "C2",      # Synchronization / MPI_Allgather
+    "rebalance": "C6", # Rebalancing
+}
+
+
+class PlotSaver:
+    @staticmethod
+    def save(fig: pltfig.Figure, trpath: str | None, fpath: str | None, fname: str):
+        PlotSaver._save_to_fpath(fig, trpath, fpath, fname, ext="pdf", show=False)
+
+    @staticmethod
+    def _save_to_fpath(
+        fig: pltfig.Figure, trpath: str | None, fpath: str | None, fname: str, ext="png", show=True
+    ):
+        trpref = ""
+        if trpath is not None:
+            if "/" in trpath:
+                trpref = trpath.split("/")[-1] + "_"
+            elif len(trpath) > 0:
+                trpref = f"{trpath}_"
+
+        if fpath is None:
+            fpath = str(get_plotfigs_dir())
+
+        full_path = f"{fpath}/{trpref}{fname}.{ext}"
+
+        if show:
+            print(f"[PlotSaver] Displaying figure\n")
+            fig.show()
+        else:
+            print(f"[PlotSaver] Writing to {full_path}\n")
+            fig.savefig(full_path, dpi=300)
+
+
 Frame = tuple[list[int], list[int], list[int]]  # (artists, legend_items, xtick_items)
 
 

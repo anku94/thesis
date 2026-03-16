@@ -96,25 +96,26 @@ def get_legend_items(all_colors: list[str]) -> list:
             [0],
             marker="s",
             mfc=all_colors[3],
-            label="DeltaFS/FullScan",
+            label="Full Scan",
             mec="black",
             markersize=12,
             linestyle="None",
         )
     )
 
-    legend_items.append(
-        Line2D(
-            [0],
-            [0],
-            marker="^",
-            mfc=all_colors[2],
-            mec="black",
-            label="FastQuery",
-            markersize=12,
-            linestyle="None",
-        )
-    )
+    # FastQuery commented out
+    # legend_items.append(
+    #     Line2D(
+    #         [0],
+    #         [0],
+    #         marker="^",
+    #         mfc=all_colors[2],
+    #         mec="black",
+    #         label="FastQuery",
+    #         markersize=12,
+    #         linestyle="None",
+    #     )
+    # )
 
     legend_items.append(
         Line2D(
@@ -154,10 +155,14 @@ def plot_latvssel_inner(ax: plt.Axes, all_colors: list[str]):
     y/x
 
     markers = ["o", "D", "^", "s"]
-    all_labels = ["DeltaFS/FullScan", "FastQuery", "TritonSort", "CARP"]
+    all_labels = ["Full Scan", "FastQuery", "TritonSort", "CARP"]
     all_msz = [16, 14, 14, 14]
 
-    for type, df in enumerate([df_carp, df_flat, df_fq, df_scan]):
+    # Skip FastQuery (df_fq) - commented out
+    for type, df in enumerate([df_carp, df_flat, df_scan]):
+        # Remap type indices: 0->0, 1->1, 2->3 (skip 2 which was FastQuery)
+        if type == 2:
+            type = 3
         rowidx = 0
         for index, row in df.iterrows():
             data_x = row["qsel"]
@@ -191,13 +196,13 @@ def plot_latvssel_inner(ax: plt.Axes, all_colors: list[str]):
 
     ax.legend(
         handles=get_legend_items(all_colors),
-        handletextpad=0.2,
+        handletextpad=0.07,
         borderpad=0.2,
-        columnspacing=0.6,
+        columnspacing=0.3,
         fontsize=18,
         loc="lower left",
-        bbox_to_anchor=(0.18, 0.02),
-        ncol=2,
+        bbox_to_anchor=(0.12, 0.02),
+        ncol=3,
     )
 
     ax.set_yscale("log")
@@ -223,8 +228,8 @@ def plot_latvssel_inner(ax: plt.Axes, all_colors: list[str]):
 
     ax.yaxis.set_major_formatter(FuncFormatter(latfmt))
 
-    ax.set_xlabel(r"\textbf{Query Selectivity}")
-    ax.set_ylabel(r"\textbf{Query Latency}")
+    ax.set_xlabel(r"\textbf{Query Selectivity}", labelpad=8)
+    ax.set_ylabel(r"\textbf{Query Latency}", labelpad=8)
 
     # ax.minorticks_off()
     ax.xaxis.set_major_locator(MultipleLocator(0.5))
@@ -247,7 +252,7 @@ def plot_query_latvssel_unified():
     # all_colors = [cmap(i) for i in all_cidxs]
     all_colors = [cmap(i) for i in range(4)]
 
-    fig, ax = plt.subplots(1, 1, figsize=[7, 6])
+    fig, ax = plt.subplots(1, 1, figsize=[6.8, 3.7])
     fig.clear()
     ax = fig.add_subplot(111)
     plot_latvssel_inner(ax, all_colors)
@@ -255,14 +260,12 @@ def plot_query_latvssel_unified():
 
     alx_carp = (list(range(0, 40)), [], [])
     alx_ts = (list(range(40, 80)), [], [])
-    alx_fq = (list(range(80, 120)), [], [])
-    alx_dfs = (list(range(120, 128)), [], [])
-    all_alx = [alx_carp, alx_ts, alx_fq, alx_dfs]
+    # alx_fq = (list(range(80, 120)), [], [])  # FastQuery removed
+    alx_dfs = (list(range(80, 88)), [], [])
 
     sb = c.StagedBuildout(ax, fig, "qlatvssel")
     sb.disable_alx(*alx_carp)
     sb.disable_alx(*alx_ts)
-    sb.disable_alx(*alx_fq)
     sb.disable_alx(*alx_dfs)
 
     sb.enable_alx(*alx_dfs)
@@ -271,11 +274,8 @@ def plot_query_latvssel_unified():
     sb.enable_alx(*alx_ts)
     c.save_plot(fig, "qlatvssel.f2")
 
-    sb.enable_alx(*alx_fq)
-    c.save_plot(fig, "qlatvssel.f3")
-
     sb.enable_alx(*alx_carp)
-    c.save_plot(fig, "qlatvssel.f4")
+    c.save_plot(fig, "qlatvssel.f3")
 
     plt.close(fig)
 
