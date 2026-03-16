@@ -30,7 +30,7 @@
     % top 
     \node[above=0cm of app.north, font=\sffamily\bfseries] (app-label) {Application};
 
-    \node[below=\loopylen of app.south] (orca-inner) {\twemoji[height=14pt]{man}\quad\twemoji[height=14pt]{gear}\quad\twemoji[height=14pt]{robot}};
+    \node[below=\loopylen of app.south] (orca-inner) {\tikz[scale=0.65, transform shape]\pic{operator};\quad\twemoji[height=14pt]{gear}\quad\twemoji[height=14pt]{robot}};
     \node[box, fit=(orca-inner)] (orca) {};
     % bottom
     \node[below=0cm of orca.south, font=\sffamily\bfseries] (orca-label) {Agent};
