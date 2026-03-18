@@ -11,7 +11,7 @@ ASSETS := assets.tex $(wildcard assets/*.tex)
 SVG_SOURCES := bsp.tex application.tex orca-arch.tex floop-orca.tex carp-layout.tex svg-test.tex
 SVGS := $(patsubst %.tex,svg/%.svg,$(SVG_SOURCES))
 
-SVGALT_SOURCES := application.tex carp-layout.tex
+SVGALT_SOURCES := application.tex carp-layout.tex bsp.tex
 SVGALTS := $(patsubst %.tex,svgalt/%.svg,$(SVGALT_SOURCES))
 
 .PHONY: all clean tidy svg svg-dir svgalt svgalt-dir

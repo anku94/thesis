@@ -32,7 +32,10 @@
     \node[leglabel] (lbl3) at ([xshift=\labelgap]n3.east) {Work};
 
     \node[fill=barriercolor, draw=barriercolor!50!black, minimum width=0.7cm, minimum height=0.35cm] (n4) at ([xshift=\entrygap]lbl3.east) {};
-    \node[leglabel] at ([xshift=\labelgap]n4.east) {Global Sync.};
+    \node[leglabel] (lbl4) at ([xshift=\labelgap]n4.east) {Global Sync. (\emph{MPI, NCCL})};
+
+    \node[fill=pqcolor, draw=pqcolor!50!black, minimum width=0.7cm, minimum height=0.35cm] (n5) at ([xshift=\entrygap]lbl4.east) {};
+    \node[leglabel] at ([xshift=\labelgap]n5.east) {Checkpoint};
   \end{scope}
 
   \begin{scope}[on background layer]
