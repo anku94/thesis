@@ -81,7 +81,7 @@ def add_annotations(ax):
         shifts = [-0.08, 0.02, 0.03, -0.06]
 
         # new shifts for main2 plot
-        shifts = [-0.13, 0.04, 0.03, -0.08]
+        shifts = [-0.2, 0.04, 0.03, 0.07]
         val = val[:-1] + '\%'
         y = y * (1 + shifts[l])
         xypt = (x, y)
@@ -97,7 +97,7 @@ def main():
     init()
     plt.close("all")
 
-    fig, ax = plt.subplots(1, 1, figsize=(6.0, 5.5))
+    fig, ax = plt.subplots(1, 1, figsize=(5.5, 3.0))
     tot_data = get_total_data()
     ax.clear()
 
@@ -120,7 +120,7 @@ def main():
                loc="outside upper center",
                columnspacing=1.5,
                handlelength=1.5,
-               bbox_to_anchor=(0.55, 0.99))
+               bbox_to_anchor=(0.55, 1.02))
 
     ax.yaxis.set_major_formatter(
         ticker.FuncFormatter(lambda x, _: f"{x / 3600:.1f} h"))
@@ -134,7 +134,7 @@ def main():
 
     add_annotations(ax)
     fig.tight_layout()
-    fig.subplots_adjust(top=0.88)
+    fig.subplots_adjust(top=0.85)
 
     # get all artists
     ax.get_children()
