@@ -263,7 +263,7 @@ offline analysis and DuckDB for real-time metrics.
 For analyses difficult to express in SQL, \emph{map} operators allow invoking arbitrary precompiled
 kernels.
 
-OrcaFlow is backed by a TBON-aware distributed planner and query engine built on Apache DataFusion.
+OrcaFlow is backed by a TBON-aware distributed planner and query engine built on Apache DataFusion~\cite{Lamb2024:DataFusion}.
 Each flow compiles into \emph{tier plans} describing transforms to apply, data to forward, and
 sinks to execute locally.
 The planner automatically places both transforms and sinks, pushing operators that reduce data
