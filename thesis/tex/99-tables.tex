@@ -81,25 +81,27 @@
       Offline trace analysis for invariant generation, online enforcement     & Timestep-aligned traces for
       offline generation, in-situ enforcement via OrcaFlow                                                                                                                                                                                                                                       \\
       \midrule
-      \tabOrcaCell{1}{Minder~\cite{Deng2025:Minder} \emph{(Fault~diagnosis)}} &
-      Fail-slow hardware                                                      & Cluster-level metrics and anomaly detection                                             & Workload-level trace events                                                                                            \\
-      \midrule
-      \tabOrcaCell{1}{Aegis~\cite{Dong2025:Aegis} \emph{(Fault~diagnosis)}}   &
-      Fail-stop hardware                                                      & Per-node NCCL counters pulled on timeouts                                               & Workload-level trace events                                                                                            \\
-      \midrule
       \tabOrcaCell{1}{Reveal~\cite{Chen2025:Reveal}                                                                                                                                                                                                                                              \\
       \emph{(Training~anomalies)}}                                            & Anomaly detection and bottleneck
       attribution                                                             & Time-windowed metrics + unsupervised learning                                           & Workload-level trace events                                                                                            \\
       \midrule
-      \tabOrcaCell{1}{PerfTracker~\cite{Guan2025:PerfTracker}                                                                                                                                                                                                                                    \\
+      \tabOrcaCell{1}{Minder\textsuperscript{\#}~\cite{Deng2025:Minder} \emph{(Fault~diagnosis)}} &
+      Fail-slow hardware                                                      & Cluster-level metrics and anomaly detection                                             & Workload-level trace events                                                                                            \\
+      \midrule
+      \tabOrcaCell{1}{Aegis\textsuperscript{\#}~\cite{Dong2025:Aegis} \emph{(Fault~diagnosis)}}   &
+      Fail-stop hardware                                                      & Per-node NCCL counters pulled on timeouts                                               & Workload-level trace events                                                                                            \\
+      \midrule
+      \tabOrcaCell{1}{PerfTracker\textsuperscript{\#}~\cite{Guan2025:PerfTracker}                                                                                                                                                                                                                                    \\
       \emph{(Training~anomalies)}}                                            & Anomaly detection and bottleneck attribution                                            & Always-on iteration
-      monitoring                                                              & Identical workflow                                                                                                                                                                          \\
+      monitoring                                                              & Identical workflow, but workload-level                                                                                                                                                                                               \\
                                                                               &                                                                                         & Trigger-driven detailed capture                       &                                                                \\
       \addlinespace
-                                                                              &                                                                                         & In-situ telemetry reductions                          &                                                                                             \\
+                                                                              &                                                                                         & In-situ telemetry reductions                          &                                                                \\
       \bottomrule
     \end{tabularx}
-    \caption{Diagnostic approaches in ML training observability and their ORCA equivalents.
-    }~\label{tab:orca:related-work}
+    % \smallskip
+    % \vspace{0.5em}
+    {\raggedright\scriptsize\itshape \textsuperscript{\#} Minder, Aegis, and PerfTracker target multi-tenant environments. ORCA currently supports a single large workload.\par}
+    \caption{Diagnostic approaches in ML training observability and their ORCA equivalents.}~\label{tab:orca:related-work}
   \end{table}
 }

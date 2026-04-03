@@ -47,20 +47,25 @@ TrainCheck~\cite{Jiang2025:TrainCheck} enforces training correctness via
 offline invariant generation and online checks.
 ORCA's timestep-aligned
 columnar analytics accelerate both stages.
-Minder~\cite{Deng2025:Minder} and
-Aegis~\cite{Dong2025:Aegis} operate at the cluster infrastructure level,
-using hardware counters and metrics to identify faulty nodes across
+Minder~\cite{Deng2025:Minder},
+Aegis~\cite{Dong2025:Aegis}, and PerfTracker~\cite{Guan2025:PerfTracker} operate at the cluster
+infrastructure level,
+using hardware counters, metrics, and fine-grained trace events to identify faulty nodes across
 workloads.
-This targets a fundamentally different scope: identifying bad
-hardware across many workloads treated as black boxes.
+Their scopes range from identifying bad hardware across many workloads treated as black boxes to
+providing tuning recommendations to customers.
+% This targets a fundamentally different scope: identifying bad hardware across many workloads
+% treated as black boxes.
 ORCA provides
 high-fidelity visibility into a single workload but does not yet support
 cross-workload diagnosis in multi-tenant environments.
 \Cref{tab:orca:related-work} summarizes the diagnostic mechanisms implemented in these systems and
 their ORCA equivalents.
 
-Among these systems, Greyhound~\cite{Wu2025:GREYHOUND} is the closest to
-ORCA in scope, implementing a complete feedback loop: iteration times are
+Among these systems, Greyhound~\cite{Wu2025:GREYHOUND} and PerfTracker~\cite{Guan2025:PerfTracker}
+are the closest to
+ORCA in scope.
+Greyhound implements a complete feedback loop: iteration times are
 tracked, NCCL events are collected for localization when outliers are
 detected, microbenchmarks are dispatched to validate stragglers, and online
 tuning rebalances work in response.
@@ -72,31 +77,44 @@ while ORCA implements an asynchronous control plane with atomicity and timestep-
 guarantees.
 Additionally, ORCA's on-fabric broadcast tree enables faster message dissemination than a central
 controller.
-% arbitrary collectives to inject probes, while ORCA propagates updates asynchronously at step
-% boundaries and uses on-fabric broadcast for faster dissemination than a central controller.
+PerfTracker implements a two-level loop: lightweight always-on monitoring of iteration times, with
+detailed capture triggered by outliers.
+Node-level aggregation reduces 300\,MB of telemetry to 30\,KB of aggregated signatures.
+Long symbol names are noted as contributing to size amplification, which ORCA avoids via
+dictionary-encoded Arrow columns.
+% PerfTracker implements a two-level loop: lightweight always-on monitoring of iteration times, and
+% detailed capture triggered by outliers. It also implements node-level aggregation to reduce
+% 300\,MB of telemetry into 30\,KB of aggregated signatures. They also note long symbol names as
+% contributing to size amplification, a problem ORCA avoids by using dictionary-encoded Arrow
+% columns. arbitrary collectives to inject probes, while ORCA propagates updates asynchronously at
+% step boundaries and uses on-fabric broadcast for faster dissemination than a central controller.
 
 \parahead{Tool Infrastructure and Tracing}
 MRNet~\cite{Roth2003:MRNet} introduced TBONs for scalable tool infrastructure, but its compiled C++
 filter model has not evolved with modern analytics.
-Fay~\cite{Erlin2011:Fay} and Snicket~\cite{Berg2021:Snicket} compile declarative queries into
-distributed probes that filter and aggregate at source.
-ORCA combines both: a TBON with Arrow interchange, declarative SQL, and BSP-aligned control.
+% Fay~\cite{Erlin2011:Fay} and Snicket~\cite{Berg2021:Snicket} compile declarative queries into
+% distributed probes that filter and aggregate at source.
+% ORCA combines both: a TBON with Arrow interchange, declarative SQL, and BSP-aligned control.
+Fay~\cite{Erlin2011:Fay}, Snicket~\cite{Berg2021:Snicket}, and Pivot Tracing~\cite{Mace2015:Pivottracing} pioneered 
+causality-preserving query-driven tracing in the context of asynchronous services.
+ORCA extends this paradigm to BSP, adding consistent control, open columnar formats, and
+an RDMA TBON.
 Dynamic instrumentation via eBPF~\cite{:eBPF} and DynInst~\cite{Berna2011:DynInst} can extend reach
 into runtime and kernel layers.
 Sketch-based telemetry reduction~\cite{Sriva2024:Circa} aligns with ORCA's in-situ aggregation
 model.
 
-% \parahead{Unified Analytics}
-% Arrow is emerging as common interchange for tabular HPC data ---TileDB~\cite{:TileDB} and
-% arrow-zarr~\cite{2026:arrow-zarr} bridge array stores and SQL engines~\cite{Lamb2024:DataFusion}.
-% SmartNICs are being explored as execution targets for Arrow-based data
-% pipelines~\cite{Ulmer2023:ExtendingComposableDatab,Liu2022:ProcessingParticleData}--- a declarative
-% engine like ORCA's could offload plan fragments to such devices transparently.
-% In-situ indexing systems like DeltaFS~\cite{Zheng2018:DeltaFS} and CARP~\cite{Jain2024:CARP} deploy
-% shufflers for embedded in-situ hash and range-partitioning.
-% ORCA's TBON could accommodate shuffling as an intra-tier operation.
-% As these ecosystems converge, common infrastructure can subsume analytics workflows ranging from
-% observability to checkpoint indexing to scientific queries.
+% \parahead{Unified Analytics} Arrow is emerging as common interchange for tabular HPC data
+% ---TileDB~\cite{:TileDB} and arrow-zarr~\cite{2026:arrow-zarr} bridge array stores and SQL
+% engines~\cite{Lamb2024:DataFusion}. SmartNICs are being explored as execution targets for
+% Arrow-based data
+% pipelines~\cite{Ulmer2023:ExtendingComposableDatab,Liu2022:ProcessingParticleData}--- a
+% declarative engine like ORCA's could offload plan fragments to such devices transparently. In-situ
+% indexing systems like DeltaFS~\cite{Zheng2018:DeltaFS} and CARP~\cite{Jain2024:CARP} deploy
+% shufflers for embedded in-situ hash and range-partitioning. ORCA's TBON could accommodate
+% shuffling as an intra-tier operation. As these ecosystems converge, common infrastructure can
+% subsume analytics workflows ranging from observability to checkpoint indexing to scientific
+% queries.
 
 \parahead{Computational Steering}
 Computational steering---interactive control of running simulations---dates to the early
