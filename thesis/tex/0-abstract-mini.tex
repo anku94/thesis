@@ -44,3 +44,31 @@ conventional HPC tracers at 56--81\% and eliminates 98.5--99.999\% of telemetry 
 evaluated queries.
 In an evaluation of its closed-loop capabilities using an LLM agent, a performance anomaly that
 took months to diagnose manually is localized in 27 minutes.
+
+
+Large-scale parallel programs—scientific simulations, distributed training—synchronize thousands of
+processes in lockstep, which means even small inefficiencies compound into cluster-wide
+bottlenecks.
+Many of these inefficiencies are inherently unpredictable: they arise only at runtime and can only
+be addressed through adaptation.
+How quickly a system can observe a problem, characterize it, and respond defines its practical
+efficiency.
+This thesis argues that general-purpose infrastructure for such adaptive feedback loops is the
+missing piece in today's parallel systems.
+Two case studies—one with an online loop, one without—show the difference this makes and motivate
+steerable observability: an always-on, programmable substrate for observing and responding to
+runtime behavior.
+We present ORCA, a system that realizes this paradigm with minimal overhead and collapses manual
+investigation timelines by orders of magnitude.
+
+The bulk-synchronous parallel (BSP) paradigm---powering large-scale scientific simulations and
+distributed ML training---poses unique efficiency challenges.
+These workloads impose periodic global synchronization across 10,000s of ranks, which compounds
+small inefficiencies into cluster-wide bottlenecks.
+Many arise from conditions unknowable before runtime, such as load imbalance and performance
+pathologies, and can only be addressed through adaptation.
+Efficiency in production therefore hinges on \emph{adaptation latency}: how quickly conditions can
+be observed, characterized, and responded to.
+This thesis argues that general-purpose infrastructure
+for adaptive feedback loops
+is the missing piece in today's BSP systems.
