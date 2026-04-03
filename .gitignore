@@ -27,3 +27,13 @@ ppts/proposal/talk_forpdf.pptx
 ppts/proposal/talk_pdf.pdf
 ppts/proposal/talk_shared.pptx
 thesis/main.pdf
+ppts/thesis/plots/__pycache__
+thesis/data/tikz/__pycache__
+ppts/thesis/acks
+ppts/thesis/LiquidJetInSupersonicCrossflow.mp4
+ppts/thesis/opening_slides.pdf
+otherdocs/_markdown_generality
+otherdocs/generality.luabridge.lua
+otherdocs/generality.markdown.in
+.claude/settings.local.json
+.vscode/settings.json
