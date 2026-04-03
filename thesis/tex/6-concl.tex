@@ -47,9 +47,9 @@ engines~\cite{Lamb2024:DataFusion} applied to in-situ HPC analytics.
 Compared with prior in-situ systems, ORCA differs in two ways.
 First, instead of placing analytics entirely on application
 ranks~\cite{Zheng2018:DeltaFS,Jain2024:CARP} or entirely on a dedicated
-tier~\cite{Eisen2024:ADIOS}, ORCA's planner decomposes them into operators that can be placed on
+tier~\cite{Eisen2025:ADIOS}, ORCA's planner decomposes them into operators that can be placed on
 either tier at runtime.
-Second, unlike ADIOS-style offload as a peer MPI job~\cite{Eisen2024:ADIOS}, ORCA's analytics tier
+Second, unlike ADIOS-style offload as a peer MPI job~\cite{Eisen2025:ADIOS}, ORCA's analytics tier
 is fully asynchronous while still preserving timestep-consistent semantics.
 
 We conclude this thesis by recapping the steerable observability paradigm and its limits
@@ -61,9 +61,9 @@ from CARP and ORCA (\S\ref{sec:concl:olap}), describing extensions within immedi
 % as columnar formats, SQL planning, and embeddable query engines. Compared with prior in-situ HPC
 % systems, ORCA differs in two ways. First, it enables a hybrid execution model. Instead of
 % monolithic analytics placed entirely on application ranks~\cite{Zheng2018:DeltaFS,Jain2024:CARP}
-% or entirely offloaded to a dedicated tier~\cite{Eisen2024:ADIOS}, ORCA uses a planner to decompose
+% or entirely offloaded to a dedicated tier~\cite{Eisen2025:ADIOS}, ORCA uses a planner to decompose
 % analytics into operators that can be placed on either tier at runtime. Second, unlike ADIOS-style
-% offload as a peer MPI job~\cite{Eisen2024:ADIOS}, ORCA’s analytics tier is completely asynchronous
+% offload as a peer MPI job~\cite{Eisen2025:ADIOS}, ORCA’s analytics tier is completely asynchronous
 % while still preserving timestep-consistent analytics semantics.
 
 % The rest of this chapter reflects on this design point (\S\ref{sec:concl:retrospective}),

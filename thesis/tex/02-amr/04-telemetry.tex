@@ -1,7 +1,6 @@
 % ! TeX root = ./main.tex
 
-\section{Denoising Telemetry For Placement}
-\label{sec:amr:tele}
+\section{Denoising Telemetry For Placement}\label{sec:amr:tele}
 
 This section describes our methodology for establishing reliable telemetry, addressing the first
 two challenges from the previous section.
@@ -28,7 +27,7 @@ Codes using Parthenon~\cite{Grete2023:Parthenon}, Phoebus~\cite{Barke2024:Phoebu
 AthenaPK~\cite{Grete2023:Parthenon}, built against MVAPICH2~\cite{Panda2021:MVAPICH} and the PSM
 fabric library~\cite{2020:IntelPerformanceScaled}.
 
-\subsection{Eliminating Faulty and Fail-Slow Hardware} \label{sec:amr:tele:hw} \figtunehw
+\subsection{Eliminating Faulty and Fail-Slow Hardware}\label{sec:amr:tele:hw} \figtunehw
 
 Hardware problems surfaced early in our study and had to be resolved before any software‑level
 conclusions were meaningful.
@@ -49,8 +48,7 @@ To ensure measurement integrity, our launch workflow overprovisioned nodes and r
 health checks (syslog and other hardware indicators).
 Failing nodes were automatically pruned from runs and blacklisted.
 
-\subsection{Tuning The Software Stack}
-\label{sec:amr:tele:sw}
+\subsection{Tuning The Software Stack}\label{sec:amr:tele:sw}
 \figtunesw
 
 We found interactions within the software stack---application logic, MPI runtime, and network
@@ -116,10 +114,9 @@ In hindsight, our pipeline mirrored modern observability stacks: structured sche
 formats, and relational queries.
 Though still ad hoc, it provided the low-latency, queryable insight needed to support targeted
 diagnosis and hypothesis-driven exploration, essential for tuning and placement at scale.
-We explore the broader implications of this model in~\S\ref{sec:amr:lessons}.
+% We explore the broader implications of this model in~\S\ref{sec:amr:lessons}.
 
-\subsection{A Critical Path Model of Execution}
-\label{sec:amr:tele:critp}
+\subsection{A Critical Path Model of Execution}\label{sec:amr:tele:critp}
 \figAmrCritPath
 
 Before turning to placement, we introduce a critical path analysis framework to identify optimal
