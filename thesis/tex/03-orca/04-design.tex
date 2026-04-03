@@ -236,7 +236,7 @@ TS2PC proposes commands for a future timestep $T_{cmd} = T_{app} + \Delta$, wher
 automatically learned speculative margin.
 The TBON assists the protocol by broadcasting requests and reducing responses --- any \texttt{NAK}
 in the subtree results in a single \texttt{NAK} at the controller.
-\Cref{fig:des-twopc} illustrates the protocol via three cases.
+\Cref{fig:orca:des-twopc} illustrates the protocol via three cases.
 
 \begin{itemize}[leftmargin=*]
   \item \emph{Case~A (Commit):}
@@ -300,7 +300,7 @@ in the subtree results in a single \texttt{NAK} at the controller.
 % The TBON assists the protocol by broadcasting requests and reducing responses --- any \texttt{NAK}
 % results in a \texttt{NAK} being sent to the controller.
 
-% \Cref{fig:des-twopc} illustrates the protocol via three cases.
+% \Cref{fig:orca:des-twopc} illustrates the protocol via three cases.
 % Ranks agree to commit commands if they are not yet at $T_{cmd}$ and committed commands are applied
 % before the execute $T_{cmd}$ (Case A).
 % If ranks are past $T_{cmd}$, they vote to abort (Case B).
