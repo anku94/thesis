@@ -6,7 +6,7 @@ ORCATIKZROOT := /Users/schwifty/Repos/mon-paper/data/tikz-figs-new
 CARPFILES := distrib6.pdf distrib.amr.pdf distrib.vpic.pdf
 CARPEVALFILES := qlatvssel.v6.pdf runtime.v4.werr.pdf query.ycsb.v3.pdf pvtbench.adapt.pdf rtp.latvspvtcnt.pdf pvtbench.epxpp.pdf carpdb.impact.alt4.pdf load.vs.params.pdf runtime.vs.params.pdf
 AMRFILES  := msgcnt_regr.pdf msgcnt_regr_hor.pdf lesson_volfunc_v2_short_zoom.pdf lesson_throttling_v4.pdf lesson_ordering_v5.pdf criticalpath2.pdf criticalpath.pdf sendorder_v2.pdf octree.pdf blastwave_runtime.pdf blastwave_runtime_wide.pdf blastwave_tradeoff_wide_mini.pdf blastwave_comm_wide_mini.pdf meshdriver_locbench.pdf scaling.pdf
-ORCAFIGSFILES := lesson_volfunc_zoom.pdf lesson_volfunc_single.pdf lesson_volfunc_single_cdf.pdf amr_tracer_runtimes.pdf amr_tracer_runtimes_2x2.pdf amr_tracesizes_line.pdf query_suite.pdf dftracer_comp.pdf ofi_tcp_tracer_runtimes.pdf ontv_combined.pdf agentic_timeline.pdf
+ORCAFIGSFILES := lesson_volfunc_zoom.pdf lesson_volfunc_single.pdf lesson_volfunc_single_cdf.pdf amr_tracer_runtimes.pdf amr_tracer_runtimes_2x2.pdf amr_tracesizes_line.pdf query_suite.pdf query_suite_abs.pdf dftracer_comp.pdf ofi_tcp_tracer_runtimes.pdf ontv_combined.pdf agentic_timeline.pdf
 ORCATIKZFILES := arch.pdf plan.pdf plan2.pdf ts2pc.pdf
 
 CARPTARGETS := $(addprefix carp_,$(CARPFILES)) $(addprefix carp_,$(CARPEVALFILES))
@@ -53,6 +53,8 @@ orca_amr_tracer_runtimes_2x2.pdf: $(ORCAFIGSROOT)/amr_tracer_runtimes_2x2.pdf
 orca_amr_tracesizes_line.pdf: $(ORCAFIGSROOT)/amr_tracesizes_line.pdf
 	cp $< $@
 orca_query_suite.pdf: $(ORCAFIGSROOT)/query_suite.pdf
+	cp $< $@
+orca_query_suite_abs.pdf: $(ORCAFIGSROOT)/query_suite_abs.pdf
 	cp $< $@
 orca_dftracer_comp.pdf: $(ORCAFIGSROOT)/dftracer_comp.pdf
 	cp $< $@

@@ -86,17 +86,32 @@ into runtime and kernel layers.
 Sketch-based telemetry reduction~\cite{Sriva2024:Circa} aligns with ORCA's in-situ aggregation
 model.
 
-\parahead{Unified Analytics}
-Arrow is emerging as common interchange for tabular HPC data ---TileDB~\cite{:TileDB} and
-arrow-zarr~\cite{2026:arrow-zarr} bridge array stores and SQL engines~\cite{Lamb2024:DataFusion}.
-SmartNICs are being explored as execution targets for Arrow-based data
-pipelines~\cite{Ulmer2023:ExtendingComposableDatab,Liu2022:ProcessingParticleData}--- a declarative
-engine like ORCA's could offload plan fragments to such devices transparently.
-In-situ indexing systems like DeltaFS~\cite{Zheng2018:DeltaFS} and CARP~\cite{Jain2024:CARP} deploy
-shufflers for embedded in-situ hash and range-partitioning.
-ORCA's TBON could accommodate shuffling as an intra-tier operation.
-As these ecosystems converge, common infrastructure can subsume analytics workflows ranging from
-observability to checkpoint indexing to scientific queries.
+% \parahead{Unified Analytics}
+% Arrow is emerging as common interchange for tabular HPC data ---TileDB~\cite{:TileDB} and
+% arrow-zarr~\cite{2026:arrow-zarr} bridge array stores and SQL engines~\cite{Lamb2024:DataFusion}.
+% SmartNICs are being explored as execution targets for Arrow-based data
+% pipelines~\cite{Ulmer2023:ExtendingComposableDatab,Liu2022:ProcessingParticleData}--- a declarative
+% engine like ORCA's could offload plan fragments to such devices transparently.
+% In-situ indexing systems like DeltaFS~\cite{Zheng2018:DeltaFS} and CARP~\cite{Jain2024:CARP} deploy
+% shufflers for embedded in-situ hash and range-partitioning.
+% ORCA's TBON could accommodate shuffling as an intra-tier operation.
+% As these ecosystems converge, common infrastructure can subsume analytics workflows ranging from
+% observability to checkpoint indexing to scientific queries.
+
+\parahead{Computational Steering}
+Computational steering---interactive control of running simulations---dates to the early
+1990s~\cite{Mille1998:SCIRun,Geist1997:Cumulvs} and continues through modern in-situ visualization
+frameworks~\cite{Ayach2015:Catalyst,Larse2022:Ascent}, but remains realized as fixed-function
+pipelines over domain-specific data models.
+ORCA generalizes this as a workload-agnostic framework using columnar formats and relational
+operators, with asynchronous and timestep-consistent control.
+ORCA's motivation is telemetry analytics, but its applicability to broader steering use cases
+tracks Arrow's adoption in scientific computing.
+Particle data already maps naturally to
+Arrow~\cite{Liu2022:ProcessingParticleData,Ulmer2023:ExtendingComposableDatab}, and bridges to
+array-based formats are emerging~\cite{2026:arrow-zarr,:DLPackProtocolApache}.
+As these ecosystems converge, the same infrastructure subsumes workflows from observability to
+in-situ visualization and indexing.
 
 % -- Details -- \parahead{ML Training Observability} Recent ML training systems address pathologies
 % from straggler
