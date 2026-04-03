@@ -30,7 +30,26 @@
       "Bash(/Users/schwifty/Repos/mon-paper/data/ppts/gensvg.sh)",
       "Bash(kpsewhich:*)",
       "Bash(texdoc:*)",
-      "Bash(bibtool:*)"
+      "Bash(bibtool:*)",
+      "WebSearch",
+      "Bash(for key in Petri2003:Missing Acun2016:Mitigating Acun2016:Variation Gunaw2018:FailSlow Bhate2020:PerfVar VanS2009:AMR Kong2022:Collie Gangi2024:RDMA You2024:GVARP Chen2025:Reveal Lu2023:PERSEUS Yildi2016:IONoise)",
+      "Bash(do echo \"=== $key ===\" grep -A 5 \"^@.*{$key,\" /Users/schwifty/Repos/mon-paper/bib/*.bib)",
+      "Bash(/Users/schwifty/miniforge3/bin/python /Users/schwifty/Repos/mon-paper/bib/process.py)",
+      "Bash(/Users/schwifty/miniforge3/bin/python -c \"import bibtexparser; print\\(bibtexparser.__version__\\)\")",
+      "mcp__zotero__zotero_search_collections",
+      "mcp__zotero__zotero_get_collection_items",
+      "mcp__zotero__zotero_get_item_metadata",
+      "mcp__zotero__zotero_update_item",
+      "WebFetch(domain:api.crossref.org)",
+      "mcp__zotero__zotero_search_items",
+      "mcp__zotero__zotero_add_by_doi",
+      "mcp__zotero__zotero_add_by_url",
+      "mcp__zotero__zotero_manage_collections",
+      "mcp__zotero__zotero_search_by_citation_key",
+      "WebFetch(domain:api.semanticscholar.org)",
+      "Bash(curl:*)",
+      "Bash(/Users/schwifty/miniforge3/bin/python data/plotsrc/query_suite.py)",
+      "Bash(/Users/schwifty/miniforge3/bin/python data/plotsrc/query_suite_abs.py)"
     ]
   }
 }
