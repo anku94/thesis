@@ -14,4 +14,3 @@ Pytorch
 Dynolog
 Kineto
 overcollection
-dataframe

@@ -4,52 +4,93 @@
 \label{sec:orca:req}
 
 We now state the key requirements for closed-loop observability.
+Our goal is to accelerate the full spectrum of observability workflows, from offline trace analysis
+to real-time diagnosis.
+This requires analytics to transform fine-grained telemetry in situ, terminating in aggregated
+views or detailed traces but reorganized for efficient offline analyses.
+Additionally, control semantics are needed for interventions ranging from steering application views to steering the
+application itself.
+% We model BSP as consisting of timesteps punctuated by synchronous collectives~\cite{:MPI,:NCCL},
+% with timesteps containing one or more collectives.
+% Steerable observability for this model must support three key requirements.
 % The goal is real-time feedback through interactive views over running applications, while retaining
 % the ability to capture detailed traces when deeper investigation is required.
 
-\parahead{BSP-Aware Semantic Guarantees}
-BSP observability requires guarantees on both data and control paths.
-On the data path, this means coordinated collection: detecting the straggler at a barrier requires
-telemetry from all ranks for that barrier instance.
-Sampling yields uncoordinated subsets insufficient for root cause attribution.
-Control path semantics must similarly align with workload structure.
-Control inputs must be applied consistently and atomically at synchronization boundaries across all
-ranks.
+\pplushead{BSP-Aware Semantic Guarantees}
+Both the data and control paths must be synchronization-aware.
+On the data path, both transport and analytics must offer consistency guarantees, as all telemetry
+for a timestep must be collected and analyzed as a single unit.
+Control inputs must similarly be applied consistently and atomically at timestep boundaries
+across all ranks.
 While uncoordinated updates may be tolerable in some cases, they break correctness for
 interventions such as hyperparameter changes --- a timestep-consistent control plane generalizes
 across use cases.
 
+\pplushead{Low-Cost, Low-Latency Feedback}
+For always-on view-driven observability to be viable, overhead must be low and proportional to view
+complexity.
+Induced jitter must be minimized, so that continuously monitored aggregates incur minimal cost,
+while detailed traces remain available on demand.
+Analytics must execute in real-time, as feedback latency bounds intervention latency.
 
-\parahead{Low-Cost, Low-Latency Feedback}
-Practical observability requires a view-driven model: emitting only what is needed to materialize
-requested views.
-First, overhead must be proportional to view complexity --- lightweight aggregates for continuous
-monitoring should incur minimal cost, while detailed traces remain available on demand.
-Second, feedback must be fast, as the latency of feedback bounds the latency of intervention.
-Finally, the system must minimize induced perturbation --- BSP workloads are jitter-sensitive, and
-overhead must scale with view complexity.
 
-\parahead{Declarative and Flexible Analytics}
+\pplushead{Declarative and Flexible Analytics}
 No predefined set of analyses can anticipate every pathology.
 Operators must be able to specify views and collection policies via a programmable interface at
 runtime, without recompilation or restart.
-% , with the system determining how to efficiently materialize them.
-The collection interface must also be source and schema-agnostic, as telemetry may be emitted by
-any layer of the runtime stack, including MPI, runtime libraries, or custom annotations.
+Collection and analytics must be schema-agnostic, enabling visibility into any layer of the runtime
+stack --- from MPI and fabric libraries to the application itself.
+
+% \parahead{BSP-Aware Semantic Guarantees}
+% BSP observability requires guarantees on both data and control paths.
+% On the data path, this means coordinated collection: detecting the straggler at a barrier requires
+% telemetry from all ranks for that barrier instance.
+% Sampling yields uncoordinated subsets insufficient for root cause attribution.
+% Control path semantics must similarly align with workload structure.
+% Control inputs must be applied consistently and atomically at synchronization boundaries across all
+% ranks.
+% While uncoordinated updates may be tolerable in some cases, they break correctness for
+% interventions such as hyperparameter changes --- a timestep-consistent control plane generalizes
+% across use cases.
+
+
+% \parahead{Low-Cost, Low-Latency Feedback}
+% Practical observability requires a view-driven model: emitting only what is needed to materialize
+% requested views.
+% First, overhead must be proportional to view complexity --- lightweight aggregates for continuous
+% monitoring should incur minimal cost, while detailed traces remain available on demand.
+% Second, feedback must be fast, as the latency of feedback bounds the latency of intervention.
+% Finally, the system must minimize induced perturbation --- BSP workloads are jitter-sensitive, and
+% overhead must scale with view complexity.
+
+% \parahead{Declarative and Flexible Analytics}
+% No predefined set of analyses can anticipate every pathology.
+% Operators must be able to specify views and collection policies via a programmable interface at
+% runtime, without recompilation or restart.
+% % , with the system determining how to efficiently materialize them.
+% The collection interface must also be source and schema-agnostic, as telemetry may be emitted by
+% any layer of the runtime stack, including MPI, runtime libraries, or custom annotations.
 
 % These requirements are in tension.
-Satisfying these requirements simultaneously is the key design challenge.
-Coordinated semantics demand global completeness, low overhead requires not disrupting the
-application, and low feedback latency requires streaming to materialize views quickly instead of
-accumulating
-data locally.
-The programming model must be expressive enough for diagnostic queries, while remaining compatible
-with low-overhead execution.
-Our design combines OLAP primitives (Arrow~\cite{:ApacheArrow}, Parquet~\cite{:ApacheParquet},
-DataFusion~\cite{Lamb2024:DataFusion}) with RDMA for low-overhead transport, aligning data
-partitioning with synchronization boundaries, analytics with a reduction topology, and control with
-timestep semantics.
+% Satisfying these requirements simultaneously is the key design challenge.
+% Coordinated semantics demand global completeness, low overhead requires not disrupting the
+% application, and low feedback latency requires streaming to materialize views quickly instead of
+% accumulating
+% data locally.
+% The programming model must be expressive enough for diagnostic queries, while remaining compatible
+% with low-overhead execution.
+% Our design combines OLAP primitives (Arrow~\cite{:ApacheArrow}, Parquet~\cite{:ApacheParquet},
+% DataFusion~\cite{Lamb2024:DataFusion}) with RDMA for low-overhead transport, aligning data
+% partitioning with synchronization boundaries, analytics with a reduction topology, and control with
+% timestep semantics.
 % Practical observability requires a view-driven model: emitting only what is needed to materialize
+
+Supporting these requirements at scale requires balancing competing constraints ---
+distributed execution for scalability, asynchronous operation for low overhead, and coordinated semantics for correctness ---
+all the while keeping analytics expressive enough for ad-hoc queries.
+Our design combines modern columnar primitives (Arrow~\cite{:ApacheArrow}, Parquet~\cite{:ApacheParquet},
+DataFusion~\cite{Lamb2024:DataFusion}) with RDMA for low-overhead transport, aligning data
+partitioning with timestep boundaries and analytics with a reduction topology.
 
 % requested views, instead of steady streams from static collection profiles. Three properties
 % follow. First, overhead must be proportional to view complexity---lightweight aggregates for

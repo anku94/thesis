@@ -1,42 +1,19 @@
 % ! TeX root = ./main.tex
 
-\section{Design}
-\label{sec:orca:design}
-
-% Design section restructure plan
-% - The section has a pedagogical structure. It is important that this be maintained somehow. 
-%    The biggest challenge with ORCA is that people do not get why it exists the way it does.
-% 
-% - Rough pedagogical structure:
-%   - Transport layer ~ gets you a better tracer for post mortems
-%   - In situ analytics ~ gets you more targeted data collection and faster feedback
-%   - Control plane ~ gets you steerable observability
-%
-% - Fundamentally, ORCA is a programmable TBON with a control plane. It enables collection of telemetry
-%   in situ aggregation and shipping of aggregates to sinks
-%   * DuckDB + Parquet is an opinionated packaging to make it self-contained, no other services
-%   * But if someone wanted to ingest to say clickhouse or something, that'd be fine too.
-%   * The core is the programmable TBON + control plane.
-%   
-% - Uplevel "minimizing perturbation" from impl to design
-
-% FRONT-LOAD THE DATA MODEL - this should be THE FIRST subsection Central insight: sync windows are
-% natural unit of causality in BSP Everything else follows from treating (swid, rank) as primary key
-% Then show: columnar formats, in-situ analytics, control plane all follow from this
+\section{Design}\label{sec:orca:design}
 
 \figDesignArch{}
 
-ORCA is a programmable \emph{tree-based overlay network} (TBON) with a controller (\tierctl{}) at
-the root and aggregators (\tieragg{}) as the intermediate scale-out tier, attached to application
-ranks (\tiermpi{}) as the leaf tier.
+ORCA (\Cref{fig:orca:des-arch}) is a programmable \emph{tree-based overlay network} (TBON) with a
+controller (\tierctl{}) at the root and aggregators (\tieragg{}) as the intermediate scale-out
+tier, attached to application ranks (\tiermpi{}) as the leaf tier.
 \tierctl{} and \tieragg{} run on dedicated nodes outside the MPI domain and communicate with the application via
 on-fabric RPCs.
 The TBON provides asynchronous data and control planes.
-Data originates as columnar Arrow streams at leaf ranks, flows through the TBON, and is persisted
-via sinks.
+Data originates as columnar Arrow~\cite{:ApacheArrow} streams at leaf ranks, flows through the
+TBON, and is persisted via sinks.
 Two sinks are currently implemented: Parquet~\cite{:ApacheParquet} for high-volume telemetry, and
-DuckDB~\cite{Raasv2019:DuckDB} for real-time metrics and dashboards.
-The architecture is shown in \Cref{fig:orca:des-arch}.
+DuckDB~\cite{Raasv2019:DuckDB} for real-time metrics streamed to dashboards.
 We present ORCA as a progression of capabilities that successively shorten the observability feedback loop:
 
 \begin{itemize}[leftmargin=*]
@@ -47,69 +24,79 @@ We present ORCA as a progression of capabilities that successively shorten the o
         feedback by transforming telemetry en-route to sinks.
         OrcaFlow chains SQL statements and map operators over multiple streams, routing results to
         configurable sinks.
-  \item The control plane (\S\ref{sec:orca:des_ctl}) enables online interventions via \textsf{TS2PC}, a speculative variant
-        of two-phase commit that ensures commands are atomically applied at all ranks at the same
-        timestep.
+  \item The control plane (\S\ref{sec:orca:des_ctl}) enables online interventions via a speculative variant
+        of two-phase commit called \textsf{TS2PC} (timestep-linked two-phase commit).
+        It ensures commands are atomically applied at all ranks at the same timestep.
 \end{itemize}
 
 
 \subsection{Data Model: Timestep Dataframes}
 \label{sec:orca:des_model}
 
-The logical unit of collection, analysis, and persistence in ORCA is a \emph{timestep dataframe}.
-Applications emit named and \emph{typed} streams with predefined Arrow schemas.
-Multiple streams may exist with different schemas, but tuples within a single stream must conform
-to a fixed schema.
-Each collective creates a new \emph{synchronization window}, identified by a unique monotonic
-identifier (\texttt{swid}) that is assigned to all events within that window.
-A timestep is an application-level construct that may span multiple \texttt{swid}s, as applications
-typically invoke multiple collectives within a timestep.
-Timestep dataframes comprise all tuples from all ranks within that timestep.
-These dataframes are logical constructs formed from rank-partitioned shards --- they arrive at
-different tiers at different times via an asynchronous pipeline, but are analyzed and persisted as
-a single unit.
+ORCA workloads emit telemetry via named and \emph{typed} streams generating \emph{timestep
+  dataframes}, which are the logical unit of collection, analysis, and persistence.
+Applications can have any number of streams, each generating events with a fixed schema.
+Streams are flushed at the end of each timestep to form these dataframes, comprising all events
+from that timestep.
+Timestep dataframes are logical constructs consisting of rank-partitioned shards that are
+transported over the TBON asynchronously, but analyzed and persisted as a single unit.
+As timesteps can invoke multiple collectives, execution is further divided into multiple
+\emph{synchronization windows}, identified by unique monotonic identifiers called \texttt{swid}s.
+
+Timestep dataframes enable efficient analytics by capturing the causal structure of BSP execution.
+At blocking collectives, all ranks wait for stragglers and execution resets.
+Each timestep is therefore naturally an independent analysis unit.
+Pathologies are attributed first to a straggler rank that delayed a collective, then to events in
+the dataframe that led to that straggler.
+This mirrors the evolution of distributed tracing in loosely-coupled microservices --- from
+treating traces as bags of events~\cite{Barha2004:Magpie} to capturing causal edges between events
+via \emph{request IDs}~\cite{Fonse2007:X-Trace,Sigel2010:Dapper}.
+For BSP workloads, this timestep-centric dataframe abstraction confers two analytical advantages:
+
+\newcommand{\citeTracers}{Shend2006:TAU,Knupf2012:Score-P,Devar2024:DFTracer,Boehm2016:Caliper,2025:PytorchKineto}
+
+\begin{itemize}[leftmargin=*]
+  \item In transit, data can be represented as Arrow~\cite{:ApacheArrow}, a highly performant columnar
+        format enabling efficient (de)-serialization, transport, and
+        in-situ columnar analytics.
+
+  \item At rest, data is persisted as \emph{timestep-partitioned}
+        Parquet~\cite{:ApacheParquet} (see \Cref{fig:orca:des-arch}) for efficient offline analyses.
+        Formats such as OTF2~\cite{Eschw2012:OTF2} and JSON~\cite{:ChromeJsonTEF} --- used by conventional
+        tracers~\cite{\citeTracers} --- not only incur ETL costs, but create rank-major layouts that
+        fragment a single timestep across thousands of per-rank logs.
+        ORCA elevates \texttt{timestep, rank} as the primary key, pre-partitioning telemetry for analytics.
+\end{itemize}
+
+Among prior work, Hatchet~\cite{Bhate2019:Hatchet} postprocesses traces to build callflow graph
+indexes.
+Callflow graphs are a secondary index for BSP telemetry, complementary but optional when the
+primary key is effective.
+
+% We take the position that callflow graphs are a secondary index for BSP telemetry, both
+% complementary and optional when an effective primary key exists.
+% --- a secondary index that is redundant when the primary key is effective.
+% ORCA simply preserves the primary key for both in-situ and post-hoc analyses.
+% As opposed to traces written as per-rank logs, this transposition from a rank-major to a timestep
+% layout enables efficient post mortems, as data for any timestep only requires reading a fraction of
+% the trace regardless of the workload duration (see \Cref{fig:des-arch}).
+
+% Applications emit named and \emph{typed} streams with predefined Arrow schemas.
+% Multiple streams may exist with different schemas, but tuples within a single stream must conform
+% to a fixed schema.
+% Each collective creates a new \emph{synchronization window}, identified by a unique monotonic
+% identifier (\texttt{swid}) that is assigned to all events within that window.
+% A timestep is an application-level construct that may span multiple \texttt{swid}s, as applications
+% typically invoke multiple collectives within a timestep.
+% Timestep dataframes comprise all tuples from all ranks within that timestep.
+% These dataframes are logical constructs formed from rank-partitioned shards --- they arrive at
+% different tiers at different times via an asynchronous pipeline, but are analyzed and persisted as
+% a single unit.
 % because the ORCA% data plane is asynchronous, shards may arrive at different tiers at different times, 
 % (similar to Spark/Dask dataframes?)
 
-\parahead{Typed Streams Enable Columnar Analytics}
-While JSON~\cite{:ChromeJsonTEF} and OTF2~\cite{Eschw2012:OTF2} traces require expensive ETL before
-dataframe analytics, ORCA emits typed Arrow~\cite{:ApacheArrow} data at the source and retains
-columnar structure throughout the pipeline --- enabling zero-copy in-situ analytics and zero-ETL
-post-hoc analyses via Parquet~\cite{:ApacheParquet} at rest.
 
-% Traditional HPC trace formats such as OTF2 store per-rank event logs and are designed to support
-% visualization or a small set of canned aggregates.
-% Neither scales to modern trace volumes or to open-ended debugging questions.
-% Newer tools such as Hatchet and HTA moved toward dataframe-style analysis, but they still ingest
-% and parse whole-rank logs before building analytical views.
-% ORCA makes the analytics-first choice explicit by using typed Arrow streams at the source and
-% preserving columnar structure as Parquet throughout the pipeline.
-
-\parahead{Timesteps Are Causally Partitioned}
-Timestep dataframes enable efficient analytics by capturing the causal independence of BSP
-execution.
-At blocking collectives, all ranks wait for stragglers and execution resets.
-Each timestep is therefore an independent unit of analysis.
-Pathologies are attributed first to a straggler rank that delayed a collective, then to events in
-the dataframe that led to that straggler.
-The evolution of distributed tracing in loosely-coupled microservices --- from treating traces as
-bags of events~\cite{Barha2004:Magpie} to capturing causal edges between events via \emph{request
-  IDs}~\cite{Fonse2007:X-Trace,Sigel2010:Dapper} --- reflects a similar evolution in request-based
-systems, but is a poor fit for BSP execution structure.
-
-Instead of accumulating telemetry into per-rank logs, ORCA optimizes for analytics over timestep
-dataframes by partitioning telemetry along \emph{(timestep, rank)} as the primary key before
-persisting as Parquet.
-Among HPC systems, Hatchet~\cite{Bhate2019:Hatchet} postprocesses traces to build callflow graph
-indexes --- a secondary index that is redundant when the primary key is effective.
-ORCA simply preserves the primary key for both in-situ and post-hoc analyses.
-As opposed to traces written as per-rank logs, this transposition from a rank-major to a timestep
-layout enables efficient post mortems, as data for any timestep only requires reading a fraction of
-the trace regardless of the workload duration (see \Cref{fig:orca:des-arch}).
-
-% TODO: streams can be disabled entirely?
-
-\subsection{Transport: TBON and Incast-Optimized}
+\subsection{TBON-Optimized RDMA Transport}
 \label{sec:orca:des_xport}
 
 
@@ -118,10 +105,10 @@ tiers.
 Overhead is minimized via an incast-optimized, receiver-driven mechanism that avoids synchronized
 pushes and overlaps data movement with application execution.
 As the \tierctl{} and \tieragg{} nodes are fully asynchronous and throughput-optimized, fabric QoS
-features can be used to relegate ORCA traffic to a lower priority class, relying on idle fabric
-capacity for low-perturbation transfer.
-For telemetry persisted as Parquet, dedicated cores on \tieragg{} are used to compress and persist
-the data once collected.
+features~\cite{DeSe2020:Slingshot} can be used to relegate ORCA traffic to a lower priority class,
+relying on idle fabric capacity for low-perturbation transfer.
+% For telemetry persisted as Parquet, dedicated cores on \tieragg{} are used to compress and persist
+% the data once collected.
 
 The transport layer is agnostic to how telemetry is generated.
 Different profiling mechanisms accumulate telemetry into per-stream \emph{SchemaCollectors} ---
@@ -130,22 +117,20 @@ After each timestep, all collectors on each rank are flushed to generate per-str
 dataframes, which are then serialized into RDMA-registered memory.
 Ranks then send a metadata RPC to their aggregators containing RDMA descriptors for the serialized
 data.
-Synchronous end-of-timestep serialization into local buffers avoids jitter from mid-timestep
-flushes.
+% Synchronous end-of-timestep serialization into local buffers avoids jitter from mid-timestep
+% flushes.
 Ranks then resume execution, while aggregators collect these dataframes via asynchronous RDMA GETs.
-As data is already prepartitioned by timestep and rank, the collection pipeline simply preserves
-this partitioning.
-While shuffling can create partitioning along arbitrary dimensions, ORCA does not currently
-implement it so as to maintain predictable ingestion throughput.
-
+% As data is already prepartitioned by timestep and rank, the collection pipeline simply preserves
+% this partitioning.
+% While shuffling can create partitioning along arbitrary dimensions, ORCA does not currently
+% implement it so as to maintain predictable ingestion throughput.
 After multiple iterations, we developed three key mechanisms for stable operation over a TBON:
+
 \begin{itemize}[leftmargin=*]
   \item Aggregators must issue RDMA GETs at controlled concurrency to prevent catastrophic
-        throughput collapse, as RDMA NICs have limited resources for tracking active RDMA operations (as low as 1--2 on older fabrics).
-        %   RNICs have limited resources for tracking active RDMA operations.
-        %   On older fabrics such as \qlogic{} Truescale and Mellanox Connect-X 3, this is as low as 1--2.
+        throughput collapse, as NICs have limited resources for tracking active RDMA operations (1--2 on older fabrics).
         The pull-based model, which resembles receiver-driven flow control, lets aggregators stay in
-        control of data volume and is essential for TBON incast topologies to work.
+        control of data volume and is essential for a stable tree-based incast topology.
 
   \item Because the collection pipeline yields dataframes in timestep order, it is vulnerable to
         head-of-line blocking from missing shards, risking \emph{out-of-memory} errors.
@@ -155,115 +140,35 @@ After multiple iterations, we developed three key mechanisms for stable operatio
         We address this with a priority queue at aggregators that prioritizes lower timesteps.
 
   \item While the system must be provisioned with adequate bandwidth to ensure
-        minimmal impact from backpressure, it is essential for stability.
+        minimal backpressure, flow control is essential for stability.
         Aggregators communicate backpressure by withholding RPC ACKs, and ranks block if outstanding RPC
         count exceeds a configured limit.
 \end{itemize}
 
-% In microbenchmarks, we found the transport layer to hold up well, about 3~GB/s with one aggregator
-% and 512 ranks (3.1~GB/s theoretical) on 40~Gbps \qlogic{} NICs.
+For offline analyses, aggregators compress and persist data at preconfigured timestep intervals.
+As the incoming data is already partitioned by timestep and rank, the TBON simply preserves this
+partitioning.
+% While shuffling can create partitioning along arbitrary dimensions, ORCA does not currently
+% implement it so as to maintain predictable ingestion throughput.
 
 
-% To further justify our primary key, we draw parallels with the evolution of distributed tracing
-% from event tracing.
-% In its simplest form, a trace is a bag of events.
-% However, analyses require preservation of causal relationships between events.
-% Dapper-style distributed tracing~\cite{Sigel2010:Dapper,:Jaeger,:Zipkin} preseves the path taken by
-% a request --- the unit of work in a distributed system --- for analyses such as the attribution of
-% SLO violations to specific services.
-% There are no microservices in a BSP workload --- attribution of pathologies is first to a rank that
-% delayed the collective, and then to a root cause within that rank's execution for that timestep.
-% Among HPC performance tools, Hatchet~\cite{Bhate2019:Hatchet} proposes a dataframe abstraction with
-% a graph-based index capturing the callflow.
-% We note that the callflow graph in BSP telemetry is logically a secondary index, and is optional if
-% telemetry is effectively partitioned along the primary index.
-
-% When configured for tracing, ORCA persists trace events as \emph{(timestep, rank)}-partitioned
-% Parquet~\cite{:ApacheParquet} files from its aggregators.
-% While prior work on in-situ partitioning~\cite{Zheng2018:DeltaFS,Jain2024:CARP} has used shuffling
-% to partition checkpoint data, trace events are already partitioned at source, as each rank
-% generates flushes its collectors at the end of every timestep.
-% ORCA simply preserves this partitioning --- ranks copy these \emph{timestep dataframes} into
-% RDMA-registered memory, which is asynchronously retrieved by their aggregators in timestep order,
-% merged to form \emph{timestep dataframes}, and persisted as partitioned Parquet at configured
-% intervals.
-% At query time, only files relevant to queried timesteps and ranks are retrieved, speeding up
-% analyses.
 
 \subsection{In-Situ Analytics for Real-time Feedback}
 \label{sec:orca:des_insitu}
 
-% Revision plan:
-% 1. Connect to prior sections
-% - Being causality preserving partitions, timestep dataframes are also a natural unit of analysis
-% - Vast majority of data can be skipped, rest can be analyzed for real-time feedback
-% - Tracing as an approach has work begetting work -- useless amounts of data is collected, then you need to waste resources
-%   serializing, compressing, persisting, and filtering it. The advantage of preparing Arrow dataframes is that it's
-%   in-memory, ready for analysis.
-% 2. Use consistent language: "OrcaFlow defines SQL-like transforms en route to sinks"
-% 3. Controller doubles as root aggregator for cross-partition work. Its work is drastically reduced with pre-aggregates
-%    and pre-filters pushed down
-
-% Key point "you don't care in traces you care in views. views can not be canned they need to be programmable. the system should serve the view it's win win for everyone -- lower latency, lower data, faster insight"
-
 \figDesignPlan{}
 
-% CANDIDATE:
-% Operators care about views that answer specific questions, not traces for their own sake. Views
-% are context-specific, so the system must be programmable and serve views directly. Serving the
-% view reduces latency and data volume because only the required aggregates and slices are computed
-% and moved. With timestep dataframes already resident in memory and transported continuously, ORCA
-% can compute these views in situ. In the example in \cref{fig:orca:bg-volatile}, the pathology can be
-% identified during the run by counting all \texttt{MPI\_Wait} calls above 10\,ms while discarding
-% the rest.
-%
-% ORCA supports materializing these views via a SQL-based programming interface called OrcaFlow.
-% OrcaFlow chains SQL transforms over timestep dataframes en route to sinks. Arbitrary transforms
-% that are hard to express in SQL are supported via \emph{map} operators that invoke precompiled
-% kernels. Two sinks are currently integrated: partitioned Parquet for offline analyses and DuckDB
-% for real-time metrics. The DuckDB sink ingests lightweight aggregates for dashboards
-%~\cite{:GrafanaDashboard} via an embedded FlightSQL~\cite{:ArrowFlightSQL} server.
-%
-% OrcaFlow contains a distributed planner that compiles flows into a DAG of physical plans via
-% Apache DataFusion~\cite{Lamb2024:DataFusion} and schedules plan fragments across TBON tiers, as
-% shown in \cref{fig:orca:des-plan}. Data originates at \tiermpi{}, is processed at \tieragg{}, and may
-% execute cross-partition stages at \tierctl{} before being persisted by sinks. The planner knows
-% lower tiers are rank-partitioned, so it schedules per-partition operators at the leaves and
-% reserves cross-partition joins and final aggregation for \tierctl{}. It avoids distributed
-% shuffles to maintain predictable ingestion and avoid backpressure. Sink placement follows the
-% same constraints.
-%
-% The computational model is comparable to Spark-style batch analytics, but adapted to a multi-tier
-% TBON. It runs in memory until a sink, avoids distributed shuffles to keep ingestion predictable,
-% and relies on pushdown to discard data early. This is why a filter like \texttt{MPI\_Wait}
-% $\ge 10\,ms$ can eliminate most events at \tiermpi{}, leaving only the slices that matter.
-% Cross-partition work is bounded by a single node, so expensive joins and global analyses remain
-% better suited to post-mortems. OrcaFlow still accelerates those workflows by reducing data volume
-% and persisting the rest as partitioned Parquet.
-
-% The goal of an observability system is not to enable accumulation of unbounded amounts of
-% telemetry, but to efficiently materialize relevant views to help identify problems.
-% Because the relevant views are context-specific --- ranging from counters to percentiles to other
-% derived metrics --- the system must be expressive and programmable to enable ad-hoc views.
-% Unbounded telemetry collection via tracing begets more work --- large amounts of data must be first
-% serialized and persisted, and later deserialized and analyzed to extract insights, delaying
-% feedback.
-% Analyzing telemetry in-situ allows the bulk of the raw data to be discarded, and insights streamed
-% to a dashboard in real-time.
-% The problem shown in Fig.
-% 1
-% can be readily analyzed in production by only collecting the counts of all MPI waits exceeding 10ms, discarding all raw data.
-
-The Arrow-based timestep dataframe abstraction enables zero-copy in-situ SQL analytics at every
-tier of the TBON, enabling low-latency materialization of views and drastically reducing persisted
-data volume.
-OrcaFlow is a SQL-based programming interface that turns the TBON into a programmable reduction
-tree, transforming timestep dataframes en route to sinks --- currently partitioned Parquet for
-offline analysis and DuckDB for real-time metrics.
+The timestep dataframe abstraction also enables zero-copy in-situ SQL analytics at every TBON tier,
+enabling low-latency materialization of views and drastically reducing persisted data volume.
+OrcaFlow (\Cref{fig:orca:des-plan}) is a SQL-based programming interface that turns the TBON into a
+programmable reduction tree, transforming dataframes en route to sinks --- currently partitioned
+Parquet for offline analysis and DuckDB for real-time metrics accessed by
+dashboards~\cite{:GrafanaDashboard}.
 For analyses difficult to express in SQL, \emph{map} operators allow invoking arbitrary precompiled
 kernels.
 
-OrcaFlow is backed by a TBON-aware distributed planner and query engine built on Apache DataFusion~\cite{Lamb2024:DataFusion}.
+OrcaFlow is backed by a TBON-aware distributed planner and query engine built on Apache
+DataFusion~\cite{Lamb2024:DataFusion}.
 Each flow compiles into \emph{tier plans} describing transforms to apply, data to forward, and
 sinks to execute locally.
 The planner automatically places both transforms and sinks, pushing operators that reduce data
@@ -296,184 +201,9 @@ Per-partition compute budget scales with \tiermpi{} and \tieragg{}, while cross-
 limited to a single node (\tierctl{}).
 This suffices for residual work after filtering and pre-aggregation.
 Post-mortems remain the preferred workflow for expensive cross-partition analyses, but still
-benefit from ORCA's in-situ filtering, preaggregation, and partitioned Parquet.
+benefit from ORCA's in-situ filtering, preaggregation, and timestep-partitioned Parquet.
 % OrcaFlow still accelerates those workflows by discarding redundant data and persisting the rest as
 % partitioned Parquet.
-
-% The Arrow-based timestep dataframe abstraction enables highly efficient in-situ columnar analytics,
-% transforming telemetry via filters and aggregates to materialize real-time views and reduce persisted data volume.
-% A SQL-based interface called OrcaFlow converts the TBON into a programmable reduction tree,
-% transforming timestep dataframes en route to sinks (Parquet and DuckDB).
-% OrcaFlow applies a sequence of SQL-based transforms to data. Map operators are provided as an escale hatc.
-
-% OrcaFlow is backed by a TBON-aware distributed planner and query engine.
-% The query engine builds on Apache DataFusion, an embedded and extensible SQL engine from the Arrow
-% ecosystem.
-% Each flow compiles into \emph{tier plans} describing transforms to apply, data to forward, and
-% sinks to execute locally.
-% The planner automatically places both transforms and sinks, pushing operators that reduce data
-% volume as close to the source as possible.
-% \tiermpi{} and \tieragg{} operate on rank-partitioned shards and execute per-partition operators:
-% selection, projection, partial aggregation.
-% Cross-partition operations like joins must run on \tierctl{}, the root aggregator.
-% Sinks are placed on the lowest tier that produces their stream subject to placement constraints (no
-% sinks on \tiermpi{}, DuckDB only on \tierctl{}).
-
-% The goal of an observability system is to materialize views that help identify problems, not to
-% accumulate unbounded telemetry.
-% The relevant view is context-specific --- a count, a percentile, a filtered subset of events ---
-% and cannot be anticipated by a fixed set of aggregates.
-% Raw traces do not solve this problem, instead they defer it to expensive offline analyses unviable
-% at scale.
-% The streaming analytics paradigm inverts this: construct ad-hoc views at the source, discard
-% unneeded data, stream results in real time.
-% The straggler in \Cref{fig:orca:bg-volatile} can be localized with a single metric: the count of MPI
-% waits exceeding 10ms.
-% This statistic can be computed in-situ and delivered to a dashboard without persisting any raw
-% events.
-
-% ORCA supports these workflows via \emph{OrcaFlow}, a SQL-based programming interface that
-% transforms timestep dataframes en route to sinks.
-% For analyses difficult to express in SQL, \emph{map} operators are provided as an escape hatch to
-% allow invoking arbitrary precompiled kernels.
-% Two sinks are currently integrated: partitioned Parquet for offline analysis and DuckDB for
-% real-time metrics accessible via an embedded FlightSQL server.
-% Flows may contain any combination of transform and sink operations.
-% All tiers collect dataframes asynchronously but analyze them in timestep order.
-
-% OrcaFlow is backed by a TBON-aware distributed planner and query engine.
-% The query engine builds on Apache DataFusion, an embedded and extensible SQL engine from the Arrow
-% ecosystem.
-% ORCA implements a distributed planner on top of DataFusion, partitioning query plans across the
-% TBON and routing data between tiers.
-% The overlay is modeled as a series of tiers: dataframes originate at \tiermpi{}, pass through
-% \tieragg{}, and optionally \tierctl{} before reaching sinks.
-% Each flow compiles into \emph{tier plans} describing transforms to apply, data to forward, and
-% sinks to execute locally.
-% The planner automatically places both transforms and sinks, pushing operators that reduce data
-% volume as close to the source as possible.
-% \tiermpi{} and \tieragg{} operate on rank-partitioned shards and execute per-partition operators:
-% selection, projection, partial aggregation.
-% Cross-partition operations like joins must run on \tierctl{}, the root aggregator.
-% Sinks are placed on the lowest tier that produces their stream subject to placement constraints (no
-% sinks on \tiermpi{}, DuckDB only on \tierctl{}).
-% An example of flows and their equivalent tier plans is shown in \Cref{fig:orca:des-plan}.
-
-% The programming model resembles batch analytics frameworks like
-% Spark~\cite{Dean2008:MapReduce,Zahar2010:Spark,Gates2009:Pig}, but with key differences: it targets
-% a multi-tier TBON, remains entirely in-memory until sink ingestion, and avoids distributed
-% shuffling to maintain predictable throughput.
-% Because per-partition operators run at leaf nodes, queries like \mpiw{} $\ge 10\,ms$ can discard
-% the vast majority of data at the MPI tier itself.
-% Computation budget for per-partition work scales with application size and aggregator count, while
-% budget for cross-partition work is limited to a single node (\tierctl{}).
-% This suffices for residual work after filtering and pre-aggregation, and expensive cross-partition
-% analyses remain best suited for post-mortems.
-% OrcaFlow still accelerates those workflows by discarding redundant data and persisting the rest as
-% partitioned Parquet.
-
-% Operators care about views that answer specific questions, not traces for their own sake. Those
-% views cannot be fixed in advance, so the system must be programmable and able to serve views
-% directly. Serving the view reduces latency and data volume because only the required aggregates
-% and slices are computed and moved. With timestep dataframes already resident in memory and
-% transported continuously, ORCA can compute these views in situ. For example, if the operator wants
-% to know whether any \texttt{MPI\_Wait} calls exceed 10\,ms, the system can drop the vast majority
-% of events, stream only outlier counts to a dashboard, and still persist the outliers for
-% post-mortem analyses.
-
-% OrcaFlow defines transforms en route to sinks over streams of timestep dataframes. A flow is
-% specified in YAML and chains SQL operators. Arbitrary transforms that 
-% do not map cleanly to SQL
-% are supported via \emph{map} operators that invoke precompiled kernels. 
-% Two sinks are
-% currently integrated: partitioned Parquet for offline analyses and DuckDB for real-time metrics.
-% The DuckDB sink ingests lightweight aggregates for real-time dashboards
-% ~\cite{:GrafanaDashboard} to access via an embedded FlightSQL~\cite{:ArrowFlightSQL} server.
-
-% OrcaFlow contains a distributed planner that compiles flows into a DAG of physical plans via
-% Apache DataFusion~\cite{Lamb2024:DataFusion} and schedules plan fragments across TBON tiers, as
-% shown in \cref{fig:orca:des-plan}. Data originates at MPI, is processed at AGG, and may execute
-% cross-partition stages at CTL before being persisted by sinks. The planner knows lower tiers are
-% rank-partitioned, so it schedules per-partition operators at the leaves and reserves cross-partition
-% joins and final aggregation for CTL. It avoids distributed shuffles to maintain predictable
-% ingestion and avoid backpressure. Sink placement follows the same constraints.
-
-
-% \subsubsection{Motivation}
-% While partitioned traces enable faster offline analyses, they do not enable real-time feedback, and
-% the collect-everything approach adds unnecessary collection, transport, and storage costs.
-% Converting trace events into aggregated metrics improves both usability and efficiency.
-% For example, if the operator is interested in knowing whether any \texttt{MPI\_Wait} calls take
-% more than 10\,ms, in-situ analytics can drop the vast majority of events and only collect the
-% outliers the user is interested in.
-% The counts of these outliers can be streamed to a dashboard in real-time, while the actual messages
-% are persisted as Parquet for offline analyses.
-% ORCA telemetry is already available as in-memory Arrow dataframes, highly amenable to efficient
-% analytics.
-% All that is needed is a programming model and an execution engine.
-
-% \subsubsection{Programming Model: OrcaFlow}
-% ORCA provides a topology-aware programming model over its TBON via a programming interface
-% \emph{OrcaFlow}.
-% Syntactically YAML, OrcaFlow allows SQL-like transformations to be defined over these streams
-% before being persisted via \emph{sinks}.
-% The \emph{flow} is then compiled into a distributed query plan using Apache
-% DataFusion~\cite{Lamb2024:DataFusion}, with plan fragments pushed all the way down to the MPI ranks
-% to minimize data movement.
-% Two sinks are currently supported by the OrcaFlow planner --- \emph{Parquet} and
-% \emph{DuckDB}~\cite{Raasv2019:DuckDB} (an embedded SQL database).
-% The Parquet sink persists transformed dataframes as \emph{(timestep, rank)}-partitioned datasets
-% for offline analyses, and can be scheduled at either AGG or CTL.
-% The DuckDB sink, available only at CTL, ingests lightweight aggregates into the embedded instance,
-% for real-time feedback via dashboards~\cite{:GrafanaDashboard} over an embedded
-% FlightSQL~\cite{:ArrowFlightSQL} server.
-
-% Points: - Conceptually, think of timestep dataframes, transforms to apply, sinks to persist to. -
-% The planner automatically compiles the flow and schedules plan and sink nodes to minimize data
-% movement. - Two types of transforms supported: SQL and map. SQL provide a declarative interface
-% that maps well to minimizing data movement. The map operator provides an escape hatch for
-% operations that do not map well to SQL, with the downside that these kernels must be defined ahead
-% of time and compiled into ORCA.
-
-% Programming model similar to Spark RDD/MapReduce, but optimized for a multi-tier TBON with no
-% shuffling. Per-partition plan nodes are pushed as close to the leaf as possible. Cost model
-% intuition is: - Avoid complex online joins on large datasets. - Computation budget for
-% per-partition operations is a lot: can scavenge sim resources and scale with aggregator -
-% Computation budget for cross-partition operations is limited to one node. Plenty for residual work
-% after filtering, pre-aggregation etc. Use postprocessing for more complex cross-partition
-% operations. Sinks are placed subject to analyses constraints. Parquet sink is placed subject to
-% analysis constraints. If no cross-partition operations for a stream, sink scheduled on
-% aggregators. - Otherwise CTL.
-
-% Conceptually, OrcaFlow treats each timestep dataframe as a rank-partitioned dataset, with
-% transforms applied as data flows through the TBON tiers and ultimately persisted via sinks.
-% The planner automatically compiles the flow and schedules plan and sink nodes to minimize data
-% movement.
-% Two types of transforms are supported: \emph{SQL} and \emph{map}.
-% SQL provides a declarative interface that naturally compiles into data movement-minimizing query
-% plans.
-% The map operator provides an escape hatch for operations that do not map well to SQL, with the
-% downside that map kernels must be defined ahead of time and compiled into ORCA.
-% OrcaFlow transforms the TBON into a runtime-programmable streaming batch analytics engine.
-
-% The programming model is similar to batch analytics frameworks like
-% Spark~\cite{Dean2008:MapReduce,Zahar2010:Spark,Gates2009:Pig}, but with a few key differences ---
-% it is optimized for a multi-tier TBON, is completely in-memory until ingested by a sink, and does
-% not use distributed shuffling so as to maintain a predictable ingestion rate and avoid
-% backpressuring the application.
-% Per-partition plan nodes --- selection, projection, partial aggregation --- are pushed as close to
-% the leaf as possible, while cross-partition joins and final aggregations are scheduled on CTL.
-% Computation budget for per-partition operations scales with the simulation ranks and the number of
-% aggregators, but the budget for cross-partition work is limited to a single node.
-% This is sufficient for residual work after filtering and pre-aggregations, and post-mortems remain
-% the preferred workflow for expensive cross-partition analyses.
-% Sink placement also follows these constraints --- the Parquet sink for streams with no
-% cross-partition nodes is scheduled on aggregators, otherwise data is persisted by the controller.
-
-% Tracing generates billions of events. Humans can not process that much info. We are usually
-% looking for high-level stories. As an example, take MPI barrier telemetry. In the common case, a
-% few quintiles are sufficient to scan for the presence of stragglers. Can we leverage something in
-% the Arrow ecosystem to provide a structured programming paradigm for the TBON?
 
 
 \subsection{Control Plane for Steerable Observability}
@@ -481,116 +211,51 @@ benefit from ORCA's in-situ filtering, preaggregation, and partitioned Parquet.
 
 \figDesignTwopc{}
 
-% CANDIDATE:
-% A complete observability system must enable users to intervene in response to feedback, closing the
-% loop between observation and action. In BSP workloads, this means toggling probes and analyses at
-% runtime, navigating a spectrum of workflows from lightweight common-case metrics to detailed
-% post-mortems, and tuning application parameters such as placement knobs or AMR refinement
-% thresholds in response to observed pathologies. While prior work has explored auto-tuning for
-% specific use cases, ORCA takes a different approach: provide a unified substrate for feedback and
-% control, enabling both manual and automated interventions as agentic workflows on top.
-%
-% The control plane must be asynchronous, atomic, and timestep-consistent. The controller is not
-% part of the collective domain, so control must be asynchronous and must not stall application
-% progress. Commands must be acknowledged by all ranks before being executed, and they must execute
-% on all ranks at the same timestep to preserve BSP semantics. While these requirements may be
-% relaxed for some workflows, they map naturally to BSP execution structure and ensure completeness
-% of scope.
-%
-% ORCA implements the control plane as a replicated state machine using a custom variant of
-% two-phase commit called timestep-linked two-phase commit (TS2PC). As the controller is not part of
-% the MPI domain, it maintains a lagging view of the application's current timestep $(=T_{app})$ via
-% asynchronous notifications from Rank~0. Timestep-consistent control requires proposing commands
-% for future timesteps, so TS2PC proposes commands for $T_{cmd} = T_{app} + \Delta$, where $\Delta$
-% is an automatically learned speculative margin. The TBON assists the protocol by broadcasting
-% requests and reducing responses, and any \texttt{NAK} results in a \texttt{NAK} being sent to the
-% controller.
-%
-% \Cref{fig:orca:des-twopc} illustrates the protocol via three cases. Ranks agree to commit commands if
-% they are not yet at $T_{cmd}$, and committed commands are applied before executing $T_{cmd}$
-% (Case A). If ranks are past $T_{cmd}$, they vote to abort (Case B). In case of aborts, $\Delta$ is
-% incremented and transactions are automatically retried, which quickly converges to the natural
-% latency of the TBON. An interesting case arises when ranks are about to execute a timestep for
-% which they have prepared commands but have not yet received a commit or abort (Case C). In such
-% cases, correctness dictates that the application be stalled until commit or abort so the prepared
-% command can execute before $T_{cmd}$. As a result, TS2PC provides completely asynchronous control
-% semantics that are efficient in the common case and correct in the worst case.
 
-% -- Outline -- Motivation: enable user to intervene in response to feedback and establish a
-% complete loop. Example usecases: toggle probes and analyses. Enable a spectrum of workflows from
-% lightweight common-case metrics to detailed post-mortems. Can be extended further: enable online
-% tuning of application parameters such as placement knobs and AMR refinement thresholds in response
-% to pathologies. Fundamentally an adapter between a synchronous application and an asynchronous
-% controller. Lots of prior work on auto tuning etc. ORCA takes a different approach: provide a
-% unified substrate for feedback and control, and enable both manual and auto tuning as agentic
-% workflows on top.
+The control plane enables users to intervene in response to feedback, closing the loop between
+observation and action.
 
-% Control plane requirements: asynchronous, atomic, and timestep-consistent. While these
-% requirements may be strict for some workflows, circumventing is always possible. But these map to
-% BSP execution structure and ensure completeness of scope.
+Interventions range from steering collection to steering the application itself in response to
+observed behavior.
+Prior work has explored auto-tuning for specific use cases~\cite{Bened2010:PERISCOPE}.
+ORCA instead provides general mechanisms for timestep-consistent feedback and control, on which
+such policies can be built.
 
-% Control plane uses a modified version of two-phase commit, that we call timestep-linked two-phase
-% commit (TS2PC). - Controller is asynchronous, lagging view of application timestep, from timestep
-% advance notifications sent by Rank 0. - Agnostic to command, treat as opaque blob - When user
-% enters a command, controller uses the last known timestep t to trigger a command for t + delta. -
-% Broadcast and reduced via the TBON, ACKs/NACKs coalesced. If txn committed, enqueued for
-% activation at t + delta. - If failed, increment delta and retry. Automatically converges to the
-% appropriate delta. The protocol also supports addressing aggregators and controller via the same
-% mechanism. Details in implementation. The entire TBON is controllable as a result. ----
+\pplushead{Requirements}
+The control plane must be asynchronous, as the controller is not part of the collective domain.
+It must also be atomic and timestep-consistent --- commands must be acknowledged by all ranks
+before being executed, and they must execute on all ranks at the same timestep for correctness.
 
-% \subsubsection{Motivation}
-% A complete observability system must enable users to intervene in response to feedback, closing the
-% loop between observation and action.
-% Use cases range from toggling probes and analyses at runtime, to navigating a spectrum of workflows
-% from lightweight common-case metrics to detailed post-mortems, to online tuning of application
-% parameters such as placement knobs or AMR refinement thresholds in response to observed
-% pathologies.
-% While prior work has explored auto-tuning for specific usecases, ORCA takes a different approach:
-% provide a unified substrate for feedback and control, enabling both manual and automated
-% interventions as agentic workflows on top.
-
-A complete observability system must enable users to intervene in response to feedback, closing the
-loop between observation and action.
-In BSP workloads, this means steering collection and tuning application parameters at runtime in
-response to observed pathologies.
-Prior work has explored auto-tuning for specific use cases. % TODO: add citation
-ORCA instead provides general mechanisms for timestep-consistent feedback and control.
-
-\subsubsection{Requirements}
-The control plane must be asynchronous, atomic, and timestep-consistent.
-The controller is not part of the collective domain, so control must be asynchronous and must not
-stall application progress.
-Commands must be acknowledged by all ranks before being executed, and they must execute on all
-ranks at the same timestep to preserve BSP semantics.
-
-\subsubsection{The TS2PC Protocol}
-ORCA implements the control plane as a replicated state machine using \emph{timestep-linked
-  two-phase commit} (TS2PC).
+\pplushead{The TS2PC Protocol}
+ORCA implements the control plane as a replicated state machine~\cite{Schne1990:SMR} using
+\emph{timestep-linked two-phase commit} (TS2PC).
 Commands are opaque payloads --- the protocol only decides when to commit and apply them.
-As the controller is not part of the MPI domain, it maintains a lagging view of the application's
-current timestep $(= T_{app})$ via asynchronous notifications from Rank~0.
+As the controller is asynchronous, it maintains a lagging view of the application's current
+timestep $(= T_{app})$.
 TS2PC proposes commands for a future timestep $T_{cmd} = T_{app} + \Delta$, where $\Delta$ is an
 automatically learned speculative margin.
 The TBON assists the protocol by broadcasting requests and reducing responses --- any \texttt{NAK}
 in the subtree results in a single \texttt{NAK} at the controller.
-\Cref{fig:orca:des-twopc} illustrates the protocol via three cases.
+\Cref{fig:des-twopc} illustrates the protocol via three cases.
 
 \begin{itemize}[leftmargin=*]
   \item \emph{Case~A (Commit):}
-        Ranks agree to commit if they have not yet reached $T_{cmd}$, and apply the command before
-        executing $T_{cmd}$.
+        Ranks agree to commit if they have not yet reached $T_{cmd}$, and apply the command just before
+        $T_{cmd}$.
   \item \emph{Case~B (Abort):}
         If ranks are past $T_{cmd}$, they vote to abort.
-        $\Delta$ is incremented and the transaction is automatically retried, quickly converging to the
-        natural latency of the TBON.
+        The controller processes the abort, increments $\Delta$, and automatically retries the transaction.
+        %   $\Delta$ is incremented and the transaction is automatically retried.
+        As a result, $\Delta$ quickly converges to the natural latency of the TBON.
   \item \emph{Case~C (Stall):}
-        A subtlety arises when ranks have prepared but not yet received commit/abort by the time $T_{cmd}$
-        arrives.
+        A subtlety arises when ranks have prepared but not yet received commit/abort by $T_{cmd}$.
         Correctness requires stalling execution until commit/abort is received, so the prepared command can
         be applied before $T_{cmd}$.
 \end{itemize}
 
-As a result, TS2PC enables a control plane that is atomic, timestep-consistent, and asynchronous in the common case.
+% As a result, TS2PC enables a control plane that is atomic, timestep-consistent, and asynchronous in
+% the common case. 
+\noindent More implementation-specific details are discussed in \S\ref{sec:orca:impl-ctl}.
 % As a result, TS2PC provides timestep-consistent control semantics that are efficient in the common
 % case and correct in the worst case.
 
@@ -635,7 +300,7 @@ As a result, TS2PC enables a control plane that is atomic, timestep-consistent, 
 % The TBON assists the protocol by broadcasting requests and reducing responses --- any \texttt{NAK}
 % results in a \texttt{NAK} being sent to the controller.
 
-% \Cref{fig:orca:des-twopc} illustrates the protocol via three cases.
+% \Cref{fig:des-twopc} illustrates the protocol via three cases.
 % Ranks agree to commit commands if they are not yet at $T_{cmd}$ and committed commands are applied
 % before the execute $T_{cmd}$ (Case A).
 % If ranks are past $T_{cmd}$, they vote to abort (Case B).
@@ -660,176 +325,3 @@ As a result, TS2PC enables a control plane that is atomic, timestep-consistent, 
 % mechanism extends to addressing aggregators and the controller itself, making the entire TBON
 % controllable via TS2PC. Implementation details, including handling of special commands like pause
 % and resume, are discussed in Section~\ref{sec:orca:impl}.
-
-% Why a control plane? To make observability actionable. Many usecases:
-
-% 1. High-level statistics in the common case. Details when problems suspected. Navigate the whole
-% spectrum within one framework.
-
-% Inspired by the capabilities of dynamic tracing capabilities of eBPF and DynInst, leveraging them
-% in real time.
-
-% 2. Also steer the application itself maybe. Say change refinement thresholds for AMR or placement
-% parameters in real-time.
-
-% Toggling probes doesn't necessarily need any consistency semantics, but steering the application
-% does. Specifically, all any control decision make take effect on all ranks at the same timestep
-% atomically. We highlight that the controller is asynchronous.
-
-% TS2PC: timestep-linked two-phase commit. two components:
-
-% 1. controller has a lagging view of the application timestep. this is done via a dispatch from MPI
-% rank 0 every time it advances, with no guarantees for later.
-
-% 2. Any control decision that goes through TS2PC is targeted for a timestep $t + \Delta$.
-
-% Distinction between the inner and the outer protocols. Inner protocol implements a single txn that
-% may fail.
-
-% Outer protocol adds domains and retries to be able to make the controller and aggregator also a
-% part of the control plane. Each outer protocol txn has a bitmask representing the tiers the txn
-% applies to. All txns are "approved" by the MPI tier via TS2PC regardless of domain. AGGs and CTL
-% snoop on TS2PC responses as they're reducing them to execute control messages.
-
-
-% \subsection{Data Models and Storage Formats}
-
-% % KEY POINT: (swid, rank) are the only mandatory columns This is the binding contract - everything
-% % else is flexible
-
-% While prior attempts have been made to have somewhat structured data models for BSP, they fail at
-% the touchstone of analytical efficiency.
-
-% Complain about OTF2 and JSON here.
-
-% The goal of a tracing as a workflow should be to capture fine-grained interactions in a manner
-% suitable for analytics.
-
-% We find that data formats for analytics is actually a well-studied problem. BSP analytics folks
-% use it all the time. Typical workflow is: write traces, analyze them in pandas, produce insight.
-
-% Pandas is columnar. Columnar formats translate well into tabular, relational schemas.
-
-% Does a tabular model constrain expressivity? Maybe you want separate event-specific metadata for
-% different event types?
-
-% We do not prescribe a specific tabular schema. We think tracing infra for BSP needn't constrain a
-% schema, the only binding agreement needs to be the presence of two columns: swid (Sync Window ID)
-% and rank.
-
-% From an application POV, a timestep may consist of one or more sync windows, which may be supplied
-% as an additional attribute by the user. But this does not change the fundamental alignment of
-% execution (stragglers reset before next swid), and a timestep is just a higher-level mapping.
-
-% To the problem of rigid schemas, we propose two solutions: - Serialize the non-uniform columns as
-% an extra field in a schema - Define a BSP trace as a collection of multiple schemas
-
-% To the extent the goal of data models is to enable reusable infrastructure and analytical
-% efficiency, neither of these two solutions compromise it.
-
-% With this definition, we arrive at a definition where data can at least logically be treated as
-% tabular and separate, although the problem of creating this separation via partitioning remains.
-
-% \subsection{First Evolution: Columnar Formats and Streaming Indexing}
-
-% Speed up offline analyses
-
-% Streaming data partitioning and indexing for HPC done before. DeltaFS and CARP use shuffling-based
-% partitioning. ADIOS is used for general-purpose streaming workflows.
-
-% Use Parquet. Prior work uses CSV/JSON. Those are expensive to parse and analyze.
-
-% Both from our experiences and others' tooling, we saw that Pandas is a popular analytics tool of
-% choice. Pandas is columnar. Why waste time parsing non-columnar into columnar? Couldn't you read
-% from say Parquet? Show benchmarks: 50X faster to parse.
-
-% Next concern is the write cost of Parquet. Tracing is write-intensive and you want to minimize
-% workload overhead. In conversations, we found people worried that Parquet trades read perf for
-% write perf. Our initial benchmarks showed the same thing, but then tuning it addressed that.
-
-% Parquet-Tuned. Disable dictionaries. We also tried disabling statistics and compression but they
-% make marginal difference on top. As fast if not faster than JSONL/CSV.
-
-% Second, we realized that unit of partitioning is (timestep, rank). Data model totally different
-% from distributed services (spans etc). We could create this partitioning in-situ. Complex in-situ
-% partitioning using shuffling has been found viable at HPC scale (DeltaFS/CARP). Partitioning
-% traces is relatively simple: you don't need to create partitioning via shuffling, you only need to
-% preserve existing partitioning.
-
-% We use a dedicated TBON with scale-out aggregation tier for this. Our TBON is designed around
-% Arrow and RDMA.
-
-% % Note: at some point we need to justify why existing streaming engines can not accomodate this %
-% workflow. Points for that argument: 1. ORCA is an Arrow + RDMA-native TBON. Both of these %
-% complement each other. Arrow creates nice contiguous regions of memory that are efficient to %
-% process and analyze and exchange via RDMA. Systems like Kafka, say, with their TCP-based event %
-% processing model will trigger a syscall for each event, slowing down both data movement and %
-% analyses. ORCA maintains tight control of everything: when and where backpressure is applied, how
-% % buffers are recycled etc. for minimizing jitter. 2. ORCA is built around BSP, which means
-% enabling % `timestep dataframe` as a unit of analysis. This requires knowing when data for a
-% timestep has % finished arriving. Generic event-based streams can not know this reliably. Batching
-% all events % into a single message enables both retrieval efficiency and is necessary to provide
-% `timestep % dataframe` semantics. 3. Once that is done, ORCA can provide analyses on top of these,
-% with the % ability to control what to pushdown, how to partition etc. The whole MapReduce/SQL
-% pipeline. % Datafusion makes it easy for us. Novel architecture, no one has done it. 4. Control
-% plane elevates % ORCA's capabilities to a different tier, coalescing of ACKs, broadcast, timestep
-% tracking etc.
-
-
-% \subsection{Second Evolution: In Situ Analytics}
-
-% One we switched to Arrow, we realized that it is highly amenable to in situ analytics. Center of
-% attention in the OLAP world.
-
-% Human operators can not plot and process billions of raw events. Is it really necessary to collect
-% all of them? (I.e. is collection avoidable in some cases?) Human operators care about high-level
-% views in the common case. Only if those views indicate problems do we need to drill down. Achieves
-% multi-scale observability.
-
-% ORCA already creates causality-preserving timestep dataframes. You can also analyze them in-situ:
-% filter them, preprocess them. This can either be for rapid online feedback, to reduce the volume
-% and the overhead of data, and to make offline analytics faster by bridging the gap between the
-% final state and the emitted state.
-
-% We started by doing SQL based analytics. Static distributed query planning (no cost models). Baked
-% in decision to do single pass streaming, no shuffles. Used Apache Datafusion, hints to compute
-% tier plans. Number of tiers is configurable.
-
-% Later realized that complex operators need escape hatches. Arrived at some combination of SQL and
-% MapReduce. MapReduce stages split across reduction tree tiers with pushdown. Depending on op
-% complexity, can do on leaf node to achieve reduction at source, or move data via RDMA and process
-% in aggregators/controllers. Bulk of per-partition processing done in aggregators, small amount of
-% cross-partition work is left for the controller for real-time workflows. For offline workflows,
-% data is directly persisted by aggregators. Like PySpark but single-pass, no shuffles. Very much
-% like having pandas/dask embedded.
-
-% We use SQL because it allows for analyses to be updated at runtime. Map kernels for now need to be
-% compiled into ORCA. Databases solve this by having sandboxes and runtimes embedded in them.
-% Introduces a layer of complexity beyond the scope of what we were trying to do.
-
-% OrcaFlow. Streams and sinks.
-
-% \subsection{Third Evolution: A Control Plane}
-
-% % POSITIONING: Describe theory, demonstrate ONE usecase (online tuning POC) Claim dynamic %
-% eBPF/DynInst as future work Key point: BSP = one long-running job on behalf of operator, not %
-% serving million queries Operator can/should have full visibility and control
-
-% Now that we have powerful real-time visibility, enabling intent is a powerful addition on top.
-
-% It realizes the vision of cluster-scale eBPF. Key is that observability requirements are not
-% static. User wears different hats. Common case hat vs root causing hat. Should be able to slide in
-% real time. Allows further reduction in data volume and multi-scale observability.
-
-% Introduce steerable observability.
-
-% Why control plane? :
-
-% \begin{markdown}
-
-% 1. It is enabled by the infra we have. 2. It is important for the problems we care about 3. BSP is
-% different from data centers. It is not serving a million user queries like a database. It is
-% running one long-running job on behalf of an operator. That operator needs and can have visibility
-% over it.
-
-% \end{markdown}

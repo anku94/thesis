@@ -239,9 +239,16 @@ Hypotheses about interrupts and scheduler effects were tested and discarded in h
 dynamic probes with programmatic aggregation and low overhead.
 But eBPF is node-local, and our workflow involved ad-hoc orchestration, uncoordinated collection,
 and manual post-hoc correlation.
-Extending this to BSP workloads with hundreds of thousands of ranks requires
-infrastructure that treats observability not as distributed logging, but as constructing views
-via BSP-aware in-situ reductions, and providing a scalable topology for coordinated control.
+% Extending this to BSP workloads with hundreds of thousands of ranks requires
+% infrastructure that treats observability not as distributed logging, but as constructing views
+% via BSP-aware in-situ reductions, and providing a scalable topology for coordinated control.
+Extending this to workload scale requires a substrate for real-time \emph{feedback}, treating
+observability not as distributed logging, but as materializing views directly from running
+applications.
+But visibility alone is insufficient for steerability --- interventions, whether additional views
+or parameter adjustments, require a \emph{control plane} back to the running application.
+The next section states the requirements such a substrate must satisfy.
+ 
 
 % Diagnosing the root cause behind \Cref{fig:orca:bg-volatile} required capabilities beyond what any
 % single tool in the taxonomy provides. At node scale, eBPF~\cite{:eBPF} provides a template:
