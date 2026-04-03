@@ -25,11 +25,11 @@
     \node[ranknode] (n1) at (dummy.east) {P};
     \node[leglabel] (lbl1) at ([xshift=\labelgap]n1.east) {Process};
 
-    \node[ranknode] (n2) at ([xshift=\entrygap]lbl1.east) {R};
-    \node[leglabel] (lbl2) at ([xshift=\labelgap]n2.east) {Rank};
+    \node[compbar, minimum width=0.7cm, minimum height=0.35cm] (n2) at ([xshift=\entrygap]lbl1.east) {};
+    \node[leglabel] (lbl2) at ([xshift=\labelgap]n2.east) {Work};
 
-    \node[compbar, minimum width=0.7cm, minimum height=0.35cm] (n3) at ([xshift=\entrygap]lbl2.east) {};
-    \node[leglabel] (lbl3) at ([xshift=\labelgap]n3.east) {Work};
+    \node[ranknode] (n3) at ([xshift=\entrygap]lbl2.east) {R};
+    \node[leglabel] (lbl3) at ([xshift=\labelgap]n3.east) {Rank};
 
     \node[fill=barriercolor, draw=barriercolor!50!black, minimum width=0.7cm, minimum height=0.35cm] (n4) at ([xshift=\entrygap]lbl3.east) {};
     \node[leglabel] (lbl4) at ([xshift=\labelgap]n4.east) {Global Sync. (\emph{MPI, NCCL})};
