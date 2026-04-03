@@ -38,6 +38,8 @@
 
 \newcommand{\tabOrcaRelated}{
   \begin{table}[t]
+    \hyphenpenalty=10000
+    \exhyphenpenalty=10000
     \centering
     \scriptsize
     \begin{tabularx}{1\textwidth}{p{1.0in} p{1.5in} Y Y }
@@ -59,7 +61,7 @@
                                                                               & Online interventions                                                                    & Tune micro-batch distribution or parallelism topology & Supported via
       control plane                                                                                                                                                                                                                                                                              \\
       \midrule
-      \tabOrcaCell{1}{Flare~\cite{Cui2026:Flare} \emph{(Training anomalies)}}
+      \tabOrcaCell{1}{Flare~\cite{Cui2026:Flare} \emph{(Training~anomalies)}}
                                                                               & Stall detection/disambiguation                                                          & Call stack analysis                                   & In-situ reductions                                             \\
       \addlinespace
                                                                               & Slowdown analysis                                                                       & Periodic metrics                                      & In-situ trace event aggregation                                \\
@@ -88,6 +90,13 @@
       \tabOrcaCell{1}{Reveal~\cite{Chen2025:Reveal}                                                                                                                                                                                                                                              \\
       \emph{(Training~anomalies)}}                                            & Anomaly detection and bottleneck
       attribution                                                             & Time-windowed metrics + unsupervised learning                                           & Workload-level trace events                                                                                            \\
+      \midrule
+      \tabOrcaCell{1}{PerfTracker~\cite{Guan2025:PerfTracker}                                                                                                                                                                                                                                    \\
+      \emph{(Training~anomalies)}}                                            & Anomaly detection and bottleneck attribution                                            & Always-on iteration
+      monitoring                                                              & Identical workflow                                                                                                                                                                          \\
+                                                                              &                                                                                         & Trigger-driven detailed capture                       &                                                                \\
+      \addlinespace
+                                                                              &                                                                                         & In-situ telemetry reductions                          &                                                                                             \\
       \bottomrule
     \end{tabularx}
     \caption{Diagnostic approaches in ML training observability and their ORCA equivalents.
