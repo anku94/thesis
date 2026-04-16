@@ -169,7 +169,7 @@ columnar files or objects.
 Query engines attach at read time and use this catalog for pruning, pushdown, and lazy evaluation.
 CARP and ORCA converge on the same pattern.
 CARP range-partitions particle data into contiguous key and value blocks with metadata as a
-separate manifest, structurally identical to Parquet~\cite{:ApacheParquet} and Iceberg.
+separate manifest, structurally identical to Parquet and Iceberg.
 ORCA writes trace data as timestep-partitioned Parquet but does not currently generate a catalog.
 Open table formats are immediately applicable to other forms of scientific data, insofar as they
 fit the

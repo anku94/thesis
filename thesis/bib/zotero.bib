@@ -2523,6 +2523,24 @@
   langid = {english}
 }
 
+@inproceedings{Casta2023:Foxhound,
+  title = {Foxhound: {{Server-Grade Observability}} for {{Network-Augmented Applications}}},
+  shorttitle = {Foxhound},
+  booktitle = {Proceedings of the {{Eighteenth European Conference}} on {{Computer Systems}}},
+  author = {Castanheira, Lucas and Schaeffer-Filho, Alberto and Benson, Theophilus A.},
+  date = {2023-05-08},
+  series = {{{EuroSys}} '23},
+  pages = {18--32},
+  publisher = {Association for Computing Machinery},
+  location = {New York, NY, USA},
+  doi = {10.1145/3552326.3567502},
+  url = {https://dl.acm.org/doi/10.1145/3552326.3567502},
+  urldate = {2026-04-06},
+  abstract = {There is a growing move to offload functionality, e.g., TCP or key-value stores, into programmable networks - either on SmartNICs or programmable switches. While offloading promises significant performance boosts, these programmable devices often provide little visibility into their performance. Moreover, many existing tools for analyzing and debugging performance problems, e.g., distributed tracing, do not extend into these devices.Motivated by this lack of visibility, we present the design and implementation of an observability framework called Foxhound, which introduces a co-designed query language, compiler, and storage abstraction layer for expressing, capturing and analyzing distributed traces and their performance data across an infrastructure comprising servers and programmable data planes. While general, Foxhound's query language offers optimized constructs which can circumvent limitations of programmable devices by pushing down operations to hardware. We have evaluated Foxhound using a Tofino switch and a large scale simulator. Our evaluations show that our storage layer can support common tracing tasks and detect associated problems at scale.},
+  isbn = {978-1-4503-9487-1},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/tracing/2023_castanheira_et_al_foxhound_server-gra.pdf}
+}
+
 @article{Castro1999:PracticalByzantineFault,
   title = {Practical {{Byzantine Fault Tolerance}}},
   author = {Castro, Miguel and Liskov, Barbara},
@@ -6167,9 +6185,10 @@
 @inproceedings{Kreps2011:Kafka,
   title = {Kafka: {{A}} Distributed Messaging System for Log Processing},
   shorttitle = {Kafka},
-  booktitle = {Proceedings of the 6th International Workshop on Networking Meets Databases},
+  booktitle = {Proceedings of the 6th {{International Workshop}} on {{Networking Meets Databases}}},
   author = {Kreps, Jay and Narkhede, Neha and Rao, Jun},
   date = {2011-06-12},
+  series = {{{NetDB}} '11},
   pages = {1--7},
   publisher = {ACM},
   location = {Athens, Greece},
@@ -6983,14 +7002,18 @@
   file = {/Users/schwifty/Zotero/storage/UIY69TKL/detecting-fail-slow-failures-large-scale-cloud-storage-systems.html}
 }
 
-@article{Lu2023:PERSEUS,
-  title = {{{PERSEUS}}: {{A Fail-Slow Detection Framework}} for {{Cloud Storage Systems}}},
+@inproceedings{Lu2023:PERSEUS,
+  title = {{{PERSEUS}}: A Fail-Slow Detection Framework for Cloud Storage Systems},
   shorttitle = {{{PERSEUS}}},
+  booktitle = {Proceedings of the 21st {{USENIX Conference}} on {{File}} and {{Storage Technologies}}},
   author = {Lu, Ruiming and Xu, Erci and Zhang, Yiming and Zhu, Fengyi and Zhu, Zhaosheng and Wang, Mengtian and Zhu, Zongpeng and Xue, Guangtao and Shu, Jiwu and Li, Minglu and Wu, Jiesheng},
-  date = {2023},
-  abstract = {The newly-emerging “fail-slow” failures plague both software and hardware where the victim components are still functioning yet with degraded performance. To address this problem, this paper presents PERSEUS, a practical fail-slow detection framework for storage devices. PERSEUS leverages a light regression-based model to fast pinpoint and analyze fail-slow failures at the granularity of drives. Within a 10month close monitoring on 248K drives, PERSEUS managed to find 304 fail-slow cases. Isolating them can reduce the (node-level) 99.99th tail latency by 48\%. We assemble a large-scale fail-slow dataset (including 41K normal drives and 315 verified fail-slow drives) from our production traces, based on which we provide root cause analysis on fail-slow drives covering a variety of ill-implemented scheduling, hardware defects, and environmental factors. We have released the dataset to the public for fail-slow study.},
-  langid = {english},
-  file = {/Users/schwifty/Zotero/storage/YAJBVEH3/Lu et al. - PERSEUS A Fail-Slow Detection Framework for Cloud.pdf}
+  date = {2023-02-21},
+  series = {{{FAST}}'23},
+  pages = {49--63},
+  publisher = {USENIX Association},
+  location = {USA},
+  abstract = {The newly-emerging "fail-slow" failures plague both software and hardware where the victim components are still functioning yet with degraded performance. To address this problem, this paper presents PERSEUS, a practical fail-slow detection framework for storage devices. PERSEUS leverages a light regression-based model to fast pinpoint and analyze fail-slow failures at the granularity of drives. Within a 10- month close monitoring on 248K drives, PERSEUS managed to find 304 fail-slow cases. Isolating them can reduce the (node-level) 99.99th tail latency by 48\%. We assemble a large-scale fail-slow dataset (including 41K normal drives and 315 verified fail-slow drives) from our production traces, based on which we provide root cause analysis on fail-slow drives covering a variety of ill-implemented scheduling, hardware defects, and environmental factors. We have released the dataset to the public for fail-slow study},
+  isbn = {978-1-939133-32-8}
 }
 
 @article{Lua2005:SurveyComparisonPeertopeer,
@@ -8407,6 +8430,22 @@
   abstract = {Previous studies of application usage show that the performance of collective communications are critical for high-performance computing. Despite active research in the field, both general and feasible solution to the optimization of collective communication problem is still missing.},
   langid = {english},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/_pjeˇsivac-grbovic_et_al_performance_analysis_of_mpi_collective_operations.pdf}
+}
+
+@online{Popta2025:CharacterizingAdaptiveMesh,
+  title = {Characterizing {{Adaptive Mesh Refinement}} on {{Heterogeneous Platforms}} with {{Parthenon-VIBE}}},
+  author = {Poptani, Akash and Khadem, Alireza and Mahlke, Scott and Miller, Jonah and Dolence, Joshua and Das, Reetuparna},
+  date = {2025-09-24},
+  eprint = {2509.19701},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  doi = {10.48550/arXiv.2509.19701},
+  url = {http://arxiv.org/abs/2509.19701},
+  urldate = {2026-04-06},
+  abstract = {Hero-class HPC simulations rely on Adaptive Mesh Refinement (AMR) to reduce compute and memory demands while maintaining accuracy. This work analyzes the performance of Parthenon, a block-structured AMR benchmark, on CPU-GPU systems. We show that smaller mesh blocks and deeper AMR levels degrade GPU performance due to increased communication, serial overheads, and inefficient GPU utilization. Through detailed profiling, we identify inefficiencies, low occupancy, and memory access bottlenecks. We further analyze rank scalability and memory constraints, and propose optimizations to improve GPU throughput and reduce memory footprint. Our insights can inform future AMR deployments on Department of Energy's upcoming heterogeneous supercomputers.},
+  pubstate = {prepublished},
+  keywords = {Computer Science - Distributed Parallel and Cluster Computing,Computer Science - Performance},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2025_poptani_et_al_characterizing_adapt.pdf;/Users/schwifty/Zotero/storage/8KWUCYEI/2509.html}
 }
 
 @inproceedings{Ports2019:WhenShouldNetwork,
