@@ -4,6 +4,7 @@
 
 \figDesignArch{}
 
+\looseness=-1
 ORCA (\Cref{fig:orca:des-arch}) is a programmable \emph{tree-based overlay network} (TBON) with a
 controller (\tierctl{}) at the root and aggregators (\tieragg{}) as the intermediate scale-out
 tier, attached to application ranks (\tiermpi{}) as the leaf tier.
@@ -240,8 +241,7 @@ benefit from ORCA's in-situ filtering, preaggregation, and timestep-partitioned 
 
 
 The control plane enables users to intervene in response to feedback, closing the loop between
-observation and action.
-Interventions range from steering collection to steering the application itself in response to
+observation and action.  Interventions range from steering collection to steering the application itself in response to
 observed behavior.
 Prior work has explored auto-tuning for specific use cases~\cite{Bened2010:PERISCOPE}.
 ORCA instead provides general mechanisms for timestep-consistent feedback and control, on which

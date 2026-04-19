@@ -264,6 +264,7 @@ queries only require decompressing the files and rowgroups that match query pred
 % 's causal
 % partitioning and Parquet's rowgroup structure reduce decompression overhead.
 
+\looseness=-1
 \parahead{Transport Layer}
 Switching from \texttt{verbs} to libfabric's \texttt{TCP} provider increases ORCA's overhead from
 1--2\% to 45--55\% (\cref{fig:orca:eval-arch-tcp}).
@@ -287,6 +288,7 @@ they still lack the columnar, causally-partitioned data path that underpins ORCA
 
 \figEvalOrcaNative{}
 
+\looseness=-1
 While it can enable conventional tracing workflows, ORCA is fundamentally designed for in-situ
 analytics --- directly materializing views from a running application.
 % Plan operators can be pushed all the way to the MPI tier, leveraging the application's own
@@ -300,7 +302,7 @@ impact on data movement.
 \takeaway{In-situ analytics and operator pushdown reduce data movement by 98.5--99.999\%, at sub-2\% overhead.}
 
 \parahead{Workflows}
-\Cref{tab:ontv-flows} shows three flows of increasing complexity, designed for AMR codes.
+\Cref{tab:orca:ontv-flows} shows three flows of increasing complexity, designed for AMR codes.
 The first demonstrates a monitoring workflow: measuring the count of \mpiw{} exceeding 1\,ms each
 timestep, while the second persists outlier events to Parquet.
 The third flow tracks compute load imbalance in AMR codes --- it filters for known compute kernels,
@@ -348,6 +350,7 @@ real-time dashboards.
 
 \subsection{Closing the Loop: Agentic Debugging}\label{sec:orca:eval-agent}
 
+\looseness=-1
 While ORCA was designed for human operators, the emergence of LLM-based coding agents, capable of
 issuing commands and analyzing outputs, offers a way to validate the steerability paradigm.
 We task an LLM agent with localizing the 4096-rank AMR anomaly from \cite{\citeJainAmr} reproduced

@@ -1,7 +1,7 @@
 CARPROOT := /Users/schwifty/Repos/carp-paper/figures
 AMRROOT  := /Users/schwifty/Repos/netsketch-amr-profiling/data/figs
 ORCAFIGSROOT := /Users/schwifty/Repos/mon-paper/data/figs
-ORCATIKZROOT := /Users/schwifty/Repos/mon-paper/data/tikz-figs-new
+ORCATIKZROOT := /Users/schwifty/Repos/mon-paper/data/tikz-figs-new/pdf
 
 CARPFILES := distrib6.pdf distrib.amr.pdf distrib.vpic.pdf
 CARPEVALFILES := qlatvssel.v6.pdf runtime.v4.werr.pdf query.ycsb.v3.pdf pvtbench.adapt.pdf rtp.latvspvtcnt.pdf pvtbench.epxpp.pdf carpdb.impact.alt4.pdf load.vs.params.pdf runtime.vs.params.pdf
@@ -76,7 +76,7 @@ orca_plan.pdf: $(ORCATIKZROOT)/plan.pdf
 	cp $< $@
 orca_plan2.pdf: $(ORCATIKZROOT)/plan2.pdf
 	cp $< $@
-orca_ts2pc.pdf: $(ORCATIKZROOT)/ts2pc.pdf
+orca_ts2pc.pdf: $(ORCATIKZROOT)/ts2pc_paper.pdf
 	cp $< $@
 
 clean:
