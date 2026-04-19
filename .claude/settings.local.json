@@ -49,7 +49,8 @@
       "WebFetch(domain:api.semanticscholar.org)",
       "Bash(curl:*)",
       "Bash(/Users/schwifty/miniforge3/bin/python data/plotsrc/query_suite.py)",
-      "Bash(/Users/schwifty/miniforge3/bin/python data/plotsrc/query_suite_abs.py)"
+      "Bash(/Users/schwifty/miniforge3/bin/python data/plotsrc/query_suite_abs.py)",
+      "Read(//Users/schwifty/Repos/mon-paper/**)"
     ]
   }
 }
