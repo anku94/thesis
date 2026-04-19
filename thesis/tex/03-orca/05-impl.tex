@@ -12,7 +12,6 @@
 \newcommand{\topodir}{\texttt{DIRECT}}
 \newcommand{\toporep}{\texttt{MPIREP}}
 
-% Section intro: - Tech stack: 40k LOC (80% C++, 20% Rust), Mercury RPC, libfabric
 The core ORCA framework consists of 40K lines of code (80\% C++, 20\% Rust).
 ORCA uses the Mercury~\cite{Souma2013:MercuryRPC} RPC library for on-fabric communication via
 libfabric~\cite{Grun2015:libfabrica} and UCX~\cite{Shami2015:UCX} providers.
@@ -30,13 +29,13 @@ profiling interfaces.
         The \orcaclient{} shim links with the application and exposes a \ocpta{} hook, called after every
         timestep.
         ORCA can be activated at runtime by preloading the full library, otherwise these hooks become
-        noops.
+        no-ops.
         \ocpta{}  captures all data path work, including draining collectors, executing
         tier plans, dispatching data, and handling control messages.
 
   \item \emph{Collectors:}
-        Streams are defined by collectors --- they accumulate events locally and emit Arrow dataframes when
-        drained.
+        Streams are implemented via collectors that accumulate events locally and emit Arrow dataframes
+        when drained.
         At the end of each timestep, ORCA drains all collectors and enqueues the output for analysis.
         Our implementation currently packages basic collectors for MPI~\cite{:MPI} and
         Kokkos~\cite{Trott2022:Kokkos3}.
@@ -47,68 +46,33 @@ profiling interfaces.
 \end{itemize}
 
 
-% CANDIDATE:
-% \subsection{Integration}
-% \label{sec:orca:impl-integ}
-% ORCA provides two integration surfaces: the \orcaclient{} shim for applications, and
-% \emph{SchemaCollectors} for profiling interfaces.
-
-% \parahead{OrcaClient}
-% The \orcaclient{} shim links with the application and exposes a \ocpta{} hook,
-% called after every timestep.
-% ORCA can be activated at runtime by preloading the full library, otherwise these hooks become
-% noops.
-% \ocpta{}  captures all data path work, including draining collectors, executing
-% tier plans, dispatching data, and handling control messages.
-
-% \parahead{SchemaCollectors}
-% SchemaCollectors define stream schemas and capture events via \ocadd{}, with one collector per
-% stream.
-% At the end of each timestep, ORCA drains collectors into per-stream Arrow dataframes and enqueues
-% them for analysis.
-% Our implementation currently packages basic collectors for MPI~\cite{:MPI} and Kokkos~\cite{Trott2022:Kokkos3}.
-% Additional collectors may be defined by clients.
-% Dynamic instrumentation via eBPF~\cite{:eBPF} and DynInst~\cite{Berna2011:DynInst} remains future work.
-
 \pplushead{Overlay}
-The ORCA overlay bootstraps via a TCP-based protocol and swiches to on-fabric RPCs after the
-initial handshake.
-% While the overlay supports additional topologies, only one is discussed in this paper for
+The overlay bootstraps via a TCP-based protocol and switches to on-fabric RPCs after the initial
+handshake.
+While it supports additional topologies for use cases like intermediate fan-in reduction, only one
+is discussed for simplicity.
+% we evaluate only one for simplicity.
+% only one is discussed in this paper for
 % simplicity.
-% The ORCA overlay bootstraps via a TCP-based discovery protocol for the initial handshake with the
-% controller, and then switches to on-fabric RPCs once Mercury addresses are exchanged.
-Routes are then constructed as per the selected TBON topology, and available aggregators are
-automatically assigned to ranks.
-Each overlay entity is assigned a 32-bit ID called \texttt{ovid} to enable uniform addressing
-across all tiers.
-Multiple topologies are supported, including \topodir{}, where all MPI ranks directly connect to
-the overlay, and \toporep{}, where ranks choose node-local representatives to reduce aggregator
-incast.
-Additional topologies can be plugged into the framework.
-For simplicity, we only discuss the \topodir{} topology in this paper.
 
 \pplushead{Data Path}
-The data path is completely asynchronous but timestep-ordered --- each node at every tier executes its tier plans
-on dataframes in timestep order independently, executes local sinks, and forwards 
+The data path is completely asynchronous but timestep-ordered.
+Each tier executes its tier plans on dataframes in timestep order independently, and forwards
 relevant data to the next tier.
 Despite its asynchronous nature, flow updates across tiers also guarantee timestep-consistency.
-We now describe two examples of properties conferred by the TBON that the planner understands:
+% This also applies to flow updates across tiers
+% Each overlay endpoint is assigned a 32-bit ID called \texttt{ovid} to enable uniform addressing
+% across all tiers.
+% Multiple topologies are supported, including \topodir{}, where all MPI ranks directly connect to
+% the overlay, and \toporep{}, where ranks choose node-local representatives to reduce aggregator
+% incast.
+% Additional topologies can be plugged into the framework.
+% For simplicity, we only discuss the \topodir{} topology in this paper.
 
-\begin{itemize}[leftmargin=*]
-  \item \emph{Partitioning:}
-        The default reduction behavior is a partition-preserving merge. Each node's subtrees
-        emit rank-partitioned data --- merge preserves
-        this partitioning.
-  \item \emph{Sortedness:}
-   Merging does not preserve sortedness by default, even if the inputs are sorted. As a result,
-   plan operators that require sorted inputs must not be pushed down to lower tiers.
-\end{itemize}
-
-% The default reduction behavior is a partition-preserving merge. Each node's subtrees
-% emit rank-partitioned data --- merge preserves
-% , and the merge preserves this partitioning. Properties such as sortedness
-% are lost after the merge
-
+% The ORCA overlay bootstraps via a TCP-based discovery protocol for the initial handshake with the
+% controller, and then switches to on-fabric RPCs once Mercury addresses are exchanged.
+% Routes are then constructed as per the selected TBON topology, and available aggregators are
+% automatically assigned to ranks.
 
 % CANDIDATE:
 % \subsection{Data Path}
@@ -139,65 +103,77 @@ We now describe two examples of properties conferred by the TBON that the planne
 %         partition shards across cores.
 % \end{itemize}
 
-% \subsection{TS2PC: Implementation Details}
-% \label{sec:orca:impl-ctl}
+\subsection{\twopc{}: Implementation Details}
+\label{sec:orca:impl-ctl}
 
-% The TS2PC implementation consists of \emph{inner} and \emph{outer} layers.
-% The inner layer enables a single transaction with a unique monotonic ID called \texttt{txnseq},
-% targeting a particular $T_{cmd}$.
-% % The inner layer implements the core two-phase commit mechanism for a single transaction --- a
-% % transaction, with a unique ID called a \texttt{txnseq} is initiated targeting a particular
-% % $T_{cmd}$, and may fail if $T_{cmd} < T_{app}$.
+% The implementation consists of 
+\twopc{} is implemented as separate \emph{inner} and \emph{outer} layers.
+The inner layer enables a single transaction with a unique monotonic ID called \texttt{txnseq},
+targeting a particular $T_{cmd}$.
+% The outer layer adds features like $\Delta$-learning, automatic retries, and cross-tier
+% consistency.
+The outer layer adds features like automatic $\Delta$-learning (discussed in
+\S\ref{sec:orca:des_ctl}) and \emph{control domains} for cross-tier consistency.
+% The inner layer implements the core two-phase commit mechanism for a single transaction --- a
+% transaction, with a unique ID called a \texttt{txnseq} is initiated targeting a particular
+% $T_{cmd}$, and may fail if $T_{cmd} < T_{app}$.
 
-% % The outer layer adds $\Delta$-learning --- commands are automatically retried with a new $\Delta$
-% % until they succeed.
+% The outer layer adds $\Delta$-learning --- commands are automatically retried with a new $\Delta$
+% until they succeed.
 % \parahead{$\Delta$-learning}
-% The outer TS2PC layer automatically retries commands with an incremented $\Delta$ in case of
+% The outer \twopc{} layer automatically retries commands with an incremented $\Delta$ in case of
 % aborts.
 % As a result, $\Delta$ quickly converges to the natural latency of the TBON.
 
-% \parahead{Concurrency}
-% Correctness necessitates that only one transaction be inflight at any given time, as intermittent
-% failures can result in commands being committed out of order, potentially breaking correctness.
-% However, a single transaction can contain an arbitrary number of commands applied as a batch.
-% % We find that correctness necessitates only one transaction to be inflight at any given time, as
-% % intermittent failures can result in result in out-of-order commits, breaking correctness.
-% % However, a single transaction can consist of an arbitrary number of commmands applied as a batch.
+\parahead{Concurrency}
+Correctness necessitates that only one transaction be in flight at any given time, as intermittent
+failures and automatic retries can result in commands being committed out of order.
+%, potentially breaking correctness.
+However, a single transaction can contain an arbitrary number of commands applied as a batch.
+% We find that correctness necessitates only one transaction to be inflight at any given time, as
+% intermittent failures can result in result in out-of-order commits, breaking correctness.
+% However, a single transaction can consist of an arbitrary number of commmands applied as a batch.
 
-% \parahead{Handling Pauses}
-% The control plane supports pausing and resuming the application as primitives for more complex
-% workflows.
-% An interesting case emerges from the interaction of the paused state with TS2PC --- when a resume
-% is committed, it will be enqueued to be applied at a future timestep never reached by a paused
-% application, creating a deadlock.
-% Our solution recognizes that the paused state makes the application synchronous with the user and
-% renders TS2PC unnecessary for timestep consistency.
-% Commands in this state circumvent the TS2PC protocol and are executed directly.
+\parahead{Handling Pauses}
+The control plane supports pausing and resuming the application between timesteps for basic
+lifecycle management, and as primitives for more complex workflows.
+An interesting case emerges from the interaction of the paused state with \twopc{} --- resume
+commands in this state will be committed for a future timestep never reached by a paused
+application, creating a deadlock.
+Our solution recognizes that the paused state makes the application synchronous with the user and
+renders \twopc{} unnecessary for consistency.
+Commands in this state circumvent the protocol and are executed directly.
 
-% % An interesting interaction emerges with PAUSE and RESUME commands, which we implemented to be able
-% % to suspend application execution and as primitives for more complex workflows.
-% % PAUSE is committed normally via TS2PC at $T_{app} + \Delta$ and it pauses execution.
-% % However, if RESUME is committed for $T_{app} + \Delta$, it creates a deadlock as the application is
-% % paused and will never execute a future timestep.
-% % Our solution recognizes that the paused state makes the application synchronous with the user and
-% % renders TS2PC unnecessary for timestep consistency.
-% % Commands in this state can be executed directly, circumventing the TS2PC protocol.
+\parahead{Cross-tier Consistency}
+Commands such as flow updates trigger tier plan updates at all tiers, and must be applied at a
+consistent timestep across the entire TBON.
+This is challenging as the higher tiers are asynchronous and observe application timesteps at
+different times.
+A tier is defined to observe a timestep when it processes its dataframes.
 
-% \parahead{Cross-tier Consistency}
-% Commands such as flow updates trigger tier plan updates at all tiers, and must be applied at a
-% consistent timestep across the entire TBON.
-% This is challenging as the higher tiers are asynchronous and observe timestep at different times
-% --- these tiers are defined to observe a timestep when they process its data.
-% Cross-tier consistency is supported via introducing control \emph{domains} in the outer layer,
-% allowing the entire overlay to be addressable via timestep-consistent control.
-% % Each tier corresponds to a domain, and each transaction contains a bitmask corresponding to the
-% % domains to which it applies --- flow update, for example, will set all domain bits.
+% Cross-tier consistency is supported via control \emph{domains} in the outer layer.
+% allowing all overlay tiers to be addressable via timestep-consistent control.
+% Each overlay tier corresponds to a domain, and each transaction contains a bitmask for its
+% executing domains --- flow updates, for example, apply to all domains.
+% Regardless of the domain, all \twopc{} commit decisions are made by \tiermpi{}, treating it as the
+% single source of truth on the application timestep.
+% Higher tiers snoop on protocol traffic and apply commands only if their domain bit is set.
+
+Cross-tier consistency is supported via \emph{control domains}, which make each overlay tier
+independently addressable by the control plane in a timestep-consistent manner.
+Each tier corresponds to a domain, and each transaction carries a bitmask specifying which domains
+it targets --- flow updates, for example, target all domains.
+The inner protocol remains unchanged, with \tiermpi{} making all commit
+decisions as the single source of truth on the application timestep, regardless of the domain.
+Higher tiers snoop on protocol traffic and apply commands only if their domain bit is set.
+% Higher tiers snoop on protocol traffic and apply commands only if their domain bit is set.
+% Higher tiers snoop on protocol traffic and apply commands only if their domain bit is set.
 
 % \begin{enumerate}[leftmargin=*]
-%   \item Each tier corresponds to a domain, and each transaction contains a bitmask corresponding to the domains
-%         to which it applies.
-%         Flow updates, for example, apply to all domains, thus all bits are set.
-%   \item All transactions are committed by \tiermpi{} regardless of the domain.
+% %   \item Each tier corresponds to a domain, and each transaction contains a bitmask corresponding to the domains
+% %         to which it applies.
+% %         Flow updates, for example, apply to all domains, thus all bits are set.
+%   \item All transactions are first committed by \tiermpi{} regardless of the domain.
 %         The bitmask is only checked at \emph{apply} time, and commands are committed only if the domain bit
 %         corresponding to that tier is set.
 %         As a result, \tiermpi{} acts as the single source of truth on the application timestep.
@@ -209,56 +185,3 @@ We now describe two examples of properties conferred by the TBON that the planne
 %         before $T_{cmd}$ is observed.
 % \end{enumerate}
 
-
-\subsection{TS2PC: Implementation Details}
-\label{sec:orca:impl-ctl}
-
-% The implementation consists of 
-TS2PC is implemented as separate \emph{inner} and \emph{outer} layers.
-The inner layer enables a single transaction with a unique monotonic ID called \texttt{txnseq},
-targeting a particular $T_{cmd}$.
-The outer layer adds features like $\Delta$-learning, automatic retries, and cross-tier
-consistency.
-% The inner layer implements the core two-phase commit mechanism for a single transaction --- a
-% transaction, with a unique ID called a \texttt{txnseq} is initiated targeting a particular
-% $T_{cmd}$, and may fail if $T_{cmd} < T_{app}$.
-
-% The outer layer adds $\Delta$-learning --- commands are automatically retried with a new $\Delta$
-% until they succeed.
-% \parahead{$\Delta$-learning}
-% The outer TS2PC layer automatically retries commands with an incremented $\Delta$ in case of
-% aborts.
-% As a result, $\Delta$ quickly converges to the natural latency of the TBON.
-
-\parahead{Concurrency}
-Correctness necessitates that only one transaction be inflight at any given time, as intermittent
-failures and automatic retries can result in commands being committed out of order.
-%, potentially breaking correctness.
-However, a single transaction can contain an arbitrary number of commands applied as a batch.
-% We find that correctness necessitates only one transaction to be inflight at any given time, as
-% intermittent failures can result in result in out-of-order commits, breaking correctness.
-% However, a single transaction can consist of an arbitrary number of commmands applied as a batch.
-
-\parahead{Handling Pauses}
-The control plane supports pausing and resuming the application between timesteps as primitives for
-more complex workflows.
-An interesting case emerges from the interaction of the paused state with TS2PC --- when a resume
-is committed, it will be enqueued to be applied at a future timestep never reached by a paused
-application, creating a deadlock.
-Our solution recognizes that the paused state makes the application synchronous with the user and
-renders TS2PC unnecessary for consistency --- commands in this state circumvent the protocol and
-are executed directly.
-
-\parahead{Cross-tier Consistency}
-Commands such as flow updates trigger tier plan updates at all tiers, and must be applied at a
-consistent timestep across the entire TBON.
-This is challenging as the higher tiers are asynchronous and observe timesteps at different times
---- tiers are defined to observe a timestep when they process its dataframes.
-
-Cross-tier consistency is supported via control \emph{domains} in the outer layer.
-% allowing the entire overlay to be addressable via timestep-consistent control.
-Each tier corresponds to a domain, and each transaction contains a bitmask for its executing
-domains --- flow updates, for example, apply to all domains.
-Regardless of the domain, all TS2PC commit decisions are made by \tiermpi{}, treating it as the
-single source of truth on the application timestep.
-Higher tiers snoop on protocol traffic and apply commands only if their domain bit is set.

@@ -1,20 +1,19 @@
 % ! TeX root = ../main.tex
 
-\section{Requirements for Steerable BSP Observability}
+% \section{Requirements for Closed-Loop Observability}
+\section{Requirements}
 \label{sec:orca:req}
 
-We now state the key requirements for closed-loop observability.
 Our goal is to accelerate the full spectrum of observability workflows, from offline trace analysis
 to real-time diagnosis.
 This requires analytics to transform fine-grained telemetry in situ, terminating in aggregated
 views or detailed traces but reorganized for efficient offline analyses.
 Additionally, control semantics are needed for interventions ranging from steering application views to steering the
 application itself.
-% We model BSP as consisting of timesteps punctuated by synchronous collectives~\cite{:MPI,:NCCL},
-% with timesteps containing one or more collectives.
-% Steerable observability for this model must support three key requirements.
-% The goal is real-time feedback through interactive views over running applications, while retaining
-% the ability to capture detailed traces when deeper investigation is required.
+We model BSP as consisting of timesteps punctuated by synchronous collectives~\cite{:MPI,:NCCL},
+with timesteps containing one or more collectives.
+Steerable observability for this model must support three key requirements.
+
 
 \pplushead{BSP-Aware Semantic Guarantees}
 Both the data and control paths must be synchronization-aware.
@@ -40,91 +39,29 @@ Operators must be able to specify views and collection policies via a programmab
 runtime, without recompilation or restart.
 Collection and analytics must be schema-agnostic, enabling visibility into any layer of the runtime
 stack --- from MPI and fabric libraries to the application itself.
+\vspace{0.2em}
 
-% \parahead{BSP-Aware Semantic Guarantees}
+% Supporting these requirements at scale requires balancing competing constraints ---
+% distributed execution for scalability, asynchronous operation for low overhead, and coordinated semantics for correctness ---
+% all the while keeping analytics expressive enough for ad-hoc queries.
+% At scale, distributed execution becomes necessary, creating competing constraints between asynchrony for low overhead
+% and coordination for correctness.
+At scale, both data and control paths necessitate distributed execution, requiring a careful balance of consistency guarantees
+with asynchrony for low overhead.
+Our design leverages modern columnar primitives (Arrow~\cite{:ApacheArrow}, Parquet~\cite{:ApacheParquet}),
+an extensible query engine called DataFusion~\cite{Lamb2024:DataFusion}, and RDMA for low-overhead transport,
+with a tree-based topology for reductions and broadcast.
+% At scale, these requirements pose competing constraints over distributed execution --- correctness necessitates
+% coordination across a large analytics tier, while
+% aligning analytics and control with a tree-based reductions and broadcasts respectively.
+% DataFusion~\cite{Lamb2024:DataFusion}) with RDMA for low-overhead transport, aligning data
+% partitioning with timestep boundaries and analytics with a reduction topology.
+
+% work interspersed by global synchronization via collectives~\cite{:MPI,:NCCL}.
+% On the data path, this implies coordinated collection and analytics.
 % BSP observability requires guarantees on both data and control paths.
 % On the data path, this means coordinated collection: detecting the straggler at a barrier requires
 % telemetry from all ranks for that barrier instance.
 % Sampling yields uncoordinated subsets insufficient for root cause attribution.
 % Control path semantics must similarly align with workload structure.
-% Control inputs must be applied consistently and atomically at synchronization boundaries across all
-% ranks.
-% While uncoordinated updates may be tolerable in some cases, they break correctness for
-% interventions such as hyperparameter changes --- a timestep-consistent control plane generalizes
-% across use cases.
-
-
-% \parahead{Low-Cost, Low-Latency Feedback}
-% Practical observability requires a view-driven model: emitting only what is needed to materialize
-% requested views.
-% First, overhead must be proportional to view complexity --- lightweight aggregates for continuous
-% monitoring should incur minimal cost, while detailed traces remain available on demand.
-% Second, feedback must be fast, as the latency of feedback bounds the latency of intervention.
-% Finally, the system must minimize induced perturbation --- BSP workloads are jitter-sensitive, and
-% overhead must scale with view complexity.
-
-% \parahead{Declarative and Flexible Analytics}
-% No predefined set of analyses can anticipate every pathology.
-% Operators must be able to specify views and collection policies via a programmable interface at
-% runtime, without recompilation or restart.
-% % , with the system determining how to efficiently materialize them.
-% The collection interface must also be source and schema-agnostic, as telemetry may be emitted by
-% any layer of the runtime stack, including MPI, runtime libraries, or custom annotations.
-
-% These requirements are in tension.
-% Satisfying these requirements simultaneously is the key design challenge.
-% Coordinated semantics demand global completeness, low overhead requires not disrupting the
-% application, and low feedback latency requires streaming to materialize views quickly instead of
-% accumulating
-% data locally.
-% The programming model must be expressive enough for diagnostic queries, while remaining compatible
-% with low-overhead execution.
-% Our design combines OLAP primitives (Arrow~\cite{:ApacheArrow}, Parquet~\cite{:ApacheParquet},
-% DataFusion~\cite{Lamb2024:DataFusion}) with RDMA for low-overhead transport, aligning data
-% partitioning with synchronization boundaries, analytics with a reduction topology, and control with
-% timestep semantics.
-% Practical observability requires a view-driven model: emitting only what is needed to materialize
-
-Supporting these requirements at scale requires balancing competing constraints ---
-distributed execution for scalability, asynchronous operation for low overhead, and coordinated semantics for correctness ---
-all the while keeping analytics expressive enough for ad-hoc queries.
-Our design combines modern columnar primitives (Arrow~\cite{:ApacheArrow}, Parquet~\cite{:ApacheParquet},
-DataFusion~\cite{Lamb2024:DataFusion}) with RDMA for low-overhead transport, aligning data
-partitioning with timestep boundaries and analytics with a reduction topology.
-
-% requested views, instead of steady streams from static collection profiles. Three properties
-% follow. First, overhead must be proportional to view complexity---lightweight aggregates for
-% continuous monitoring should incur minimal cost, while detailed traces for investigation remain
-% available on demand. Second, feedback must be fast---the latency of feedback bounds the latency of
-% intervention, so views must materialize quickly enough to act on. Third, the system must minimize
-% induced perturbation---BSP workloads are jitter-sensitive, and overhead must remain low in the
-% common case and scale with view complexity.
-
-
-% BSP observability requires guarantees on both data and control paths. On the data path, this means
-% coordinated collection and analysis. Detecting the straggler at a barrier requires telemetry from
-% all ranks for that particular barrier instance. Techniques like sampling yield uncoordinated
-% subsets of telemetry, and cannot materialize the complete views necessary for root cause
-% attribution.
-
-% Control path semantics must similarly align with workload structure. Collectives in BSP are both
-% synchronization and consistency mechanisms. Control inputs must be applied consistently and
-% atomically at these boundaries across all ranks. While the effects of uncoordinated updates may be
-% transient and tolerable in some cases, they break correctness for interventions such as
-% hyperparameter changes, which must be timestep-consistent--- a control plane with these guarantees
-% generalizes across usecases.
-
-% Programmability requires a model that is both expressive enough for unanticipated queries while
-% structured enough to yield actionable insights. real-time feedback rather than deferred analysis.
-% Our design combines OLAP primitives --- columnar formats like Arrow~\cite{:ApacheArrow} and
-% Parquet~\cite{:ApacheParquet}, SQL-based analytics via DataFusion~\cite{Lamb2024:DataFusion} ---
-% with RDMA for low-overhead data movement over HPC fabrics: data partitioned by synchronization
-% boundaries, analytics layered over a reduction topology, and a timestep-consistent control plane.
-
-% \cite{:ApacheArrow} (Arrow) \cite{:ApacheParquet} (Parquet) \cite{Lamb2024:DataFusion}
-% (DataFusion) Our design combines primitives from the OLAP ecosystem---columnar formats like
-% Arrow~\cite{:ApacheArrow} and Parquet~\cite{:ApacheParquet} and SQL-based
-% analytics~\cite{Lamb2024:DataFusion}---with RDMA for low-overhead data movement over HPC fabrics.
-% These are aligned with BSP execution structure: data partitioned by synchronization boundaries,
-% analytics layered over a reduction topology, and a timestep-consistent control plane.
 
