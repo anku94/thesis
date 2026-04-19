@@ -2993,22 +2993,7 @@
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/ibcc/2016_liu_et_al_improvements_to_the.pdf}
 }
 
-@online{Liu2022:ProcessingParticleData,
-  title = {Processing {{Particle Data Flows}} with {{SmartNICs}}},
-  author = {Liu, Jianshen and Maltzahn, Carlos and Curry, Matthew L. and Ulmer, Craig},
-  date = {2022-10-13},
-  eprint = {2210.06827},
-  eprinttype = {arXiv},
-  eprintclass = {cs},
-  url = {http://arxiv.org/abs/2210.06827},
-  urldate = {2022-11-21},
-  abstract = {Many distributed applications implement complex data flows and need a flexible mechanism for routing data between producers and consumers. Recent advances in programmable network interface cards, or SmartNICs, represent an opportunity to offload data-flow tasks into the network fabric, thereby freeing the hosts to perform other work. System architects in this space face multiple questions about the best way to leverage SmartNICs as processing elements in data flows. In this paper, we advocate the use of Apache Arrow as a foundation for implementing data-flow tasks on SmartNICs. We report on our experiences adapting a partitioning algorithm for particle data to Apache Arrow and measure the on-card processing performance for the BlueField-2 SmartNIC. Our experiments confirm that the BlueField-2's (de)compression hardware can have a significant impact on in-transit workflows where data must be unpacked, processed, and repacked.},
-  pubstate = {prepublished},
-  keywords = {65Y20 60L10 90B18,B.4.1,B.8.2,C.4,Computer Science - Distributed Parallel and Cluster Computing,Computer Science - Networking and Internet Architecture,Computer Science - Performance,D.2.13,E.2},
-  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2022_liu_et_al_processing_particle.pdf;/Users/schwifty/Zotero/storage/QV3Y6H8Q/2210.html}
-}
-
-@inproceedings{Liu2022:ProcessingParticleDataa,
+@inproceedings{Liu2022:ProcessingParticleData,
   title = {Processing {{Particle Data Flows}} with {{SmartNICs}}},
   booktitle = {2022 {{IEEE High Performance Extreme Computing Conference}} ({{HPEC}})},
   author = {Liu, Jianshen and Maltzahn, Carlos and Curry, Matthew L. and Ulmer, Craig},
@@ -3022,6 +3007,21 @@
   eventtitle = {2022 {{IEEE High Performance Extreme Computing Conference}} ({{HPEC}})},
   keywords = {Atmospheric measurements,compression,Distributed databases,Fabrics,Hardware,in-transit computations,Particle measurements,Partitioning algorithms,Routing,SmartNICs},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2022_liu_et_al_processing_particle 1.pdf}
+}
+
+@online{Liu2022:ProcessingParticleDataPP,
+  title = {Processing {{Particle Data Flows}} with {{SmartNICs}}},
+  author = {Liu, Jianshen and Maltzahn, Carlos and Curry, Matthew L. and Ulmer, Craig},
+  date = {2022-10-13},
+  eprint = {2210.06827},
+  eprinttype = {arXiv},
+  eprintclass = {cs},
+  url = {http://arxiv.org/abs/2210.06827},
+  urldate = {2022-11-21},
+  abstract = {Many distributed applications implement complex data flows and need a flexible mechanism for routing data between producers and consumers. Recent advances in programmable network interface cards, or SmartNICs, represent an opportunity to offload data-flow tasks into the network fabric, thereby freeing the hosts to perform other work. System architects in this space face multiple questions about the best way to leverage SmartNICs as processing elements in data flows. In this paper, we advocate the use of Apache Arrow as a foundation for implementing data-flow tasks on SmartNICs. We report on our experiences adapting a partitioning algorithm for particle data to Apache Arrow and measure the on-card processing performance for the BlueField-2 SmartNIC. Our experiments confirm that the BlueField-2's (de)compression hardware can have a significant impact on in-transit workflows where data must be unpacked, processed, and repacked.},
+  pubstate = {prepublished},
+  keywords = {65Y20 60L10 90B18,B.4.1,B.8.2,C.4,Computer Science - Distributed Parallel and Cluster Computing,Computer Science - Networking and Internet Architecture,Computer Science - Performance,D.2.13,E.2},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2022_liu_et_al_processing_particle.pdf;/Users/schwifty/Zotero/storage/QV3Y6H8Q/2210.html}
 }
 
 @incollection{Loren2008:RMOST,
@@ -3218,7 +3218,7 @@
   urldate = {2024-10-23},
   abstract = {Due to the complexity and diversity of new parallel architectures, automatic tuning of parallel applications has become increasingly important for achieving acceptable performance levels, as well as performance portability. The European AutoTune project developed a tuning framework that closely integrates and automates performance analysis and performance tuning. The Periscope Tuning Framework (PTF) relies on a flexible plugin mechanism and provides tuning plugins for various different tuning aspects. Each plugin provides codified expert knowledge for performance or energy efficiency tuning. PTF is able to tune serial and parallel codes for homogeneous and heterogeneous target hardware. The output of the framework is tuning recommendations that can be integrated into the production version of the code. In this paper, we present the latest development in the design of PTF aiming at (1) achieving higher portability and scalability by using the Score-P measurement infrastructure, (2) extending Score-P with tuning capabilities, (3) increasing analysis capabilities by providing new analysis strategies, and (4) increasing tuning capabilities by providing new plugins.},
   eventtitle = {2016 2nd {{International Conference}} on {{Green High Performance Computing}} ({{ICGHPC}})},
-  keywords = {auto-tuning,Computer architecture,Instruments,Libraries,Measurement,Monitoring,Parallel computing,Performance analysis,performance analysis,performance tuning,PTF,Tuning},
+  keywords = {auto-tuning,Computer architecture,Instruments,Libraries,Measurement,Monitoring,Parallel computing,performance analysis,Performance analysis,performance tuning,PTF,Tuning},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/hpc/2016_mijaković_et_al_an_architecture_for.pdf}
 }
 
@@ -4560,7 +4560,7 @@
   url = {https://ieeexplore.ieee.org/document/10982439/},
   urldate = {2025-09-02},
   abstract = {Performance inefficiencies can lead to performance anomalies in parallel programs. Existing performance analysis tools either have a limited detection scope or require significant domain knowledge to use, which constrains their practical adoption to identify performance inefficiencies. In this paper, we propose STAD, a performance analysis tool for parallel programs that considers both spatial and temporal patterns within trace data. STAD captures the spatial communication patterns between processes using a spatial communication pattern graph. It then adopts a dynamic graph neural network-based unsupervised model to learn the evolving temporal patterns along the timeline. Additionally, STAD diagnoses the root causes of performance anomalies by exploiting the aggregated feature of anomalies along the call tree. Our evaluation results demonstrate that STAD can effectively detect performance anomalies with acceptable overhead and diagnose the root causes attributed to both the program itself and the running environment.},
-  keywords = {Accuracy,Analytical models,Anomalies,Graph neural networks,Hardware,Heating systems,Libraries,parallel programs,Performance analysis,performance analysis,Phasor measurement units,root cause,Sun,Training},
+  keywords = {Accuracy,Analytical models,Anomalies,Graph neural networks,Hardware,Heating systems,Libraries,parallel programs,performance analysis,Performance analysis,Phasor measurement units,root cause,Sun,Training},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/perfvar/2025_xuan_et_al_identifying_performa.pdf}
 }
 
@@ -4840,6 +4840,20 @@
   eventtitle = {{{SC18}}: {{International Conference}} for {{High Performance Computing}}, {{Networking}}, {{Storage}} and {{Analysis}}},
   keywords = {Analytical models,Computational modeling,Data models,Indexing,Libraries,Trajectory},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/2018_zheng_et_al_scaling_embedded_in-situ_indexing_with_deltafs.pdf;/Users/schwifty/Zotero/storage/A8IHG8LJ/8665820.html}
+}
+
+@inproceedings{Zheng2025:Uprobes,
+  title = {Extending {{Applications Safely}} and {{Efficiently}}},
+  shorttitle = {Uprobes},
+  author = {Zheng, Yusheng and Yu, Tong and Yang, Yiwei and Hu, Yanpeng and Lai, Xiaozheng and Williams, Dan and Quinn, Andi},
+  date = {2025},
+  pages = {557--574},
+  url = {https://www.usenix.org/conference/osdi25/presentation/zheng-yusheng},
+  urldate = {2026-04-19},
+  eventtitle = {19th {{USENIX Symposium}} on {{Operating Systems Design}} and {{Implementation}} ({{OSDI}} 25)},
+  isbn = {978-1-939133-47-2},
+  langid = {english},
+  file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/tracing/2025_zheng_et_al_extending_applicatio.pdf}
 }
 
 @article{Zhou:EvolvableNetworkTelemetry,
