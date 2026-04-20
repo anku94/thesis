@@ -114,16 +114,18 @@ Event-based streaming systems~\cite{Kreps2011:Kafka,Carbo2015:ApacheFlink} treat
 events as separate in transit, requiring these dependency edges to be reconstructed after
 collection.
 \hl{Even with identical collection profiles and data formats,
-reconstructing these edges after persistence incurs costs from small random reads,
-analogous to how FastQuery compares with CARP in} \ref{sec:carp:eval_carpdb}.
+  reconstructing these edges after persistence incurs costs from small random reads,
+  analogous to how FastQuery compares with CARP in} \ref{sec:carp:eval_carpdb}.
 
 % Not only does ORCA's in-situ timestep alignment produce a more efficient on-disk layout, but its
 % co-design and in-situ analytics translate queries into an execution strategy that approaches the
 % minimum necessary work.
 \looseness=-1
-\hl{ORCA's in-situ timestep alignment not only accelerates offline trace analytics but enables skipping
-persistence entirely---only the relevant data is materialized for a given view, and queries
-translate into execution strategies that approach the minimum necessary work.}
+\hl{ORCA's in-situ timestep alignment not only accelerates offline trace analytics but enables
+  skipping
+  persistence entirely---only the relevant data is materialized for a given view, and queries
+  translate into execution strategies that approach the minimum necessary work.
+}
 Data movement is minimized via pushdowns that leverage workload resources, and RDMA minimizes
 the residual data movement overhead.
 Prior~\cite{Erlin2011:Fay,Berg2021:Snicket,Mace2015:Pivottracing} work has explored query-driven
@@ -153,6 +155,29 @@ observability~\cite{Jacob1988:CCAPartial}.
 When conditions are too transient for online intervention, ORCA's in-situ reductions still capture
 their structure more efficiently than any post-hoc approach, providing the empirical basis for
 developing predictive strategies that anticipate rather than react~\cite{Smith1957:Predict}.
+
+\paragraph{Applicability Beyond BSP}
+\hl{
+While this thesis focuses on steerability under BSP constraints,
+the broader lesson is that
+observability becomes far more powerful when built over an explicit ontology of system state rather
+than over fixed telemetry categories such as traces, metrics, and logs.
+BSP makes this unusually tractable because it defines a regular unit of distributed
+progress with strong consistency guarantees that applies regardless of scale.
+For observability beyond BSP, ORCA suggests two directions.
+Conceptually, it argues for
+richer ontologies, modeling systems as not just serving requests asynchronously, but as
+databases, filesystems, and inference engines, extending what can become visible and
+actionable, with instructive parallels in} Palantir~\cite{:PalantirOntology}.
+\hl{Architecturally, it is a template for observability as tier-aware streaming
+analytics evaluating invariants over distributed application state, and persisting detail
+only when
+those invariants are violated---closer to a distributed core dump than to always-on retention.
+Extending this model beyond BSP, however, requires solving the harder problem that BSP largely
+sidesteps: defining the ontology, causal boundaries,
+and staleness bounds in systems that do not provide a global clock for free,
+and deriving from them meaningful pushed-down units of work.
+}
 
 
 \section{Lessons from OLAP for Scientific Data Management}\label{sec:concl:olap}
