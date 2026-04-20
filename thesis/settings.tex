@@ -134,6 +134,15 @@
     citestyle=numeric-comp,
 ]{biblatex}
 
+% BBT biblatex export puts conference venue in eventtitle, not booktitle; copy it over
+\DeclareSourcemap{
+  \maps[datatype=bibtex]{
+    \map[overwrite=false]{
+      \step[fieldsource=eventtitle, fieldtarget=booktitle]
+    }
+  }
+}
+
 % remove some metadata
 \AtEveryBibitem{%
   \clearfield{day}%
@@ -147,8 +156,8 @@
   \clearfield{isbn}%
   \clearfield{location}%
   \clearfield{address}%
-  \clearfield{doi}%
-  \clearfield{pages}%
+  % \clearfield{doi}%
+  % \clearfield{pages}%
   % \clearfield{series}%
 }
 

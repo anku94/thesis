@@ -241,11 +241,12 @@
   file = {/Users/schwifty/Zotero/storage/36V8GBA7/cai.html}
 }
 
-@article{:MPI,
+@report{:MPI,
   title = {{{MPI}}: {{A Message-Passing Interface Standard Version}} 4.1},
   shorttitle = {{{MPI}}},
   author = {{Message Passing Interface Forum}},
   date = {2023-11},
+  institution = {Message Passing Interface Forum},
   url = {https://www.mpi-forum.org/docs/mpi-4.1/mpi41-report.pdf},
   langid = {english},
   file = {/Users/schwifty/Zotero/storage/DWZSAIVJ/MPI A Message-Passing Interface Standard.pdf}
@@ -945,6 +946,7 @@
   url = {https://www.osti.gov/biblio/1405171},
   urldate = {2026-02-13},
   abstract = {The data-acquisition (DAQ) system of the CMS experiment at the LHC performs the read-out and assembly of events accepted by the first level hardware trigger. Assembled events are made available to the high-level trigger (HLT), which selects interesting events for offline storage and analysis. The system is designed to handle a maximum input rate of 100 kHz and an aggregated throughput of 100 GB/s originating from approximately 500 sources and 10\textasciicircum 8 electronic channels. An overview of the architecture and design of the hardware and software of the DAQ system is given. We report on the performance and operational experience of the DAQ and its Run Control System in the first two years of collider runs of the LHC, both in proton-proton and Pb-Pb collisions. We present an analysis of the current performance, its limitations, and the most common failure modes and discuss the ongoing evolution of the HLT capability needed to match the luminosity ramp-up of the LHC.},
+  issue = {1},
   langid = {english},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/misc/2012_bauer_operational_experien.pdf}
 }
@@ -978,6 +980,7 @@
   publisher = {Springer},
   location = {Berlin, Heidelberg},
   doi = {10.1007/978-3-642-11261-4_1},
+  url = {https://doi.org/10.1007/978-3-642-11261-4_1},
   abstract = {This paper presents PERISCOPE - an online distributed performance analysis tool that searches for a wide range of performance bottlenecks in parallel applications. It consists of a set of agents that capture and analyze application and hardware-related properties in an autonomous fashion. The paper focuses on the Periscope design, the different search methodologies, and the steps involved to do an online performance analysis. A new graphical user-friendly interface based on Eclipse is introduced. Through the use of this new easy-to-use graphical interface, remote execution, selection of the type of analysis, and the inspection of the found properties can be performed in an intuitive and easy way. In addition, a real-world application, namely, the GENE code, a grand challenge problem of plasma physics is analyzed using Periscope. The results are illustrated in terms of found properties and scalability issues.},
   isbn = {978-3-642-11261-4},
   langid = {english},
@@ -1470,6 +1473,7 @@
 @inproceedings{Cui2026:Flare,
   title = {Flare: {{Anomaly Diagnostics}} for {{Divergent LLM Training}} in {{GPU Clusters}} of {{Thousand-Plus Scale}}},
   shorttitle = {Flare},
+  booktitle = {23rd {{USENIX Symposium}} on {{Networked Systems Design}} and {{Implementation}} ({{NSDI}} 26)},
   author = {Cui, Weihao and Zhang, Ji and Zhao, Han and Liu, Chao and Sha, Jian and Sang, Bo and He, Bingsheng and Guo, Minyi and Chen, Quan},
   date = {2026},
   url = {https://www.usenix.org/conference/nsdi26/presentation/cui},
@@ -2259,7 +2263,7 @@
 
 @software{Jain2026:orca-code,
   title = {{{ORCA}}: {{Observability}} with Real-Time Control and Aggregation},
-  author = {Jain, Ankush},
+  author = {Jain, Ankush and Jiang, Sheng and Cranor, Chuck},
   date = {2026},
   url = {https://github.com/pdlfs/orca-umbrella}
 }
@@ -2815,6 +2819,7 @@
   publisher = {Springer International Publishing},
   location = {Cham},
   doi = {10.1007/978-3-030-81627-8_12},
+  url = {https://doi.org/10.1007/978-3-030-81627-8_12},
   abstract = {This chapter describes Ascent, a production library for in situ visualization and analysis on exascale architectures. It begins by describing the library’s focal points: minimizing encumbrance on simulation codes and enabling diverse and powerful capabilities. The chapter then describes Ascent’s abstractions, interface, and design. It concludes with success stories that highlight its capabilities: in situ visualization of a 97.8 billion element inertial confinement fusion simulation using 16,384 GPUs, delivering radiography capabilities for a Kelvin-Helmholtz simulation, and native rendering of higher-order elements.},
   isbn = {978-3-030-81627-8},
   langid = {english},
@@ -3893,6 +3898,7 @@
   title = {Similarity and Dimensional Methods in Mechanics},
   author = {Sedov, Leonid Ivanovich},
   date = {1959},
+  publisher = {CRC Press},
   doi = {10.1201/9780203739730},
   url = {http://archive.org/details/l-i-sedov.-similarity-and-dimensional-methods-in-mechanics},
   urldate = {2025-02-04},
@@ -4737,6 +4743,8 @@
   pages = {10},
   publisher = {USENIX Association},
   location = {USA},
+  url = {https://www.usenix.org/conference/hotcloud-10/spark-cluster-computing-working-sets},
+  urldate = {2025-12-15},
   abstract = {MapReduce and its variants have been highly successful in implementing large-scale data-intensive applications on commodity clusters. However, most of these systems are built around an acyclic data flow model that is not suitable for other popular applications. This paper focuses on one such class of applications: those that reuse a working set of data across multiple parallel operations. This includes many iterative machine learning algorithms, as well as interactive data analysis tools. We propose a new framework called Spark that supports these applications while retaining the scalability and fault tolerance of MapReduce. To achieve these goals, Spark introduces an abstraction called resilient distributed datasets (RDDs). An RDD is a read-only collection of objects partitioned across a set of machines that can be rebuilt if a partition is lost. Spark can outperform Hadoop by 10x in iterative machine learning jobs, and can be used to interactively query a 39 GB dataset with sub-second response time.},
   file = {/Users/schwifty/Library/CloudStorage/GoogleDrive-ankushj@andrew.cmu.edu/My Drive/MiscNotes/08 Zotero/NetSketch-Mon/olap/2010_zaharia_et_al_spark_cluster_compu.pdf}
 }
@@ -4855,6 +4863,7 @@
 @inproceedings{Zheng2025:Uprobes,
   title = {Extending {{Applications Safely}} and {{Efficiently}}},
   shorttitle = {Uprobes},
+  booktitle = {19th {{USENIX Symposium}} on {{Operating Systems Design}} and {{Implementation}} ({{OSDI}} 25)},
   author = {Zheng, Yusheng and Yu, Tong and Yang, Yiwei and Hu, Yanpeng and Lai, Xiaozheng and Williams, Dan and Quinn, Andi},
   date = {2025},
   pages = {557--574},
