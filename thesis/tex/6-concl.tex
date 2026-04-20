@@ -83,8 +83,7 @@ in real time, and to change those views on demand as diagnosis progresses.
 % Its core contribution is economic.
 Conventional tracing is locked to a preselected fidelity that both overcollects and undercollects:
 despite paying for comprehensive collection at one layer, it can still lack the
-visibility into lower layers necessary
-for root-cause identification.
+visibility into lower layers necessary for root-cause identification.
 In contrast, steerable observability materializes relevant views directly from the application in
 real-time.
 This drastically reduces collection and storage overhead through predicate and reduction pushdowns.
@@ -114,13 +113,25 @@ requiring analytical substrates to preserve these causal edges.
 Event-based streaming systems~\cite{Kreps2011:Kafka,Carbo2015:ApacheFlink} treat
 events as separate in transit, requiring these dependency edges to be reconstructed after
 collection.
-ORCA is co-designed for this paradigm, translating queries into an execution strategy
-that approaches the minimum necessary work --- data movement is minimized via pushdowns that
-leverage workload resources, and RDMA minimizes
+\hl{Even with identical collection profiles and data formats,
+reconstructing these edges after persistence incurs costs from small random reads,
+analogous to how FastQuery compares with CARP in} \ref{sec:carp:eval_carpdb}.
+
+% Not only does ORCA's in-situ timestep alignment produce a more efficient on-disk layout, but its
+% co-design and in-situ analytics translate queries into an execution strategy that approaches the
+% minimum necessary work.
+\looseness=-1
+\hl{ORCA's in-situ timestep alignment not only accelerates offline trace analytics but enables skipping
+persistence entirely---only the relevant data is materialized for a given view, and queries
+translate into execution strategies that approach the minimum necessary work.}
+Data movement is minimized via pushdowns that leverage workload resources, and RDMA minimizes
 the residual data movement overhead.
 Prior~\cite{Erlin2011:Fay,Berg2021:Snicket,Mace2015:Pivottracing} work has explored query-driven
 tracing for asynchronous microservices.
 ORCA extends this to BSP workloads, adding a control plane for steerability.
+% ORCA is co-designed for this paradigm, translating queries into an execution strategy that
+% approaches the minimum necessary work --- data movement is minimized via pushdowns that leverage
+% workload resources, and RDMA minimizes the residual data movement overhead.
 % Fay~~\cite{Erlin2011:Fay}, Snicket~\cite{Berg2021:Snicket}, and Pivot
 % Tracing~\cite{Mace2015:Pivottracing} implement query-driven tracing for microservices. straggler
 % rank, then to the sequence of events behind its slowdown. Analyses need to preserve these causal
@@ -359,10 +370,12 @@ adaptive placement.
 \paragraph{Beyond Relational Algebra}
 Scientific computing and ML operate primarily on arrays,
 meshes, and tensors using domain-specific analytics that go beyond the relational model.
-\hl{N-D arrays are strided access patterns over contiguous buffers, requiring only dimensional metadata
-on top of the columnar representation.
-More broadly, memory is linear regardless of how data is logically shaped, and columnar formats
-capture that linearity directly.}
+\hl{N-D arrays are strided access patterns over contiguous buffers, requiring only dimensional
+  metadata
+  on top of the columnar representation.
+  More broadly, memory is linear regardless of how data is logically shaped, and columnar formats
+  capture that linearity directly.
+}
 Everything above the buffer is metadata.
 Prior work on SciQL~\cite{Kerst2011:SciQL} and MeshSQL~\cite{Lee2004:MeshSQL} has explored
 declarative interfaces for these types, and practical
