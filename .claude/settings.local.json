@@ -51,7 +51,9 @@
       "Bash(/Users/schwifty/miniforge3/bin/python data/plotsrc/query_suite.py)",
       "Bash(/Users/schwifty/miniforge3/bin/python data/plotsrc/query_suite_abs.py)",
       "Read(//Users/schwifty/Repos/mon-paper/**)",
-      "Bash(latexdiff --version)"
+      "Bash(latexdiff --version)",
+      "WebFetch(domain:www.usenix.org)",
+      "WebFetch(domain:arxiv.org)"
     ]
   }
 }

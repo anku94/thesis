@@ -391,7 +391,7 @@ host, NIC, and kernel tiers --- is an instance of this.
 % --- deciding which operators run where and how intermediate results flow between them.
 
 \paragraph{Cost-Aware Reactive Placement}
-ORCA’s placement today follows tree the topology: per-partition work is pushed down, while
+ORCA’s placement today follows the tree topology: per-partition work is pushed down, while
 cross-partition work remains at higher tiers.
 While this works, it is not cost-aware because it does not react to observed placement conditions
 such as backlogs and kernel costs.
