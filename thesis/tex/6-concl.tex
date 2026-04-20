@@ -80,41 +80,54 @@ in real time, and to change those views on demand as diagnosis progresses.
 % always-on collection viable for production BSP systems: high-level signals flag anomalies in real
 % time, and narrower views can then surface their root causes. The same paradigm enables online
 % intervention, as views are both necessary to guide interventions and assess their effectiveness.
-Its core contribution is economic.
+% Its core contribution is economic.
 Conventional tracing is locked to a preselected fidelity that both overcollects and undercollects:
 despite paying for comprehensive collection at one layer, it can still lack the
 visibility into lower layers necessary
 for root-cause identification.
-Steerable observability shifts the cost model by evaluating predicates and reductions before
-export, so only matches and summaries pay serialization, transport, and storage.
-This makes needle-in-haystack questions viable as continuous queries, and supports drill-down
-across arbitrary fidelities as needed, insofar as instrumentation permits.
+In contrast, steerable observability materializes relevant views directly from the application in
+real-time.
+This drastically reduces collection and storage overhead through predicate and reduction pushdowns.
+It also shortens feedback latency, enabling drill-downs across arbitrary fidelity insofar as
+instrumentation permits, while cheap pushdowns enable continuous predicate evaluation for
+anomalies.
+% In contrast, steerable observability materializes relevant views directly from the application in
+% real-time. Not only does this drastically reduce the collection and storage overhead by enabling
+% predicate and reduction pushdowns, but it also shortens the feedback latency, enabling drilldowns
+% across arbitrary fidelity insofar as instruementation permits. Steerable observability shifts the
+% cost model by evaluating predicates and reductions before export, so only matches and summaries
+% pay serialization, transport, and storage. This makes needle-in-haystack questions viable as
+% continuous queries, and supports drill-down across arbitrary fidelities as needed, insofar as
+% instrumentation permits.
 
 
 
+% \looseness=-1
 \paragraph{BSP Is Different}
 BSP workloads run as a single coordinated job, not a web of loosely coupled microservices.
 Global synchronization defines both the unit of work and the axes of causality and consistency.
-Attribution of pathologies is first to a straggler rank, then to the sequence of events behind its
-slowdown.
-Root causes lie within a deeper layer of the same runtime stack, not across microservices.
-Analyses need to preserve these causal dependencies.
+Attribution of pathologies is first to an anomalous rank, and then to local events
+within that rank.
+Root causes lie within a deeper layer of a single workload's runtime stack, not across
+microservices,
+requiring analytical substrates to preserve these causal edges.
 Event-based streaming systems~\cite{Kreps2011:Kafka,Carbo2015:ApacheFlink} treat
 events as separate in transit, requiring these dependency edges to be reconstructed after
 collection.
-
 ORCA is co-designed for this paradigm, translating queries into an execution strategy
 that approaches the minimum necessary work --- data movement is minimized via pushdowns that
-leverage the application's scale, and RDMA minimizes
-the overhead of residual data movement.
-All processing happens in-memory over a highly efficient columnar representation.
-The closest analogs are \emph{Data Acquisition} (DAQ) pipelines in particle
-accelerators~\cite{Aboli2016:DAQ-ATLAS,Bauer2012:DAQ-CMS}, where
-FPGAs discard the bulk of sensor data at source, retaining only high-signal telemetry.
-Fay~~\cite{Erlin2011:Fay} and Snicket~\cite{Berg2021:Snicket} implement query-driven tracing for
-microservices.
-ORCA extends this to BSP workloads, adding a
-control plane for steerability.
+leverage workload resources, and RDMA minimizes
+the residual data movement overhead.
+Prior~\cite{Erlin2011:Fay,Berg2021:Snicket,Mace2015:Pivottracing} work has explored query-driven
+tracing for asynchronous microservices.
+ORCA extends this to BSP workloads, adding a control plane for steerability.
+% Fay~~\cite{Erlin2011:Fay}, Snicket~\cite{Berg2021:Snicket}, and Pivot
+% Tracing~\cite{Mace2015:Pivottracing} implement query-driven tracing for microservices. straggler
+% rank, then to the sequence of events behind its slowdown. Analyses need to preserve these causal
+% dependencies. All processing happens in-memory over a highly efficient columnar representation.
+% The closest analogs are \emph{Data Acquisition} (DAQ) pipelines in particle
+% accelerators~\cite{Aboli2016:DAQ-ATLAS,Bauer2012:DAQ-CMS}, where FPGAs discard the bulk of sensor
+% data at source, retaining only high-signal telemetry.
 
 
 
@@ -346,6 +359,11 @@ adaptive placement.
 \paragraph{Beyond Relational Algebra}
 Scientific computing and ML operate primarily on arrays,
 meshes, and tensors using domain-specific analytics that go beyond the relational model.
+\hl{N-D arrays are strided access patterns over contiguous buffers, requiring only dimensional metadata
+on top of the columnar representation.
+More broadly, memory is linear regardless of how data is logically shaped, and columnar formats
+capture that linearity directly.}
+Everything above the buffer is metadata.
 Prior work on SciQL~\cite{Kerst2011:SciQL} and MeshSQL~\cite{Lee2004:MeshSQL} has explored
 declarative interfaces for these types, and practical
 convergence is underway through bridges like arrow-zarr~\cite{2026:arrow-zarr} and
@@ -366,10 +384,11 @@ fabric itself~\cite{Ulmer2023:ExtendingComposableDatab,Liu2022:ProcessingParticl
 can push filter and sketch logic into kernel-side probes.
 Each tier admits a restricted operator subset under different resource and state constraints.
 More broadly, unified intermediate representations and layered compilation are emerging as the path
-toward composing data processing across heterogeneous execution targets~\cite{Jungm2025:DesigningFutureProofData}.
+toward composing data processing across heterogeneous execution
+targets~\cite{Jungm2025:DesigningFutureProofData}.
 The compilation problem for ORCA --- decomposing a high-level query across
 host, NIC, and kernel tiers --- is an instance of this.
-%  --- deciding which operators run where and how intermediate results flow between them.
+% --- deciding which operators run where and how intermediate results flow between them.
 
 \paragraph{Cost-Aware Reactive Placement}
 ORCA’s placement today follows tree the topology: per-partition work is pushed down, while

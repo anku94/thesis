@@ -50,7 +50,7 @@
   \begin{figure}[t]
     \centering
     \includegraphics[width=0.8\textwidth, trim=0.2cm 0cm 0.2cm 0cm, clip]{data/figs/orca_ts2pc.pdf}
-    \caption{Timestep-linked two-phase commit (TS2PC).
+    \caption{Timestep-linked two-phase commit (\twopc{}).
       Commands are proposed for a future timestep $T_{cmd} = T_{mpi} + \Delta$.
       (A) Normal case: ranks agree and apply the command before executing $T_{cmd}$.
       (B) Abort: ranks have passed $T_{cmd}$ and vote to abort, command is retried with a

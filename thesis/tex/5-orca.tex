@@ -140,8 +140,8 @@ Below, we briefly describe the core components of the ORCA architecture.
 
   \item \textbf{Control Semantics.}
         ORCA implements a control path using a novel variant of two-phase commit, called
-        \textit{timestep-linked two-phase commit} (TS2PC).
-        TS2PC is an asynchronous protocol that enables control actions to be applied consistently at a
+        \textit{timestep-linked two-phase commit} (\twopc{}).
+        \twopc{} is an asynchronous protocol that enables control actions to be applied consistently at a
         specified timestep across all ranks.
         This provides low-overhead replicated state machine semantics and supports dynamic observability
         workflows.

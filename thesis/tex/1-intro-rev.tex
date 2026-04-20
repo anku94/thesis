@@ -384,7 +384,7 @@ while control is applied via broadcast.
 A SQL-based analytics interface transforms dataframes en route to
 storage and visualization,
 with operator pushdown and RDMA to minimize data movement across the overlay.
-A custom two-phase commit variant called \emph{TS2PC} ensures that control inputs are applied on
+A custom two-phase commit variant called \twopc{} ensures that control inputs are applied on
 all ranks at the same timestep.
 On a real AMR code at 4096 ranks,
 ORCA collects detailed traces at 1--2\% overhead versus 56--81\% for conventional tracers,
@@ -575,7 +575,7 @@ Where SQL is insufficient, ORCA supports user-defined \emph{map} operators withi
         eliminating $98.5\%$--$99.999\%$ of telemetry
         at source in evaluated queries.
 
-  \item A timestep-consistent control plane via TS2PC (\emph{timestep-linked two-phase commit}) that
+  \item A timestep-consistent control plane via \twopc{} (\emph{timestep-linked two-phase commit}) that
         enables coordinated runtime changes aligned to BSP synchronization.
 
   \item In a closed-loop evaluation using an LLM agent, an anomaly that took months to isolate
