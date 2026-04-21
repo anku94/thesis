@@ -53,7 +53,8 @@
       "Read(//Users/schwifty/Repos/mon-paper/**)",
       "Bash(latexdiff --version)",
       "WebFetch(domain:www.usenix.org)",
-      "WebFetch(domain:arxiv.org)"
+      "WebFetch(domain:arxiv.org)",
+      "Bash(xargs -0 du -ch)"
     ]
   }
 }
