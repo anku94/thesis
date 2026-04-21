@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150">
-  <rect x="10" y="10" width="280" height="130" rx="10" ry="10" fill="#d0d0d0" stroke="black" stroke-width="2"/>
-  <text x="150" y="80" text-anchor="middle" font-size="20" font-family="sans-serif">This is a box</text>
-</svg>
