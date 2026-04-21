@@ -72,7 +72,7 @@ undiagnosed performance pathologies has become economically untenable.
 % Kong2022: Collie (RDMA) Xuan2026: STAD You2024:GVARP: GVARP Missing: Petrini2003 Acun2016:
 % Mitigating Acun2016: Variation Gunaw2018: FailSlow VanS2009: Scalability in AMR
 Yet the causes are diverse and highly
-context-dependent~\cite{Kong2022:Collie,Xuan2025:STAD,You2024:GVARP,Petri2003:Missing,Acun2016:Mitigating,Acun2016:Variation,Gunaw2018:FailSlow,VanS2009:AMR,Jain2025:AMR,Bhate2020:PerfVar,Chen2025:Reveal,Gangi2024:RDMA,Cui2025:XPUTimer,Jiang2025:TrainCheck,Deng2025:Minder,Dong2025:Aegis,Yao2025:Holmes,Wu2025:GREYHOUND}
+context-dependent~\cite{\citeGroupVarHpc,\citeGroupVarAmr,\citeGroupVarRdma,\citeGroupVarMisc,\citeGroupVarSolns,\citeGroupML}
 ---load imbalance, poor overlap, hardware variability---varying with the cluster, workload, scale,
 and configuration.
 Metrics~\cite{:Prometheus,Schwa2021:LDMS} provide baseline visibility but rarely enough workload
@@ -100,7 +100,7 @@ And because BSP is a single coordinated workload, the system can unify observati
 intervention---enabling operators to steer collection on demand, test hypotheses live, and act on
 feedback, all while the job runs.
 Real-time diagnostics are already proving valuable in ML
-training~\cite{Yao2025:Holmes,Wu2025:GREYHOUND,Deng2025:Minder,Cui2025:XPUTimer,Dong2025:Aegis,Jiang2025:TrainCheck,Guan2025:PerfTracker}
+training~\cite{\citeGroupML}
 for problems ranging from straggler localization to training correctness, but each system
 implements a bespoke collection and analytics pipeline.
 A common observability substrate is needed for BSP workloads, providing low-overhead

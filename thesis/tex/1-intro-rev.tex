@@ -27,8 +27,8 @@ infrastructure~\cite{Jones2012:Checkpointing,Eisen2022:Checkpoint,Lian2025:Unive
 On the compute path, frequent global synchronization amplifies the system's sensitivity ---
 factors such as
 execution
-variability~\cite{Hoefl2010:Noise,Petri2003:Missing,Yildi2016:IONoise,Kocol2018:Varbench,Acun2016:Variation,Wu2025:GREYHOUND,Yao2025:Holmes,Deng2025:Mycroft,Deng2025:Minder,Chen2025:Reveal,Deng2025:Mycroft},
-failures~\cite{Cui2025:XPUTimer,Dong2025:Aegis}, and correctness risks~\cite{Jiang2025:TrainCheck}
+variability~\cite{Hoefl2010:Noise,\citeGroupVarHpc,\citeGroupMLAnomaly},
+failures~\cite{\citeGroupMLFault}, and correctness risks~\cite{\citeGroupMLCorrectness}
 from corrupted state affect workload-wide progress.
 % and also amplifies correctness risks when failures or corrupted state propagate across ranks.
 Runtime artifacts that would be manageable in loosely coupled systems, such as minor OS-level
@@ -207,7 +207,7 @@ We initially set out to build telemetry-driven placement policies that could ada
 characteristics at runtime.
 In practice, we found placement effects
 repeatedly confounded by unrelated artifacts---fail-slow hardware, fabric pathologies, and tuning
-issues—that had to be identified and eliminated before placement could be isolated.
+issues---that had to be identified and eliminated before placement could be isolated.
 
 \begin{figure}[t]
   \centering
@@ -514,9 +514,9 @@ Where SQL is insufficient, ORCA supports user-defined \emph{map} operators withi
 
   \item Operational demand in large-scale ML training is driving observability for issues such as
         straggler
-        localization~\cite{Yao2025:Holmes,Wu2025:GREYHOUND,Cui2025:XPUTimer,Guan2025:PerfTracker,Chen2025:Reveal},
-        fault diagnosis~\cite{Deng2025:Minder,Dong2025:Aegis},
-        and training correctness~\cite{Jiang2025:TrainCheck}.
+        localization~\cite{\citeGroupMLAnomaly},
+        fault diagnosis~\cite{\citeGroupMLFault},
+        and training correctness~\cite{\citeGroupMLCorrectness}.
         These are typically implemented as bespoke pipelines, but can be generalized by a
         programmable BSP-aware substrate.
 \end{itemize}
