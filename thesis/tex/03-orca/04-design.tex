@@ -254,12 +254,15 @@ before being executed, and they must execute on all ranks at the same timestep f
 
 \pplushead{The \twopc{} Protocol}
 ORCA implements the control plane as a replicated state machine~\cite{Schne1990:SMR} using
-\emph{timestep-linked two-phase commit} (\twopc{}).
-Commands are opaque payloads --- the protocol only decides when to commit and apply them.
-As the controller is asynchronous, it maintains a lagging view of the application's current
-timestep $(= T_{app})$.
-\twopc{} proposes commands for a future timestep $T_{cmd} = T_{app} + \Delta$, where $\Delta$ is an
-automatically learned speculative margin.
+a two-phase commit~\cite{Gray1978:Notes} variant called \emph{timestep-linked two-phase commit} (\twopc{}).
+Commands are opaque payloads --- the protocol only decides when to commit and apply them
+in a timestep-consistent manner.
+As the controller is asynchronous with respect to the application,
+it speculates on the timestep before which the command can be safely committed at all ranks
+by using a lagging view of application timestep ($T_{app}$) and adding an automatically
+learned margin called $\Delta$.
+Commands are proposed for $T_{cmd} = T_{app} + \Delta$ and
+are buffered on all ranks to be executed at the beginning of $T_{cmd}$, if committed.
 The TBON assists the protocol by broadcasting requests and reducing responses --- any \texttt{NAK}
 in the subtree results in a single \texttt{NAK} at the controller.
 \Cref{fig:orca:des-twopc} illustrates the protocol via three cases.
