@@ -185,7 +185,10 @@ We evaluate analytics performance using a suite of post-mortem queries
 All queries run on traces from a smaller 20-timestep run, executed cold with caches cleared,
 latencies averaged over 3 runs.
 
-\takeaway{ORCA traces enable 3--4 orders of magnitude faster analytics compared to \dftracer{} and Caliper.}
+\takeaway{ORCA traces enable 3--4 orders of magnitude faster analytics vs. \dftracer{} and Caliper.}
+
+% expand page by one line
+\enlargethispage{\baselineskip}
 
 \parahead{Queries}
 We use three queries of increasing complexity.
@@ -309,6 +312,8 @@ The third flow tracks compute load imbalance in AMR codes --- it filters for kno
 computes duration aggregates by rank, and streams details to Parquet and percentiles to DuckDB for
 real-time dashboards.
 
+% expand page by one line
+\enlargethispage{\baselineskip}
 
 \parahead{Observations}
 \Cref{fig:orca:eval-ontv} shows the runtime overhead and the data reduction at \tiermpi{} for the three flows.

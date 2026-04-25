@@ -74,7 +74,7 @@ For BSP workloads, this timestep-centric dataframe abstraction confers two analy
    \item In transit, data can be represented as Arrow~\cite{:ApacheArrow}, 
    whose contiguous columnar layout enables efficient serialization into RDMA-registered memory, 
    zero-copy deserialization and in-situ analytics, while types such as dictionary arrays 
-   map naturally to repeated symbols in trace data.
+   map naturally to repeated symbols that occur frequently in trace data.
 %    . Arrow types such as dictionary arrays 
 %    naturally enable efficient representations for repeated symbols in trace data.
 
@@ -248,8 +248,9 @@ ORCA instead provides general mechanisms for timestep-consistent feedback and co
 such policies can be built.
 
 \pplushead{Requirements}
-The control plane must be asynchronous, as the controller is not part of the collective domain.
-It must also be atomic and timestep-consistent --- commands must be acknowledged by all ranks
+The control plane must be asynchronous, as 
+controllers --- humans or automated agents --- are not a part of the collective domain.
+It must also be atomic and timestep-consistent, i.e. commands must be acknowledged by all ranks
 before being executed, and they must execute on all ranks at the same timestep for correctness.
 
 \pplushead{The \twopc{} Protocol}
