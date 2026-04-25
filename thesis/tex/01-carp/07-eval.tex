@@ -168,7 +168,7 @@ is distributed enough to allow for parallel processing of a query.
   }}
 \vspace{5pt}
 
-\cref{fig:carp:kt-rt} measures the effective I/O throughput of four different index building
+\Cref{fig:carp:kt-rt} measures the effective I/O throughput of four different index building
 approaches ingesting 188\,GB of VPIC data (corresponding to 3.5B particles or one timestep at 512
 ranks).
 The effective I/O throughput is computed by dividing the application data volume by the total
@@ -239,7 +239,7 @@ By avoiding post-processing, CARP enables indexes to be built 2.8--4.9$\times$ f
 
 \figevaldyn
 
-\cref{fig:carp:eval-dyn} is a study of how frequently partition tables need to be recomputed for
+\Cref{fig:carp:eval-dyn} is a study of how frequently partition tables need to be recomputed for
 our VPIC trace to generate balanced partitions.
 We construct partitions from a perfect knowledge of different simulation timesteps and measure how
 well they fit subsequent timesteps.
@@ -271,11 +271,11 @@ these.
 
 \figCarpEvalRtpLat
 
-\cref{fig:carp:eval-rtplat} shows the time taken by a single renegotiation round across different
+\Cref{fig:carp:eval-rtplat} shows the time taken by a single renegotiation round across different
 scales and pivot counts.
 As described in \S\ref{sec:carp:impl}, we implement renegotiation using a reduction tree and hence
 expect it to scale logarithmically.
-\cref{fig:carp:eval-rtplat} shows the logarithmic scalability of our implementation from 16 to 2048
+\Cref{fig:carp:eval-rtplat} shows the logarithmic scalability of our implementation from 16 to 2048
 ranks for 6 different values of the pivot count parameter.
 Increasing the number of pivots computed increases the size of the messages exchanged.
 This results in proportionally higher round latency.
@@ -291,7 +291,7 @@ We expect these numbers to be much lower if run natively on a modern interconnec
 
 \figCarpEvalPvtCnt
 
-\cref{fig:carp:eval-pvtcnt} shows the results from a micro-benchmark that tests the lossiness of
+\Cref{fig:carp:eval-pvtcnt} shows the results from a micro-benchmark that tests the lossiness of
 our pivot calculation scheme.
 Pivots are an approximate representation of a distribution.
 The higher the pivot count, the better the approximation.
@@ -308,8 +308,12 @@ diminishing returns beyond 256 pivots.
 We also see that the last two timesteps are harder to reconstruct than the others.
 This is because of the extremely skewed nature of those timesteps' distributions
 (\cref{fig:carp:distrib-vpic,fig:carp:distrib-amr}).
-All VPIC timesteps have long tails, but when they become extremely long (towards the end of the
-simulation) more pivots are required to accurately capture those distributions.
+While all VPIC timesteps have long tails, more pivots help when they become extremely long
+as the simulation progresses.
+Sketch-based quantile estimation methods can provide more robustness for such distributions~\cite{Karni2016:KLLSketch}.
+% More robust pivot estimation methods can provide more resilience for such distributions.
+% All VPIC timesteps have long tails, but when they become extremely long (towards the end of the
+% simulation) more pivots are required to accurately capture those distributions.
 
 \subsubsection{Impact of KoiDB}
 \label{sec:carp:eval_carpdb}
@@ -335,6 +339,7 @@ predictable, as described in \S\ref{sec:carp:des_store}.
 \subsubsection{Tuning CARP}
 \label{sec:carp:eval_tune}
 
+\looseness=-1
 We now summarize key takeaways on the performance impact of CARP's two main tunable parameters:
 renegotiation frequency and pivot counts.
 We vary renegotiation frequencies between 2$\times$/epoch to 26$\times$/epoch and pivot count from

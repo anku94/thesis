@@ -16,6 +16,7 @@ In-situ generation of bitmap indices would be faster than post-processing via Fa
 cost of dedicated resources, and the space overhead and query performance limitations of bitmap
 indices would still remain.
 
+\looseness=-1
 Usher et al.~\cite{Usher2021:AdaptiveSpatiallyAware} describes an in-situ indexing system that
 aggregates application data into spatial locality-preserving data layouts.
 Their approach requires provisioning dedicated aggregator nodes which collect spatially-partitioned
@@ -29,6 +30,7 @@ confers maximum benefits of an in-situ partitioning approach.
 Since CARP does not require any dedicated resources, these two approaches can be composed together
 for richer partitioning capabilities.
 
+\looseness=-1
 Slalom~\cite{Olma2017:Slalom} and VETI~\cite{Marou2023:VETI} describe raw-data indexing approaches.
 Raw data indexing works on the query path to exploit pre-existing order in data and adaptively
 reorder data in response to query patterns.

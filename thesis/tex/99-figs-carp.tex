@@ -38,7 +38,7 @@
 
 % Figure 3.4
 \newcommand{\figdesarch}{
-  \begin{figure}[t]
+  \begin{figure}[!t]
     \centering
     \includegraphics[height=0.38\textheight,keepaspectratio]{data/tikz/pdf/carp-arch.pdf}
     \caption{Example of an N-rank application using CARP.
@@ -74,7 +74,7 @@
     \caption{Partition table renegotiation relies on pivots computed from histograms of keys tracked on
       each rank.
       Pivots are merged, and the new global histogram is divided into equal-mass bins before being
-      broadcasted.}
+      broadcast.}
     \label{fig:carp:des-hist}
   \end{figure}
 }

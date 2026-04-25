@@ -77,6 +77,7 @@ reorganize on-disk data \cite{Raju2017:PebblesDB}.
 Databases are designed for mixed workloads with updates, while lightweight indexes are better
 suited to scientific data.
 
+\looseness=-1
 \textbf{Index Lookup and Data Retrieval.
 }
 Efficient range queries require quickly finding matching records using the index and retrieving the
@@ -87,6 +88,8 @@ records requires multiple random reads.
 Additionally, FastQuery queries require provisioning enough compute nodes to fit large index
 structures in memory, and queries can only be processed once these indexes are loaded.
 
+\looseness=-1
 With CARP, we aim to pair the query latency of a sorted and clustered index with the reduced
 overhead of an in-situ approach.
-We discuss the challenges of meeting these goals in the next section.
+% We discuss the challenges of meeting these goals in the next section.
+We discuss the resulting challenges in the next section.

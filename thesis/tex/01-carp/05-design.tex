@@ -1,44 +1,115 @@
+
 \section{Design of CARP}
 \label{sec:carp:des}
-
-In this section we provide an overview of CARP's architecture. We describe the scalable way data is routed to ranks by key (\S\ref{sec:carp:des_comm}), the triggers that allow CARP to determine that data needs to be repartitioned (\S\ref{sec:carp:des_detect}), the protocol that allows ranks to determine a new partitioning for the data (\S\ref{sec:carp:des_reneg}), and a reference storage backend design for logging partition data efficiently to storage (\S\ref{sec:carp:des_store}).
-
 \figdesarch
+
+We now discuss CARP's architecture, beginning with the scalable way data is routed to ranks by key
+(\S\ref{sec:carp:des_comm}), the
+triggers that allow CARP to determine that data needs to be repartitioned
+(\S\ref{sec:carp:des_detect}), the protocol that allows ranks to determine a new partitioning for
+the data (\S\ref{sec:carp:des_reneg}), and a reference storage backend design for logging partition
+data efficiently to storage (\S\ref{sec:carp:des_store}).% In this section we provide an overview of
+% CARP's architecture.
+
 
 \subsection{Communication: Scalable data flow}
 \label{sec:carp:des_comm}
 
-\autoref{fig:carp:des-arch} shows the architecture of CARP using an example parallel application with $N$ ranks. Application data is intercepted by CARP as a stream of records, one per each particle or cell. Each application rank owns one partition and acts as both a producer and a consumer of data. These records are routed to the corresponding partition on the basis of the key via an operation called \emph{shuffling}. On the receiving end, the local partition is managed via a local instance of a storage backend called KoiDB (\S\ref{sec:carp:des_store}). This KoiDB instance is responsible for collecting data and writing it out to a per-rank on-disk log. For efficient shuffling, we leverage the scalable all-to-all communication overlay from the DeltaFS project~\cite{Zheng2018:DeltaFS}, as it has been demonstrated to scale up to 131,072 ranks.
+% shrink page by one line
+\Cref{fig:carp:des-arch} shows the architecture of CARP using an example parallel application
+with $N$ ranks.
+Application data is intercepted by CARP as a stream of records, one per each particle or cell.
+Each application rank owns one partition and acts as both a producer and a consumer of data.
+These records are routed to the corresponding partition on the basis of the key via an operation
+called \emph{shuffling}.
+On the receiving end, the local partition is managed via a local instance of a storage backend
+called KoiDB (\S\ref{sec:carp:des_store}).
+This KoiDB instance is responsible for collecting data and writing it out to a per-rank on-disk
+log.
+For efficient shuffling, we leverage the scalable all-to-all communication overlay from the DeltaFS
+project~\cite{Zheng2018:DeltaFS}, as it has been demonstrated to scale up to 131,072 ranks.
 
-Due to the transmission delay introduced by shuffling, data written through CARP is only available to query at the end of a checkpointing \emph{epoch}.  At the end of each epoch, CARP flushes all data to the disk. By doing so, it aligns its fault-tolerance semantics with those of typical scientific applications.
+\looseness=-1
+Due to the transmission delay introduced by shuffling, data written through CARP is only available
+to query at the end of a checkpoint \emph{epoch}.
+After each epoch, CARP flushes all data to the disk.
+By doing so, it aligns its fault-tolerance semantics with those of typical scientific applications.
 
 \figdessend
 
 \subsection{Detection: Triggering repartitioning}
 \label{sec:carp:des_detect}
 
-CARP uses a triggering mechanism to determine if the current partitioning of data is leading the system to a state of load imbalance (i.e., routing more data to a subset of the partitions).  Imbalanced loads affect the write path by creating stragglers and affect the query path when larger partitions are traversed to return query data.  \autoref{fig:carp:des-send} shows the data flow from the application to the shuffle sender layer.  This is the path that CARP monitors to determine whether to trigger data repartitioning. We describe CARP's control flow through the three possible cases of data flow from the application to the shuffle sender layer below.
+CARP uses a triggering mechanism to determine if the current partitioning of data is leading the
+system to a state of load imbalance (i.e., routing more data to a subset of the partitions).
+Imbalanced loads affect the write path by creating stragglers and affect the query path when larger
+partitions are traversed to return query data.
+\autoref{fig:carp:des-send} shows the data flow from the application to the shuffle sender layer.
+This is the path that CARP monitors to determine whether to trigger data repartitioning.
+We describe CARP's control flow through the three possible cases of data flow from the application
+to the shuffle sender layer below.
 
-\textbf{Common Case.} In the common case CARP shuffles data as per the assigned partition ranges as described previously in \S\ref{sec:carp:des_comm}. Collectively these ranges form a \emph{partition table} that is replicated across all ranks.
-A distribution of keys transmitted by each rank is stored locally and used when it becomes necessary to participate in a global renegotiation of the partition table (\S\ref{sec:carp:des_hist}).
+\textbf{Common Case.
+}
+In the common case CARP shuffles data as per the assigned partition ranges as described previously
+in \S\ref{sec:carp:des_comm}.
+Collectively these ranges form a \emph{partition table} that is replicated across all ranks.
+A distribution of keys transmitted by each rank is stored locally and used when it becomes
+necessary to participate in a global renegotiation of the partition table
+(\S\ref{sec:carp:des_hist}).
 
-\textbf{Out-Of-Bounds.} As simulations progress new keys are generated. If a rank is asked to insert a key that is currently out of the partition table bounds, then there is no valid destination for the data. In this case CARP temporarily buffers the data in an in-memory buffer on the sender called the \emph{Out-Of-Bounds (OOB) Buffer}. Once the OOB buffer reaches a predetermined threshold, a renegotiation of the partition table is triggered.
+\enlargethispage{\baselineskip}
+\textbf{Out-Of-Bounds.
+}
+As simulations progress new keys are generated.
+If a rank is asked to insert a key that is currently out of the partition table bounds, then there
+is no valid destination for the data.
+In this case CARP temporarily buffers the data in an in-memory buffer on the sender called the
+\emph{Out-Of-Bounds (OOB) Buffer}.
+Once the OOB buffer reaches a predetermined threshold, a renegotiation of the partition table is
+triggered.
 
-\textbf{Rebalancing Required.} This trigger is only needed to adapt to distribution changes \emph{within} an epoch --- for new epochs CARP bootstraps partitions from scratch. To resolve intra-epoch drift, a renegotiation should be triggered to compute a new and more relevant partition table. Instead of using background communication mechanisms to robustly detect load outliers, we have found it simpler to assume that a rebalancing is required at periodic intervals within an epoch. Some applications such as AMR (Adaptive Mesh Refinement) codes are aware of when they refine and can signal CARP for more precise control over renegotiation. We explore the impact of a fixed interval further in our evaluation.
-
-\figdeshist
+\textbf{Rebalancing Required.
+}
+This trigger is only needed to adapt to distribution changes \emph{within} an epoch --- for new
+epochs CARP bootstraps partitions from scratch.
+To resolve intra-epoch drift, a renegotiation should be triggered to compute a new and more
+relevant partition table.
+Instead of using background communication mechanisms to robustly detect load outliers, we have
+found it simpler to assume that a rebalancing is required at periodic intervals within an epoch.
+Some applications such as AMR (Adaptive Mesh Refinement) codes are aware of when they refine and
+can signal CARP for more precise control over renegotiation.
+We explore the impact of a fixed interval further in our evaluation.
 
 \subsection{Renegotiation: Determining new partitions}
 \label{sec:carp:des_reneg}
 
-The goal of renegotiation is to rebalance the partition boundaries used by the shuffle layer to route data to its destination. Renegotiation replaces the partition table stored in each rank with a new more balanced one based on the latest statistics of the global distribution of the keyspace. Renegotiation is similar to distributed snapshotting algorithms such as \emph{Chandy-Lamport}~\cite{Chandy1985:DistributedSnapshotsDetermining} but is designed to trade off some accuracy for scalability and performance. As a result, the computed global distribution is not a perfect representation of the actual distribution, but our evaluation shows that any estimation errors result in negligible imbalance in partition load. Our scalable implementation of renegotiation is described in \S\ref{sec:carp:impl}. The steps involved in the renegotiation protocol are as follows:
+The goal of renegotiation is to rebalance the partition boundaries used by the shuffle layer to
+route data to its destination.
+Renegotiation replaces the partition table stored in each rank with a new more balanced one based
+on the latest statistics of the global distribution of the keyspace.
+Renegotiation is similar to distributed snapshotting algorithms such as
+\emph{Chandy-Lamport}~\cite{Chandy1985:DistributedSnapshotsDetermining} but is designed to trade
+off some accuracy for scalability and performance.
+As a result, the computed global distribution is not a perfect representation of the actual
+distribution, but our evaluation shows that any estimation errors result in negligible imbalance in
+partition load.
+Our scalable implementation of renegotiation is described in \S\ref{sec:carp:impl}.
+The steps involved in the renegotiation protocol are as follows:
+
+\figdeshist
 
 \begin{enumerate}
-  \item A rank triggers a renegotiation round by notifying all ranks to start the process. This pauses shuffling.
-  \item Local distribution estimates are computed on all ranks and then collected and merged on rank 0 to form an estimate of the global distribution.
+  % \item A rank triggers a renegotiation round by notifying all ranks to start the process.
+  %       This pauses shuffling.
+  \item A new round is triggered via a notification from some rank, which also pauses shuffling.
+        % This pauses shuffling.
+  \item Local distribution estimates are computed on all ranks and then collected and merged on rank
+        0 to form an estimate of the global distribution.
   \item A new partition table is computed and broadcast.
-  \item All ranks switch to the new partition table and flush their Out-Of-Bounds buffers according to the new partitions.
-  \item Ranks reset local distribution statistics, resume shuffling.
+  \item All ranks switch to the new partition table and flush their Out-Of-Bounds buffers according
+        to the new partitions.
+  \item Ranks reset local distribution statistics and resume shuffling.
 \end{enumerate}
 
 Local distribution estimates are computed and merged using summary statistics primitives.
@@ -46,22 +117,69 @@ Renegotiation is initiated by trigger that can fire on any rank.
 We describe CARP's summary statistics primitives and trigger design next.
 
 \subsubsection{Summary Statistics} \label{sec:carp:des_hist}
-CARP ranks use summary statistics primitives to construct the global distribution during renegotiation. We use \emph{histogram-based sampling} to track and aggregate ranks' local key distributions. Different quantile estimation techniques can be plugged into CARP, but we have found that histogram-based sampling is efficient to compute and allows for control over trading compactness for accuracy. CARP tracks rank-local key distributions using histograms. Each rank's histogram consists of one bin per application rank (or partition). For each processed key the corresponding bin counter is incremented. This histogram represents a lightweight, lossy representation of the local key distribution. When a renegotiation is invoked the global distribution is constructed using two primitives: histogram sampling and pivot union, as shown in \cref{fig:carp:des-hist}.
+CARP ranks use summary statistics primitives to construct the global distribution during
+renegotiation.
+We use \emph{histogram-based sampling} to track and aggregate ranks' local key distributions.
+Different quantile estimation techniques can be plugged into CARP, but we have found that
+histogram-based sampling is efficient to compute and allows for control over trading compactness
+for accuracy.
+CARP tracks rank-local key distributions using histograms.
+Each rank's histogram consists of one bin per application rank (or partition).
+For each processed key the corresponding bin counter is incremented.
+This histogram represents a lightweight, lossy representation of the local key distribution.
+When a renegotiation is invoked the global distribution is constructed using two primitives:
+histogram sampling and pivot union, as shown in \cref{fig:carp:des-hist}.
 
-When ranks are notified of a renegotiation round, they compute \emph{pivots} via the \textbf{histogram sampling} primitive. Pivots are a compact and lossy representation of a distribution that can be efficiently computed, communicated, and merged. Pivots are a set of $k$ points in the keyspace that divide the histogram into $k$ partitions of equal mass, i.e., bins containing the same number of samples. Increasing $k$ reduces representation lossiness but requires more network communication for the additional information. For skewed distributions, this results in more pivots concentrated in histogram regions where bin counts are high and vice versa. Pivots are calculated by linear interpolation between bin boundaries. We also factor in the keys in the local OOB buffer for pivot computation.
+\looseness=-1
+When ranks are notified of a renegotiation round, they compute \emph{pivots} via the
+\textbf{histogram sampling} primitive.
+Pivots are a compact and lossy representation of a distribution that can be efficiently computed,
+communicated, and merged.
+Pivots are a set of $k$ points in the keyspace that divide the histogram into $k$ partitions of
+equal mass, i.e., bins containing the same number of samples.
+Increasing $k$ reduces representation lossiness but requires more network communication for the
+additional information.
+For skewed distributions, this results in more pivots concentrated in histogram regions where bin
+counts are high and vice versa.
+Pivots are calculated by linear interpolation between bin boundaries.
+% We also factor in the keys in the local OOB buffer for pivot computation.
+Keys in local OOB buffers are also factored into pivot computation.
 
-Pivots from all ranks are collected at a designated rank (Rank 0) and aggregated to form pivots representing the global distribution via the \textbf{pivot union} primitive. This operation uses the information captured in rank-local pivots to construct a global distribution. This global distribution is then resampled to compute the new partition table that is broadcast to all ranks.
+Pivots from all ranks are collected at a designated rank (Rank 0) and aggregated to form pivots
+representing the global distribution via the \textbf{pivot union} primitive.
+This operation uses the information captured in rank-local pivots to construct a global
+distribution.
+This global distribution is then resampled to compute the new partition table that is broadcast to
+all ranks.
 
 \subsubsection{Triggers}
 \label{sec:carp:des_trig}
 
-Renegotiation triggers are evaluated at each rank to determine when to renegotiate, as shown in \cref{fig:carp:des-send}.
+Renegotiation triggers are evaluated at each rank to determine when to renegotiate (see \cref{fig:carp:des-send}).
 
-The \textbf{Out-of-Bounds trigger} is used to extend partition boundaries when many keys outside the partition table boundaries are encountered. We partition the known keyspace without any gaps, so an invocation of this trigger strictly extends the allocated keyspace. An in-memory \emph{Out-of-Bounds} (OOB) buffer is used on each rank to temporarily store keys that are currently outside the bounds of the current partition table. The OOB buffer has a predetermined size and when it fills up a renegotiation is triggered. The contents of all ranks' OOB buffers are factored into the new partition table so that the newly computed table has destinations for those keys. Keys in the OOB buffers are flushed to their respective destinations once the renegotiation completes. We have found OOB buffers with a capacity of 512--1024 items per rank sufficiently effective.
+The \textbf{Out-of-Bounds trigger} is used to extend partition boundaries when many keys outside
+the partition table boundaries are encountered.
+We partition the known keyspace without any gaps, so an invocation of this trigger strictly extends
+the allocated keyspace.
+An in-memory \emph{Out-of-Bounds} (OOB) buffer is used on each rank to temporarily store keys that
+are currently outside the bounds of the current partition table.
+The OOB buffer has a predetermined size and when it fills up a renegotiation is triggered.
+The contents of all ranks' OOB buffers are factored into the new partition table so that the newly
+computed table has destinations for those keys.
+Keys in the OOB buffers are flushed to their respective destinations once the renegotiation
+completes.
+We have found OOB buffers with a capacity of 512--1024 items per rank sufficiently effective.
 
-This trigger is also used to bootstrap CARP at the beginning of each epoch. As there is no partition table when an epoch begins, all ranks collect writes into their OOB buffers, and invoke a renegotiation to find the first partition table to start shuffling with.
+This trigger is also used to bootstrap CARP at the beginning of each epoch.
+As there is no partition table when an epoch begins, all ranks collect writes into their OOB
+buffers, and invoke a renegotiation to find the first partition table to start shuffling with.
 
-The \textbf{Rebalancing trigger} is used to account for key distribution drift over time causing partition load to become imbalanced. In principle this trigger could be designed to fire only when key distribution drift is detected, however we have found that invoking it periodically is both simpler and effective. We found frequent fixed-interval renegotiation to provide effective partitioning without having a measurable runtime overhead (\S\ref{sec:carp:eval_tune}).
+The \textbf{Rebalancing trigger} is used to account for key distribution drift over time causing
+partition load to become imbalanced.
+In principle this trigger could be designed to fire only when key distribution drift is detected,
+however we have found that invoking it periodically is both simpler and effective.
+We found frequent fixed-interval renegotiation to provide effective partitioning without having a
+measurable runtime overhead (\S\ref{sec:carp:eval_tune}).
 
 
 \subsection{Storage: Logging for efficiency}
@@ -70,17 +188,53 @@ The \textbf{Rebalancing trigger} is used to account for key distribution drift o
 \figdeskoidb
 
 
-KoiDB is our reference implementation of CARP's storage backend. Its output is written to a parallel file system and can be directly queried by a query client on a single node. As query clients access files in read-only mode, multiple concurrent query clients are automatically supported. KoiDB collects data from the shuffle receiver and writes it to an append-only log on shared storage.  KoiDB instances are local to each rank and operate independently of each other. We discuss using CARP with other storage backends in \S\ref{sec:carp:disc}.
+KoiDB is our reference implementation of CARP's storage backend.
+Its output is written to a parallel file system and can be directly queried by a query client on a
+single node.
+As query clients access files in read-only mode, multiple concurrent query clients are
+automatically supported.
+KoiDB collects data from the shuffle receiver and writes it to an append-only log on shared
+storage.
+KoiDB instances are local to each rank and operate independently of each other.
+We discuss using CARP with other storage backends in \S\ref{sec:carp:disc}.
 
-\cref{fig:carp:des-carpdb} shows KoiDB's on-disk log format.  KoiDB produces this output by first collecting shuffled records in a memory buffer. When the buffer fills, KoiDB compacts the data into an \emph{SSTable} (or SST) that is then appended to the log.  Compaction operations include (optionally) sorting the contents by key, serializing the keys and values into separate sub-blocks for more efficient query-time parsing, and writing the serialized SST to storage. A manifest entry containing the SST's key range and location is also written into a manifest block that is used to find relevant SSTs for queries. Storing this manifest results in a small space amplification (\mytexttilde.01\%). KoiDB uses double-buffering to allow compaction to run in the background while shuffling continues in the foreground.
+\cref{fig:carp:des-carpdb} shows KoiDB's on-disk log format.
+KoiDB produces this output by first collecting shuffled records in a memory buffer.
+When the buffer fills, KoiDB compacts the data into an \emph{SSTable} (or SST) that is then
+appended to the log.
+Compaction operations include (optionally) sorting the contents by key, serializing the keys and
+values into separate sub-blocks for more efficient query-time parsing, and writing the serialized
+SST to storage.
+A manifest entry containing the SST's key range and location is also written into a manifest block
+that is used to find relevant SSTs for queries.
+Storing this manifest results in a small space amplification (\mytexttilde.01\%).
+KoiDB uses double-buffering to allow compaction to run in the background while shuffling continues
+in the foreground.
 
 
 We now describe two additional optimizations KoiDB applies to SSTs for query performance:
 
-\textbf{Repartitioning to refine SSTs.}
-CARP partitioning quality can be degraded by \emph{stray keys} created when CARP partition tables are updated. These keys end up being misdelivered because their correct shuffle destination changes between dispatch and delivery due to renegotiation.
-Letting them be written to the wrong partition reduces SST selectivity and will increase query latency as more SSTs need to be read for each query. One way to avoid stray keys is by flushing the network before each renegotiation, but this increases the cost of invoking the primitive. KoiDB mitigates this by simultaneously maintaining multiple open SSTs and separating stray keys into a different SST. As we show in \S\ref{sec:carp:eval_carpdb}, this improves the selectivity of CARP partitions by up to 48$\times$.
+\looseness=-1
+\textbf{Repartitioning to refine SSTs.
+}
+CARP partitioning quality can be degraded by \emph{stray keys} created when CARP partition tables
+are updated.
+These keys end up being misdelivered because their correct shuffle destination changes between
+dispatch and delivery due to renegotiation.
+Letting them be written to the wrong partition reduces SST selectivity and will increase query
+latency as more SSTs need to be read for each query.
+One way to avoid stray keys is by flushing the network before each renegotiation, but this
+increases the cost of invoking the primitive.
+KoiDB mitigates this by simultaneously maintaining multiple open SSTs and separating stray keys
+into a different SST.
+As we show in \S\ref{sec:carp:eval_carpdb}, this improves the selectivity of CARP partitions by up
+to 48$\times$.
 
 
-\textbf{Subpartitioning to create smaller SSTs.}
-To further reduce the read amplification for highly selective queries, KoiDB can subdivide a rank's SSTs into smaller ranges before writing them out. Smaller SSTs can be retrieved faster, but a large number of subpartitions can also increase CARP's CPU and metadata overhead and adversely affect runtime.
+\textbf{Subpartitioning to create smaller SSTs.
+}
+To further reduce the read amplification for highly selective queries, KoiDB can subdivide a rank's
+SSTs into smaller ranges before writing them out.
+Smaller SSTs can be retrieved faster, but a large number of subpartitions can also increase CARP's
+CPU and metadata overhead and adversely affect runtime.
+
