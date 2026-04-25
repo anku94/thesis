@@ -182,6 +182,7 @@ and deriving from them meaningful pushed-down units of work.
 Having reviewed ORCA as an observability and control substrate, we now turn to broader lessons from
 CARP and ORCA for scientific data management.
 
+\looseness=-1
 \paragraph{Why HPC Ingestion Is Filesystem-Centric}
 HPC applications write to parallel
 filesystems~\cite{Braam2002:Lustre,Schmu2002:GPFS,:VDURA,2025:VASTAI,:WekaIO,:Hammerspace} and
@@ -207,7 +208,10 @@ scientific data formats, resists monolithic databases.
 % storage stack, not ingestion into a centralized store.
 
 \paragraph{Relevance of Open Table Formats}
-Modern analytics systems increasingly decouple query engines from storage.
+% Modern analytics systems increasingly decouple query engines from storage.
+By decoupling query engines from data at rest stored in standard formats, 
+the modern analytics ecosystem has converged on an architecture well-aligned with HPC
+workflows.
 Open table formats such as Iceberg~\cite{:Iceberg} and Delta Lake~\cite{Armbr2020:Deltalake}
 maintain a
 lightweight catalog over partitioned
