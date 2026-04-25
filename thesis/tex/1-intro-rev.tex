@@ -19,6 +19,7 @@ continue to grow with time~\cite{Rahma2024:MLScale}.
 As these applications scale, their efficiency has datacenter-level impacts on both cost and
 time-to-discovery.
 
+\looseness=-1
 The tightly synchronized nature of BSP creates distinct challenges along the data and compute
 paths.
 On the data path, bursts of checkpointed state create massive I/O demands on the storage and
@@ -525,9 +526,12 @@ Where SQL is insufficient, ORCA supports user-defined \emph{map} operators withi
 \end{itemize}
 
 
-\pagebreak
+% \pagebreak
 \section{List of Contributions}
 \label{sec:intro:contribs}
+
+% expand page by one line
+\enlargethispage{\baselineskip}
 
 \paragraph{CARP (\emph{Continuous Adaptive Range Partitioner})}
 \begin{itemize}
