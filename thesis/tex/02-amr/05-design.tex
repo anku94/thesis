@@ -53,8 +53,12 @@ AthenaPK~\cite{Grete2023:Parthenon}.
 
 Modern block-based AMR codes use octrees and space-filling curves (SFCs) as foundational data
 structures for mesh management.
-This section describes these building blocks and the baseline placement policy, as understanding
-their strengths and limitations is crucial for developing better policies.
+% We now describe these building blocks and the baseline placement policy, as understanding
+% their strengths and limitations is crucial for developing better policies.
+We now describe these building blocks and the baseline placement policy
+as a precursor for more sophisticated policies.
+% , as understanding
+% their strengths and limitations is crucial for developing better policies.
 
 \figoctree
 
@@ -73,6 +77,7 @@ Some locality, however, is inevitably lost as dimensionality reduction is inhere
 
 \subsubsection{Baseline Placement Policy}
 
+\looseness=-1
 Placement computation is a component of the \emph{redistribution} process, invoked if the mesh
 structure changes because of (de)refinement operations.
 Redistribution proceeds in three steps: blocks are first assigned block IDs using Z-order SFCs, the
@@ -88,6 +93,7 @@ co-locating spatial neighbors.
 
 \subsubsection{Augmenting Existing Infrastructure}
 
+\looseness=-1
 Octrees and space-filling curves are fundamental, well-studied components of modern AMR codes.
 Rather than replace these proven building blocks, we augment them with mechanisms to handle
 variable block costs and flexible allocation patterns.
@@ -188,6 +194,8 @@ The approach reduces placement overhead while retaining CDP's solution quality.
 
 \subsection{CPLX: Combining the Best of Both}\label{sec:amr:des:cplx}
 
+% expand page by one line
+\enlargethispage{\baselineskip}
 Our experiments with LPT and CDP revealed a clear tradeoff---LPT achieved better load balance but
 higher communication costs, while CDP preserved locality at the expense of some load imbalance.
 Neither policy consistently outperformed the other in end-to-end runtime, suggesting the potential

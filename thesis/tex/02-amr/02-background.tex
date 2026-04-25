@@ -200,6 +200,9 @@ number of computational points (\emph{cells}) regardless of refinement level.
 Ultimately, the execution time of these compute tasks represents the core computational cost to
 advance the simulation state, establishing the fundamental lower bound on runtime.
 
+% shrink page by one line
+\enlargethispage{-\baselineskip}
+
 \parahead{Communication Tasks}
 Communication tasks create complex inter-block dependencies through \emph{boundary exchanges},
 where each block communicates with up to 26 neighbors in 3D (faces, edges, and vertices).
@@ -210,10 +213,11 @@ message sizes and the potential for blocking downstream tasks.
 \emph{Flux correction} follows a similar small-message, peer-to-peer pattern for ensuring consistency of
 conserved quantities.
 
+\looseness=-1
 \parahead{Redistribution}
-Redistribution operations rebalance blocks across ranks as the simulation evolves, adapting to
+Redistribution rebalances blocks across ranks as the simulation evolves, adapting to
 changes from mesh refinement or coarsening.
-They are triggered when blocks are tagged for refinement based on physical criteria, like solution
+It is triggered when blocks are tagged for refinement based on physical criteria, like solution
 gradients exceeding a threshold.
 Each redistribution computes new block-to-rank mappings and migrates data.
 Because redistribution may be invoked frequently and must complete within tight performance

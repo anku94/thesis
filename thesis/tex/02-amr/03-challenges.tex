@@ -16,7 +16,8 @@ Second, the magnitude of this variability also changed unpredictably as placemen
 were modified.
 % Second, the artifacts driving this variability behaved unpredictably as placement properties were
 % modified.
-For example, optimizing for communication locality did not reliably improve end-to-end performance initially.
+For example, optimizing for communication locality did not reliably improve end-to-end performance
+initially.
 These observations forced us to treat placement not as a theoretical optimization problem, but as a
 systems engineering task grounded in empirically observed runtime behavior.
 The following challenges structure the empirical and algorithmic contributions of this work.
@@ -55,6 +56,7 @@ NP-hard~\cite{Garey1979:Intractability}, and additional objectives further compl
 Placement mechanisms had to encode relevant tradeoffs while remaining fast and robust enough for
 dynamic AMR workloads.
 
-We address these challenges sequentially: \S\ref{sec:amr:tele} describes the tuning and analytics
-infrastructure used to establish reliable telemetry, and \S\ref{sec:amr:design} presents placement
+We address these challenges sequentially: \S\ref{sec:amr:tele} describes the 
+tuning and analytics methods
+ used to establish reliable telemetry, and \S\ref{sec:amr:design} presents placement
 policies enabled by this exercise.

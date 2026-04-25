@@ -18,6 +18,7 @@ rapid refinement.
 We evaluate these aspects by comparing different values of $X$ against {\cple} as our reference
 point.
 
+\looseness=-1
 We primarily evaluate CPLX using the Sedov Blast Wave 3D problem in
 Phoebus~\cite{Barke2024:Phoebus}, a hydrodynamics code built on top of the
 Parthenon~\cite{Grete2023:Parthenon} framework.
@@ -35,7 +36,8 @@ properties under different synthetic regimes in \S\ref{sec:amr:eval:micro}.
 % mesh size to initially have one block per rank. The number of blocks quickly increases due to
 % refinement, settling at $\sim$2 blocks per rank towards the end of the simulation. The initial and
 % final block counts, and the total and the load-balancing timesteps are also shown in Table 1. 
-We evaluate four configurations of the Sedov Blast Wave problem, as detailed in Table 1.
+\looseness=-1
+We evaluate four configurations of the Sedov problem, as detailed in Table 1.
 Each run begins with one block per rank, increasing as refinement proceeds, and finally settling at
 \mytilde{}two blocks per rank.
 The table reports initial and final block counts, total steps, and load-balancing invocations.
@@ -124,6 +126,7 @@ Measured as reduction in non-compute time, the impact of CPLX becomes even more 
 
 \finding{3}{CPLX enables consistent control over the load-locality tradeoff, and tradeoff impact increases with scale}
 
+\enlargethispage{\baselineskip}
 \noindent\Cref{fig:amr:eval:tradeoff:wide} isolates the core tradeoff by showing P2P communication
 and synchronization times, normalized against the baseline, for all policy configurations at 512 and 4096 ranks.
 Intermediate scales are omitted for compactness, but we find them to demonstrate similar trends.
@@ -139,6 +142,7 @@ impact of balancing the two increases with scale.
 Given the strong performance of LPT vs commercial ILP solvers (\S\ref{sec:amr:des:lpt}), this is likely
 close to the practically achievable optimum under our model of AMR placement.
 
+\looseness=-1
 At 512 ranks, some CPLX configurations even reduce communication time relative to baseline---this
 is explained by the compounding effects captured by boundary communication time.
 High variance in the preceding compute kernels results in more time spent in \mpiw{} by some ranks,
@@ -220,10 +224,11 @@ fabric-level recovery behavior unrelated to placement.
 % rounds as well as those with latency above 10\,ms, which we found to reflect fabric-level recovery
 % behavior that obscures placement-driven trends.
 
+\looseness=-1
 \Cref{fig:amr:eval:loc} shows average round latency across placement policies as
 locality decreases from \cpla{} to \cple.
 While higher locality yields lower latency at small scales (512 ranks and below), a surprising
-U-shaped trend emerges at larger scales: intermediate values of $X$ outperform both extremes.
+U-shaped trend emerges at larger scales: intermediate $X$ values outperform both extremes.
 This inversion is driven by face-neighbor communication, which increases as meshes get denser.
 Locality-preserving policies cluster high-traffic neighbors unevenly, increasing per-rank load.
 Intermediate \cplx{} settings diffuse this clustering without fully randomizing placement, leading

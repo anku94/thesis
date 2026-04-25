@@ -29,6 +29,8 @@ fabric library~\cite{2020:IntelPerformanceScaled}.
 
 \subsection{Eliminating Faulty and Fail-Slow Hardware}\label{sec:amr:tele:hw} \figtunehw
 
+% shirnk
+\enlargethispage{-\baselineskip}
 Hardware problems surfaced early in our study and had to be resolved before any software‑level
 conclusions were meaningful.
 Initially collected profiling data showed more than 70\% of runtime being spent in global
@@ -137,6 +139,9 @@ We now establish a key principle:
   % \textbf{Principle:} 
 }
 \vspace{2pt}
+
+% shrink page by one line
+\enlargethispage{-\baselineskip}
 
 % This follows from Lamport's \emph{happened-before} relation --- only dependent operations can
 % create causal relationships. If the critical path is local to a single rank, it reflects compute
