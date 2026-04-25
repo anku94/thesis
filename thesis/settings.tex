@@ -102,9 +102,9 @@
 % -- Minitoc styling options --
 \tightmtctrue
 \setlength{\mtcindent}{36pt}        % reduce left indent (default 24pt)
-\renewcommand{\mtcfont}{\small\sffamily}           % sans-serif entries
-\renewcommand{\mtcSfont}{\small\sffamily\bfseries} % sans-serif sections (bold)
-\renewcommand{\mtcSSfont}{\small\sffamily}         % sans-serif subsections
+% \renewcommand{\mtcfont}{\small\sffamily}           % sans-serif entries
+% \renewcommand{\mtcSfont}{\small\sffamily\bfseries} % sans-serif sections (bold)
+% \renewcommand{\mtcSSfont}{\small\sffamily}         % sans-serif subsections
 % \mtcsettitle{minitoc}{}            % remove "Contents" title
 \mtcsetfeature{minitoc}{open}{\vspace{-0.5ex}}   % reduce space after top rule
 \mtcsetfeature{minitoc}{close}{\vspace{0.5ex}} % reduce space before bottom rule
@@ -189,7 +189,7 @@
 
 % report class doesn't have these, define minimal versions
 \newcommand{\frontmatter}{\pagenumbering{roman}}
-\newcommand{\mainmatter}{\pagenumbering{arabic}\setcounter{page}{1}}
+\newcommand{\mainmatter}{\cleardoublepage\pagenumbering{arabic}\setcounter{page}{1}}
 \newenvironment{titlingpage}{\titlepage}{\endtitlepage}
 
 %% -- Paragraph styling --
