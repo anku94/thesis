@@ -1,29 +1,47 @@
+% !TEX root = ../main.tex
 \frontchapter{Acknowledgments}
 
-% {\small
-% \noindent \emph{I thank my thesis committee --- George Amvrosiadis (chair), Greg Ganger, Andy
-% Pavlo, Vyas Sekar, and Brad Settlemyer --- for their guidance and feedback throughout this work.
-% This research was supported by Los Alamos National Laboratory under contracts
-%   [LANL-CONTRACT-1] and [LANL-CONTRACT-2], and by the U.S.
-% Department of Energy under grants [DOE-GRANT-1] and [DOE-GRANT-2].
-% I also thank the current and former members of the PDL Consortium (Bloomberg LP, Datadog, 
-% Everpure, Google, Jane Street, LayerZero Labs, Meta, Microsoft Research, Oracle Corporation, Salesforce, 
-% Uber, and Western Digital) for their interest, insights, and feedback.}
-% \par
+% \vspace{-1em}
+
+% {\normalsize
+%   \noindent \emph{I thank my thesis committee --- George Amvrosiadis (chair), Greg Ganger, Andy
+%     Pavlo, Vyas Sekar, and Brad Settlemyer --- for their guidance and feedback throughout this work.
+    % {\small \noindent \emph{I thank my thesis committee --- George Amvrosiadis (chair), Greg Ganger,
+    % Andy Pavlo, Vyas Sekar, and Brad Settlemyer --- for their guidance and feedback throughout this
+    % work. This research was supported by Los Alamos National Laboratory under contracts
+    % [LANL-CONTRACT-1] and [LANL-CONTRACT-2], and by the U.S. Department of Energy under grants
+    % [DOE-GRANT-1] and [DOE-GRANT-2]. I also thank the current and former members of the PDL Consortium
+    % (Bloomberg LP, Datadog, Everpure, Google, Jane Street, LayerZero Labs, Meta, Microsoft Research,
+    % Oracle Corporation, Salesforce, Uber, and Western Digital) for their interest, insights, and
+    % feedback.} \par }
+    % This research was sponsored by the Los Alamos National Laboratory's Institute for Reliable
+    % High Performance Information Technology (IRHPIT), the NetSketch project, and the Mochi project
+    % (DOE/NNSA Contract Nos.~DE-AC52-06NA25396/394903, DE-AC52-06NA25396/394957, and
+    % 89233218CNA000001/394957 respectively), and the New Mexico Consortium.
+    % I also thank the
+    % current and former members of the Parallel Data Lab (PDL) Consortium at Carnegie Mellon
+    % University (Bloomberg LP, Datadog, Everpure, Google, Jane Street, LayerZero Labs, Meta,
+    % Microsoft Research, Oracle Corporation, Salesforce, Uber, and Western Digital) for their
+    % interest, insights, and feedback.
+    % The views and the conclusions are those of the author and do not necessarily represent the opinions
+    % of the sponsoring organizations, agencies, or the U.S.
+    % Government.
+%   }
+%   \par
 % }
 
-{\small
-\noindent \emph{I thank my thesis committee --- George Amvrosiadis (chair), Greg Ganger, Andy
-Pavlo, Vyas Sekar, and Brad Settlemyer --- for their guidance and feedback throughout this work.
-This research was sponsored by the Los Alamos National Laboratory's Institute for Reliable
-High Performance Information Technology (IRHPIT), the NetSketch project, and the Mochi project
-(DOE/NNSA Contract Nos.~DE-AC52-06NA25396/394903, DE-AC52-06NA25396/394957, and
-89233218CNA000001/394957 respectively), and the New Mexico Consortium. I also thank the
-current and former members of the Parallel Data Lab (PDL) Consortium at Carnegie Mellon
-University (Bloomberg LP, Datadog, Everpure, Google, Jane Street, LayerZero Labs, Meta,
-Microsoft Research, Oracle Corporation, Salesforce, Uber, and Western Digital) for their
-interest, insights, and feedback.}
-\par
+% {\normalsize
+%   \noindent \emph{This thesis was supervised by a committee comprising George Amvrosiadis
+%     (chair), Greg Ganger, Andy Pavlo, Vyas Sekar, and Brad Settlemyer. I thank them for their
+%     guidance and feedback throughout this work.}
+%   \par
+% }
+
+{\normalsize
+  \noindent \emph{I thank my thesis committee --- George Amvrosiadis (chair), Greg Ganger, Andy
+    Pavlo, Vyas Sekar, and Brad Settlemyer --- for their guidance and feedback throughout this
+    work.}
+  \par
 }
 
 \vspace{1em}
@@ -55,8 +73,8 @@ Greg, now tragically deposed and exiled to an obscure hyperscaler (Google MTV),
 for an excellent job running the show for most of my tenure here.
 Bill, Karen, and Joan for all the magical things they do to make everything run,
 and Joan again for the last-minute typesetting lessons.
-% Bill for always bolstering the audience numbers during practice talks, and him,
-% Karen, Joan for all the magical things they do to make everything run.
+% Bill for always bolstering the audience numbers during practice talks, and him, Karen, Joan for
+% all the magical things they do to make everything run.
 Jason, Chad, and Mitch for handling all my tantrums when Wolf did not work,
 and for all the times it did.
 My appetite for the scale of systems I wanted to do
@@ -127,7 +145,7 @@ Ami for a meme that slowly acquired salience, leading to substantial personal ch
 2023.
 
 % expand page by one line
-\enlargethispage{\baselineskip}
+% \enlargethispage{2\baselineskip}
 
 Finally, my roommate Jovina and my parents.
 Jovina for a fascinating and entertaining character study, teaching
@@ -140,8 +158,23 @@ atherosclerotic cardiovascular
 disease.
 It is finally done, and a new chapter of gainful employment beckons.
 
-% \vfill
-% \noindent\emph{This work was supported in part by the PDL Consortium (Bloomberg LP, Everpure,
-%   Google, Jane Street, LayerZero Labs, Meta, Microsoft Research, Oracle Corporation, Salesforce,
-%   Uber, and Western Digital), whose interest, insights, and feedback helped shape this work.
+% \vfill \noindent\emph{This work was supported in part by the PDL Consortium (Bloomberg LP,
+% Everpure, Google, Jane Street, LayerZero Labs, Meta, Microsoft Research, Oracle Corporation,
+% Salesforce, Uber, and Western Digital), whose interest, insights, and feedback helped shape this
+% work.
+% }
+
+% {\footnotesize\noindent\emph{
+%     This research was sponsored by the Los Alamos National Laboratory's Institute for Reliable
+%     High Performance Information Technology (IRHPIT), the NetSketch project, and the Mochi project
+%     (DOE/NNSA Contract Nos.~DE-AC52-06NA25396/394903, DE-AC52-06NA25396/394957, and
+%     89233218CNA000001/394957 respectively), and the New Mexico Consortium.
+%     I also thank the
+%     current and former members of the Parallel Data Lab (PDL) Consortium at Carnegie Mellon
+%     University (Bloomberg LP, Datadog, Everpure, Google, Jane Street, LayerZero Labs, Meta,
+%     Microsoft Research, Oracle Corporation, Salesforce, Uber, and Western Digital) for their
+%     interest, insights, and feedback.
+%   The views and the conclusions are those of the author and do not necessarily represent the opinions of the sponsoring organizations, agencies, or the U.S. Government.
+% }
+%   \par
 % }
